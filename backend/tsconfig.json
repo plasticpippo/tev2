@@ -1,0 +1,47 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "commonjs",
+    "lib": ["ES2020", "DOM"],
+    "outDir": "./dist",
+    "rootDir": ".",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "removeComments": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "noImplicitThis": true,
+    "noImplicitReturns": false,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node10",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@handlers/*": ["src/handlers/*"],
+      "@prisma": ["src/prisma"],
+      "@router": ["src/router"],
+      "@shared/*": ["../shared/*"]
+    },
+    "types": ["node"],
+    "composite": true
+  },
+  "ts-node": {
+    "esm": true
+  },
+  "include": [
+    "src/**/*",
+    "src/__tests__/**/*",
+    "../shared/**/*"
+  ],
+ "exclude": [
+     "node_modules",
+     "dist"
+   ]
+}

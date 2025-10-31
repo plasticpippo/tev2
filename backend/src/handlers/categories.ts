@@ -1,0 +1,125 @@
+import express, { Request, Response } from 'express';
+import { prisma } from '../prisma';
+import type { Category } from '../types';
+
+export const categoriesRouter = express.Router();
+
+// GET /api/categories - Get all categories
+categoriesRouter.get('/', async (req: Request, res: Response) => {
+  try {
+    const categories = await prisma.category.findMany({
+      select: {
+        id: true,
+        name: true,
+        visibleTillIds: true
+      }
+    });
+    res.json(categories);
+  } catch (error) {
+    console.error('Error fetching categories:', error);
+    res.status(500).json({ error: 'Failed to fetch categories' });
+  }
+});
+
+// GET /api/categories/:id - Get a specific category
+categoriesRouter.get('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const category = await prisma.category.findUnique({
+      where: { id: Number(id) },
+      select: {
+        id: true,
+        name: true,
+        visibleTillIds: true
+      }
+    });
+    
+    if (!category) {
+      return res.status(404).json({ error: 'Category not found' });
+    }
+    
+    res.json(category);
+  } catch (error) {
+    console.error('Error fetching category:', error);
+    res.status(500).json({ error: 'Failed to fetch category' });
+  }
+});
+
+// POST /api/categories - Create a new category
+categoriesRouter.post('/', async (req: Request, res: Response) => {
+  try {
+    const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
+    
+    const category = await prisma.category.create({
+      data: {
+        name,
+        visibleTillIds: visibleTillIds || []
+      },
+      select: {
+        id: true,
+        name: true,
+        visibleTillIds: true
+      }
+    });
+    
+    res.status(201).json(category);
+  } catch (error) {
+    console.error('Error creating category:', error);
+    res.status(500).json({ error: 'Failed to create category' });
+  }
+});
+
+// PUT /api/categories/:id - Update a category
+categoriesRouter.put('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
+    
+    const category = await prisma.category.update({
+      where: { id: Number(id) },
+      data: {
+        name,
+        visibleTillIds: visibleTillIds || []
+      },
+      select: {
+        id: true,
+        name: true,
+        visibleTillIds: true
+      }
+    });
+    
+    res.json(category);
+  } catch (error) {
+    console.error('Error updating category:', error);
+    res.status(500).json({ error: 'Failed to update category' });
+  }
+});
+
+// DELETE /api/categories/:id - Delete a category
+categoriesRouter.delete('/:id', async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    // Check if category has associated products
+    const products = await prisma.product.count({
+      where: { categoryId: Number(id) }
+    });
+    
+    if (products > 0) {
+      return res.status(400).json({ 
+        error: 'Cannot delete category with associated products. Please re-assign products first.' 
+      });
+    }
+    
+    await prisma.category.delete({
+      where: { id: Number(id) }
+    });
+    
+    res.status(204).send();
+  } catch (error) {
+    console.error('Error deleting category:', error);
+    res.status(500).json({ error: 'Failed to delete category' });
+  }
+});
+
+export default categoriesRouter;

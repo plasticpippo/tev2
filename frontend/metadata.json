@@ -1,0 +1,5 @@
+{
+  "name": "Bar POS Pro",
+  "description": "A sleek, fast, and intuitive Point of Sale (POS) application designed specifically for bar service. Features a touch-friendly interface for quick order entry, persistent tab management, and detailed daily reporting.",
+  "requestFramePermissions": []
+}
