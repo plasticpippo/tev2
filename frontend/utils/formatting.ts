@@ -1,8 +1,6 @@
 export const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(amount);
+    // Format as EUR currency with € symbol prefix and comma as decimal separator
+    return `€${amount.toFixed(2).replace('.', ',')}`;
 };
 
 export const formatDate = (dateString: string): string => {

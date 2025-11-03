@@ -54,6 +54,7 @@ jest.mock('../prisma', () => {
       create: jest.fn(),
       update: jest.fn(),
       delete: jest.fn(),
+      count: jest.fn(),
     },
     stockAdjustment: {
       findMany: jest.fn(),
@@ -90,6 +91,7 @@ jest.mock('../prisma', () => {
       update: jest.fn(),
       delete: jest.fn(),
       updateMany: jest.fn(),
+      count: jest.fn(),
     },
     $connect: jest.fn(),
     $disconnect: jest.fn(),

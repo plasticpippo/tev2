@@ -84,6 +84,7 @@ describe('Stock Items API', () => {
       expect(prisma.stockItem.create).toHaveBeenCalledWith({
         data: {
           ...newStockItem,
+          baseUnit: 'unit', // Default base unit is added
           purchasingUnits: undefined // the handler uses undefined when not provided
         }
       });
@@ -107,6 +108,7 @@ describe('Stock Items API', () => {
         where: { id: 1 },
         data: {
           ...updatedStockItemData,
+          baseUnit: 'unit', // Default base unit is added
           purchasingUnits: undefined // the handler uses undefined when not provided
         }
       });

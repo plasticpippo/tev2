@@ -94,41 +94,75 @@ productsRouter.post('/', async (req: Request, res: Response) => {
 productsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
+    const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
     
-    // First, delete existing variants for this product
-    await prisma.productVariant.deleteMany({
-      where: { productId: Number(id) }
-    });
-    
-    const product = await prisma.product.update({
-      where: { id: Number(id) },
-      data: {
-        name,
-        categoryId,
-        variants: {
-          create: variants.map(v => ({
-            name: v.name,
-            price: v.price,
-            isFavourite: v.isFavourite || false,
-            backgroundColor: v.backgroundColor,
-            textColor: v.textColor,
-            stockConsumption: {
-              create: v.stockConsumption.map((sc: { stockItemId: number; quantity: number }) => ({
-                stockItemId: sc.stockItemId,
-                quantity: sc.quantity
-              }))
+    // Start a transaction to ensure data consistency
+    const product = await prisma.$transaction(async (tx) => {
+      // Update the product fields
+      const updatedProduct = await tx.product.update({
+        where: { id: Number(id) },
+        data: {
+          name: name !== undefined ? name : undefined,
+          categoryId: categoryId !== undefined ? categoryId : undefined,
+        },
+        include: {
+          variants: {
+            include: {
+              stockConsumption: true
             }
-          }))
-        }
-      },
-      include: {
-        variants: {
-          include: {
-            stockConsumption: true
           }
         }
+      });
+      
+      // If variants are provided, update them as well
+      if (variants && Array.isArray(variants) && variants.length > 0) {
+        // First, delete existing stock consumption records for this product's variants
+        await tx.stockConsumption.deleteMany({
+          where: {
+            variant: {
+              productId: Number(id)
+            }
+          }
+        });
+        
+        // Then delete existing variants for this product
+        await tx.productVariant.deleteMany({
+          where: { productId: Number(id) }
+        });
+        
+        // Create new variants
+        const updatedProductWithVariants = await tx.product.update({
+          where: { id: Number(id) },
+          data: {
+            variants: {
+              create: variants.map(v => ({
+                name: v.name,
+                price: v.price,
+                isFavourite: v.isFavourite || false,
+                backgroundColor: v.backgroundColor,
+                textColor: v.textColor,
+                stockConsumption: {
+                  create: v.stockConsumption.map((sc: { stockItemId: number; quantity: number }) => ({
+                    stockItemId: sc.stockItemId,
+                    quantity: sc.quantity
+                  }))
+                }
+              }))
+            }
+          },
+          include: {
+            variants: {
+              include: {
+                stockConsumption: true
+              }
+            }
+          }
+        });
+        
+        return updatedProductWithVariants;
       }
+      
+      return updatedProduct;
     });
     
     res.json(product);
@@ -143,8 +177,26 @@ productsRouter.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
-    await prisma.product.delete({
-      where: { id: Number(id) }
+    // Start a transaction to ensure data consistency
+    await prisma.$transaction(async (tx) => {
+      // First, delete stock consumption records for this product's variants
+      await tx.stockConsumption.deleteMany({
+        where: {
+          variant: {
+            productId: Number(id)
+          }
+        }
+      });
+      
+      // Then delete the variants
+      await tx.productVariant.deleteMany({
+        where: { productId: Number(id) }
+      });
+      
+      // Finally delete the product
+      await tx.product.delete({
+        where: { id: Number(id) }
+      });
     });
     
     res.status(204).send();

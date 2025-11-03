@@ -37,14 +37,15 @@ stockItemsRouter.get('/:id', async (req: Request, res: Response) => {
 // POST /api/stock-items - Create a new stock item
 stockItemsRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, quantity, type, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
     
     const stockItem = await prisma.stockItem.create({
       data: {
         name,
         quantity,
         type,
-        purchasingUnits: purchasingUnits ? JSON.stringify(purchasingUnits) : undefined
+        baseUnit: baseUnit || 'unit',
+        ...(purchasingUnits !== undefined && purchasingUnits !== null && { purchasingUnits: JSON.stringify(purchasingUnits) })
       }
     });
     
@@ -59,7 +60,7 @@ stockItemsRouter.post('/', async (req: Request, res: Response) => {
 stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, quantity, type, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
     
     const stockItem = await prisma.stockItem.update({
       where: { id: Number(id) },
@@ -67,7 +68,8 @@ stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
         name,
         quantity,
         type,
-        purchasingUnits: purchasingUnits ? JSON.stringify(purchasingUnits) : undefined
+        baseUnit: baseUnit || 'unit',
+        ...(purchasingUnits !== undefined && purchasingUnits !== null && { purchasingUnits: JSON.stringify(purchasingUnits) })
       }
     });
     

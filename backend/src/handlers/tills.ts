@@ -78,21 +78,42 @@ tillsRouter.delete('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
     
     // Remove this till from all category visibleTillIds arrays
-    await prisma.category.updateMany({
-      data: {
-        visibleTillIds: {
-          // This would require a raw SQL update or custom logic to remove the id from JSON arrays
-          // For now, we'll just update the record to remove the till from visibleTillIds
-          set: { value: [] } // This is a placeholder - proper implementation would require more complex logic
-        }
-      },
-      where: {
-        visibleTillIds: { 
-          path: '$', 
-          array_contains: id 
-        }
+    const allCategories = await prisma.category.findMany({
+      select: {
+        id: true,
+        visibleTillIds: true
       }
     });
+
+    // Update each category to remove the till ID from visibleTillIds
+    if (Array.isArray(allCategories)) {
+      for (const category of allCategories) {
+        if (category.visibleTillIds) {
+          let visibleTillIdsArray: number[];
+          
+          if (Array.isArray(category.visibleTillIds)) {
+            visibleTillIdsArray = category.visibleTillIds as number[];
+          } else {
+            // If it's a JSON string, parse it
+            try {
+              visibleTillIdsArray = JSON.parse(category.visibleTillIds as unknown as string);
+            } catch (e) {
+              // If parsing fails, treat as empty array
+              visibleTillIdsArray = [];
+            }
+          }
+          
+          const updatedVisibleTillIds = visibleTillIdsArray.filter((tillId: number) => tillId !== Number(id));
+          
+          await prisma.category.update({
+            where: { id: category.id },
+            data: {
+              visibleTillIds: JSON.stringify(updatedVisibleTillIds)
+            }
+          });
+        }
+      }
+    }
     
     await prisma.till.delete({
       where: { id: Number(id) }

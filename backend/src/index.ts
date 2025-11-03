@@ -30,7 +30,7 @@ app.use('/api', router);
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
-  res.status(20).json({ status: 'OK', timestamp: new Date().toISOString() });
+  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
 // Error handling middleware

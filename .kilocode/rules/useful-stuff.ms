@@ -21,3 +21,6 @@ Before starting backend or frontend server, make sure they are not already runni
 NO Workarounds! NO shortcuts!
 
 ## ALWAYS USE SUBTASKS TO KEEP TOKEN USAGE AT A MINIMUM
+
+Frontend is running on port 3000
+Backend is running on port 3001

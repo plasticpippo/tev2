@@ -14,7 +14,7 @@ type DateRangePreset = 'today' | 'yesterday' | '7days' | '30days' | 'custom';
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, users, tills, settings }) => {
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-    const [dateRange, setDateRange] = useState<DateRangePreset>('today');
+    const [dateRange, setDateRange] = useState<DateRangePreset>('30days');
     const [customStart, setCustomStart] = useState('');
     const [customEnd, setCustomEnd] = useState('');
     const [customStartTime, setCustomStartTime] = useState('00:00');
@@ -82,11 +82,19 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
     const totalFilteredSales = useMemo(() => {
         return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
     }, [filteredTransactions]);
-
+    
     const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
-        <button onClick={() => setDateRange(preset)} className={`px-3 py-2 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>{label}</button>
+        <button
+            onClick={() => setDateRange(preset)}
+            className={`px-3 py-2 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
+            aria-pressed={dateRange === preset}
+            aria-label={`Filter by ${label}`}
+            data-testid={`date-range-${preset}`}
+        >
+            {label}
+        </button>
     );
-
+    
     return (
         <div className="h-full flex flex-col">
             <h2 className="text-2xl font-bold text-slate-300 mb-4 flex-shrink-0">Transaction History</h2>
@@ -98,7 +106,14 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                     <DateRangeButton preset="yesterday" label="Yesterday"/>
                     <DateRangeButton preset="7days" label="Last 7 Days"/>
                     <DateRangeButton preset="30days" label="Last 30 Days"/>
-                    <button onClick={() => setDateRange('custom')} className={`px-3 py-2 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>Custom</button>
+                    <button
+                        onClick={() => setDateRange('custom')}
+                        className={`px-3 py-2 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
+                        aria-label="Filter by custom date range"
+                        aria-pressed={dateRange === 'custom'}
+                    >
+                        Custom
+                    </button>
                 </div>
 
                 {/* Additional Filters */}
@@ -107,43 +122,82 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                         <div className="space-y-4">
                             {/* Row 2 (Custom): Till & User */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <select value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm">
-                                    <option value="all">All Tills</option>
-                                    {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                                </select>
-                                <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm">
-                                    <option value="all">All Users</option>
-                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                                </select>
+                                <div>
+                                    <label htmlFor="till-select" className="block text-sm font-medium text-slate-400 mb-1">Till</label>
+                                    <select id="till-select" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" data-testid="till-select" role="combobox">
+                                        <option value="all">All Tills</option>
+                                        {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label htmlFor="user-select" className="block text-sm font-medium text-slate-400 mb-1">User</label>
+                                    <select id="user-select" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user" data-testid="user-select" role="combobox">
+                                        <option value="all">All Users</option>
+                                        {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                    </select>
+                                </div>
                             </div>
                             {/* Row 3 (Custom): Date/Time Pickers */}
                             <div className="flex items-center gap-2 flex-wrap bg-slate-900 p-2 rounded-md border border-slate-700">
-                                <span className="text-sm text-slate-400">From:</span>
-                                <input type="date" value={customStart} onChange={e => setCustomStart(e.target.value)} className="bg-slate-700 p-2 rounded-md text-sm"/>
-                                <input type="time" value={customStartTime} onChange={e => setCustomStartTime(e.target.value)} className="bg-slate-700 p-2 rounded-md text-sm"/>
-                                <span className="text-sm text-slate-400">To:</span>
-                                <input type="date" value={customEnd} onChange={e => setCustomEnd(e.target.value)} className="bg-slate-700 p-2 rounded-md text-sm"/>
-                                <input type="time" value={customEndTime} onChange={e => setCustomEndTime(e.target.value)} className="bg-slate-700 p-2 rounded-md text-sm"/>
+                                <label htmlFor="custom-start-date" className="text-sm text-slate-400">From:</label>
+                                <input
+                                    id="custom-start-date"
+                                    type="date"
+                                    value={customStart}
+                                    onChange={e => setCustomStart(e.target.value)}
+                                    className="bg-slate-700 p-2 rounded-md text-sm"
+                                />
+                                <input
+                                    id="custom-start-time"
+                                    type="time"
+                                    value={customStartTime}
+                                    onChange={e => setCustomStartTime(e.target.value)}
+                                    className="bg-slate-700 p-2 rounded-md text-sm"
+                                    aria-label="Start time"
+                                />
+                                <label htmlFor="custom-end-date" className="text-sm text-slate-400">To:</label>
+                                <input
+                                    id="custom-end-date"
+                                    type="date"
+                                    value={customEnd}
+                                    onChange={e => setCustomEnd(e.target.value)}
+                                    className="bg-slate-700 p-2 rounded-md text-sm"
+                                    aria-label="End date"
+                                />
+                                <input
+                                    id="custom-end-time"
+                                    type="time"
+                                    value={customEndTime}
+                                    onChange={e => setCustomEndTime(e.target.value)}
+                                    className="bg-slate-700 p-2 rounded-md text-sm"
+                                    aria-label="End time"
+                                />
                             </div>
                         </div>
                     ) : (
                         /* Row 2 (Preset): Till & User */
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <select value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm">
-                                <option value="all">All Tills</option>
-                                {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
-                            </select>
-                            <select value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm">
-                                <option value="all">All Users</option>
-                                {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
-                            </select>
+                            <div>
+                                <label htmlFor="till-select-preset" className="block text-sm font-medium text-slate-400 mb-1">Till</label>
+                                <select id="till-select-preset" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" role="combobox" data-testid="till-select">
+                                    <option value="all">All Tills</option>
+                                    {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="user-select-preset" className="block text-sm font-medium text-slate-400 mb-1">User</label>
+                                <select id="user-select-preset" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user">
+                                    <option value="all">All Users</option>
+                                    {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
+                                </select>
+                            </div>
                         </div>
                     )}
                 </div>
             </div>
 
 
-            <div className="mb-2 text-slate-400 text-sm">
+            <div className="mb-2 text-slate-400 text-sm" aria-live="polite">
                 Found <strong>{filteredTransactions.length}</strong> transactions totaling <strong>{formatCurrency(totalFilteredSales)}</strong>
             </div>
 
@@ -156,7 +210,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                             <button
                                 key={t.id}
                                 onClick={() => setSelectedTransaction(t)}
-                                className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === t.id ? 'bg-amber-600 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
+                                className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === t.id ? 'bg-amber-60 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
+                                aria-label={`Transaction ${t.id} for ${formatCurrency(t.total)} by ${t.userName} at ${t.tillName}`}
                             >
                                 <div className="flex justify-between items-center">
                                     <span className="font-bold">{formatCurrency(t.total)}</span>
