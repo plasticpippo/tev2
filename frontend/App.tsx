@@ -99,14 +99,31 @@ const App: React.FC = () => {
   // --- STOCK & PRODUCT COMPUTATIONS ---
   const makableVariantIds = useMemo(() => {
     const stockMap = new Map(appData.stockItems.map(item => [item.id, item.quantity]));
+    const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const makableIds = new Set<number>();
     appData.products.forEach(product => {
       product.variants.forEach(variant => {
-        const canMake = variant.stockConsumption.every(
+        // Only consider valid stock consumption records (with proper UUID format and existing stock items)
+        const validStockConsumptions = variant.stockConsumption.filter(
+          ({ stockItemId }) => uuidRegex.test(stockItemId) && stockMap.has(stockItemId)
+        );
+        
+        // Check if all valid stock consumption requirements can be met
+        const canMake = validStockConsumptions.every(
           ({ stockItemId, quantity }) => (stockMap.get(stockItemId) ?? 0) >= quantity
         );
-        if (canMake) {
+        
+        // Only consider the variant makable if all of its valid stock consumption requirements can be met
+        // If a variant has invalid stock references, it should not be considered makable
+        if (canMake && validStockConsumptions.length === variant.stockConsumption.length) {
           makableIds.add(variant.id);
+        } else if (validStockConsumptions.length < variant.stockConsumption.length) {
+          // Log warning for variants with invalid stock references
+          const invalidRefs = variant.stockConsumption.filter(
+            ({ stockItemId }) => !uuidRegex.test(stockItemId) || !stockMap.has(stockItemId)
+          );
+          console.warn(`Variant ${variant.id} (${product.name} - ${variant.name}) has invalid stock references:`,
+                       invalidRefs.map(ref => ref.stockItemId));
         }
       });
     });
@@ -245,18 +262,36 @@ const App: React.FC = () => {
     await api.saveTransaction(transactionData);
     
     // Decrease stock levels
-    const consumptions = new Map<number, number>();
+    const consumptions = new Map<string, number>();
     orderItems.forEach(item => {
       const product = appData.products.find(p => p.id === item.productId);
       const variant = product?.variants.find(v => v.id === item.variantId);
       if (variant) {
         variant.stockConsumption.forEach(sc => {
-          const currentQty = consumptions.get(sc.stockItemId) || 0;
-          consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
+          // Validate that the stockItemId is a proper UUID format and exists in our stockItems data
+          const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+          const isUUIDFormat = uuidRegex.test(sc.stockItemId);
+          const stockItemExists = appData.stockItems.some(stockItem => stockItem.id === sc.stockItemId);
+          
+          if (isUUIDFormat && stockItemExists) {
+            const currentQty = consumptions.get(sc.stockItemId) || 0;
+            consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
+          } else {
+            let warningMsg = `Invalid stock item reference in variant ${variant.id}: ${sc.stockItemId}`;
+            if (!isUUIDFormat) {
+              warningMsg += " (Invalid UUID format)";
+            }
+            if (!stockItemExists) {
+              warningMsg += " (Stock item does not exist)";
+            }
+            console.warn(warningMsg);
+          }
         });
       }
     });
-    await api.updateStockLevels(Array.from(consumptions.entries()).map(([stockItemId, quantity]) => ({ stockItemId, quantity })));
+    if (consumptions.size > 0) {
+      await api.updateStockLevels(Array.from(consumptions.entries()).map(([stockItemId, quantity]) => ({ stockItemId, quantity })));
+    }
 
     if (activeTab) {
       await api.deleteTab(activeTab.id);

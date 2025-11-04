@@ -3,6 +3,25 @@ import type {
   Till, StockItem, StockAdjustment, OrderActivityLog, ProductVariant
 } from '../../shared/types';
 
+// --- API BASE URL HELPER ---
+const getApiBaseUrl = (): string => {
+  // In development, use the VITE_API_URL from .env
+ if ((import.meta as any).env.DEV) {
+    return (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
+  }
+  // In production, you might want to use relative URLs or a different config
+ return (import.meta as any).env.VITE_API_URL || '';
+};
+
+const API_BASE_URL = getApiBaseUrl();
+
+// Helper function to construct full API URLs
+const apiUrl = (path: string): string => {
+ // Remove leading slash if present to avoid double slashes
+  const cleanPath = path.startsWith('/') ? path.slice(1) : path;
+  return `${API_BASE_URL}/${cleanPath}`;
+};
+
 // --- SUBSCRIBER for real-time updates ---
 let subscribers: (() => void)[] = [];
 
@@ -10,7 +29,7 @@ export const subscribeToUpdates = (callback: () => void): (() => void) => {
   subscribers.push(callback);
   return () => {
     subscribers = subscribers.filter(sub => sub !== callback);
-  };
+ };
 };
 
 const notifyUpdates = () => {
@@ -23,7 +42,7 @@ const notifyUpdates = () => {
 // Users
 export const getUsers = async (): Promise<User[]> => {
   try {
-    const response = await fetch('/api/users');
+    const response = await fetch(apiUrl('/api/users'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -35,7 +54,7 @@ export const getUsers = async (): Promise<User[]> => {
 export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promise<User> => {
   try {
     const method = user.id ? 'PUT' : 'POST';
-    const url = user.id ? `/api/users/${user.id}` : '/api/users';
+    const url = user.id ? apiUrl(`/api/users/${user.id}`) : apiUrl('/api/users');
     
     const response = await fetch(url, {
       method,
@@ -55,7 +74,7 @@ export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promis
 
 export const deleteUser = async (userId: number): Promise<{ success: boolean; message?: string }> => {
   try {
-    const response = await fetch(`/api/users/${userId}`, {
+    const response = await fetch(apiUrl(`/api/users/${userId}`), {
       method: 'DELETE'
     });
     
@@ -70,7 +89,7 @@ export const deleteUser = async (userId: number): Promise<{ success: boolean; me
 
 export const login = async (username: string, password: string): Promise<User> => {
   try {
-    const response = await fetch('/api/users/login', {
+    const response = await fetch(apiUrl('/api/users/login'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ username, password })
@@ -87,7 +106,7 @@ export const login = async (username: string, password: string): Promise<User> =
 // Products, Variants
 export const getProducts = async (): Promise<Product[]> => {
   try {
-    const response = await fetch('/api/products');
+    const response = await fetch(apiUrl('/api/products'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -99,7 +118,7 @@ export const getProducts = async (): Promise<Product[]> => {
 export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> & { id?: number; variants: (Omit<ProductVariant, 'id' | 'productId'> & {id?:number})[] }): Promise<Product> => {
   try {
     const method = productData.id ? 'PUT' : 'POST';
-    const url = productData.id ? `/api/products/${productData.id}` : '/api/products';
+    const url = productData.id ? apiUrl(`/api/products/${productData.id}`) : apiUrl('/api/products');
     
     const response = await fetch(url, {
       method,
@@ -119,7 +138,7 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
 
 export const deleteProduct = async (productId: number): Promise<{ success: boolean, message?: string }> => {
   try {
-    const response = await fetch(`/api/products/${productId}`, {
+    const response = await fetch(apiUrl(`/api/products/${productId}`), {
       method: 'DELETE'
     });
     
@@ -135,7 +154,7 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
 // Categories
 export const getCategories = async (): Promise<Category[]> => {
   try {
-    const response = await fetch('/api/categories');
+    const response = await fetch(apiUrl('/api/categories'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -147,7 +166,7 @@ export const getCategories = async (): Promise<Category[]> => {
 export const saveCategory = async (category: Omit<Category, 'id'> & { id?: number }): Promise<Category> => {
   try {
     const method = category.id ? 'PUT' : 'POST';
-    const url = category.id ? `/api/categories/${category.id}` : '/api/categories';
+    const url = category.id ? apiUrl(`/api/categories/${category.id}`) : apiUrl('/api/categories');
     
     const response = await fetch(url, {
       method,
@@ -162,12 +181,12 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
   } catch (error) {
     console.error('Error saving category:', error);
     throw error;
-  }
+ }
 };
 
 export const deleteCategory = async (categoryId: number): Promise<{ success: boolean; message?: string }> => {
   try {
-    const response = await fetch(`/api/categories/${categoryId}`, {
+    const response = await fetch(apiUrl(`/api/categories/${categoryId}`), {
       method: 'DELETE'
     });
     
@@ -189,7 +208,7 @@ export const deleteCategory = async (categoryId: number): Promise<{ success: boo
 // Settings
 export const getSettings = async (): Promise<Settings> => {
   try {
-    const response = await fetch('/api/settings');
+    const response = await fetch(apiUrl('/api/settings'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -199,12 +218,12 @@ export const getSettings = async (): Promise<Settings> => {
       tax: { mode: 'none' }, 
       businessDay: { autoStartTime: '06:00', lastManualClose: null } 
     };
-  }
+ }
 };
 
 export const saveSettings = async (settings: Settings): Promise<void> => {
   try {
-    const response = await fetch('/api/settings', {
+    const response = await fetch(apiUrl('/api/settings'), {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(settings)
@@ -221,7 +240,7 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
 // Transactions
 export const getTransactions = async (): Promise<Transaction[]> => {
   try {
-    const response = await fetch('/api/transactions');
+    const response = await fetch(apiUrl('/api/transactions'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -232,7 +251,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
 
 export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt'>): Promise<Transaction> => {
   try {
-    const response = await fetch('/api/transactions', {
+    const response = await fetch(apiUrl('/api/transactions'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(transactionData)
@@ -250,8 +269,8 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
 
 // Tabs
 export const getTabs = async (): Promise<Tab[]> => {
-  try {
-    const response = await fetch('/api/tabs');
+ try {
+    const response = await fetch(apiUrl('/api/tabs'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -263,7 +282,7 @@ export const getTabs = async (): Promise<Tab[]> => {
 export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise<Tab> => {
   try {
     const method = tabData.id ? 'PUT' : 'POST';
-    const url = tabData.id ? `/api/tabs/${tabData.id}` : '/api/tabs';
+    const url = tabData.id ? apiUrl(`/api/tabs/${tabData.id}`) : apiUrl('/api/tabs');
     
     const response = await fetch(url, {
       method,
@@ -282,8 +301,8 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
 };
 
 export const deleteTab = async (tabId: number): Promise<void> => {
-  try {
-    const response = await fetch(`/api/tabs/${tabId}`, {
+ try {
+    const response = await fetch(apiUrl(`/api/tabs/${tabId}`), {
       method: 'DELETE'
     });
     
@@ -297,7 +316,7 @@ export const deleteTab = async (tabId: number): Promise<void> => {
 
 export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => {
   // For now, update each tab individually
-  const promises = tabsToUpdate.map(tab => saveTab(tab));
+ const promises = tabsToUpdate.map(tab => saveTab(tab));
   await Promise.all(promises);
   notifyUpdates();
 };
@@ -305,7 +324,7 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
 // Tills
 export const getTills = async (): Promise<Till[]> => {
   try {
-    const response = await fetch('/api/tills');
+    const response = await fetch(apiUrl('/api/tills'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -317,7 +336,7 @@ export const getTills = async (): Promise<Till[]> => {
 export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promise<Till> => {
  try {
     const method = till.id ? 'PUT' : 'POST';
-    const url = till.id ? `/api/tills/${till.id}` : '/api/tills';
+    const url = till.id ? apiUrl(`/api/tills/${till.id}`) : apiUrl('/api/tills');
     
     const response = await fetch(url, {
       method,
@@ -337,7 +356,7 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
 
 export const deleteTill = async (tillId: number): Promise<{success: boolean}> => {
   try {
-    const response = await fetch(`/api/tills/${tillId}`, {
+    const response = await fetch(apiUrl(`/api/tills/${tillId}`), {
       method: 'DELETE'
     });
     
@@ -352,8 +371,8 @@ export const deleteTill = async (tillId: number): Promise<{success: boolean}> =>
 
 // Stock Items
 export const getStockItems = async (): Promise<StockItem[]> => {
-  try {
-    const response = await fetch('/api/stock-items');
+ try {
+    const response = await fetch(apiUrl('/api/stock-items'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -362,10 +381,10 @@ export const getStockItems = async (): Promise<StockItem[]> => {
   }
 };
 
-export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: number }): Promise<StockItem> => {
+export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string }): Promise<StockItem> => {
   try {
     const method = item.id ? 'PUT' : 'POST';
-    const url = item.id ? `/api/stock-items/${item.id}` : '/api/stock-items';
+    const url = item.id ? apiUrl(`/api/stock-items/${item.id}`) : apiUrl('/api/stock-items');
     
     const response = await fetch(url, {
       method,
@@ -383,9 +402,9 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: number 
  }
 };
 
-export const deleteStockItem = async (itemId: number): Promise<{ success: boolean; message?: string }> => {
+export const deleteStockItem = async (itemId: string): Promise<{ success: boolean; message?: string }> => {
   try {
-    const response = await fetch(`/api/stock-items/${itemId}`, {
+    const response = await fetch(apiUrl(`/api/stock-items/${itemId}`), {
       method: 'DELETE'
     });
     
@@ -404,26 +423,44 @@ export const deleteStockItem = async (itemId: number): Promise<{ success: boolea
   }
 };
 
-export const updateStockLevels = async (consumptions: { stockItemId: number, quantity: number }[]): Promise<void> => {
- try {
-    const response = await fetch('/api/stock-items/update-levels', {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ consumptions })
-    });
-    
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    notifyUpdates();
-  } catch (error) {
-    console.error('Error updating stock levels:', error);
-    throw error;
+export const updateStockLevels = async (consumptions: { stockItemId: string, quantity: number }[]): Promise<void> => {
+  try {
+     const response = await fetch(apiUrl('/api/stock-items/update-levels'), {
+       method: 'PUT',
+       headers: { 'Content-Type': 'application/json' },
+       body: JSON.stringify({ consumptions })
+     });
+     
+     if (!response.ok) {
+       // Check if it's a 400 error with a specific message
+       if (response.status === 400) {
+         const errorData = await response.json();
+         console.warn('Stock level update response:', errorData);
+         // If the error is related to invalid stock item references, we might want to handle it differently
+         if (errorData.error && errorData.error.includes('Invalid stock item ID format')) {
+           throw new Error(`Invalid stock item ID format: ${errorData.error}`);
+         }
+       }
+       throw new Error(`HTTP error! status: ${response.status}`);
+     }
+     
+     // Check if the response contains warnings (for orphaned references)
+     const responseData = await response.json();
+     if (responseData.warnings) {
+       console.warn('Stock level update completed with warnings:', responseData.warnings);
+     }
+     
+     notifyUpdates();
+   } catch (error) {
+     console.error('Error updating stock levels:', error);
+     throw error;
  }
 };
 
 // Stock Adjustments
 export const getStockAdjustments = async (): Promise<StockAdjustment[]> => {
-  try {
-    const response = await fetch('/api/stock-adjustments');
+ try {
+    const response = await fetch(apiUrl('/api/stock-adjustments'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -434,7 +471,7 @@ export const getStockAdjustments = async (): Promise<StockAdjustment[]> => {
 
 export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 'createdAt'>): Promise<StockAdjustment> => {
   try {
-    const response = await fetch('/api/stock-adjustments', {
+    const response = await fetch(apiUrl('/api/stock-adjustments'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(adjData)
@@ -447,13 +484,13 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
   } catch (error) {
     console.error('Error saving stock adjustment:', error);
     throw error;
-  }
+ }
 };
 
 // Order Activity Log
 export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
   try {
-    const response = await fetch('/api/order-activity-logs');
+    const response = await fetch(apiUrl('/api/order-activity-logs'));
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     return await response.json();
   } catch (error) {
@@ -463,8 +500,8 @@ export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
 };
 
 export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' | 'createdAt'>): Promise<OrderActivityLog> => {
-  try {
-    const response = await fetch('/api/order-activity-logs', {
+ try {
+    const response = await fetch(apiUrl('/api/order-activity-logs'), {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(logData)

@@ -15,6 +15,7 @@ async function seedDatabase() {
     // Clear existing data (optional, for development)
     await prisma.settings.deleteMany({});
     await prisma.orderActivityLog.deleteMany({});
+    await prisma.stockConsumption.deleteMany({}); // Clear stock consumptions first
     await prisma.stockAdjustment.deleteMany({});
     await prisma.tab.deleteMany({});
     await prisma.transaction.deleteMany({});
@@ -132,7 +133,7 @@ async function seedDatabase() {
       prisma.product.create({
         data: {
           name: 'Merlot',
-          categoryId: 1, // Red Wine
+          categoryId: categories[0].id, // Red Wine
           variants: {
             create: [
               {
@@ -143,7 +144,7 @@ async function seedDatabase() {
                 textColor: 'text-white',
                 stockConsumption: {
                   create: {
-                    stockItemId: 1, // Merlot Bulk
+                    stockItemId: stockItems[0].id, // Merlot Bulk
                     quantity: 150,
                   },
                 },
@@ -156,7 +157,7 @@ async function seedDatabase() {
                 textColor: 'text-white',
                 stockConsumption: {
                   create: {
-                    stockItemId: 1, // Merlot Bulk
+                    stockItemId: stockItems[0].id, // Merlot Bulk
                     quantity: 750,
                   },
                 },
@@ -175,7 +176,7 @@ async function seedDatabase() {
       prisma.product.create({
         data: {
           name: 'Local Lager',
-          categoryId: 2, // Beer
+          categoryId: categories[1].id, // Beer
           variants: {
             create: [
               {
@@ -186,7 +187,7 @@ async function seedDatabase() {
                 textColor: 'text-white',
                 stockConsumption: {
                   create: {
-                    stockItemId: 2, // Lager Bottle
+                    stockItemId: stockItems[1].id, // Lager Bottle
                     quantity: 1,
                   },
                 },
@@ -205,7 +206,7 @@ async function seedDatabase() {
       prisma.product.create({
         data: {
           name: 'Vodka & Tonic',
-          categoryId: 3, // Cocktails
+          categoryId: categories[2].id, // Cocktails
           variants: {
             create: [
               {
@@ -217,11 +218,11 @@ async function seedDatabase() {
                 stockConsumption: {
                   create: [
                     {
-                      stockItemId: 3, // Vodka
+                      stockItemId: stockItems[2].id, // Vodka
                       quantity: 40,
                     },
                     {
-                      stockItemId: 4, // Tonic Water
+                      stockItemId: stockItems[3].id, // Tonic Water
                       quantity: 150,
                     },
                   ],

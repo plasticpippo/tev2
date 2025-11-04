@@ -11,11 +11,17 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
       orderBy: { createdAt: 'desc' },
       take: 100  // Limit to last 10 logs for performance
     });
-    res.json(orderActivityLogs);
-  } catch (error) {
+    // Parse the details JSON string back to appropriate type
+    const logsWithParsedDetails = orderActivityLogs.map(log => ({
+      ...log,
+      details: typeof log.details === 'string' ? JSON.parse(log.details) : log.details,
+      createdAt: log.createdAt.toISOString() // Ensure createdAt is in string format
+    }));
+    res.json(logsWithParsedDetails);
+ } catch (error) {
     console.error('Error fetching order activity logs:', error);
     res.status(500).json({ error: 'Failed to fetch order activity logs' });
- }
+  }
 });
 
 // GET /api/order-activity-logs/:id - Get a specific order activity log
@@ -30,7 +36,14 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Order activity log not found' });
     }
     
-    res.json(orderActivityLog);
+    // Parse the details JSON string back to appropriate type
+    const logWithParsedDetails = {
+      ...orderActivityLog,
+      details: typeof orderActivityLog.details === 'string' ? JSON.parse(orderActivityLog.details) : orderActivityLog.details,
+      createdAt: orderActivityLog.createdAt.toISOString() // Ensure createdAt is in string format
+    };
+    
+    res.json(logWithParsedDetails);
   } catch (error) {
     console.error('Error fetching order activity log:', error);
     res.status(500).json({ error: 'Failed to fetch order activity log' });

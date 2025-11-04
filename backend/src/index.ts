@@ -6,7 +6,7 @@ import { router } from './router';
 import { initPrisma } from './prisma';
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Security middleware
 app.use(helmet());
@@ -49,10 +49,12 @@ const startServer = async () => {
     // Initialize Prisma client
     await initPrisma();
     
-    app.listen(PORT, () => {
-      console.log(`Server is running on port ${PORT}`);
-      console.log(`Health check: http://localhost:${PORT}/health`);
-      console.log(`API base: http://localhost:${PORT}/api`);
+    const HOST = process.env.HOST || 'localhost';
+    
+    app.listen(PORT, HOST, () => {
+      console.log(`Server is running on ${HOST}:${PORT}`);
+      console.log(`Health check: http://${HOST}:${PORT}/health`);
+      console.log(`API base: http://${HOST}:${PORT}/api`);
     });
   } catch (error) {
     console.error('Failed to start server:', error);

@@ -15,8 +15,8 @@ export interface ProductVariant {
   price: number;
   isFavourite?: boolean;
   stockConsumption: {
-    stockItemId: number;
-    quantity: number;
+      stockItemId: string;
+      quantity: number;
   }[];
   backgroundColor: string;
   textColor: string; 
@@ -91,19 +91,19 @@ export interface PurchasingUnit {
 }
 
 export interface StockItem {
-    id: number;
+    id: string;
     name: string;
-    quantity: number; 
+    quantity: number;
     type: 'Ingredient' | 'Sellable Good';
-    baseUnit: string; 
+    baseUnit: string;
     purchasingUnits: PurchasingUnit[];
 }
 
 export interface StockAdjustment {
     id: number;
-    stockItemId: number;
+    stockItemId: string;
     itemName: string;
-    quantity: number; 
+    quantity: number;
     reason: string;
     userId: number;
     userName: string;

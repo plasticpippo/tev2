@@ -23,7 +23,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
         onUpdate({ ...variant, stockConsumption: newConsumption });
     };
 
-    const handleUpdateConsumption = (index: number, field: 'stockItemId' | 'quantity', value: number) => {
+    const handleUpdateConsumption = (index: number, field: 'stockItemId' | 'quantity', value: string | number) => {
         const newConsumption = [...(variant.stockConsumption || [])];
         newConsumption[index] = { ...newConsumption[index], [field]: value };
         onUpdate({ ...variant, stockConsumption: newConsumption });
@@ -34,7 +34,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
         onUpdate({ ...variant, stockConsumption: newConsumption });
     };
 
-    const getBaseUnitForStockItem = (id: number) => stockItems.find(si => si.id === id)?.baseUnit || '';
+    const getBaseUnitForStockItem = (id: string) => stockItems.find(si => si.id === id)?.baseUnit || '';
 
     return (
         <div className="bg-slate-700 p-4 rounded-md space-y-4 border border-slate-600">
@@ -83,7 +83,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                 <div className="space-y-2">
                     {(variant.stockConsumption || []).map((sc, index) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
-                            <select value={sc.stockItemId} onChange={e => handleUpdateConsumption(index, 'stockItemId', Number(e.target.value))} className="flex-grow p-2 bg-slate-600 border border-slate-500 rounded-md text-sm">
+                            <select value={sc.stockItemId} onChange={e => handleUpdateConsumption(index, 'stockItemId', e.target.value)} className="flex-grow p-2 bg-slate-600 border border-slate-500 rounded-md text-sm">
                                 {stockItems.map(si => <option key={si.id} value={si.id}>{si.name}</option>)}
                             </select>
                             <VKeyboardInput k-type="numeric" type="number" value={sc.quantity} onChange={e => handleUpdateConsumption(index, 'quantity', parseFloat(e.target.value) || 0)} placeholder="Qty" className="w-24 p-2 bg-slate-600 border border-slate-500 rounded-md text-sm" />

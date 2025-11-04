@@ -13,6 +13,12 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    
+    /* Path aliases */
+    "baseUrl": ".",
+    "paths": {
+      "@shared/*": ["../shared/*"]
+    },
 
     /* Linting */
     "strict": true,
@@ -20,6 +26,6 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/__tests__", "src/test", "src/mocks"],
+  "include": ["src", "src/__tests__", "src/test", "src/mocks", "../shared"],
   "references": [{"path": "./tsconfig.node.json"}]
 }

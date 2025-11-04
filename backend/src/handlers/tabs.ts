@@ -8,7 +8,13 @@ export const tabsRouter = express.Router();
 tabsRouter.get('/', async (req: Request, res: Response) => {
   try {
     const tabs = await prisma.tab.findMany();
-    res.json(tabs);
+    // Parse the items JSON string back to array
+    const tabsWithParsedItems = tabs.map(tab => ({
+      ...tab,
+      items: typeof tab.items === 'string' ? JSON.parse(tab.items) : tab.items,
+      createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
+    }));
+    res.json(tabsWithParsedItems);
   } catch (error) {
     console.error('Error fetching tabs:', error);
     res.status(500).json({ error: 'Failed to fetch tabs' });
@@ -27,7 +33,14 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Tab not found' });
     }
     
-    res.json(tab);
+    // Parse the items JSON string back to array
+    const tabWithParsedItems = {
+      ...tab,
+      items: typeof tab.items === 'string' ? JSON.parse(tab.items) : tab.items,
+      createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
+    };
+    
+    res.json(tabWithParsedItems);
   } catch (error) {
     console.error('Error fetching tab:', error);
     res.status(500).json({ error: 'Failed to fetch tab' });

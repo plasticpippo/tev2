@@ -9,11 +9,11 @@ interface AdjustmentModalProps {
     currentUser: User;
     onClose: () => void;
     onSave: () => void;
-    preselectedItemId?: number;
+    preselectedItemId?: string;
 }
 
 const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUser, onClose, onSave, preselectedItemId }) => {
-    const [stockItemId, setStockItemId] = useState<number | ''>(preselectedItemId || '');
+    const [stockItemId, setStockItemId] = useState<string | ''>(preselectedItemId || '');
     const [quantity, setQuantity] = useState<number | ''>('');
     const [selectedUnitId, setSelectedUnitId] = useState<string>('base');
     const [reason, setReason] = useState('');
@@ -56,7 +56,7 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-slate-400">Stock Item</label>
-                <select value={stockItemId} onChange={e => setStockItemId(Number(e.target.value))} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required>
+                <select value={stockItemId} onChange={e => setStockItemId(e.target.value)} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required>
                     <option value="" disabled>Select an item...</option>
                     {stockItems.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                 </select>
@@ -100,7 +100,7 @@ interface InventoryManagementProps {
 export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockItems, stockAdjustments, currentUser, products, categories, onDataUpdate }) => {
     const [activeTab, setActiveTab] = useState<'ingredients' | 'goods'>('ingredients');
     const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
-    const [preselectedItemId, setPreselectedItemId] = useState<number | undefined>(undefined);
+    const [preselectedItemId, setPreselectedItemId] = useState<string | undefined>(undefined);
     const [searchTerm, setSearchTerm] = useState('');
     const [stockLevelFilter, setStockLevelFilter] = useState<'all' | 'low' | 'out'>('all');
     const [categoryFilter, setCategoryFilter] = useState<number | 'all'>('all');
@@ -111,7 +111,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
         onDataUpdate();
     };
 
-    const handleOpenAdjustModal = (itemId: number) => {
+    const handleOpenAdjustModal = (itemId: string) => {
         setPreselectedItemId(itemId);
         setIsAdjustmentModalOpen(true);
     };
@@ -123,11 +123,17 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
         });
 
         if (categoryFilter !== 'all') {
-            const stockItemIdsInCategory = new Set<number>();
+            const stockItemIdsInCategory = new Set<string>();
+            const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
             products.forEach(p => {
                 if (p.categoryId === categoryFilter) {
                     p.variants.forEach(v => {
-                        v.stockConsumption.forEach(sc => stockItemIdsInCategory.add(sc.stockItemId));
+                        v.stockConsumption.forEach(sc => {
+                            // Only add to the set if the stockItemId is a valid UUID format
+                            if (uuidRegex.test(sc.stockItemId)) {
+                                stockItemIdsInCategory.add(sc.stockItemId);
+                            }
+                        });
                     });
                 }
             });

@@ -16,8 +16,8 @@ describe('Stock Items API', () => {
   describe('GET /api/stock-items', () => {
     it('should return all stock items', async () => {
       const mockStockItems = [
-        { id: 1, name: 'Tomatoes', quantity: 100, type: 'ingredient', purchasingUnits: null },
-        { id: 2, name: 'Lettuce', quantity: 50, type: 'ingredient', purchasingUnits: null }
+        { id: '50e8400-e29b-41d4-a716-46655440000', name: 'Tomatoes', quantity: 100, type: 'ingredient', purchasingUnits: null },
+        { id: '550e8400-e29b-41d4-a716-446655440001', name: 'Lettuce', quantity: 50, type: 'ingredient', purchasingUnits: null }
       ];
 
       (prisma.stockItem.findMany as jest.Mock).mockResolvedValue(mockStockItems);
@@ -43,17 +43,17 @@ describe('Stock Items API', () => {
 
   describe('GET /api/stock-items/:id', () => {
     it('should return a specific stock item', async () => {
-      const mockStockItem = { id: 1, name: 'Tomatoes', quantity: 100, type: 'ingredient', purchasingUnits: null };
+      const mockStockItem = { id: '550e8400-e29b-41d4-a716-4665544000', name: 'Tomatoes', quantity: 100, type: 'ingredient', purchasingUnits: null };
 
       (prisma.stockItem.findUnique as jest.Mock).mockResolvedValue(mockStockItem);
 
       const response = await request(app)
-        .get('/api/stock-items/1')
+        .get('/api/stock-items/550e8400-e29b-41d4-a716-46655440000')
         .expect(200);
 
       expect(response.body).toEqual(mockStockItem);
       expect(prisma.stockItem.findUnique).toHaveBeenCalledWith({
-        where: { id: 1 }
+        where: { id: '550e8400-e29b-41d4-a716-46655440000' }
       });
     });
 
@@ -61,7 +61,7 @@ describe('Stock Items API', () => {
       (prisma.stockItem.findUnique as jest.Mock).mockResolvedValue(null);
 
       const response = await request(app)
-        .get('/api/stock-items/999')
+        .get('/api/stock-items/550e8400-e29b-41d4-a716-46655440002')
         .expect(404);
 
       expect(response.body).toEqual({ error: 'Stock item not found' });
@@ -71,7 +71,7 @@ describe('Stock Items API', () => {
   describe('POST /api/stock-items', () => {
     it('should create a new stock item', async () => {
       const newStockItem = { name: 'New Stock Item', quantity: 10, type: 'ingredient', purchasingUnits: null };
-      const createdStockItem = { id: 3, ...newStockItem };
+      const createdStockItem = { id: '550e8400-e29b-41d4-a716-46655440003', ...newStockItem };
 
       (prisma.stockItem.create as jest.Mock).mockResolvedValue(createdStockItem);
 
@@ -94,18 +94,18 @@ describe('Stock Items API', () => {
   describe('PUT /api/stock-items/:id', () => {
     it('should update an existing stock item', async () => {
       const updatedStockItemData = { name: 'Updated Stock Item', quantity: 20, type: 'ingredient', purchasingUnits: null };
-      const updatedStockItem = { id: 1, ...updatedStockItemData };
+      const updatedStockItem = { id: '550e8400-e29b-41d4-a716-466544004', ...updatedStockItemData };
 
       (prisma.stockItem.update as jest.Mock).mockResolvedValue(updatedStockItem);
 
       const response = await request(app)
-        .put('/api/stock-items/1')
+        .put('/api/stock-items/550e8400-e29b-41d4-a716-46655440004')
         .send(updatedStockItemData)
         .expect(200);
 
       expect(response.body).toEqual(updatedStockItem);
       expect(prisma.stockItem.update).toHaveBeenCalledWith({
-        where: { id: 1 },
+        where: { id: '550e8400-e29b-41d4-a716-46655440004' },
         data: {
           ...updatedStockItemData,
           baseUnit: 'unit', // Default base unit is added
@@ -120,11 +120,11 @@ describe('Stock Items API', () => {
       (prisma.stockItem.delete as jest.Mock).mockResolvedValue({});
 
       const response = await request(app)
-        .delete('/api/stock-items/1')
+        .delete('/api/stock-items/550e8400-e29b-41d4-a716-46655440005')
         .expect(204);
 
       expect(prisma.stockItem.delete).toHaveBeenCalledWith({
-        where: { id: 1 }
+        where: { id: '550e8400-e29b-41d4-a716-46655440005' }
       });
     });
 

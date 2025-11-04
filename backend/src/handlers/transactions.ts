@@ -10,7 +10,13 @@ transactionsRouter.get('/', async (req: Request, res: Response) => {
     const transactions = await prisma.transaction.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    res.json(transactions);
+    // Parse the items JSON string back to array
+    const transactionsWithParsedItems = transactions.map(transaction => ({
+      ...transaction,
+      items: typeof transaction.items === 'string' ? JSON.parse(transaction.items) : transaction.items,
+      createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
+    }));
+    res.json(transactionsWithParsedItems);
   } catch (error) {
     console.error('Error fetching transactions:', error);
     res.status(500).json({ error: 'Failed to fetch transactions' });
@@ -29,7 +35,14 @@ transactionsRouter.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Transaction not found' });
     }
     
-    res.json(transaction);
+    // Parse the items JSON string back to array
+    const transactionWithParsedItems = {
+      ...transaction,
+      items: typeof transaction.items === 'string' ? JSON.parse(transaction.items) : transaction.items,
+      createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
+    };
+    
+    res.json(transactionWithParsedItems);
   } catch (error) {
     console.error('Error fetching transaction:', error);
     res.status(500).json({ error: 'Failed to fetch transaction' });

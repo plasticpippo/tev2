@@ -14,13 +14,17 @@ admin user: admin
 admin password: admin123
 
 
+## General Behaviour
 
 ALWAYS run frontend and backend servers in dev mode
 Before starting backend or frontend server, make sure they are not already running, especially the frontend server
 
-NO Workarounds! NO shortcuts!
+NO Workarounds! NO shortcuts! ONLY proper coding!
 
 ## ALWAYS USE SUBTASKS TO KEEP TOKEN USAGE AT A MINIMUM
 
 Frontend is running on port 3000
 Backend is running on port 3001
+
+### We are testing from LAN with a browser, NOT from localhost
+

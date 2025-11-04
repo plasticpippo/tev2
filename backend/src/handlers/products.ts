@@ -54,6 +54,47 @@ productsRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
     
+    // Validate category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId }
+    });
+    
+    if (!category) {
+      return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+    }
+    
+    // If variants have stock consumption, validate stock item references
+    if (variants && variants.length > 0) {
+      // Collect all stock item IDs from all variants
+      const allStockItemIds: string[] = [];
+      variants.forEach(v => {
+        if (v.stockConsumption && Array.isArray(v.stockConsumption)) {
+          v.stockConsumption.forEach(sc => {
+            if (sc.stockItemId) {
+              allStockItemIds.push(sc.stockItemId);
+            }
+          });
+        }
+      });
+      
+      // Check if all referenced stock items exist
+      if (allStockItemIds.length > 0) {
+        const existingStockItems = await prisma.stockItem.findMany({
+          where: { id: { in: allStockItemIds } },
+          select: { id: true }
+        });
+        
+        const existingStockItemIds = existingStockItems.map(item => item.id);
+        const invalidStockItemIds = allStockItemIds.filter(id => !existingStockItemIds.includes(id));
+        
+        if (invalidStockItemIds.length > 0) {
+          return res.status(400).json({
+            error: `Invalid stock item references: ${invalidStockItemIds.join(', ')}`
+          });
+        }
+      }
+    }
+    
     const product = await prisma.product.create({
       data: {
         name,
@@ -66,7 +107,7 @@ productsRouter.post('/', async (req: Request, res: Response) => {
             backgroundColor: v.backgroundColor,
             textColor: v.textColor,
             stockConsumption: {
-              create: v.stockConsumption.map((sc: { stockItemId: number; quantity: number }) => ({
+              create: v.stockConsumption.map((sc: { stockItemId: string; quantity: number }) => ({
                 stockItemId: sc.stockItemId,
                 quantity: sc.quantity
               }))
@@ -95,6 +136,49 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
+    
+    // If categoryId is provided, validate that it exists
+    if (categoryId !== undefined) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId }
+      });
+      
+      if (!category) {
+        return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+      }
+    }
+    
+    // If variants are provided with stock consumption, validate stock item references
+    if (variants && Array.isArray(variants) && variants.length > 0) {
+      // Collect all stock item IDs from all variants
+      const allStockItemIds: string[] = [];
+      variants.forEach(v => {
+        if (v.stockConsumption && Array.isArray(v.stockConsumption)) {
+          v.stockConsumption.forEach(sc => {
+            if (sc.stockItemId) {
+              allStockItemIds.push(sc.stockItemId);
+            }
+          });
+        }
+      });
+      
+      // Check if all referenced stock items exist
+      if (allStockItemIds.length > 0) {
+        const existingStockItems = await prisma.stockItem.findMany({
+          where: { id: { in: allStockItemIds } },
+          select: { id: true }
+        });
+        
+        const existingStockItemIds = existingStockItems.map(item => item.id);
+        const invalidStockItemIds = allStockItemIds.filter(id => !existingStockItemIds.includes(id));
+        
+        if (invalidStockItemIds.length > 0) {
+          return res.status(400).json({
+            error: `Invalid stock item references: ${invalidStockItemIds.join(', ')}`
+          });
+        }
+      }
+    }
     
     // Start a transaction to ensure data consistency
     const product = await prisma.$transaction(async (tx) => {
@@ -142,7 +226,7 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
                 backgroundColor: v.backgroundColor,
                 textColor: v.textColor,
                 stockConsumption: {
-                  create: v.stockConsumption.map((sc: { stockItemId: number; quantity: number }) => ({
+                  create: v.stockConsumption.map((sc) => ({
                     stockItemId: sc.stockItemId,
                     quantity: sc.quantity
                   }))

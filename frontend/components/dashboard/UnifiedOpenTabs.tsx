@@ -12,7 +12,9 @@ export const UnifiedOpenTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
                 ) : (
                     <div className="space-y-2">
                          {[...tabs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(tab => {
-                             const tabTotal = tab.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                             // Ensure tab.items is an array before calling reduce
+                             const itemsArray = Array.isArray(tab.items) ? tab.items : [];
+                             const tabTotal = itemsArray.reduce((sum, item) => sum + item.price * item.quantity, 0);
                              return (
                                 <div key={tab.id} className="bg-slate-800 p-3 rounded-md flex justify-between items-center">
                                     <div>

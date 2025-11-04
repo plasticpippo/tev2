@@ -29,9 +29,18 @@
       "args": [
         "-y",
         "@playwright/mcp@0.0.38",
-        "--browser=",
-        "--headless=",
-        "--viewport-size="
+        "--browser=chromium",
+        "--headless=true",
+        "--caps=core,core-tabs,testing"
+      ],
+      "alwaysAllow": [
+        "browser_navigate",
+        "browser_snapshot",
+        "browser_console_messages",
+        "browser_network_requests",
+        "browser_click",
+        "browser_type",
+        "browser_fill_form"
       ]
     }
   }
