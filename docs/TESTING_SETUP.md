@@ -179,6 +179,8 @@ describe('UserManagement Component', () => {
 - `/api/categories` - GET, POST, PUT, DELETE
 - `/api/transactions` - GET, POST
 - `/api/tabs` - GET, POST, PUT, DELETE
+- `/api/rooms` - GET, POST, PUT, DELETE
+- `/api/tables` - GET, POST, PUT, DELETE, PUT position
 - `/api/tills` - GET, POST, PUT, DELETE
 - `/api/stock-items` - GET, POST, PUT, DELETE
 - `/api/stock-adjustments` - GET, POST
@@ -195,6 +197,8 @@ describe('UserManagement Component', () => {
 ### Backend Tests
 - `backend/src/__tests__/users.test.ts` - User API tests
 - `backend/src/__tests__/products.test.ts` - Product API tests
+- `backend/src/__tests__/rooms.test.ts` - Room API tests
+- `backend/src/__tests__/tables.test.ts` - Table API tests
 - `backend/src/__tests__/setup.ts` - Test setup
 
 ### Frontend Tests

@@ -25,6 +25,7 @@ A comprehensive point of sale system with separate frontend and backend, featuri
 - **Product Management**: Create and manage products with multiple variants and pricing
 - **Real-time Transactions**: Process sales with multiple payment methods (Cash, Card, Other)
 - **Tab Management**: Open, save, and manage customer tabs for ongoing orders
+- **Table Management**: Visual layout editor for room and table management with drag-and-drop functionality
 - **Order History**: Complete transaction history with detailed item breakdowns
 
 ### Inventory Management
@@ -52,6 +53,7 @@ A comprehensive point of sale system with separate frontend and backend, featuri
 - **Virtual Keyboard**: On-screen keyboard for touch-screen terminals
 - **Tax Configuration**: Flexible tax settings for different jurisdictions
 - **Category Management**: Organize products by categories with till-specific visibility
+- **Table Management**: Complete restaurant floor management with visual layout editor and table assignment
 
 ## Project Structure
 
@@ -134,6 +136,7 @@ npm run dev:backend
 ### Main Workflows
 - **Processing a Sale**: Select products from the grid, adjust quantities, choose payment method, and complete the transaction
 - **Managing Tabs**: Create tabs for ongoing orders, add items, transfer items between tabs, and settle when ready
+- **Managing Tables**: Create and organize rooms, design table layouts visually, assign customers to tables, and track table status
 - **Inventory Management**: Monitor stock levels, create stock adjustments, and track ingredient consumption
 - **Reporting**: Access transaction history, sales analytics, and user performance reports
 
@@ -150,7 +153,7 @@ The application can be configured to be accessible from other devices on your lo
 2. Configure the frontend to point to your machine's IP address in `frontend/.env`:
    ```
    VITE_API_URL=http://[YOUR_IP_ADDRESS]:3001
-   VITE_HOST=0.0.0
+   VITE_HOST=0.0.0.0
    VITE_PORT=3000
    ```
 
@@ -181,6 +184,8 @@ The backend provides a comprehensive REST API for all system functions:
 - `/api/tills` - Till management
 - `/api/transactions` - Transaction history and processing
 - `/api/tabs` - Tab management
+- `/api/rooms` - Room management for table organization
+- `/api/tables` - Table management with position and status tracking
 - `/api/stock-items` - Inventory management
 - `/api/stock-adjustments` - Stock adjustment tracking
 - `/api/order-activity-logs` - Activity logging

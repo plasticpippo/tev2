@@ -9,8 +9,8 @@ interface TabManagerProps {
   tabs: Tab[];
   onCreateTab: (name: string) => void;
   onAddToTab: (tabId: number) => void;
-  onLoadTab: (tabId: number) => void;
-  onCloseTab: (tabId: number) => void;
+ onLoadTab: (tabId: number) => void;
+ onCloseTab: (tabId: number) => void;
   onOpenTransfer: (tabId: number) => void;
   currentOrder: OrderItem[];
 }
@@ -63,43 +63,50 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
             [...tabs].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map(tab => {
               const tabTotal = tab.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
               return (
-                <div key={tab.id} className="bg-slate-900 p-3 rounded-md flex justify-between items-center">
-                  <div>
-                    <p className="font-bold">{tab.name}</p>
-                    <p className="text-sm text-slate-400">{formatCurrency(tabTotal)}</p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    {canAddToTabs ? (
-                      <button
-                        onClick={() => onAddToTab(tab.id)}
-                        className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
-                      >
-                        Add to Tab
-                      </button>
-                    ) : tab.items.length === 0 ? (
-                      <button
-                        onClick={() => onCloseTab(tab.id)}
-                        className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md text-sm transition"
-                      >
-                        Close Tab
-                      </button>
-                    ) : (
-                      <>
+                <div key={tab.id} className="bg-slate-900 p-3 rounded-md flex flex-col">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-bold">{tab.name}</p>
+                      <p className="text-sm text-slate-400">{formatCurrency(tabTotal)}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      {canAddToTabs ? (
                         <button
-                          onClick={() => onOpenTransfer(tab.id)}
-                          className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          onClick={() => onAddToTab(tab.id)}
+                          className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
                         >
-                          Transfer
+                          Add to Tab
                         </button>
+                      ) : tab.items.length === 0 ? (
                         <button
-                          onClick={() => onLoadTab(tab.id)}
-                          className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          onClick={() => onCloseTab(tab.id)}
+                          className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md text-sm transition"
                         >
-                          Load Tab
+                          Close Tab
                         </button>
-                      </>
-                    )}
+                      ) : (
+                        <>
+                          <button
+                            onClick={() => onOpenTransfer(tab.id)}
+                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          >
+                            Transfer
+                          </button>
+                          <button
+                            onClick={() => onLoadTab(tab.id)}
+                            className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          >
+                            Load Tab
+                          </button>
+                        </>
+                      )}
+                    </div>
                   </div>
+                  {tab.tableId && (
+                    <div className="flex justify-between items-center text-xs mt-1">
+                      <span className="text-green-400">Table: {tab.tableId}</span>
+                    </div>
+                  )}
                 </div>
               );
             })

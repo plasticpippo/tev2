@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrderItem, User, Tab } from '../../shared/types';
+import type { OrderItem, User, Tab, Table } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 
 interface OrderPanelProps {
@@ -7,15 +7,17 @@ interface OrderPanelProps {
   user: User;
   // Fix: Changed productId from number to orderItemId (string) to match the OrderItem type and the handler in App.tsx.
   onUpdateQuantity: (orderItemId: string, newQuantity: number) => void;
-  onClearOrder: () => void;
+ onClearOrder: () => void;
   onPayment: () => void;
   onOpenTabs: () => void;
   onLogout: () => void;
   activeTab: Tab | null;
   onSaveTab: () => void;
+  assignedTable: Table | null;
+  onOpenTableAssignment: () => void;
 }
 
-export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpdateQuantity, onClearOrder, onPayment, onOpenTabs, onLogout, activeTab, onSaveTab }) => {
+export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpdateQuantity, onClearOrder, onPayment, onOpenTabs, onLogout, activeTab, onSaveTab, assignedTable, onOpenTableAssignment }) => {
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
@@ -33,6 +35,20 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
         {activeTab && (
             <div className="bg-sky-800 p-2 rounded-md my-2 text-center border border-sky-600">
                 <p className="font-bold text-sky-200">Editing Tab: {activeTab.name}</p>
+            </div>
+        )}
+        {assignedTable && (
+            <div className="bg-green-800 p-2 rounded-md my-2 text-center border border-green-600 flex justify-between items-center">
+                <div>
+                    <p className="font-bold text-green-200">Table: {assignedTable.name}</p>
+                    <p className="text-xs text-green-300">{assignedTable.status.charAt(0).toUpperCase() + assignedTable.status.slice(1)}</p>
+                </div>
+                <button
+                    onClick={onOpenTableAssignment}
+                    className="text-xs bg-green-700 hover:bg-green-600 font-bold py-1 px-2 rounded-md"
+                >
+                    Change Table
+                </button>
             </div>
         )}
         <h2 className="text-2xl font-bold text-amber-400 border-t border-slate-700 pt-2">Current Order</h2>
@@ -71,34 +87,58 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
         )}
 
         {activeTab ? (
-          <button
-            onClick={onSaveTab}
-            className="w-full bg-sky-600 hover:bg-sky-500 font-bold py-3 rounded-md transition"
-          >
-            Save Tab & Start New Order
-          </button>
-        ) : (
-          <div className="grid grid-cols-2 gap-2">
+          <>
             <button
-              onClick={onOpenTabs}
-              className={`w-full bg-sky-600 hover:bg-sky-500 font-bold py-3 rounded-md transition ${orderItems.length === 0 ? 'col-span-2' : ''}`}
+              onClick={onSaveTab}
+              className="w-full bg-sky-600 hover:bg-sky-500 font-bold py-3 rounded-md transition"
             >
-              {orderItems.length > 0 ? 'Tabs' : 'View Open Tabs'}
+              Save Tab & Start New Order
             </button>
+            
             {orderItems.length > 0 && (
-              <button onClick={onClearOrder} className="w-full bg-red-700 hover:bg-red-600 font-bold py-3 rounded-md transition">
-                Clear
+              <button onClick={onPayment} className="w-full bg-green-600 hover:bg-green-500 font-bold py-3 rounded-md transition">
+                Payment
               </button>
             )}
-          </div>
+          </>
+        ) : (
+          <>
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                onClick={onOpenTabs}
+                className={`w-full bg-sky-60 hover:bg-sky-500 font-bold py-3 rounded-md transition ${orderItems.length === 0 ? 'col-span-2' : ''}`}
+              >
+                {orderItems.length > 0 ? 'Tabs' : 'View Open Tabs'}
+              </button>
+              {orderItems.length > 0 && (
+                <button onClick={onClearOrder} className="w-full bg-red-700 hover:bg-red-600 font-bold py-3 rounded-md transition">
+                  Clear
+                </button>
+              )}
+            </div>
+            
+            <div className="space-y-2">
+              {orderItems.length > 0 && !assignedTable && (
+                <button
+                  onClick={onOpenTableAssignment}
+                  className="w-full bg-green-700 hover:bg-green-600 font-bold py-3 rounded-md transition"
+                >
+                  Assign to Table
+                </button>
+              )}
+              {orderItems.length > 0 && (
+                <button
+                  onClick={onPayment}
+                  className="w-full bg-green-600 hover:bg-green-500 font-bold py-3 rounded-md transition"
+                >
+                  Payment
+                </button>
+              )}
+            </div>
+          </>
         )}
-
-
-        {orderItems.length > 0 && (
-          <button onClick={onPayment} className="w-full bg-green-600 hover:bg-green-500 font-bold py-4 text-lg rounded-md transition">
-            Payment
-          </button>
-        )}
+        
+        
       </div>
     </div>
   );

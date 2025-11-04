@@ -11,10 +11,12 @@ import { TransferItemsModal } from './components/TransferItemsModal';
 import { TillSetupScreen } from './components/TillSetupScreen';
 import { VirtualKeyboardProvider } from './components/VirtualKeyboardContext';
 import { VirtualKeyboard } from './components/VirtualKeyboard';
+import { TableAssignmentModal } from './components/TableAssignmentModal';
 
 import type {
   User, Product, Category, OrderItem, ProductVariant, Settings,
-  Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog
+  Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog,
+  Room, Table
 } from '../shared/types';
 import * as api from './services/apiService';
 import { subscribeToUpdates } from './services/apiService';
@@ -33,10 +35,13 @@ const App: React.FC = () => {
     stockItems: StockItem[];
     stockAdjustments: StockAdjustment[];
     orderActivityLogs: OrderActivityLog[];
+    rooms: Room[];
+    tables: Table[];
   }>({
     products: [], categories: [], users: [], tills: [], settings: null,
-    transactions: [], tabs: [], stockItems: [], stockAdjustments: [], orderActivityLogs: []
-  });
+    transactions: [], tabs: [], stockItems: [], stockAdjustments: [], orderActivityLogs: [],
+    rooms: [], tables: []
+ });
   const [isLoading, setIsLoading] = useState(true);
 
   // Session State
@@ -51,11 +56,13 @@ const App: React.FC = () => {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoadingOrderSession, setIsLoadingOrderSession] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab | null>(null);
+  const [assignedTable, setAssignedTable] = useState<Table | null>(null);
 
   // Modal State
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isTabsModalOpen, setIsTabsModalOpen] = useState(false);
+ const [isTabsModalOpen, setIsTabsModalOpen] = useState(false);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
+  const [isTableAssignmentModalOpen, setIsTableAssignmentModalOpen] = useState(false);
   const [transferSourceTab, setTransferSourceTab] = useState<Tab | null>(null);
 
   // --- DATA FETCHING ---
@@ -72,7 +79,7 @@ const App: React.FC = () => {
       try {
         const [
           products, categories, users, tills, settings, transactions, tabs,
-          stockItems, stockAdjustments, orderActivityLogs
+          stockItems, stockAdjustments, orderActivityLogs, rooms, tables
         ] = await Promise.all([
           api.getProducts(),
           api.getCategories(),
@@ -83,11 +90,13 @@ const App: React.FC = () => {
           api.getTabs(),
           api.getStockItems(),
           api.getStockAdjustments(),
-          api.getOrderActivityLogs()
+          api.getOrderActivityLogs(),
+          api.getRooms(),
+          api.getTables()
         ]);
         setAppData({
           products, categories, users, tills, settings, transactions, tabs,
-          stockItems, stockAdjustments, orderActivityLogs
+          stockItems, stockAdjustments, orderActivityLogs, rooms, tables
         });
       } catch (error) {
         console.error("Failed to fetch initial data", error);
@@ -347,7 +356,9 @@ const App: React.FC = () => {
     const transactionData = {
         items: orderItems, subtotal, tax, tip, total, paymentMethod,
         userId: currentUser.id, userName: currentUser.name,
-        tillId: assignedTillId, tillName: currentTillName
+        tillId: assignedTillId, tillName: currentTillName,
+        tableId: assignedTable?.id,  // Include table ID if available
+        tableName: assignedTable?.name  // Include table name for reference
     };
     
     await api.saveTransaction(transactionData);
@@ -398,43 +409,49 @@ const App: React.FC = () => {
       console.error('Failed to update order session status on payment completion:', error);
     }
     
+    // Update table status to available after payment
+    if (assignedTable) {
+      await api.saveTable({ ...assignedTable, status: 'available' });
+      setAssignedTable(null);
+    }
+    
     clearOrder(false);
     setIsPaymentModalOpen(false);
   };
 
   // Tabs Management
- const handleCreateTab = async (name: string) => {
-    if (!assignedTillId) return;
-    await api.saveTab({ name, items: [], tillId: assignedTillId, tillName: currentTillName, createdAt: new Date().toISOString() });
+  const handleCreateTab = async (name: string) => {
+     if (!assignedTillId) return;
+     await api.saveTab({ name, items: [], tillId: assignedTillId, tillName: currentTillName, createdAt: new Date().toISOString(), tableId: assignedTable?.id });
   };
   
   const handleAddToTab = async (tabId: number) => {
-    const tab = appData.tabs.find(t => t.id === tabId);
-    if (!tab || orderItems.length === 0) return;
-    const updatedItems = [...tab.items];
-    orderItems.forEach(orderItem => {
-      const existing = updatedItems.find(i => i.variantId === orderItem.variantId);
-      if (existing) {
-        existing.quantity += orderItem.quantity;
-      } else {
-        updatedItems.push(orderItem);
-      }
-    });
-    await api.saveTab({ ...tab, items: updatedItems });
-    
-    // Update order session status to assign-tab when adding to a tab
-    try {
-      const result = await api.updateOrderSessionStatus('assign-tab');
-      if (!result) {
-        console.warn('Order session assign-tab status update failed or user not authenticated');
-      }
-    } catch (error) {
-      console.error('Failed to update order session status when assigning to tab:', error);
-    }
-    
-    clearOrder(false);
-    setIsTabsModalOpen(false);
-  };
+     const tab = appData.tabs.find(t => t.id === tabId);
+     if (!tab || orderItems.length === 0) return;
+     const updatedItems = [...tab.items];
+     orderItems.forEach(orderItem => {
+       const existing = updatedItems.find(i => i.variantId === orderItem.variantId);
+       if (existing) {
+         existing.quantity += orderItem.quantity;
+       } else {
+         updatedItems.push(orderItem);
+       }
+     });
+     await api.saveTab({ ...tab, items: updatedItems, tableId: assignedTable?.id });
+     
+     // Update order session status to assign-tab when adding to a tab
+     try {
+       const result = await api.updateOrderSessionStatus('assign-tab');
+       if (!result) {
+         console.warn('Order session assign-tab status update failed or user not authenticated');
+       }
+     } catch (error) {
+       console.error('Failed to update order session status when assigning to tab:', error);
+     }
+     
+     clearOrder(false);
+     setIsTabsModalOpen(false);
+   };
   
   const handleLoadTab = (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
@@ -446,10 +463,10 @@ const App: React.FC = () => {
   };
   
   const handleSaveTab = async () => {
-    if (!activeTab) return;
-    await api.saveTab({ ...activeTab, items: orderItems });
-    clearOrder(false);
-  };
+     if (!activeTab) return;
+     await api.saveTab({ ...activeTab, items: orderItems, tableId: assignedTable?.id });
+     clearOrder(false);
+   };
   
   const handleCloseTab = async (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
@@ -466,6 +483,30 @@ const App: React.FC = () => {
       setIsTransferModalOpen(true);
     }
   };
+
+  const handleTableAssign = async (tableId: string) => {
+    if (tableId) {
+      const table = appData.tables.find(t => t.id === tableId);
+      if (table) {
+        setAssignedTable(table);
+        
+        // If there's an active tab, update it with the new table assignment
+        if (activeTab) {
+          await api.saveTab({ ...activeTab, tableId });
+        }
+      }
+    } else {
+      // Clear table assignment
+      setAssignedTable(null);
+      if (activeTab) {
+        await api.saveTab({ ...activeTab, tableId: undefined });
+      }
+    }
+ };
+
+  const handleOpenTableAssignment = () => {
+    setIsTableAssignmentModalOpen(true);
+ };
 
   const handleConfirmMove = async (
     destination: { type: 'existing', id: number } | { type: 'new', name: string },
@@ -546,6 +587,8 @@ const App: React.FC = () => {
           stockItems={appData.stockItems}
           stockAdjustments={appData.stockAdjustments}
           orderActivityLogs={appData.orderActivityLogs}
+          rooms={appData.rooms}
+          tables={appData.tables}
           onDataUpdate={debouncedFetchData}
           assignedTillId={assignedTillId}
           onAssignDevice={handleAssignDevice}
@@ -588,6 +631,8 @@ const App: React.FC = () => {
               onLogout={handleLogout}
               activeTab={activeTab}
               onSaveTab={handleSaveTab}
+              assignedTable={assignedTable}
+              onOpenTableAssignment={handleOpenTableAssignment}
             />
           </div>
         </main>
@@ -599,6 +644,7 @@ const App: React.FC = () => {
         orderItems={orderItems}
         taxSettings={appData.settings!.tax}
         onConfirmPayment={handleConfirmPayment}
+        assignedTable={assignedTable}
       />
       
       <TabManager
@@ -619,6 +665,15 @@ const App: React.FC = () => {
         sourceTab={transferSourceTab}
         allTabs={appData.tabs}
         onConfirmMove={handleConfirmMove}
+      />
+      
+      <TableAssignmentModal
+        isOpen={isTableAssignmentModalOpen}
+        onClose={() => setIsTableAssignmentModalOpen(false)}
+        tables={appData.tables}
+        rooms={appData.rooms}
+        onTableAssign={handleTableAssign}
+        currentTableId={assignedTable?.id}
       />
       
       <VirtualKeyboard />

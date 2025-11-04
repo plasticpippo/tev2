@@ -64,6 +64,8 @@ export interface Transaction {
   userName: string;
   tillId: number;
   tillName: string;
+  tableId?: string;
+  tableName?: string;
   createdAt: string;
 }
 
@@ -113,8 +115,39 @@ export interface StockAdjustment {
 export interface OrderActivityLog {
     id: number;
     action: 'Item Removed' | 'Order Cleared';
-    details: string | OrderItem[]; 
+    details: string | OrderItem[];
     userId: number;
     userName: string;
     createdAt: string;
+}
+
+export interface Room {
+    id: string;
+    name: string;
+    description?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Table {
+    id: string;
+    name: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+    status: 'available' | 'occupied' | 'reserved' | 'unavailable';
+    roomId: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
+export interface Tab {
+    id: number;
+    name: string;
+    items: OrderItem[];
+    createdAt: string;
+    tillId: number;
+    tillName: string;
+    tableId?: string;
 }

@@ -7,7 +7,11 @@ export const tabsRouter = express.Router();
 // GET /api/tabs - Get all tabs
 tabsRouter.get('/', async (req: Request, res: Response) => {
   try {
-    const tabs = await prisma.tab.findMany();
+    const tabs = await prisma.tab.findMany({
+      include: {
+        table: true
+      }
+    });
     // Parse the items JSON string back to array
     const tabsWithParsedItems = tabs.map(tab => ({
       ...tab,
@@ -26,7 +30,10 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tab = await prisma.tab.findUnique({
-      where: { id: Number(id) }
+      where: { id: Number(id) },
+      include: {
+        table: true
+      }
     });
     
     if (!tab) {
@@ -50,7 +57,18 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, items, tillId, tillName } = req.body as Omit<Tab, 'id' | 'createdAt'>;
+    const { name, items, tillId, tillName, tableId } = req.body;
+    
+    // If tableId is provided, verify that the table exists
+    if (tableId) {
+      const table = await prisma.table.findUnique({
+        where: { id: tableId },
+      });
+      
+      if (!table) {
+        return res.status(404).json({ error: 'Table not found' });
+      }
+    }
     
     const tab = await prisma.tab.create({
       data: {
@@ -58,12 +76,13 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
         items: JSON.stringify(items),
         tillId,
         tillName,
+        tableId: tableId || null,
         createdAt: new Date()
       }
     });
     
     res.status(201).json(tab);
-  } catch (error) {
+ } catch (error) {
     console.error('Error creating tab:', error);
     res.status(500).json({ error: 'Failed to create tab' });
   }
@@ -73,7 +92,18 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
 tabsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, items, tillId, tillName } = req.body as Omit<Tab, 'id' | 'createdAt'>;
+    const { name, items, tillId, tillName, tableId } = req.body;
+    
+    // If tableId is provided, verify that the table exists
+    if (tableId) {
+      const table = await prisma.table.findUnique({
+        where: { id: tableId },
+      });
+      
+      if (!table) {
+        return res.status(404).json({ error: 'Table not found' });
+      }
+    }
     
     const tab = await prisma.tab.update({
       where: { id: Number(id) },
@@ -81,7 +111,8 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
         name,
         items: JSON.stringify(items),
         tillId,
-        tillName
+        tillName,
+        tableId: tableId || null
       }
     });
     

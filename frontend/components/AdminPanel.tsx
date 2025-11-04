@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab } from '../../shared/types';
+import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '../../shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
 import { UserManagement } from './UserManagement';
@@ -11,6 +11,8 @@ import { OrderActivityHistory } from './OrderActivityHistory';
 import { ManagerDashboard } from './ManagerDashboard';
 import { StockItemManagement } from './StockItemManagement';
 import { AnalyticsPanel } from './AnalyticsPanel';
+import { TableManagement } from './TableManagement';
+import { TableProvider } from './TableContext';
 import * as api from '../services/apiService';
 
 interface AdminPanelProps {
@@ -28,18 +30,21 @@ interface AdminPanelProps {
   stockItems: StockItem[];
   stockAdjustments: StockAdjustment[];
   orderActivityLogs: OrderActivityLog[];
-  assignedTillId: number | null;
+  rooms: Room[];
+  tables: Table[];
+ assignedTillId: number | null;
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
-  const { 
-    currentUser, onLogout, onAssignDevice, assignedTillId, onSwitchToPos, 
-    onDataUpdate, products, categories, users, tills, settings, 
-    transactions, tabs, stockItems, stockAdjustments, orderActivityLogs 
-  } = props;
+  const {
+    currentUser, onLogout, onAssignDevice, assignedTillId, onSwitchToPos,
+    onDataUpdate, products, categories, users, tills, settings,
+    transactions, tabs, stockItems, stockAdjustments, orderActivityLogs,
+    rooms, tables
+ } = props;
   
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
 
@@ -53,7 +58,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const renderView = () => {
     switch (activeView) {
       case 'dashboard':
-        return <ManagerDashboard 
+        return <ManagerDashboard
             transactions={transactions}
             tabs={tabs}
             users={users}
@@ -80,6 +85,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           return <TransactionHistory transactions={transactions} users={users} tills={tills} settings={settings} />;
       case 'activity':
           return <OrderActivityHistory logs={orderActivityLogs} />;
+      case 'tables':
+          return (
+            <TableProvider>
+              <TableManagement />
+            </TableProvider>
+          );
       default:
         return <p>Select a view</p>;
     }
@@ -125,6 +136,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <div className="pt-2"></div>
                 <NavButton view="users" label="Users" isFirst/>
                 <NavButton view="tills" label="Tills" />
+                <NavButton view="tables" label="Tables & Layout" />
                 <div className="pt-2"></div>
                 <NavButton view="settings" label="Settings" isFirst/>
             </nav>

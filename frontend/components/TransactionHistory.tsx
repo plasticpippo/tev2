@@ -207,8 +207,8 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                         <p className="text-slate-500 text-center pt-8">No transactions found for the selected filters.</p>
                     ) : (
                         filteredTransactions.map(t => (
+                            <div key={t.id} className="flex flex-col">
                             <button
-                                key={t.id}
                                 onClick={() => setSelectedTransaction(t)}
                                 className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === t.id ? 'bg-amber-60 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
                                 aria-label={`Transaction ${t.id} for ${formatCurrency(t.total)} by ${t.userName} at ${t.tillName}`}
@@ -221,7 +221,13 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                     <span className="text-slate-300">{t.userName} ({t.paymentMethod})</span>
                                     <span className="text-slate-400">{formatDate(t.createdAt)}</span>
                                 </div>
+                                {t.tableName && (
+                                    <div className="flex justify-between items-center text-xs mt-1">
+                                        <span className="text-green-400">Table: {t.tableName}</span>
+                                    </div>
+                                )}
                             </button>
+                          </div>
                         ))
                     )}
                 </div>

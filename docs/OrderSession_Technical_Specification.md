@@ -10,12 +10,14 @@ This document outlines the technical specification for implementing an OrderSess
 - When a user logs out, any active order is cleared without being saved to the database
 - No persistence of active orders exists between sessions
 - Tabs are separate from active orders and stored in the database
-
+- With the new tables feature, tabs can now be associated with specific tables in rooms
 ### Issues Identified
 1. Order data is lost on application crashes/reloads
 2. Users cannot continue orders after logging out and back in
 3. No mechanism to recover orders if the device crashes
 4. No cross-till order continuity
+5. Table assignment was not possible with the previous tab system
+
 
 ## Proposed Solution: OrderSession Model
 
@@ -31,12 +33,14 @@ model OrderSession {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   logoutTime  DateTime? // Timestamp when user logged out with active order
-  tabId       Int?     // Optional: if session was assigned to a tab
- user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  tab         Tab?     @relation(fields: [tabId], references: [id])
-  
+ tabId       Int?     // Optional: if session was assigned to a tab
+  tableId     String?  @db.Uuid  // Optional: if session is associated with a table
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+ tab         Tab?     @relation(fields: [tabId], references: [id])
+  table       Table?   @relation(fields: [tableId], references: [id], onDelete: SetNull)
+
   @@map("order_sessions")
-}
+  }
 ```
 
 #### Status Values
@@ -75,6 +79,17 @@ model OrderSession {
 - **Response**: Completed transaction object
 
 #### 6. Assign OrderSession to Tab
+- **Endpoint**: `POST /api/order-sessions/:id/assign-to-tab`
+- **Description**: Assigns the session to a tab and updates status
+- **Request Body**: `{ tabId: number, tableId?: string }`
+- **Response**: Updated `OrderSession` object
+
+#### 7. Associate OrderSession with Table
+- **Endpoint**: `POST /api/order-sessions/:id/assign-to-table`
+- **Description**: Associates the session with a table without creating a tab
+- **Request Body**: `{ tableId: string }`
+- **Response**: Updated `OrderSession` object
+
 ### Frontend Integration Plan
 
 #### 1. Session State Management
@@ -101,11 +116,12 @@ model OrderSession {
 - Complete OrderSession when payment is processed
 - Update status to 'completed'
 - Create transaction record from OrderSession data
-
 #### 6. Tab Operations
 - Assign OrderSession to tab when user saves to tab
 - Update status to 'assigned_to_tab'
 - Clear local order state after assignment
+- Optionally associate with a table during tab assignment
+
 
 ### Recovery Mechanism
 

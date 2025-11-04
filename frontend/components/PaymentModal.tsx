@@ -10,9 +10,10 @@ interface PaymentModalProps {
   orderItems: OrderItem[];
   taxSettings: TaxSettings;
   onConfirmPayment: (paymentMethod: string, tip: number) => void;
+  assignedTable?: { name: string } | null;
 }
 
-export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, orderItems, taxSettings, onConfirmPayment }) => {
+export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, orderItems, taxSettings, onConfirmPayment, assignedTable }) => {
   const [selectedMethod, setSelectedMethod] = useState(PAYMENT_METHODS[0]);
   const [tip, setTip] = useState(0);
   
@@ -53,6 +54,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
           <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition">&times;</button>
         </div>
         
+        {assignedTable && (
+            <div className="mb-4 bg-green-900 p-3 rounded-md border border-green-700">
+                <div className="flex justify-between items-center">
+                    <div>
+                        <p className="font-bold text-green-200">Table: {assignedTable.name}</p>
+                        <p className="text-sm text-green-30">Payment for assigned table</p>
+                    </div>
+                </div>
+            </div>
+        )}
         <div className="mb-4">
             <label className="block text-slate-300 mb-1">Tip Amount</label>
             <VKeyboardInput
