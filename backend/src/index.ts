@@ -5,22 +5,46 @@ import { rateLimit } from 'express-rate-limit';
 import { router } from './router';
 import { initPrisma } from './prisma';
 
+// CORS options based on environment variables
+const corsOptions: cors.CorsOptions = {
+  origin: process.env.CORS_ORIGIN?.split(',') || [
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
+    'http://localhost:5173',
+    'http://127.0.1:5173'
+  ],
+  credentials: true,
+};
+
+// Rate limiting configuration for different endpoints
+const generalRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 500, // limit each IP to 500 requests per windowMs (increased for POS system)
+  message: 'Too many requests from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
+// More restrictive rate limit for authentication endpoints
+const authRateLimit = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 20, // limit each IP to 20 auth requests per windowMs
+  message: 'Too many authentication attempts from this IP, please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+});
+
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
 // Security middleware
 app.use(helmet());
 
-// Rate limiting
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // limit each IP to 100 requests per windowMs
- message: 'Too many requests from this IP, please try again later.'
-});
-app.use(limiter);
+// Apply general rate limiting
+app.use(generalRateLimit);
 
-// Enable CORS for all routes
-app.use(cors());
+// Enable CORS with configured options
+app.use(cors(corsOptions));
 
 // Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));

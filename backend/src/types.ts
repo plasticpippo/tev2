@@ -113,8 +113,18 @@ export interface StockAdjustment {
 export interface OrderActivityLog {
     id: number;
     action: 'Item Removed' | 'Order Cleared';
-    details: string | OrderItem[]; 
+    details: string | OrderItem[];
     userId: number;
     userName: string;
     createdAt: string;
+}
+
+export interface OrderSession {
+    id: string;
+    userId: number;
+    items: OrderItem[];
+    status: 'active' | 'pending_logout' | 'completed';
+    createdAt: string;
+    updatedAt: string;
+    logoutTime: string | null;
 }

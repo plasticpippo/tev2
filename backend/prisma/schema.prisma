@@ -19,6 +19,7 @@ model User {
   orderActivityLogs OrderActivityLog[]
   stockAdjustments  StockAdjustment[]
   transactions      Transaction[]
+  orderSessions     OrderSession[]
 
   @@map("users")
 }
@@ -150,4 +151,17 @@ model Settings {
   lastManualClose DateTime?
 
   @@map("settings")
+}
+
+model OrderSession {
+  id          String   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  userId      Int
+  items       Json
+ status      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  logoutTime  DateTime?
+  user        User     @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@map("order_sessions")
 }

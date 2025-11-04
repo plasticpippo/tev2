@@ -3,23 +3,46 @@ import type {
   Till, StockItem, StockAdjustment, OrderActivityLog, ProductVariant
 } from '../../shared/types';
 
+// Define OrderSession interface for frontend
+export interface OrderSession {
+  id: string;
+  userId: number;
+  items: OrderItem[];
+  status: 'active' | 'pending_logout' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+  logoutTime: string | null;
+}
+
+// Request deduplication cache
+const requestCache = new Map<string, Promise<any>>();
+
 // --- API BASE URL HELPER ---
 const getApiBaseUrl = (): string => {
   // In development, use the VITE_API_URL from .env
- if ((import.meta as any).env.DEV) {
-    return (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
-  }
-  // In production, you might want to use relative URLs or a different config
- return (import.meta as any).env.VITE_API_URL || '';
+  if ((import.meta as any).env.DEV) {
+     return (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
+   }
+   // In production, you might want to use relative URLs or a different config
+   return (import.meta as any).env.VITE_API_URL || '';
 };
 
 const API_BASE_URL = getApiBaseUrl();
 
 // Helper function to construct full API URLs
 const apiUrl = (path: string): string => {
- // Remove leading slash if present to avoid double slashes
+  // Remove leading slash if present to avoid double slashes
   const cleanPath = path.startsWith('/') ? path.slice(1) : path;
   return `${API_BASE_URL}/${cleanPath}`;
+};
+
+// Helper function to get headers with credentials
+const getAuthHeaders = (): Record<string, string> => {
+  return {
+    'Content-Type': 'application/json',
+    // In a real implementation, you might include a token here if using JWT
+    // 'Authorization': `Bearer ${localStorage.getItem('authToken')}`
+  };
 };
 
 // --- SUBSCRIBER for real-time updates ---
@@ -39,12 +62,45 @@ const notifyUpdates = () => {
 
 // --- API FUNCTIONS ---
 
+// Helper function for making API requests with deduplication
+const makeApiRequest = async (url: string, options?: RequestInit, cacheKey?: string): Promise<any> => {
+  // If a cache key is provided, check if we have a pending request
+  if (cacheKey && requestCache.has(cacheKey)) {
+    return requestCache.get(cacheKey);
+  }
+
+  const requestPromise = fetch(url, options)
+    .then(async response => {
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    })
+    .catch(error => {
+      console.error(`Error making request to ${url}:`, error);
+      throw error;
+    })
+    .finally(() => {
+      // Clean up the cache when the request completes
+      if (cacheKey) {
+        requestCache.delete(cacheKey);
+      }
+    });
+
+  // Store the promise in the cache if a cache key was provided
+  if (cacheKey) {
+    requestCache.set(cacheKey, requestPromise);
+  }
+
+  return requestPromise;
+};
+
 // Users
 export const getUsers = async (): Promise<User[]> => {
+  const cacheKey = 'getUsers';
   try {
-    const response = await fetch(apiUrl('/api/users'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+    const result = await makeApiRequest(apiUrl('/api/users'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching users:', error);
     return [];
@@ -58,7 +114,7 @@ export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promis
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(user)
     });
     
@@ -75,7 +131,8 @@ export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promis
 export const deleteUser = async (userId: number): Promise<{ success: boolean; message?: string }> => {
   try {
     const response = await fetch(apiUrl(`/api/users/${userId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -91,13 +148,16 @@ export const login = async (username: string, password: string): Promise<User> =
   try {
     const response = await fetch(apiUrl('/api/users/login'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify({ username, password })
     });
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
+    const userData = await response.json();
+    // Store user in localStorage upon successful login for API authentication
+    localStorage.setItem('currentUser', JSON.stringify(userData));
+    return userData;
+ } catch (error) {
     console.error('Error during login:', error);
     throw error;
  }
@@ -105,10 +165,10 @@ export const login = async (username: string, password: string): Promise<User> =
 
 // Products, Variants
 export const getProducts = async (): Promise<Product[]> => {
+  const cacheKey = 'getProducts';
   try {
-    const response = await fetch(apiUrl('/api/products'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+    const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching products:', error);
     return [];
@@ -122,7 +182,7 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(productData)
     });
     
@@ -133,13 +193,14 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
  } catch (error) {
     console.error('Error saving product:', error);
     throw error;
- }
+  }
 };
 
 export const deleteProduct = async (productId: number): Promise<{ success: boolean, message?: string }> => {
   try {
     const response = await fetch(apiUrl(`/api/products/${productId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -153,11 +214,11 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
 
 // Categories
 export const getCategories = async (): Promise<Category[]> => {
+  const cacheKey = 'getCategories';
   try {
-    const response = await fetch(apiUrl('/api/categories'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
+    const result = await makeApiRequest(apiUrl('/api/categories'), undefined, cacheKey);
+    return result;
+ } catch (error) {
     console.error('Error fetching categories:', error);
     return [];
   }
@@ -170,7 +231,7 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(category)
     });
     
@@ -187,7 +248,8 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
 export const deleteCategory = async (categoryId: number): Promise<{ success: boolean; message?: string }> => {
   try {
     const response = await fetch(apiUrl(`/api/categories/${categoryId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) {
@@ -207,25 +269,25 @@ export const deleteCategory = async (categoryId: number): Promise<{ success: boo
 
 // Settings
 export const getSettings = async (): Promise<Settings> => {
+  const cacheKey = 'getSettings';
   try {
-    const response = await fetch(apiUrl('/api/settings'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
-  } catch (error) {
+    const result = await makeApiRequest(apiUrl('/api/settings'), undefined, cacheKey);
+    return result;
+ } catch (error) {
     console.error('Error fetching settings:', error);
     // Return default settings on error
-    return { 
-      tax: { mode: 'none' }, 
-      businessDay: { autoStartTime: '06:00', lastManualClose: null } 
+    return {
+      tax: { mode: 'none' },
+      businessDay: { autoStartTime: '06:00', lastManualClose: null }
     };
- }
+  }
 };
 
 export const saveSettings = async (settings: Settings): Promise<void> => {
   try {
     const response = await fetch(apiUrl('/api/settings'), {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(settings)
     });
     
@@ -239,10 +301,10 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
 
 // Transactions
 export const getTransactions = async (): Promise<Transaction[]> => {
+  const cacheKey = 'getTransactions';
   try {
-    const response = await fetch(apiUrl('/api/transactions'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+    const result = await makeApiRequest(apiUrl('/api/transactions'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching transactions:', error);
     return [];
@@ -253,7 +315,7 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
   try {
     const response = await fetch(apiUrl('/api/transactions'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(transactionData)
     });
     
@@ -269,10 +331,10 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
 
 // Tabs
 export const getTabs = async (): Promise<Tab[]> => {
- try {
-    const response = await fetch(apiUrl('/api/tabs'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+  const cacheKey = 'getTabs';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/tabs'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching tabs:', error);
     return [];
@@ -286,7 +348,7 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(tabData)
     });
     
@@ -303,7 +365,8 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
 export const deleteTab = async (tabId: number): Promise<void> => {
  try {
     const response = await fetch(apiUrl(`/api/tabs/${tabId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -323,10 +386,10 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
 
 // Tills
 export const getTills = async (): Promise<Till[]> => {
+  const cacheKey = 'getTills';
   try {
-    const response = await fetch(apiUrl('/api/tills'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+    const result = await makeApiRequest(apiUrl('/api/tills'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching tills:', error);
     return [];
@@ -340,7 +403,7 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(till)
     });
     
@@ -357,7 +420,8 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
 export const deleteTill = async (tillId: number): Promise<{success: boolean}> => {
   try {
     const response = await fetch(apiUrl(`/api/tills/${tillId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
@@ -371,10 +435,10 @@ export const deleteTill = async (tillId: number): Promise<{success: boolean}> =>
 
 // Stock Items
 export const getStockItems = async (): Promise<StockItem[]> => {
- try {
-    const response = await fetch(apiUrl('/api/stock-items'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+  const cacheKey = 'getStockItems';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/stock-items'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching stock items:', error);
     return [];
@@ -388,7 +452,7 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string 
     
     const response = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(item)
     });
     
@@ -405,7 +469,8 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string 
 export const deleteStockItem = async (itemId: string): Promise<{ success: boolean; message?: string }> => {
   try {
     const response = await fetch(apiUrl(`/api/stock-items/${itemId}`), {
-      method: 'DELETE'
+      method: 'DELETE',
+      headers: getAuthHeaders()
     });
     
     if (!response.ok) {
@@ -427,7 +492,7 @@ export const updateStockLevels = async (consumptions: { stockItemId: string, qua
   try {
      const response = await fetch(apiUrl('/api/stock-items/update-levels'), {
        method: 'PUT',
-       headers: { 'Content-Type': 'application/json' },
+       headers: getAuthHeaders(),
        body: JSON.stringify({ consumptions })
      });
      
@@ -459,10 +524,10 @@ export const updateStockLevels = async (consumptions: { stockItemId: string, qua
 
 // Stock Adjustments
 export const getStockAdjustments = async (): Promise<StockAdjustment[]> => {
- try {
-    const response = await fetch(apiUrl('/api/stock-adjustments'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    return await response.json();
+  const cacheKey = 'getStockAdjustments';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/stock-adjustments'), undefined, cacheKey);
+    return result;
   } catch (error) {
     console.error('Error fetching stock adjustments:', error);
     return [];
@@ -473,7 +538,7 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
   try {
     const response = await fetch(apiUrl('/api/stock-adjustments'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(adjData)
     });
     
@@ -487,13 +552,143 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
  }
 };
 
-// Order Activity Log
-export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
+// Order Sessions
+export const getOrderSession = async (): Promise<OrderSession | null> => {
   try {
-    const response = await fetch(apiUrl('/api/order-activity-logs'));
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    // Get userId from localStorage or wherever it's stored after login
+    const storedUser = localStorage.getItem('currentUser');
+    const userId = storedUser ? JSON.parse(storedUser).id : null;
+    
+    if (!userId) {
+      console.warn('No user authenticated for order session, returning null');
+      return null;
+    }
+    
+    const response = await fetch(apiUrl(`/api/order-sessions/current?userId=${userId}`));
+    if (!response.ok) {
+      if (response.status === 404) {
+        // Return null or empty session if no active session exists
+        return null;
+      } else if (response.status === 401) {
+        // User not authenticated, return null instead of throwing
+        console.warn('User not authenticated for order session, returning null');
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
     return await response.json();
   } catch (error) {
+    console.error('Error fetching order session:', error);
+    // Return null instead of throwing to prevent errors during initialization
+    return null;
+  }
+};
+
+export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSession | null> => {
+  try {
+    // Get userId from localStorage or wherever it's stored after login
+    const storedUser = localStorage.getItem('currentUser');
+    const userId = storedUser ? JSON.parse(storedUser).id : null;
+    
+    if (!userId) {
+      console.warn('No user authenticated for order session save, returning null');
+      return null;
+    }
+    
+    const response = await fetch(apiUrl('/api/order-sessions/current'), {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ items: orderItems, userId })
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated, don't throw error to prevent app crashes
+        console.warn('User not authenticated for order session save, returning null');
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const savedSession = await response.json();
+    notifyUpdates();
+    return savedSession;
+  } catch (error) {
+    console.error('Error saving order session:', error);
+    // Return null instead of throwing to prevent errors during initialization
+    return null;
+  }
+};
+
+export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | 'assign-tab'): Promise<OrderSession | null> => {
+  try {
+    // Get userId from localStorage or wherever it's stored after login
+    const storedUser = localStorage.getItem('currentUser');
+    const userId = storedUser ? JSON.parse(storedUser).id : null;
+    
+    if (!userId) {
+      console.warn(`No user authenticated for order session status update (${status}), returning null`);
+      return null;
+    }
+    
+    let endpoint = '';
+    switch (status) {
+      case 'logout':
+        endpoint = '/api/order-sessions/current/logout';
+        break;
+      case 'complete':
+        endpoint = '/api/order-sessions/current/complete';
+        break;
+      case 'assign-tab':
+        endpoint = '/api/order-sessions/current/assign-tab';
+        break;
+      default:
+        throw new Error(`Invalid status: ${status}`);
+    }
+    
+    const response = await fetch(apiUrl(endpoint), {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ userId })
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        // User not authenticated, don't throw error to prevent app crashes
+        console.warn(`User not authenticated for order session status update (${status}), returning null`);
+        return null;
+      }
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const updatedSession = await response.json();
+    notifyUpdates();
+    return updatedSession;
+  } catch (error) {
+    console.error(`Error updating order session status (${status}):`, error);
+    // Return null instead of throwing to prevent errors during initialization
+    return null;
+  }
+};
+
+export const clearOrderSession = async (): Promise<void> => {
+  // Helper function to clear the session after completion
+  // In our implementation, this happens by updating the status to 'completed' or 'pending_logout'
+  console.log('Order session cleared');
+};
+
+// Logout function to clear user data from localStorage
+export const logout = async (): Promise<void> => {
+  // Clear user data from localStorage
+  localStorage.removeItem('currentUser');
+  console.log('User logged out and data cleared');
+};
+
+// Order Activity Log
+export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
+  const cacheKey = 'getOrderActivityLogs';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/order-activity-logs'), undefined, cacheKey);
+    return result;
+ } catch (error) {
     console.error('Error fetching order activity logs:', error);
     return [];
   }
@@ -503,7 +698,7 @@ export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' 
  try {
     const response = await fetch(apiUrl('/api/order-activity-logs'), {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: getAuthHeaders(),
       body: JSON.stringify(logData)
     });
     

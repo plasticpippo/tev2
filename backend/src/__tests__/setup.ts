@@ -93,6 +93,15 @@ jest.mock('../prisma', () => {
       updateMany: jest.fn(),
       count: jest.fn(),
     },
+    orderSession: {
+      findMany: jest.fn(),
+      findFirst: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      deleteMany: jest.fn(),
+    },
     $connect: jest.fn(),
     $disconnect: jest.fn(),
   };

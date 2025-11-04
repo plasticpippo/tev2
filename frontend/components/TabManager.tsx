@@ -44,7 +44,7 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
             value={newTabName}
             onChange={(e) => setNewTabName(e.target.value)}
             placeholder="New tab name (e.g., 'John D.')"
-            className="flex-grow p-3 bg-slate-900 border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
+            className="flex-grow p-3 bg-slate-900 text-white placeholder-slate-400 border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
           />
           <button
             onClick={handleCreateTab}

@@ -9,6 +9,7 @@ import { tillsRouter } from './handlers/tills';
 import { stockItemsRouter } from './handlers/stockItems';
 import { stockAdjustmentsRouter } from './handlers/stockAdjustments';
 import { orderActivityLogsRouter } from './handlers/orderActivityLogs';
+import { orderSessionsRouter } from './handlers/orderSessions';
 
 export const router = express.Router();
 
@@ -23,6 +24,7 @@ router.use('/tills', tillsRouter);
 router.use('/stock-items', stockItemsRouter);
 router.use('/stock-adjustments', stockAdjustmentsRouter);
 router.use('/order-activity-logs', orderActivityLogsRouter);
+router.use('/order-sessions', orderSessionsRouter);
 
 // Health check for the API
 router.get('/health', (req, res) => {

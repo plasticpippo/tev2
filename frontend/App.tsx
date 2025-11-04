@@ -18,6 +18,7 @@ import type {
 } from '../shared/types';
 import * as api from './services/apiService';
 import { subscribeToUpdates } from './services/apiService';
+import type { OrderSession } from './services/apiService';
 
 const App: React.FC = () => {
   // Global App State
@@ -48,6 +49,7 @@ const App: React.FC = () => {
 
   // Order State
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
+  const [isLoadingOrderSession, setIsLoadingOrderSession] = useState(false);
   const [activeTab, setActiveTab] = useState<Tab | null>(null);
 
   // Modal State
@@ -57,44 +59,56 @@ const App: React.FC = () => {
   const [transferSourceTab, setTransferSourceTab] = useState<Tab | null>(null);
 
   // --- DATA FETCHING ---
-  const fetchData = useCallback(async () => {
-    try {
-      const [
-        products, categories, users, tills, settings, transactions, tabs,
-        stockItems, stockAdjustments, orderActivityLogs
-      ] = await Promise.all([
-        api.getProducts(),
-        api.getCategories(),
-        api.getUsers(),
-        api.getTills(),
-        api.getSettings(),
-        api.getTransactions(),
-        api.getTabs(),
-        api.getStockItems(),
-        api.getStockAdjustments(),
-        api.getOrderActivityLogs()
-      ]);
-      setAppData({
-        products, categories, users, tills, settings, transactions, tabs,
-        stockItems, stockAdjustments, orderActivityLogs
-      });
-    } catch (error) {
-      console.error("Failed to fetch initial data", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+    // Debounce function to prevent rapid API calls
+    const debounce = (func: Function, delay: number) => {
+      let timeoutId: NodeJS.Timeout;
+      return (...args: any[]) => {
+        clearTimeout(timeoutId);
+        timeoutId = setTimeout(() => func.apply(null, args), delay);
+      };
+   };
+  
+    const fetchData = useCallback(async () => {
+      try {
+        const [
+          products, categories, users, tills, settings, transactions, tabs,
+          stockItems, stockAdjustments, orderActivityLogs
+        ] = await Promise.all([
+          api.getProducts(),
+          api.getCategories(),
+          api.getUsers(),
+          api.getTills(),
+          api.getSettings(),
+          api.getTransactions(),
+          api.getTabs(),
+          api.getStockItems(),
+          api.getStockAdjustments(),
+          api.getOrderActivityLogs()
+        ]);
+        setAppData({
+          products, categories, users, tills, settings, transactions, tabs,
+          stockItems, stockAdjustments, orderActivityLogs
+        });
+      } catch (error) {
+        console.error("Failed to fetch initial data", error);
+      } finally {
+        setIsLoading(false);
+      }
+    }, []);
+  
+    // Debounced version of fetchData to prevent multiple rapid calls
+    const debouncedFetchData = useCallback(debounce(fetchData, 300), [fetchData]);
 
   useEffect(() => {
-    // If no till is assigned, we don't need to load all data, just enough to set up.
-    if (!assignedTillId) {
-        setIsLoading(false);
-        return;
-    }
-    fetchData();
-    const unsubscribe = subscribeToUpdates(fetchData);
-    return () => unsubscribe();
-  }, [fetchData, assignedTillId]);
+      // If no till is assigned, we don't need to load all data, just enough to set up.
+      if (!assignedTillId) {
+          setIsLoading(false);
+          return;
+      }
+      fetchData();
+      const unsubscribe = subscribeToUpdates(debouncedFetchData);
+      return () => unsubscribe();
+    }, [fetchData, debouncedFetchData, assignedTillId]);
 
   // --- STOCK & PRODUCT COMPUTATIONS ---
   const makableVariantIds = useMemo(() => {
@@ -135,9 +149,72 @@ const App: React.FC = () => {
     return appData.tills.find(t => t.id === assignedTillId)?.name || 'Unknown Till';
   }, [assignedTillId, appData.tills]);
 
+  // --- ORDER SESSION MANAGEMENT ---
+  // Load order session when user logs in
+  useEffect(() => {
+    const loadOrderSession = async () => {
+      if (currentUser) {
+        setIsLoadingOrderSession(true);
+        try {
+          const session = await api.getOrderSession();
+          if (session && session.items) {
+            setOrderItems(session.items);
+          } else {
+            // If no active session exists, start with empty order
+            setOrderItems([]);
+          }
+        } catch (error) {
+          console.error('Failed to load order session:', error);
+          // Start with empty order if session loading fails
+          setOrderItems([]);
+        } finally {
+          setIsLoadingOrderSession(false);
+        }
+      } else {
+        // If no user is logged in, ensure order items are cleared
+        setOrderItems([]);
+        setIsLoadingOrderSession(false);
+      }
+    };
+
+    loadOrderSession();
+  }, [currentUser]);
+
+    // Save order session whenever orderItems change (with debounce)
+    useEffect(() => {
+      if (!currentUser || isLoadingOrderSession) {
+        return; // Don't save if no user or still loading
+      }
+
+      // Only save if we have actual order items
+      if (orderItems && orderItems.length > 0) {
+        const saveSession = async () => {
+          const result = await api.saveOrderSession(orderItems);
+          if (!result) {
+            console.warn('Order session save failed or user not authenticated');
+          }
+        };
+  
+        // Debounce the save operation to avoid too many API calls
+        const timeoutId = setTimeout(saveSession, 500);
+        return () => clearTimeout(timeoutId);
+      } else if (orderItems && orderItems.length === 0) {
+        // If we have no order items but a user is logged in, clear any existing session
+        // This prevents creating empty sessions on initialization
+        api.saveOrderSession(orderItems).then(result => {
+          if (!result) {
+            console.warn('Empty order session save failed or user not authenticated');
+          }
+        }).catch(error => {
+          console.error('Failed to save empty order session:', error);
+        });
+      }
+    }, [orderItems, currentUser, isLoadingOrderSession]);
+
   // --- HANDLERS ---
   const handleLogin = async (user: User) => {
     setCurrentUser(user);
+    // User is already stored in localStorage by the login API function
     // If an admin logs in to an unassigned till, we now need to fetch all data.
     if (!assignedTillId && user.role === 'Admin') {
         setIsLoading(true);
@@ -145,11 +222,23 @@ const App: React.FC = () => {
     }
   };
 
-  const handleLogout = () => {
-    setCurrentUser(null);
-    setIsAdminPanelOpen(false);
-    clearOrder(false); // don't log on logout
-  };
+   const handleLogout = async () => {
+     if (currentUser) {
+       try {
+         const result = await api.updateOrderSessionStatus('logout');
+         if (!result) {
+           console.warn('Order session logout status update failed or user not authenticated');
+         }
+       } catch (error) {
+         console.error('Failed to update order session status on logout:', error);
+       }
+     }
+     setCurrentUser(null);
+     // Clear stored user from localStorage using API service
+     await api.logout();
+     setIsAdminPanelOpen(false);
+     clearOrder(false); // don't log on logout
+   };
   
   const handleTillSelect = (tillId: number) => {
       localStorage.setItem('assignedTillId', String(tillId));
@@ -169,6 +258,8 @@ const App: React.FC = () => {
     // Log the user out and return to the login screen to reflect the change,
     // avoiding a full page reload which can cause a blank screen flicker.
     setCurrentUser(null);
+    // Clear stored user from localStorage using API service
+    api.logout();
     setIsAdminPanelOpen(false);
     clearOrder(false); // Also clear any transient order state
   };
@@ -297,12 +388,22 @@ const App: React.FC = () => {
       await api.deleteTab(activeTab.id);
     }
     
+    // Update order session status to completed
+    try {
+      const result = await api.updateOrderSessionStatus('complete');
+      if (!result) {
+        console.warn('Order session complete status update failed or user not authenticated');
+      }
+    } catch (error) {
+      console.error('Failed to update order session status on payment completion:', error);
+    }
+    
     clearOrder(false);
     setIsPaymentModalOpen(false);
   };
 
   // Tabs Management
-  const handleCreateTab = async (name: string) => {
+ const handleCreateTab = async (name: string) => {
     if (!assignedTillId) return;
     await api.saveTab({ name, items: [], tillId: assignedTillId, tillName: currentTillName, createdAt: new Date().toISOString() });
   };
@@ -320,6 +421,17 @@ const App: React.FC = () => {
       }
     });
     await api.saveTab({ ...tab, items: updatedItems });
+    
+    // Update order session status to assign-tab when adding to a tab
+    try {
+      const result = await api.updateOrderSessionStatus('assign-tab');
+      if (!result) {
+        console.warn('Order session assign-tab status update failed or user not authenticated');
+      }
+    } catch (error) {
+      console.error('Failed to update order session status when assigning to tab:', error);
+    }
+    
     clearOrder(false);
     setIsTabsModalOpen(false);
   };
@@ -434,7 +546,7 @@ const App: React.FC = () => {
           stockItems={appData.stockItems}
           stockAdjustments={appData.stockAdjustments}
           orderActivityLogs={appData.orderActivityLogs}
-          onDataUpdate={fetchData}
+          onDataUpdate={debouncedFetchData}
           assignedTillId={assignedTillId}
           onAssignDevice={handleAssignDevice}
           onSwitchToPos={() => setIsAdminPanelOpen(false)}
