@@ -45,7 +45,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
                 </div>
                 <button
                     onClick={onOpenTableAssignment}
-                    className="text-xs bg-green-700 hover:bg-green-600 font-bold py-1 px-2 rounded-md"
+                    className="text-xs bg-amber-600 hover:bg-amber-500 font-bold py-1 px-2 rounded-md"
                 >
                     Change Table
                 </button>
@@ -106,7 +106,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             <div className="grid grid-cols-2 gap-2">
               <button
                 onClick={onOpenTabs}
-                className={`w-full bg-sky-60 hover:bg-sky-500 font-bold py-3 rounded-md transition ${orderItems.length === 0 ? 'col-span-2' : ''}`}
+                className={`w-full bg-sky-700 hover:bg-sky-600 font-bold py-3 rounded-md transition ${orderItems.length === 0 ? 'col-span-2' : ''}`}
               >
                 {orderItems.length > 0 ? 'Tabs' : 'View Open Tabs'}
               </button>
@@ -121,7 +121,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
               {orderItems.length > 0 && !assignedTable && (
                 <button
                   onClick={onOpenTableAssignment}
-                  className="w-full bg-green-700 hover:bg-green-600 font-bold py-3 rounded-md transition"
+                  className="w-full bg-amber-600 hover:bg-amber-500 font-bold py-3 rounded-md transition"
                 >
                   Assign to Table
                 </button>

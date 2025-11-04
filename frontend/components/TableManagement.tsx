@@ -57,7 +57,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
           <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save</button>
         </div>
       </form>
@@ -291,7 +291,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
             Layout
           </button>
           <button
-            className={`px-4 py-2 font-medium text-sm ${activeTab === 'rooms' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-40 hover:text-slate-300'}`}
+            className={`px-4 py-2 font-medium text-sm ${activeTab === 'rooms' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-400 hover:text-slate-300'}`}
             onClick={() => setActiveTab('rooms')}
           >
             Rooms
@@ -391,7 +391,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
               <h3 className="text-lg font-bold text-slate-300">Table Management</h3>
               <button
                 onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
-                className="bg-amber-60 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md text-sm"
+                className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md text-sm"
               >
                 Add Table
               </button>

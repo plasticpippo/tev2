@@ -62,10 +62,10 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-3xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
+      <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-3xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Assign Table</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
+          <button onClick={onClose} className="text-slate-300 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
         </div>
         
         <div className="flex gap-4 mb-4">
@@ -76,13 +76,13 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Search tables..."
-              className="w-full p-3 bg-slate-900 text-white placeholder-slate-400 border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
+              className="w-full p-3 bg-slate-800 text-white placeholder-slate-400 border border-slate-600 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
             />
           </div>
           <select
             value={filterRoom}
             onChange={(e) => setFilterRoom(e.target.value)}
-            className="bg-slate-900 text-white border-slate-700 rounded-md p-3 min-w-[150px]"
+            className="bg-slate-800 text-white border-slate-600 rounded-md p-3 min-w-[150px]"
           >
             <option value="all">All Rooms</option>
             {rooms.map(room => (
@@ -98,24 +98,24 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               onClick={() => setSelectedTableId(table.id)}
               className={`p-3 rounded-md border-2 transition ${
                 selectedTableId === table.id
-                  ? 'border-amber-400 bg-amber-900'
-                  : 'border-slate-700 bg-slate-900 hover:bg-slate-700'
-              } ${table.status === 'occupied' ? 'opacity-70' : ''}`}
+                  ? 'border-amber-400 bg-amber-800'
+                  : 'border-slate-600 bg-slate-800 hover:bg-slate-700'
+              } ${table.status === 'occupied' ? 'opacity-90' : ''}`}
             >
               <div className="flex justify-between items-start">
                 <div className="text-left">
-                  <p className="font-bold">{table.name}</p>
-                  <p className="text-xs text-slate-400">{rooms.find(r => r.id === table.roomId)?.name}</p>
+                  <p className="font-bold text-white">{table.name}</p>
+                  <p className="text-xs text-slate-300">{rooms.find(r => r.id === table.roomId)?.name}</p>
                 </div>
                 <span className={`w-3 h-3 rounded-full ${getStatusColor(table.status)} ${table.status === 'occupied' ? 'animate-pulse' : ''}`}></span>
               </div>
-              <p className="text-xs mt-1 text-slate-400 capitalize">{table.status}</p>
+              <p className="text-xs mt-1 text-slate-300 capitalize">{table.status}</p>
             </button>
           ))}
         </div>
 
         {filteredTables.length === 0 && (
-          <div className="flex-grow flex items-center justify-center text-slate-500">
+          <div className="flex-grow flex items-center justify-center text-slate-300">
             <p>No tables found</p>
           </div>
         )}
@@ -124,13 +124,13 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
           <div className="flex gap-2">
             <button
               onClick={handleClear}
-              className="bg-red-700 hover:bg-red-60 text-white font-bold py-2 px-4 rounded-md transition"
+              className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition"
             >
               Clear Table
             </button>
             <button
               onClick={onClose}
-              className="bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-md transition"
+              className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md transition"
             >
               Cancel
             </button>
@@ -139,9 +139,9 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
             onClick={handleConfirm}
             disabled={!selectedTableId}
             className={`font-bold py-2 px-6 rounded-md transition ${
-              selectedTableId 
-                ? 'bg-green-600 hover:bg-green-500 text-white' 
-                : 'bg-slate-700 text-slate-400 cursor-not-allowed'
+              selectedTableId
+                ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
             }`}
           >
             Confirm Assignment
