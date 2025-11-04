@@ -29,3 +29,6 @@ Backend is running on port 3001
 ### We are testing from LAN with a browser, NOT from localhost
 
 ## DO NOT EVER kill all npm processes. ONLY stop the necessary processes required to achieve your current goal
+
+
+### ALL documentation must be located at ./docs
