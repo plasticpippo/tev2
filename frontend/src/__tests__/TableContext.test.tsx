@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, act, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { TableProvider, useTableContext } from '../../components/TableContext';
@@ -52,7 +51,7 @@ const mockTables: Table[] = [
 ];
 
 // Test component to access context values
-const TestComponent: React.FC = () => {
+const TestComponent = () => {
  const context = useTableContext();
   return (
     <div>
@@ -164,7 +163,7 @@ describe('TableContext', () => {
         json: async () => mockTables
       });
 
-    const { getByTestId, rerender } = renderWithContext();
+    const { getByTestId } = renderWithContext();
     
     // Wait for initial data to load
     await waitFor(() => {
@@ -186,7 +185,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the addRoom function
-    const TestAddRoomComponent: React.FC = () => {
+    const TestAddRoomComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -233,7 +232,7 @@ describe('TableContext', () => {
       });
 
     // Wait for initial data to load
-    const { getByTestId, rerender } = renderWithContext();
+    const { getByTestId } = renderWithContext();
     await waitFor(() => {
       expect(getByTestId('rooms-count')).toHaveTextContent('2');
     });
@@ -253,7 +252,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the updateRoom function
-    const TestUpdateRoomComponent: React.FC = () => {
+    const TestUpdateRoomComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -312,7 +311,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the deleteRoom function
-    const TestDeleteRoomComponent: React.FC = () => {
+    const TestDeleteRoomComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -383,7 +382,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the addTable function
-    const TestAddTableComponent: React.FC = () => {
+    const TestAddTableComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -471,7 +470,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the updateTable function
-    const TestUpdateTableComponent: React.FC = () => {
+    const TestUpdateTableComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -544,7 +543,7 @@ describe('TableContext', () => {
     });
 
     // Get context to access the deleteTable function
-    const TestDeleteTableComponent: React.FC = () => {
+    const TestDeleteTableComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -580,7 +579,7 @@ describe('TableContext', () => {
 
   it('should update table position', () => {
     // Get context to access the updateTablePosition function
-    const TestUpdatePositionComponent: React.FC = () => {
+    const TestUpdatePositionComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -610,7 +609,7 @@ describe('TableContext', () => {
 
   it('should set layout mode', () => {
     // Get context to access the setLayoutMode function
-    const TestSetLayoutModeComponent: React.FC = () => {
+    const TestSetLayoutModeComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -639,7 +638,7 @@ describe('TableContext', () => {
 
   it('should set selected room ID', () => {
     // Get context to access the setSelectedRoomId function
-    const TestSetSelectedRoomIdComponent: React.FC = () => {
+    const TestSetSelectedRoomIdComponent = () => {
       const context = useTableContext();
       return (
         <button 
@@ -667,7 +666,7 @@ describe('TableContext', () => {
   });
 
   it('should throw error when useTableContext is used outside TableProvider', () => {
-    const TestComponentOutsideProvider: React.FC = () => {
+    const TestComponentOutsideProvider = () => {
       useTableContext(); // This should throw an error
       return <div>Test</div>;
     };

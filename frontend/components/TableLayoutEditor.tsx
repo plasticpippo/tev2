@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTableContext } from './TableContext';
-import { Table, Room } from '../../shared/types';
+import { Table } from '../../shared/types';
 
 interface TableLayoutEditorProps {
   selectedRoomId: string | null;

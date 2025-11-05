@@ -214,20 +214,16 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
 interface TableManagementProps {}
 
 export const TableManagement: React.FC<TableManagementProps> = () => {
-  const { 
-    rooms, 
-    tables, 
-    selectedRoomId, 
+  const {
+    rooms,
+    tables,
+    selectedRoomId,
     setSelectedRoomId,
     layoutMode,
     setLayoutMode,
     loading,
     error,
-    addRoom,
-    updateRoom,
     deleteRoom,
-    addTable,
-    updateTable,
     deleteTable,
     refreshData
  } = useTableContext();

@@ -1,4 +1,3 @@
-import React from 'react';
 import { render, screen, fireEvent, waitFor, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { TableLayoutEditor } from '../../components/TableLayoutEditor';
@@ -54,12 +53,12 @@ const mockTables: Table[] = [
 global.fetch = jest.fn();
 
 // Mock the TableContext to provide test data
-const MockTableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+const MockTableProvider = ({ children }: { children: any }) => {
   return (
     <TableProvider>
       {children}
     </TableProvider>
-  );
+ );
 };
 
 describe('TableLayoutEditor', () => {
@@ -164,7 +163,7 @@ describe('TableLayoutEditor', () => {
 
   it('shows mode indicator when in edit or drag mode', async () => {
     // Mock the context to set layout mode to 'edit'
-    const MockTableProviderWithEditMode: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+    const MockTableProviderWithEditMode = ({ children }: { children: any }) => {
       return (
         <TableProvider>
           {children}
