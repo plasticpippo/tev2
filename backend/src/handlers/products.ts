@@ -19,7 +19,7 @@ productsRouter.get('/', async (req: Request, res: Response) => {
     res.json(products);
   } catch (error) {
     console.error('Error fetching products:', error);
-    res.status(500).json({ error: 'Failed to fetch products' });
+    res.status(500).json({ error: 'Failed to fetch products. Please try again later.' });
   }
 });
 
@@ -45,7 +45,7 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
     res.json(product);
   } catch (error) {
     console.error('Error fetching product:', error);
-    res.status(500).json({ error: 'Failed to fetch product' });
+    res.status(500).json({ error: 'Failed to fetch product. Please try again later.' });
   }
 });
 
@@ -126,9 +126,9 @@ productsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(product);
  } catch (error) {
-    console.error('Error creating product:', error);
-    res.status(500).json({ error: 'Failed to create product' });
-  }
+   console.error('Error creating product:', error);
+   res.status(500).json({ error: 'Failed to create product. Please check your data and try again.' });
+ }
 });
 
 // PUT /api/products/:id - Update a product
@@ -252,7 +252,7 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
     res.json(product);
   } catch (error) {
     console.error('Error updating product:', error);
-    res.status(500).json({ error: 'Failed to update product' });
+    res.status(500).json({ error: 'Failed to update product. Please check your data and try again.' });
   }
 });
 
@@ -286,7 +286,7 @@ productsRouter.delete('/:id', async (req: Request, res: Response) => {
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting product:', error);
-    res.status(500).json({ error: 'Failed to delete product' });
+    res.status(500).json({ error: 'Failed to delete product. The product may be in use or referenced elsewhere.' });
   }
 });
 

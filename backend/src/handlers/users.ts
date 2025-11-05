@@ -126,7 +126,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     res.json(user);
   } catch (error) {
     console.error('Error during login:', error);
-    res.status(500).json({ error: 'Login failed' });
+    res.status(500).json({ error: 'Login failed due to server error. Please try again later.' });
   }
 });
 

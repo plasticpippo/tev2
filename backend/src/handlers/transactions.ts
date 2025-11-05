@@ -19,7 +19,7 @@ transactionsRouter.get('/', async (req: Request, res: Response) => {
     res.json(transactionsWithParsedItems);
   } catch (error) {
     console.error('Error fetching transactions:', error);
-    res.status(500).json({ error: 'Failed to fetch transactions' });
+    res.status(500).json({ error: 'Failed to fetch transactions. Please try again later.' });
   }
 });
 
@@ -45,7 +45,7 @@ transactionsRouter.get('/:id', async (req: Request, res: Response) => {
     res.json(transactionWithParsedItems);
   } catch (error) {
     console.error('Error fetching transaction:', error);
-    res.status(500).json({ error: 'Failed to fetch transaction' });
+    res.status(500).json({ error: 'Failed to fetch transaction. Please try again later.' });
   }
 });
 
@@ -76,7 +76,7 @@ transactionsRouter.post('/', async (req: Request, res: Response) => {
     res.status(201).json(transaction);
  } catch (error) {
     console.error('Error creating transaction:', error);
-    res.status(500).json({ error: 'Failed to create transaction' });
+    res.status(500).json({ error: 'Failed to create transaction. Please check your data and try again.' });
   }
 });
 

@@ -24,8 +24,13 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    await api.saveCategory({ id: category?.id, name, visibleTillIds });
-    onSave();
+    try {
+      await api.saveCategory({ id: category?.id, name, visibleTillIds });
+      onSave();
+    } catch (error) {
+      console.error('Error saving category:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save category. Please check your data and try again.');
+    }
   };
 
   return (
@@ -92,9 +97,14 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
 
   const confirmDelete = async () => {
     if (deletingCategory) {
+      try {
         await api.deleteCategory(deletingCategory.id);
         setDeletingCategory(null);
         onDataUpdate();
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        alert(error instanceof Error ? error.message : 'Failed to delete category. The category may have associated products or be in use elsewhere.');
+      }
     }
   };
 

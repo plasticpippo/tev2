@@ -30,7 +30,7 @@
         "-y",
         "@playwright/mcp@0.0.38",
         "--browser=chromium",
-        "--headless=true",
+        "--headless",
         "--caps=core,core-tabs,testing"
       ],
       "alwaysAllow": [
@@ -40,7 +40,9 @@
         "browser_network_requests",
         "browser_click",
         "browser_type",
-        "browser_fill_form"
+        "browser_fill_form",
+        "browser_evaluate",
+        "browser_select_option"
       ]
     }
   }

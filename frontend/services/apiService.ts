@@ -72,7 +72,9 @@ const makeApiRequest = async (url: string, options?: RequestInit, cacheKey?: str
   const requestPromise = fetch(url, options)
     .then(async response => {
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const errorData = await response.json().catch(() => ({}));
+        const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+        throw new Error(errorMessage);
       }
       return await response.json();
     })
@@ -92,7 +94,7 @@ const makeApiRequest = async (url: string, options?: RequestInit, cacheKey?: str
     requestCache.set(cacheKey, requestPromise);
   }
 
-  return requestPromise;
+ return requestPromise;
 };
 
 // Users
@@ -118,7 +120,11 @@ export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promis
       body: JSON.stringify(user)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedUser = await response.json();
     notifyUpdates();
     return savedUser;
@@ -135,12 +141,16 @@ export const deleteUser = async (userId: number): Promise<{ success: boolean; me
       headers: getAuthHeaders()
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting user:', error);
-    return { success: false, message: 'Failed to delete user' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete user' };
   }
 };
 
@@ -152,7 +162,11 @@ export const login = async (username: string, password: string): Promise<User> =
       body: JSON.stringify({ username, password })
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const userData = await response.json();
     // Store user in localStorage upon successful login for API authentication
     localStorage.setItem('currentUser', JSON.stringify(userData));
@@ -186,7 +200,11 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
       body: JSON.stringify(productData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedProduct = await response.json();
     notifyUpdates();
     return savedProduct;
@@ -203,12 +221,16 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
       headers: getAuthHeaders()
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting product:', error);
-    return { success: false, message: 'Failed to delete product' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete product' };
   }
 };
 
@@ -235,14 +257,18 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
       body: JSON.stringify(category)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedCategory = await response.json();
     notifyUpdates();
     return savedCategory;
   } catch (error) {
     console.error('Error saving category:', error);
     throw error;
- }
+  }
 };
 
 export const deleteCategory = async (categoryId: number): Promise<{ success: boolean; message?: string }> => {
@@ -253,17 +279,15 @@ export const deleteCategory = async (categoryId: number): Promise<{ success: boo
     });
     
     if (!response.ok) {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        return { success: false, message: errorData.error };
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting category:', error);
-    return { success: false, message: 'Failed to delete category' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete category' };
   }
 };
 
@@ -291,7 +315,11 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
       body: JSON.stringify(settings)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     notifyUpdates();
   } catch (error) {
     console.error('Error saving settings:', error);
@@ -319,7 +347,11 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
       body: JSON.stringify(transactionData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedTransaction = await response.json();
     notifyUpdates();
     return savedTransaction;
@@ -352,7 +384,11 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
       body: JSON.stringify(tabData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedTab = await response.json();
     notifyUpdates();
     return savedTab;
@@ -369,7 +405,11 @@ export const deleteTab = async (tabId: number): Promise<void> => {
       headers: getAuthHeaders()
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     notifyUpdates();
   } catch (error) {
     console.error('Error deleting tab:', error);
@@ -407,7 +447,11 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
       body: JSON.stringify(till)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedTill = await response.json();
     notifyUpdates();
     return savedTill;
@@ -417,19 +461,23 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
   }
 };
 
-export const deleteTill = async (tillId: number): Promise<{success: boolean}> => {
+export const deleteTill = async (tillId: number): Promise<{success: boolean, message?: string}> => {
   try {
     const response = await fetch(apiUrl(`/api/tills/${tillId}`), {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     notifyUpdates();
     return { success: true };
  } catch (error) {
     console.error('Error deleting till:', error);
-    return { success: false };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete till' };
   }
 };
 
@@ -456,7 +504,11 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string 
       body: JSON.stringify(item)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedItem = await response.json();
     notifyUpdates();
     return savedItem;
@@ -474,17 +526,15 @@ export const deleteStockItem = async (itemId: string): Promise<{ success: boolea
     });
     
     if (!response.ok) {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        return { success: false, message: errorData.error };
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting stock item:', error);
-    return { success: false, message: 'Failed to delete stock item' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete stock item' };
   }
 };
 
@@ -542,7 +592,11 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
       body: JSON.stringify(adjData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedAdjustment = await response.json();
     notifyUpdates();
     return savedAdjustment;
@@ -702,7 +756,11 @@ export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' 
       body: JSON.stringify(logData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedLog = await response.json();
     notifyUpdates();
     return savedLog;
@@ -735,7 +793,11 @@ export const saveRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'update
       body: JSON.stringify(roomData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedRoom = await response.json();
     notifyUpdates();
     return savedRoom;
@@ -753,17 +815,15 @@ export const deleteRoom = async (roomId: string): Promise<{ success: boolean; me
     });
     
     if (!response.ok) {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        return { success: false, message: errorData.error };
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting room:', error);
-    return { success: false, message: 'Failed to delete room' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete room' };
   }
 };
 
@@ -790,7 +850,11 @@ export const saveTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'upd
       body: JSON.stringify(tableData)
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const savedTable = await response.json();
     notifyUpdates();
     return savedTable;
@@ -808,17 +872,15 @@ export const deleteTable = async (tableId: string): Promise<{ success: boolean; 
     });
     
     if (!response.ok) {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        return { success: false, message: errorData.error };
-      }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
     console.error('Error deleting table:', error);
-    return { success: false, message: 'Failed to delete table' };
+    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete table' };
   }
 };
 
@@ -831,7 +893,11 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
       body: JSON.stringify({ positionX: x, positionY: y })
     });
     
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      throw new Error(errorMessage);
+    }
     const updatedTable = await response.json();
     notifyUpdates();
     return updatedTable;

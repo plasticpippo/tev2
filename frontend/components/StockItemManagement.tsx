@@ -42,16 +42,21 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
     e.preventDefault();
     if (!name.trim() || !baseUnit.trim()) return;
 
-    const itemData = { 
-        id: item?.id, 
-        name, 
-        type, 
-        baseUnit,
-        quantity: item?.id ? item.quantity : quantity,
-        purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.multiplier > 0)
-    };
-    await api.saveStockItem(itemData);
-    onSave();
+    try {
+      const itemData = {
+          id: item?.id,
+          name,
+          type,
+          baseUnit,
+          quantity: item?.id ? item.quantity : quantity,
+          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.multiplier > 0)
+      };
+      await api.saveStockItem(itemData);
+      onSave();
+    } catch (error) {
+      console.error('Error saving stock item:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save stock item. Please check your data and try again.');
+    }
   };
 
   return (

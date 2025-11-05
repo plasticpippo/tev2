@@ -17,7 +17,7 @@ categoriesRouter.get('/', async (req: Request, res: Response) => {
     res.json(categories);
   } catch (error) {
     console.error('Error fetching categories:', error);
-    res.status(500).json({ error: 'Failed to fetch categories' });
+    res.status(500).json({ error: 'Failed to fetch categories. Please try again later.' });
   }
 });
 
@@ -41,8 +41,8 @@ categoriesRouter.get('/:id', async (req: Request, res: Response) => {
     res.json(category);
   } catch (error) {
     console.error('Error fetching category:', error);
-    res.status(500).json({ error: 'Failed to fetch category' });
-  }
+    res.status(500).json({ error: 'Failed to fetch category. Please try again later.' });
+ }
 });
 
 // POST /api/categories - Create a new category
@@ -65,8 +65,8 @@ categoriesRouter.post('/', async (req: Request, res: Response) => {
     res.status(201).json(category);
   } catch (error) {
     console.error('Error creating category:', error);
-    res.status(500).json({ error: 'Failed to create category' });
-  }
+    res.status(500).json({ error: 'Failed to create category. Please check your data and try again.' });
+ }
 });
 
 // PUT /api/categories/:id - Update a category
@@ -91,7 +91,7 @@ categoriesRouter.put('/:id', async (req: Request, res: Response) => {
     res.json(category);
   } catch (error) {
     console.error('Error updating category:', error);
-    res.status(500).json({ error: 'Failed to update category' });
+    res.status(500).json({ error: 'Failed to update category. Please check your data and try again.' });
   }
 });
 
@@ -118,7 +118,7 @@ categoriesRouter.delete('/:id', async (req: Request, res: Response) => {
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting category:', error);
-    res.status(500).json({ error: 'Failed to delete category' });
+    res.status(500).json({ error: 'Failed to delete category. The category may have associated products or be in use elsewhere.' });
   }
 });
 

@@ -6,6 +6,7 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { availableColors, getContrastingTextColor } from '../utils/color';
 import { formatCurrency } from '../utils/formatting';
 import { v4 as uuidv4 } from 'uuid';
+import { useVirtualKeyboard } from './VirtualKeyboardContext';
 
 interface VariantFormProps {
     variant: Partial<ProductVariant>;
@@ -111,6 +112,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
   const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: 'text-white' }]);
+  const { closeKeyboard } = useVirtualKeyboard();
 
   const handleAddVariant = () => {
     setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: 'text-white' }]);
@@ -132,11 +134,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    // Close the virtual keyboard before processing the form submission
+    closeKeyboard();
     if (!name.trim() || !categoryId || variants.some(v => !v.name?.trim())) return;
     
-    await api.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
-    onSave();
-  };
+    try {
+      await api.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
+      onSave();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      alert(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+    }
+ };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -168,7 +177,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
             <button type="button" onClick={handleAddVariant} className="w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md">+ Add Selling Variant</button>
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+          <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
           <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save Product</button>
         </div>
       </form>
@@ -196,9 +205,14 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
 
   const confirmDelete = async () => {
     if (deletingProduct) {
+      try {
         await api.deleteProduct(deletingProduct.id);
         setDeletingProduct(null);
         onDataUpdate();
+      } catch (error) {
+        console.error('Error deleting product:', error);
+        alert(error instanceof Error ? error.message : 'Failed to delete product. The product may be in use or referenced elsewhere.');
+      }
     }
   };
 

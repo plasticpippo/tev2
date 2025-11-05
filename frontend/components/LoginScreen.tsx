@@ -39,8 +39,19 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, assignedTillI
         closeKeyboard();
         await onLogin(user);
       }
-    } catch (err) {
-      setError('Invalid username or password.');
+    } catch (err: any) {
+      // Check if it's a network error or server error
+      if (err.message && err.message.includes('401')) {
+        setError('Invalid username or password. Please check your credentials and try again.');
+      } else if (err.message && err.message.includes('400')) {
+        setError('Missing username or password. Please enter both fields.');
+      } else if (err.message && (err.message.includes('500') || err.message.includes('server'))) {
+        setError('Server error. Please try again later. If the problem persists, contact your system administrator.');
+      } else if (err.message) {
+        setError(err.message);
+      } else {
+        setError('Login failed. Please check your credentials and network connection, then try again.');
+      }
     } finally {
         setIsLoading(false);
     }
