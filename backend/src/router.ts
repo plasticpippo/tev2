@@ -11,7 +11,9 @@ import { stockAdjustmentsRouter } from './handlers/stockAdjustments';
 import { orderActivityLogsRouter } from './handlers/orderActivityLogs';
 import { orderSessionsRouter } from './handlers/orderSessions';
 import tablesRouter from './handlers/tables';
+import { layoutRouter } from './handlers/gridLayout';
 import roomsRouter from './handlers/rooms';
+import { dailyClosingsRouter } from './handlers/dailyClosings';
 
 export const router = express.Router();
 
@@ -27,8 +29,10 @@ router.use('/stock-items', stockItemsRouter);
 router.use('/stock-adjustments', stockAdjustmentsRouter);
 router.use('/order-activity-logs', orderActivityLogsRouter);
 router.use('/order-sessions', orderSessionsRouter);
+router.use('/grid-layouts', layoutRouter);
 router.use('/tables', tablesRouter);
 router.use('/rooms', roomsRouter);
+router.use('/daily-closings', dailyClosingsRouter);
 
 // Health check for the API
 router.get('/health', (req, res) => {

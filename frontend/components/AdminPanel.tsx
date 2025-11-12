@@ -13,6 +13,7 @@ import { StockItemManagement } from './StockItemManagement';
 import { AnalyticsPanel } from './AnalyticsPanel';
 import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
+import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import * as api from '../services/apiService';
 
 interface AdminPanelProps {
@@ -36,7 +37,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -64,6 +65,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
             users={users}
             tills={tills}
             settings={settings}
+            currentUser={currentUser}
         />;
       case 'analytics':
         return <AnalyticsPanel transactions={transactions} products={products} categories={categories} settings={settings} />;
@@ -91,6 +93,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
               <TableManagement />
             </TableProvider>
           );
+      case 'dailyClosingSummary':
+          return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
       default:
         return <p>Select a view</p>;
     }
@@ -128,6 +132,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <div className="pt-2"></div>
                 <NavButton view="transactions" label="Transactions" />
                 <NavButton view="activity" label="Activity Log" />
+                <NavButton view="dailyClosingSummary" label="Daily Closing Summary" />
                 <div className="pt-2"></div>
                 <NavButton view="products" label="Products" isFirst/>
                 <NavButton view="categories" label="Categories" />

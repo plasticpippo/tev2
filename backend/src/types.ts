@@ -110,6 +110,22 @@ export interface StockAdjustment {
     createdAt: string;
 }
 
+export interface DailyClosing {
+  id: number;
+  createdAt: string;
+  closedAt: string;
+  summary: {
+    transactions: number;
+    totalSales: number;
+    totalTax: number;
+    totalTips: number;
+    paymentMethods: Record<string, { count: number; total: number }>;
+    tills: Record<string, { transactions: number; total: number }>;
+  };
+ userId: number;
+  userName: string;
+}
+
 export interface OrderActivityLog {
     id: number;
     action: 'Item Removed' | 'Order Cleared';
