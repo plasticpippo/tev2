@@ -2,6 +2,11 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { Tab, OrderItem } from '../../shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 
+// Define destination types more clearly
+type ExistingDestination = { type: 'existing'; id: number };
+type NewDestination = { type: 'new' };
+type Destination = ExistingDestination | NewDestination | null;
+
 interface TransferItemsModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -11,8 +16,8 @@ interface TransferItemsModalProps {
 }
 
 export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, onClose, sourceTab, allTabs, onConfirmMove }) => {
-  const [transferQuantities, setTransferQuantities] = useState<Record<string, number>>({}); // product.id -> quantity to move
-  const [destination, setDestination] = useState<{ type: 'existing'; id: number } | { type: 'new' } | null>(null);
+  const [transferQuantities, setTransferQuantities] = useState<Record<string, number>>({}); // orderItem.id -> quantity to move
+  const [destination, setDestination] = useState<Destination>(null);
   const [newTabName, setNewTabName] = useState('');
 
   const destinationTabs = useMemo(() => {
@@ -45,12 +50,18 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
   };
 
   const handleConfirm = () => {
-    const itemsToMove = Object.entries(transferQuantities)
-      .filter(([, quantity]: [string, number]) => quantity > 0)
-      .map(([productId, quantity]: [string, number]) => {
-        const sourceItem = sourceTab.items.find(item => item.id === productId);
-        return { ...sourceItem!, quantity: quantity };
-      });
+    // Create items to move based on selected quantities
+    const itemsToMove: OrderItem[] = [];
+    
+    Object.entries(transferQuantities).forEach(([orderItemId, quantity]) => {
+      if (quantity > 0) {
+        const sourceItem = sourceTab.items.find(item => item.id === orderItemId);
+        if (sourceItem) {
+          // Create a new item with the specified quantity
+          itemsToMove.push({ ...sourceItem, quantity });
+        }
+      }
+    });
 
     if (itemsToMove.length === 0 || !destination) return;
 
@@ -62,16 +73,26 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
     }
   };
   
-  // Fix: Explicitly typed the accumulator and value of the `reduce` function to ensure that `totalItemsToMove` is correctly inferred as a number, resolving type errors.
+  // Calculate total items to move
   const totalItemsToMove = Object.values(transferQuantities).reduce((sum: number, qty: number) => sum + qty, 0);
   const isMoveDisabled = totalItemsToMove === 0 || !destination || (destination.type === 'new' && !newTabName.trim());
+
+  // Get the currently selected tab name for display
+  const selectedTabName = destination?.type === 'existing'
+    ? destinationTabs.find(tab => tab.id === destination.id)?.name
+    : null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 flex-shrink-0">
-            <h2 className="text-2xl font-bold text-amber-400">Transfer Items</h2>
-            <p className="text-slate-400">From tab: <span className="font-semibold text-white">{sourceTab.name}</span></p>
+            <div className="flex justify-between items-center mb-4">
+                <div>
+                    <h2 className="text-2xl font-bold text-amber-400">Transfer Items</h2>
+                    <p className="text-slate-300">From tab: <span className="font-semibold text-white">{sourceTab.name}</span></p>
+                </div>
+                <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
+            </div>
         </div>
 
         <div className="px-6 space-y-4 flex-grow overflow-y-auto">
@@ -88,9 +109,23 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                     <span className="text-sm text-slate-400 ml-2">(out of {item.quantity})</span>
                                 </div>
                                 <div className="flex items-center gap-3">
-                                  <button onClick={() => handleQuantityChange(item.id, -1)} disabled={(transferQuantities[item.id] || 0) === 0} className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50">-</button>
+                                  <button
+                                    onClick={() => handleQuantityChange(item.id, -1)}
+                                    disabled={(transferQuantities[item.id] || 0) === 0}
+                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
+                                    aria-label={`Decrease quantity of ${item.name}`}
+                                  >
+                                    -
+                                  </button>
                                   <span className="w-8 text-center font-bold text-lg">{transferQuantities[item.id] || 0}</span>
-                                  <button onClick={() => handleQuantityChange(item.id, 1)} disabled={(transferQuantities[item.id] || 0) >= item.quantity} className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50">+</button>
+                                  <button
+                                    onClick={() => handleQuantityChange(item.id, 1)}
+                                    disabled={(transferQuantities[item.id] || 0) >= item.quantity}
+                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
+                                    aria-label={`Increase quantity of ${item.name}`}
+                                  >
+                                    +
+                                  </button>
                                 </div>
                             </div>
                         ))
@@ -106,6 +141,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                             key={tab.id}
                             onClick={() => setDestination({ type: 'existing', id: tab.id })}
                             className={`p-3 rounded-md transition font-semibold truncate ${destination?.type === 'existing' && destination.id === tab.id ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-slate-700 hover:bg-slate-600'}`}
+                            aria-label={`Select destination tab: ${tab.name}`}
                         >
                             {tab.name}
                         </button>
@@ -113,6 +149,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                     <button
                         onClick={() => setDestination({ type: 'new' })}
                         className={`p-3 rounded-md transition font-semibold ${destination?.type === 'new' ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-slate-700 hover:bg-slate-500'}`}
+                        aria-label="Create new tab"
                     >
                         + New Tab
                     </button>
@@ -130,12 +167,17 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                         />
                     </div>
                 )}
+                {destination?.type === 'existing' && selectedTabName && (
+                  <p className="mt-2 text-slate-300 text-sm">
+                    Selected: <span className="text-amber-400 font-semibold">{selectedTabName}</span>
+                  </p>
+                )}
             </div>
         </div>
         
         <div className="flex justify-end gap-2 p-6 pt-4 border-t border-slate-700 flex-shrink-0">
           <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 px-6 rounded-md">Cancel</button>
-          <button 
+          <button
             onClick={handleConfirm}
             disabled={isMoveDisabled}
             className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed"

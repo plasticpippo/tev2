@@ -43,15 +43,6 @@ export interface User {
   role: 'Admin' | 'Cashier';
 }
 
-export interface Tab {
-  id: number;
-  name:string;
-  items: OrderItem[];
-  createdAt: string;
- tillId: number;
-  tillName: string;
-}
-
 export interface Transaction {
   id: number;
   items: OrderItem[];

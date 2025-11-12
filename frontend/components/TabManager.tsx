@@ -30,14 +30,15 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
   const canAddToTabs = currentOrder.length > 0;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-40">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-6 border border-slate-700">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Manage Tabs</h2>
           <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close tab manager">&times;</button>
         </div>
         
-        <div className="flex gap-2 mb-6">
+        <div className="flex-grow overflow-y-auto pb-4">
+          <div className="flex gap-2 mb-6">
           <VKeyboardInput
             k-type="full"
             type="text"
@@ -56,7 +57,7 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
         </div>
 
         <h3 className="text-lg font-semibold mb-2 text-slate-300">Open Tabs</h3>
-        <div className="max-h-80 overflow-y-auto space-y-2">
+        <div className="overflow-y-auto max-h-80 space-y-2">
           {tabs.length === 0 ? (
             <p className="text-slate-400 text-center py-4">No open tabs.</p>
           ) : (
@@ -115,6 +116,15 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
         {!canAddToTabs && tabs.length > 0 && (
              <p className="text-center text-slate-400 text-sm mt-4">Select a tab to load it for editing or payment.</p>
         )}
+        </div>
+        <div className="pt-4 border-t border-slate-700 flex-shrink-0">
+          <button
+            onClick={onClose}
+            className="w-full bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 rounded-md transition"
+          >
+            Close
+          </button>
+        </div>
       </div>
     </div>
   );

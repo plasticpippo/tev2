@@ -48,18 +48,19 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Complete Payment</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition">&times;</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
         </div>
+        <div className="flex-grow overflow-y-auto pb-4">
         
         {assignedTable && (
-            <div className="mb-4 bg-green-900 p-3 rounded-md border border-green-700">
+            <div className="mb-4 bg-green-900 p-3 rounded-md border-green-700">
                 <div className="flex justify-between items-center">
                     <div>
                         <p className="font-bold text-green-200">Table: {assignedTable.name}</p>
-                        <p className="text-sm text-green-30">Payment for assigned table</p>
+                        <p className="text-sm text-green-300">Payment for assigned table</p>
                     </div>
                 </div>
             </div>
@@ -72,7 +73,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
                 value={tip === 0 ? '' : tip}
                 onChange={(e) => setTip(parseFloat(e.target.value) || 0)}
                 className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md"
-                placeholder="0.00"
+                placeholder="0.0"
             />
         </div>
 
@@ -97,13 +98,16 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
             ))}
           </div>
         </div>
+        </div>
 
-        <button
-          onClick={() => onConfirmPayment(selectedMethod, tip)}
-          className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 text-lg rounded-md transition"
-        >
-          Confirm Payment for {formatCurrency(finalTotal)}
-        </button>
+        <div className="pt-4 border-t border-slate-700 flex-shrink-0">
+          <button
+            onClick={() => onConfirmPayment(selectedMethod, tip)}
+            className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 text-lg rounded-md transition"
+          >
+            Confirm Payment for {formatCurrency(finalTotal)}
+          </button>
+        </div>
       </div>
     </div>
   );

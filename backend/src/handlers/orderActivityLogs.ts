@@ -12,11 +12,23 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
       take: 100  // Limit to last 10 logs for performance
     });
     // Parse the details JSON string back to appropriate type
-    const logsWithParsedDetails = orderActivityLogs.map(log => ({
-      ...log,
-      details: typeof log.details === 'string' ? JSON.parse(log.details) : log.details,
-      createdAt: log.createdAt.toISOString() // Ensure createdAt is in string format
-    }));
+    const logsWithParsedDetails = orderActivityLogs.map(log => {
+      // Handle details field - it might be stored as a JSON object or string
+      let parsedDetails = log.details;
+      if (typeof log.details === 'string') {
+        try {
+          parsedDetails = JSON.parse(log.details);
+        } catch (e) {
+          console.warn('Failed to parse details as JSON, returning as string:', log.details);
+          parsedDetails = log.details; // Return as string if parsing fails
+        }
+      }
+      return {
+        ...log,
+        details: parsedDetails,
+        createdAt: log.createdAt.toISOString() // Ensure createdAt is in string format
+      };
+    });
     res.json(logsWithParsedDetails);
  } catch (error) {
     console.error('Error fetching order activity logs:', error);
@@ -37,9 +49,18 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     }
     
     // Parse the details JSON string back to appropriate type
+    let parsedDetails = orderActivityLog.details;
+    if (typeof orderActivityLog.details === 'string') {
+      try {
+        parsedDetails = JSON.parse(orderActivityLog.details);
+      } catch (e) {
+        console.warn('Failed to parse details as JSON, returning as string:', orderActivityLog.details);
+        parsedDetails = orderActivityLog.details; // Return as string if parsing fails
+      }
+    }
     const logWithParsedDetails = {
       ...orderActivityLog,
-      details: typeof orderActivityLog.details === 'string' ? JSON.parse(orderActivityLog.details) : orderActivityLog.details,
+      details: parsedDetails,
       createdAt: orderActivityLog.createdAt.toISOString() // Ensure createdAt is in string format
     };
     
