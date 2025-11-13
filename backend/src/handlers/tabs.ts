@@ -56,8 +56,25 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
 
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', async (req: Request, res: Response) => {
-  try {
+ try {
+    console.log('Backend: POST /api/tabs called with body:', req.body);
     const { name, items, tillId, tillName, tableId } = req.body;
+    
+    // Validate required fields
+    if (!name || typeof name !== 'string' || name.trim() === '') {
+      console.log('Backend: Tab name validation failed:', { name, type: typeof name, trimmed: name?.trim() });
+      return res.status(400).json({ error: 'Tab name is required and must be a non-empty string' });
+    }
+    
+    // Check if a tab with the same name already exists
+    const existingTab = await prisma.tab.findFirst({
+      where: { name: name.trim() }
+    });
+    
+    if (existingTab) {
+      console.log('Backend: Duplicate tab name detected:', name.trim());
+      return res.status(409).json({ error: 'A tab with this name already exists' });
+    }
     
     // If tableId is provided, verify that the table exists
     if (tableId) {
@@ -70,9 +87,10 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
       }
     }
     
+    console.log('Backend: Creating new tab with data:', { name: name.trim(), items, tillId, tillName, tableId });
     const tab = await prisma.tab.create({
       data: {
-        name,
+        name: name.trim(), // Trim whitespace
         items: JSON.stringify(items),
         tillId,
         tillName,
@@ -81,6 +99,7 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
       }
     });
     
+    console.log('Backend: Tab created successfully:', tab);
     res.status(201).json(tab);
  } catch (error) {
     console.error('Error creating tab:', error);
@@ -93,6 +112,25 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, items, tillId, tillName, tableId } = req.body;
+    
+    // Validate name if it's provided
+    if (name !== undefined) {
+      if (typeof name !== 'string' || name.trim() === '') {
+        return res.status(400).json({ error: 'Tab name must be a non-empty string' });
+      }
+      
+      // Check if a tab with the same name already exists (excluding the current tab)
+      const existingTab = await prisma.tab.findFirst({
+        where: {
+          name: name.trim(),
+          id: { not: Number(id) } // Exclude current tab from check
+        }
+      });
+      
+      if (existingTab) {
+        return res.status(409).json({ error: 'A tab with this name already exists' });
+      }
+    }
     
     // If tableId is provided, verify that the table exists
     if (tableId) {
@@ -108,7 +146,7 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
     const tab = await prisma.tab.update({
       where: { id: Number(id) },
       data: {
-        name,
+        name: name !== undefined ? name.trim() : undefined, // Only trim if name is provided
         items: JSON.stringify(items),
         tillId,
         tillName,

@@ -6,10 +6,13 @@ type KeyboardType = 'numeric' | 'full';
 type VKeyboardInputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   'k-type': KeyboardType;
   autoOpenOnMount?: boolean;
+  onKeyPress?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+} & {
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 };
 
 export const VKeyboardInput = forwardRef<HTMLInputElement, VKeyboardInputProps>(
-  ({ 'k-type': kType, onFocus, autoOpenOnMount, ...props }, ref) => {
+  ({ 'k-type': kType, onFocus, onKeyPress, autoOpenOnMount, ...props }, ref) => {
     const internalInputRef = useRef<HTMLInputElement>(null);
     const { openKeyboard } = useVirtualKeyboard();
 
@@ -42,6 +45,16 @@ export const VKeyboardInput = forwardRef<HTMLInputElement, VKeyboardInputProps>(
       }
     };
 
-    return <input ref={internalInputRef} onFocus={handleFocus} inputMode="none" {...props} />;
+    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+      if (e.key === 'Enter' && onKeyPress) {
+        onKeyPress(e);
+      }
+      // Handle the original onKeyDown if provided
+      if (props.onKeyDown) {
+        props.onKeyDown(e);
+      }
+    };
+
+    return <input ref={internalInputRef} onFocus={handleFocus} onKeyDown={handleKeyDown} inputMode="none" {...props} />;
   }
 );

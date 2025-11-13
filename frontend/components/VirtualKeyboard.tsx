@@ -38,9 +38,9 @@ const NumpadLayout: React.FC = () => {
             <Key value="8" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="9" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
 
-            <Key value="." onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
+            <Key value="Enter" label="↵" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="0" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <Key value="00" label="00" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
+            <Key value="0" label="0" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
         </div>
     );
 };
@@ -83,7 +83,8 @@ const FullKeyboardLayout: React.FC = () => {
                 <button onClick={toggleCaps} className={`h-14 rounded-lg shadow-md px-6 font-semibold text-xl transition ${isCaps ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`}>⇪</button>
             </div>
             <div className="flex gap-1.5 justify-center">
-                <Key value=" " label="Space" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-grow-[4]" />
+                <Key value="Enter" label="↵" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-1" />
+                <Key value=" " label="Space" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-grow-[2]" />
                 <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-14 rounded-lg shadow-md font-semibold px-6">Done</button>
             </div>
         </div>

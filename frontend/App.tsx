@@ -518,6 +518,10 @@ const App: React.FC = () => {
     destination: { type: 'existing', id: number } | { type: 'new', name: string },
     itemsToMove: OrderItem[]
   ) => {
+    console.log('App: handleConfirmMove called');
+    console.log('App: destination', destination);
+    console.log('App: itemsToMove', itemsToMove);
+    console.log('App: transferSourceTab', transferSourceTab);
       if (!transferSourceTab || itemsToMove.length === 0 || !assignedTillId) return;
 
       let destTab: Tab;

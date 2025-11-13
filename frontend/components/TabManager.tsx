@@ -17,11 +17,15 @@ interface TabManagerProps {
 
 export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, onCreateTab, onAddToTab, onLoadTab, onCloseTab, onOpenTransfer, currentOrder }) => {
   const [newTabName, setNewTabName] = useState('');
+  const [error, setError] = useState('');
 
   const handleCreateTab = () => {
     if (newTabName.trim()) {
       onCreateTab(newTabName.trim());
       setNewTabName('');
+      setError(''); // Clear error when tab is created successfully
+    } else {
+      setError('Please enter a tab name');
     }
   };
 
@@ -43,18 +47,29 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
             k-type="full"
             type="text"
             value={newTabName}
-            onChange={(e) => setNewTabName(e.target.value)}
+            onChange={(e) => {
+              setNewTabName(e.target.value);
+              if (error) setError(''); // Clear error when user starts typing
+            }}
             placeholder="New tab name (e.g., 'John D.')"
-            className="flex-grow p-3 bg-slate-900 text-white placeholder-slate-400 border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
+            className={`flex-grow p-3 bg-slate-900 text-white placeholder-slate-400 border rounded-md focus:ring-2 focus:outline-none transition ${
+              error ? 'border-red-500 focus:ring-red-500' : 'border-slate-700 focus:ring-amber-500'
+            }`}
           />
           <button
             onClick={handleCreateTab}
-            disabled={!newTabName.trim()}
             className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-md transition duration-300 disabled:bg-slate-600"
+            disabled={!newTabName.trim()}
           >
             Create
           </button>
         </div>
+        
+        {error && (
+          <div className="mb-4 p-2 bg-red-900/50 border border-red-700 rounded-md">
+            <p className="text-red-300 text-sm">{error}</p>
+          </div>
+        )}
 
         <h3 className="text-lg font-semibold mb-2 text-slate-300">Open Tabs</h3>
         <div className="overflow-y-auto max-h-80 space-y-2">
@@ -67,8 +82,8 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
                 <div key={tab.id} className="bg-slate-900 p-3 rounded-md flex flex-col">
                   <div className="flex justify-between items-center">
                     <div>
-                      <p className="font-bold">{tab.name}</p>
-                      <p className="text-sm text-slate-400">{formatCurrency(tabTotal)}</p>
+                      <p className="font-bold text-white">{tab.name}</p>
+                      <p className="text-sm text-slate-300">{formatCurrency(tabTotal)}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       {canAddToTabs ? (

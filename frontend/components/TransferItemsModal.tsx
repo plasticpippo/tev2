@@ -16,25 +16,26 @@ interface TransferItemsModalProps {
 }
 
 export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, onClose, sourceTab, allTabs, onConfirmMove }) => {
+  // Early return before any hooks are called - this was the original issue
+  if (!isOpen || !sourceTab) return null;
+
   const [transferQuantities, setTransferQuantities] = useState<Record<string, number>>({}); // orderItem.id -> quantity to move
   const [destination, setDestination] = useState<Destination>(null);
-  const [newTabName, setNewTabName] = useState('');
+ const [newTabName, setNewTabName] = useState('');
 
-  const destinationTabs = useMemo(() => {
-    if (!sourceTab) return [];
-    return allTabs.filter(t => t.id !== sourceTab.id);
-  }, [allTabs, sourceTab]);
+ const destinationTabs = useMemo(() => {
+   // This hook will always be called in the same order now
+   return allTabs.filter(t => t.id !== sourceTab.id);
+}, [allTabs, sourceTab]);
 
-  // Reset state when the modal is opened for a new tab
-  useEffect(() => {
-    if (isOpen) {
-      setTransferQuantities({});
-      setNewTabName('');
-      setDestination(null);
-    }
-  }, [isOpen, sourceTab]);
-
-  if (!isOpen || !sourceTab) return null;
+ // Reset state when the modal is opened for a new tab
+ useEffect(() => {
+   if (isOpen) {
+     setTransferQuantities({});
+     setNewTabName('');
+     setDestination(null);
+   }
+ }, [isOpen, sourceTab]);
 
   const handleQuantityChange = (orderItemId: string, change: number) => {
     const sourceItem = sourceTab.items.find(item => item.id === orderItemId);
@@ -50,37 +51,62 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
   };
 
   const handleConfirm = () => {
-    // Create items to move based on selected quantities
-    const itemsToMove: OrderItem[] = [];
-    
-    Object.entries(transferQuantities).forEach(([orderItemId, quantity]) => {
-      if (quantity > 0) {
-        const sourceItem = sourceTab.items.find(item => item.id === orderItemId);
-        if (sourceItem) {
-          // Create a new item with the specified quantity
-          itemsToMove.push({ ...sourceItem, quantity });
-        }
-      }
-    });
+   console.log('TransferItemsModal: handleConfirm called');
+   console.log('TransferItemsModal: destination', destination);
+   console.log('TransferItemsModal: newTabName', newTabName);
+   console.log('TransferItemsModal: transferQuantities', transferQuantities);
+   
+   // Create items to move based on selected quantities
+   const itemsToMove: OrderItem[] = [];
+   
+   Object.entries(transferQuantities).forEach(([orderItemId, quantity]) => {
+     if (quantity > 0) {
+       const sourceItem = sourceTab.items.find(item => item.id === orderItemId);
+       if (sourceItem) {
+         // Create a new item with the specified quantity
+         itemsToMove.push({ ...sourceItem, quantity });
+       }
+     }
+   });
 
-    if (itemsToMove.length === 0 || !destination) return;
+   console.log('TransferItemsModal: itemsToMove', itemsToMove);
 
-    if (destination.type === 'new') {
-      if (!newTabName.trim()) return;
-      onConfirmMove({ type: 'new', name: newTabName.trim() }, itemsToMove);
-    } else {
-      onConfirmMove({ type: 'existing', id: destination.id }, itemsToMove);
-    }
-  };
+   if (!destination) {
+     console.log('TransferItemsModal: Early return - no destination');
+     return;
+   }
+
+   // Only validate items exist if we're actually trying to move items
+   // If the user just wants to close the modal, they can click Cancel
+   if (itemsToMove.length === 0) {
+     console.log('TransferItemsModal: Early return - no items to move');
+     return;
+   }
+
+   if (destination.type === 'new') {
+     console.log('TransferItemsModal: Creating new tab with name:', newTabName.trim());
+     if (!newTabName.trim()) {
+       console.log('TransferItemsModal: New tab name is empty, returning');
+       return;
+     }
+     onConfirmMove({ type: 'new', name: newTabName.trim() }, itemsToMove);
+   } else {
+     console.log('TransferItemsModal: Using existing tab with id:', destination.id);
+     onConfirmMove({ type: 'existing', id: destination.id }, itemsToMove);
+   }
+ };
   
-  // Calculate total items to move
-  const totalItemsToMove = Object.values(transferQuantities).reduce((sum: number, qty: number) => sum + qty, 0);
-  const isMoveDisabled = totalItemsToMove === 0 || !destination || (destination.type === 'new' && !newTabName.trim());
+ // Calculate total items to move - using useMemo to ensure it's recalculated when transferQuantities changes
+ const totalItemsToMove = useMemo(() =>
+   Object.values(transferQuantities).reduce((sum: number, qty: number) => sum + qty, 0)
+ , [transferQuantities]);
 
-  // Get the currently selected tab name for display
-  const selectedTabName = destination?.type === 'existing'
-    ? destinationTabs.find(tab => tab.id === destination.id)?.name
-    : null;
+ const isMoveDisabled = !destination || (destination.type === 'new' && (!newTabName.trim() || totalItemsToMove === 0)) || (destination.type === 'existing' && totalItemsToMove === 0);
+
+ // Get the currently selected tab name for display
+ const selectedTabName = destination?.type === 'existing'
+   ? destinationTabs.find(tab => tab.id === destination.id)?.name
+   : null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -164,7 +190,24 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                             placeholder="Enter new tab name..."
                             className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md"
                             autoFocus
+                            onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
+                                // If Enter key is pressed, confirm the transfer
+                                if (e.key === 'Enter') {
+                                    handleConfirm();
+                                }
+                            }}
                         />
+                        {newTabName && (
+                            <div className="mt-2 flex justify-end">
+                                <button
+                                    onClick={handleConfirm}
+                                    disabled={destination?.type === 'new' && !newTabName.trim()}
+                                    className="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed text-sm"
+                                >
+                                    Confirm Tab Name
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
                 {destination?.type === 'existing' && selectedTabName && (
@@ -178,12 +221,12 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
         <div className="flex justify-end gap-2 p-6 pt-4 border-t border-slate-700 flex-shrink-0">
           <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 px-6 rounded-md">Cancel</button>
           <button
-            onClick={handleConfirm}
-            disabled={isMoveDisabled}
-            className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed"
-          >
-            Move {totalItemsToMove > 0 ? `${totalItemsToMove} Item(s)` : ''}
-          </button>
+              onClick={handleConfirm}
+              disabled={isMoveDisabled}
+              className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed"
+            >
+              Move Items ({totalItemsToMove})
+            </button>
         </div>
       </div>
     </div>

@@ -40,15 +40,23 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
 
   const handleKeyPress = useCallback((key: string) => {
     if (activeInputRef.current) {
-      const target = activeInputRef.current;
-      const start = target.selectionStart || 0;
-      const end = target.selectionEnd || 0;
-      const newValue = target.value.substring(0, start) + key + target.value.substring(end);
-      
-      dispatchInputChange(target, newValue);
+      if (key === 'Enter') {
+        // Trigger both keypress and keydown events for Enter key to properly handle form submission
+        const keypressEvent = new KeyboardEvent('keypress', { key: 'Enter', bubbles: true });
+        const keydownEvent = new KeyboardEvent('keydown', { key: 'Enter', bubbles: true });
+        activeInputRef.current.dispatchEvent(keypressEvent);
+        activeInputRef.current.dispatchEvent(keydownEvent);
+      } else {
+        const target = activeInputRef.current;
+        const start = target.selectionStart || 0;
+        const end = target.selectionEnd || 0;
+        const newValue = target.value.substring(0, start) + key + target.value.substring(end);
+        
+        dispatchInputChange(target, newValue);
 
-      target.focus();
-      target.selectionStart = target.selectionEnd = start + key.length;
+        target.focus();
+        target.selectionStart = target.selectionEnd = start + key.length;
+      }
     }
   }, []);
 

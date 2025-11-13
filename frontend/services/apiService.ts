@@ -374,6 +374,7 @@ export const getTabs = async (): Promise<Tab[]> => {
 };
 
 export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise<Tab> => {
+  console.log('apiService: saveTab called with data:', tabData);
   try {
     const method = tabData.id ? 'PUT' : 'POST';
     const url = tabData.id ? apiUrl(`/api/tabs/${tabData.id}`) : apiUrl('/api/tabs');
@@ -384,12 +385,16 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
       body: JSON.stringify(tabData)
     });
     
+    console.log('apiService: saveTab response status:', response.status);
+    
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      console.log('apiService: saveTab error response:', errorData);
       throw new Error(errorMessage);
     }
     const savedTab = await response.json();
+    console.log('apiService: saveTab successful, savedTab:', savedTab);
     notifyUpdates();
     return savedTab;
  } catch (error) {

@@ -13,14 +13,24 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
     });
     // Parse the details JSON string back to appropriate type
     const logsWithParsedDetails = orderActivityLogs.map(log => {
-      // Handle details field - it might be stored as a JSON object or string
+      // Handle details field - it might be stored as a JSON string or plain string
       let parsedDetails = log.details;
       if (typeof log.details === 'string') {
-        try {
-          parsedDetails = JSON.parse(log.details);
-        } catch (e) {
-          console.warn('Failed to parse details as JSON, returning as string:', log.details);
-          parsedDetails = log.details; // Return as string if parsing fails
+        // Check if the string looks like JSON (starts with {, [, or ")
+        const trimmedDetails = log.details.trim();
+        if ((trimmedDetails.startsWith('{') && trimmedDetails.endsWith('}')) ||
+            (trimmedDetails.startsWith('[') && trimmedDetails.endsWith(']')) ||
+            (trimmedDetails.startsWith('"') && trimmedDetails.endsWith('"'))) {
+          try {
+            parsedDetails = JSON.parse(log.details);
+          } catch (e) {
+            // If it looks like JSON but parsing fails, return as string
+            console.warn('Failed to parse details as JSON, returning as string:', log.details);
+            parsedDetails = log.details;
+          }
+        } else {
+          // If it doesn't look like JSON, return as string
+          parsedDetails = log.details;
         }
       }
       return {
@@ -51,11 +61,21 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     // Parse the details JSON string back to appropriate type
     let parsedDetails = orderActivityLog.details;
     if (typeof orderActivityLog.details === 'string') {
-      try {
-        parsedDetails = JSON.parse(orderActivityLog.details);
-      } catch (e) {
-        console.warn('Failed to parse details as JSON, returning as string:', orderActivityLog.details);
-        parsedDetails = orderActivityLog.details; // Return as string if parsing fails
+      // Check if the string looks like JSON (starts with {, [, or ")
+      const trimmedDetails = orderActivityLog.details.trim();
+      if ((trimmedDetails.startsWith('{') && trimmedDetails.endsWith('}')) ||
+          (trimmedDetails.startsWith('[') && trimmedDetails.endsWith(']')) ||
+          (trimmedDetails.startsWith('"') && trimmedDetails.endsWith('"'))) {
+        try {
+          parsedDetails = JSON.parse(orderActivityLog.details);
+        } catch (e) {
+          // If it looks like JSON but parsing fails, return as string
+          console.warn('Failed to parse details as JSON, returning as string:', orderActivityLog.details);
+          parsedDetails = orderActivityLog.details;
+        }
+      } else {
+        // If it doesn't look like JSON, return as string
+        parsedDetails = orderActivityLog.details;
       }
     }
     const logWithParsedDetails = {
@@ -79,6 +99,7 @@ orderActivityLogsRouter.post('/', async (req: Request, res: Response) => {
     const orderActivityLog = await prisma.orderActivityLog.create({
       data: {
         action,
+        // Store details as JSON string if it's an object/array, otherwise store as string
         details: typeof details === 'string' ? details : JSON.stringify(details),
         userId,
         userName,
