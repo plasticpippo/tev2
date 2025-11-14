@@ -66,6 +66,20 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Tab name is required and must be a non-empty string' });
     }
     
+    // Validate items array
+    if (items && Array.isArray(items)) {
+      for (const item of items) {
+        if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
+          console.error('Invalid item without name:', item);
+          return res.status(400).json({ error: 'All items must have a valid name' });
+        }
+        if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+          console.error('Invalid item properties:', item);
+          return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+        }
+      }
+    }
+    
     // Check if a tab with the same name already exists
     const existingTab = await prisma.tab.findFirst({
       where: { name: name.trim() }
@@ -91,7 +105,7 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
     const tab = await prisma.tab.create({
       data: {
         name: name.trim(), // Trim whitespace
-        items: JSON.stringify(items),
+        items: JSON.stringify(items || []),
         tillId,
         tillName,
         tableId: tableId || null,
@@ -132,6 +146,20 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
       }
     }
     
+    // Validate items array if provided
+    if (items !== undefined && Array.isArray(items)) {
+      for (const item of items) {
+        if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
+          console.error('Invalid item without name:', item);
+          return res.status(400).json({ error: 'All items must have a valid name' });
+        }
+        if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+          console.error('Invalid item properties:', item);
+          return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+        }
+      }
+    }
+    
     // If tableId is provided, verify that the table exists
     if (tableId) {
       const table = await prisma.table.findUnique({
@@ -147,7 +175,7 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
       where: { id: Number(id) },
       data: {
         name: name !== undefined ? name.trim() : undefined, // Only trim if name is provided
-        items: JSON.stringify(items),
+        items: JSON.stringify(items || []),
         tillId,
         tillName,
         tableId: tableId || null

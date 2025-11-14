@@ -288,6 +288,10 @@ const App: React.FC = () => {
         quantity: 1,
         effectiveTaxRate: 0.19, // Example tax rate, would be better to store this per product
       };
+      // Ensure the name is not empty or undefined
+      if (!newOrderItem.name || newOrderItem.name.trim() === '') {
+        newOrderItem.name = `Item ${newOrderItem.variantId}`;
+      }
       setOrderItems([...orderItems, newOrderItem]);
     }
   };
@@ -303,7 +307,7 @@ const App: React.FC = () => {
       const quantityRemoved = oldQuantity - newQuantity;
       api.saveOrderActivityLog({
         action: 'Item Removed',
-        details: `${quantityRemoved} x ${itemToUpdate.name}`,
+        details: `${quantityRemoved} x ${itemToUpdate.name || `Item ${itemToUpdate.variantId}`}`,
         userId: currentUser.id,
         userName: currentUser.name,
       });
@@ -321,9 +325,14 @@ const App: React.FC = () => {
   
   const clearOrder = (logActivity: boolean = true) => {
     if (logActivity && orderItems.length > 0 && currentUser) {
+      // Fix items without names before logging
+      const correctedItems = orderItems.map(item => ({
+        ...item,
+        name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      }));
       api.saveOrderActivityLog({
         action: 'Order Cleared',
-        details: [...orderItems],
+        details: correctedItems,
         userId: currentUser.id,
         userName: currentUser.name,
       });
@@ -354,15 +363,50 @@ const App: React.FC = () => {
       });
 
       const total = subtotal + tax + tip;
-      const transactionData = {
-          items: orderItems, subtotal, tax, tip, total, paymentMethod,
-          userId: currentUser.id, userName: currentUser.name,
-          tillId: assignedTillId, tillName: currentTillName,
+      
+      // Validate that all items have names before saving transaction
+      const validItems = orderItems.filter(item => item.name && item.name.trim() !== '');
+      if (validItems.length !== orderItems.length) {
+        console.warn('Some items have invalid names, correcting them before saving transaction');
+        // Fix items without names
+        const correctedItems = orderItems.map(item => ({
+          ...item,
+          name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+        }));
+        const transactionData = {
+          items: correctedItems,
+          subtotal: subtotal,
+          tax: tax,
+          tip: tip,
+          total: total,
+          paymentMethod: paymentMethod,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          tillId: assignedTillId,
+          tillName: currentTillName,
           tableId: assignedTable?.id, // Include table ID if available
           tableName: assignedTable?.name // Include table name for reference
-      };
-      
-      await api.saveTransaction(transactionData);
+        };
+        
+        await api.saveTransaction(transactionData);
+      } else {
+        const transactionData = {
+          items: orderItems,
+          subtotal: subtotal,
+          tax: tax,
+          tip: tip,
+          total: total,
+          paymentMethod: paymentMethod,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          tillId: assignedTillId,
+          tillName: currentTillName,
+          tableId: assignedTable?.id, // Include table ID if available
+          tableName: assignedTable?.name // Include table name for reference
+        };
+        
+        await api.saveTransaction(transactionData);
+      }
       
       // Decrease stock levels
       const consumptions = new Map<string, number>();
@@ -434,8 +478,13 @@ const App: React.FC = () => {
   const handleAddToTab = async (tabId: number) => {
      const tab = appData.tabs.find(t => t.id === tabId);
      if (!tab || orderItems.length === 0) return;
+     // Fix items without names when adding to a tab
+     const correctedOrderItems = orderItems.map(item => ({
+       ...item,
+       name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+     }));
      const updatedItems = [...tab.items];
-     orderItems.forEach(orderItem => {
+     correctedOrderItems.forEach(orderItem => {
        const existing = updatedItems.find(i => i.variantId === orderItem.variantId);
        if (existing) {
          existing.quantity += orderItem.quantity;
@@ -462,7 +511,12 @@ const App: React.FC = () => {
   const handleLoadTab = (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
     if (tab) {
-      setOrderItems(tab.items);
+      // Fix items without names when loading a tab
+      const correctedItems = tab.items.map(item => ({
+        ...item,
+        name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      }));
+      setOrderItems(correctedItems);
       setActiveTab(tab);
       setIsTabsModalOpen(false);
     }
@@ -470,7 +524,12 @@ const App: React.FC = () => {
   
   const handleSaveTab = async () => {
      if (!activeTab) return;
-     await api.saveTab({ ...activeTab, items: orderItems, tableId: assignedTable?.id });
+     // Fix items without names when saving a tab
+     const correctedItems = orderItems.map(item => ({
+       ...item,
+       name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+     }));
+     await api.saveTab({ ...activeTab, items: correctedItems, tableId: assignedTable?.id });
      clearOrder(false);
    };
   
@@ -524,6 +583,12 @@ const App: React.FC = () => {
     console.log('App: transferSourceTab', transferSourceTab);
       if (!transferSourceTab || itemsToMove.length === 0 || !assignedTillId) return;
 
+      // Fix items without names before moving
+      const correctedItemsToMove = itemsToMove.map(item => ({
+        ...item,
+        name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      }));
+
       let destTab: Tab;
       if (destination.type === 'new') {
           destTab = await api.saveTab({ name: destination.name, items: [], tillId: assignedTillId, tillName: currentTillName, createdAt: new Date().toISOString() });
@@ -535,7 +600,7 @@ const App: React.FC = () => {
 
       // Add items to destination
       const destItems = [...destTab.items];
-      itemsToMove.forEach(movingItem => {
+      correctedItemsToMove.forEach(movingItem => {
           const existing = destItems.find(i => i.variantId === movingItem.variantId);
           if (existing) {
               existing.quantity += movingItem.quantity;
@@ -546,7 +611,7 @@ const App: React.FC = () => {
 
       // Remove items from source
       const sourceItems = [...transferSourceTab.items];
-      itemsToMove.forEach(movingItem => {
+      correctedItemsToMove.forEach(movingItem => {
           const existingIndex = sourceItems.findIndex(i => i.id === movingItem.id);
           if (existingIndex > -1) {
               sourceItems[existingIndex].quantity -= movingItem.quantity;

@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Product, ProductVariant, Category } from '../../shared/types';
+import { formatCurrency } from '../utils/formatting';
 
 interface ProductGridProps {
   products: Product[];
@@ -94,12 +95,4 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
       </div>
     </div>
   );
-};
-
-// Helper function (if not already in a utility file)
-const formatCurrency = (amount: number): string => {
-    return new Intl.NumberFormat('de-DE', {
-        style: 'currency',
-        currency: 'EUR',
-    }).format(amount);
 };

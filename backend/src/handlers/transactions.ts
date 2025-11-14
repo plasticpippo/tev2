@@ -52,10 +52,26 @@ transactionsRouter.get('/:id', async (req: Request, res: Response) => {
 // POST /api/transactions - Create a new transaction
 transactionsRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { 
-      items, subtotal, tax, tip, total, paymentMethod, 
-      userId, userName, tillId, tillName 
+    const {
+      items, subtotal, tax, tip, total, paymentMethod,
+      userId, userName, tillId, tillName
     } = req.body as Omit<Transaction, 'id' | 'createdAt'>;
+    
+    // Validate that all items have required properties, especially name
+    if (!Array.isArray(items)) {
+      return res.status(400).json({ error: 'Items must be an array' });
+    }
+    
+    for (const item of items) {
+      if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
+        console.error('Invalid item without name:', item);
+        return res.status(400).json({ error: 'All items must have a valid name' });
+      }
+      if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+        console.error('Invalid item properties:', item);
+        return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+      }
+    }
     
     const transaction = await prisma.transaction.create({
       data: {

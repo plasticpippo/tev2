@@ -131,7 +131,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                         sourceTab.items.map(item => (
                             <div key={item.id} className="flex justify-between items-center bg-slate-800 p-2 rounded">
                                 <div>
-                                    <span className="font-semibold">{item.name}</span>
+                                    <span className="font-semibold">{item.name || `Item ${item.variantId}`}</span>
                                     <span className="text-sm text-slate-400 ml-2">(out of {item.quantity})</span>
                                 </div>
                                 <div className="flex items-center gap-3">
@@ -139,7 +139,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                     onClick={() => handleQuantityChange(item.id, -1)}
                                     disabled={(transferQuantities[item.id] || 0) === 0}
                                     className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
-                                    aria-label={`Decrease quantity of ${item.name}`}
+                                    aria-label={`Decrease quantity of ${item.name || `Item ${item.variantId}`}`}
                                   >
                                     -
                                   </button>
@@ -148,7 +148,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                     onClick={() => handleQuantityChange(item.id, 1)}
                                     disabled={(transferQuantities[item.id] || 0) >= item.quantity}
                                     className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
-                                    aria-label={`Increase quantity of ${item.name}`}
+                                    aria-label={`Increase quantity of ${item.name || `Item ${item.variantId}`}`}
                                   >
                                     +
                                   </button>
@@ -216,7 +216,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                   </p>
                 )}
             </div>
-        </div>
+          </div>
         
         <div className="flex justify-end gap-2 p-6 pt-4 border-t border-slate-700 flex-shrink-0">
           <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 px-6 rounded-md">Cancel</button>

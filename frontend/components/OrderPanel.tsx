@@ -62,7 +62,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             {orderItems.map(item => (
               <div key={item.id} className="bg-slate-800 p-3 rounded-md flex justify-between items-center">
                 <div>
-                  <p className="font-semibold">{item.name}</p>
+                  <p className="font-semibold">{item.name || `Item ${item.variantId}`}</p>
                   <p className="text-slate-400 text-sm">{formatCurrency(item.price)}</p>
                 </div>
                 <div className="flex items-center gap-3">

@@ -67,9 +67,9 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
              <div>
                 <label className="block text-sm font-medium text-slate-400 mb-2">Button Color</label>
                  <div className="flex items-center gap-4">
-                    <div className="flex flex-wrap gap-2 flex-grow">
+                    <div className="flex flex-wrap gap-2 flex-grow max-h-40 overflow-y-auto p-2 border border-slate-600 rounded-md bg-slate-900 bg-opacity-50">
                         {availableColors.map(color => (
-                            <button type="button" key={color} onClick={() => onUpdate({ ...variant, backgroundColor: color, textColor: getContrastingTextColor(color) })} className={`w-8 h-8 rounded-full ${color} ${variant.backgroundColor === color ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition`}></button>
+                            <button type="button" key={color} onClick={() => onUpdate({ ...variant, backgroundColor: color, textColor: getContrastingTextColor(color) })} className={`w-8 h-8 rounded-full border border-slate-400 p-0 ${color} ${variant.backgroundColor === color ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-white`} title={color}></button>
                         ))}
                     </div>
                     <div className={`${variant.backgroundColor || 'bg-slate-600'} ${variant.textColor || 'text-white'} rounded-md p-3 text-center w-32 h-20 flex flex-col justify-center`}>
@@ -111,11 +111,11 @@ interface ProductModalProps {
 const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockItems, onClose, onSave }) => {
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
-  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: 'text-white' }]);
+  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
   const { closeKeyboard } = useVirtualKeyboard();
 
   const handleAddVariant = () => {
-    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: 'text-white' }]);
+    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
   };
 
   const handleUpdateVariant = (index: number, updatedVariant: Partial<ProductVariant>) => {
@@ -273,6 +273,10 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
         onConfirm={confirmDelete}
         onCancel={() => setDeletingProduct(null)}
       />
+      {/* Hidden elements to ensure Tailwind includes all color classes in the build */}
+      <div className="hidden">
+        <div className={availableColors.join(' ')}></div>
+      </div>
     </div>
   );
 };
