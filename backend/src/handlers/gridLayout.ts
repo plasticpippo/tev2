@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
-import type { ProductGridLayout } from '@prisma/client';
+import { ProductGridLayout } from '@prisma/client';
 
 export const layoutRouter = express.Router();
 
@@ -14,8 +14,15 @@ layoutRouter.get('/tills/:tillId/grid-layouts', async (req: Request, res: Respon
       return res.status(400).json({ error: 'Invalid till ID' });
     }
 
+    const { filterType } = req.query;
+    
+    const whereClause: any = { tillId: parsedTillId };
+    if (filterType) {
+      whereClause.filterType = filterType as string;
+    }
+    
     const layouts = await prisma.productGridLayout.findMany({
-      where: { tillId: parsedTillId },
+      where: whereClause,
       orderBy: { createdAt: 'asc' }
     });
 
@@ -30,27 +37,37 @@ layoutRouter.get('/tills/:tillId/grid-layouts', async (req: Request, res: Respon
 layoutRouter.post('/tills/:tillId/grid-layouts', async (req: Request, res: Response) => {
   try {
     const { tillId } = req.params;
-    const { name, layout, isDefault } = req.body;
+    const { name, layout, isDefault, filterType, categoryId } = req.body;
     
     const parsedTillId = parseInt(tillId, 10);
     if (isNaN(parsedTillId)) {
       return res.status(400).json({ error: 'Invalid till ID' });
     }
 
-    // If setting as default, unset other defaults for this till
+    // If setting as default, unset other defaults for this till and filter type
     if (isDefault) {
+      const whereClause: any = { tillId: parsedTillId, isDefault: true };
+      if (filterType) {
+        whereClause.filterType = filterType;
+      }
+      
       await prisma.productGridLayout.updateMany({
-        where: { tillId: parsedTillId, isDefault: true },
+        where: whereClause,
         data: { isDefault: false }
       });
     } else {
-      // If no default layout exists for this till, make this one the default
+      // If no default layout exists for this till and filter type, make this one the default
+      const whereClause: any = { tillId: parsedTillId };
+      if (filterType) {
+        whereClause.filterType = filterType;
+      }
+      
       const existingLayouts = await prisma.productGridLayout.findMany({
-        where: { tillId: parsedTillId }
+        where: whereClause
       });
       
       if (existingLayouts.length === 0) {
-        // This is the first layout, make it default
+        // This is the first layout for this filter type, make it default
         req.body.isDefault = true;
       }
     }
@@ -60,8 +77,10 @@ layoutRouter.post('/tills/:tillId/grid-layouts', async (req: Request, res: Respo
         tillId: parsedTillId,
         name,
         layout,
-        isDefault: req.body.isDefault || isDefault || false
-      }
+        isDefault: req.body.isDefault || isDefault || false,
+        filterType: filterType || 'all',
+        categoryId: categoryId || null
+      } as any // Type assertion to handle filterType and categoryId
     });
 
     res.status(201).json(newLayout);
@@ -100,39 +119,69 @@ layoutRouter.get('/grid-layouts/:layoutId', async (req: Request, res: Response) 
 layoutRouter.put('/grid-layouts/:layoutId', async (req: Request, res: Response) => {
   try {
     const { layoutId } = req.params;
-    const { name, layout, isDefault } = req.body;
+    const { name, layout, isDefault, filterType, categoryId } = req.body;
     
     const parsedLayoutId = parseInt(layoutId, 10);
     if (isNaN(parsedLayoutId)) {
       return res.status(400).json({ error: 'Invalid layout ID' });
     }
 
-    // If setting as default, unset other defaults for the same till
+    // If setting as default, unset other defaults for the same till and filter type
     if (isDefault) {
       const targetLayout = await prisma.productGridLayout.findUnique({
         where: { id: parsedLayoutId }
       });
       
       if (targetLayout) {
+        const whereClause: any = {
+          tillId: targetLayout.tillId,
+          isDefault: true
+        };
+        
+        // Only unset defaults for the same filter type if specified
+        if (filterType) {
+          whereClause.filterType = filterType;
+        }
+        
         await prisma.productGridLayout.updateMany({
-          where: { tillId: targetLayout.tillId, isDefault: true },
+          where: whereClause,
           data: { isDefault: false }
         });
       }
     }
 
+    // Update the layout with all fields
+    const existingLayout = await prisma.productGridLayout.findUnique({
+      where: { id: parsedLayoutId }
+    });
+
+    if (!existingLayout) {
+      return res.status(404).json({ error: 'Layout not found' });
+    }
+
+    // Prepare update data with proper type assertion
+    const updateData: any = {
+      name,
+      layout,
+      isDefault,
+      updatedAt: new Date()
+    };
+
+    // Only add filterType and categoryId to update if they are provided in the request
+    if (filterType !== undefined) {
+      updateData.filterType = filterType;
+    }
+    if (categoryId !== undefined) {
+      updateData.categoryId = categoryId;
+    }
+
     const updatedLayout = await prisma.productGridLayout.update({
       where: { id: parsedLayoutId },
-      data: {
-        name,
-        layout,
-        isDefault,
-        updatedAt: new Date()
-      }
+      data: updateData
     });
 
     res.json(updatedLayout);
-  } catch (error) {
+ } catch (error) {
     console.error('Error updating layout:', error);
     res.status(500).json({ error: 'Failed to update layout' });
   }
@@ -266,7 +315,7 @@ layoutRouter.post('/grid-layouts/:layoutId/copy-to/:targetTillId', async (req: R
       data: {
         tillId: parsedTargetTillId,
         name: layoutName,
-        layout: sourceLayout.layout,
+        layout: sourceLayout.layout as any, // Type assertion to handle JsonValue
         isDefault: false // New copied layouts are not defaults
       }
     });
@@ -282,37 +331,68 @@ layoutRouter.post('/grid-layouts/:layoutId/copy-to/:targetTillId', async (req: R
 layoutRouter.get('/tills/:tillId/current-layout', async (req: Request, res: Response) => {
   try {
     const { tillId } = req.params;
+    const { filterType = 'all' } = req.query;
     const parsedTillId = parseInt(tillId, 10);
     
     if (isNaN(parsedTillId)) {
       return res.status(400).json({ error: 'Invalid till ID' });
     }
 
-    // First try to get the default layout
+    // First try to get the default layout for the specific filter type
+    // If filterType is 'category', also filter by categoryId if provided
+    const filterTypeStr = req.query.filterType as string || 'all';
+    const categoryIdParam = req.query.categoryId ? parseInt(req.query.categoryId as string, 10) : null;
+    
+    let whereClauseForDefault: any = {
+      tillId: parsedTillId,
+      isDefault: true,
+      filterType: filterTypeStr
+    };
+    
+    // If filtering by category, also filter by categoryId
+    if (filterTypeStr === 'category' && categoryIdParam !== null && !isNaN(categoryIdParam)) {
+      whereClauseForDefault.categoryId = categoryIdParam;
+    }
+    
     let layout = await prisma.productGridLayout.findFirst({
-      where: { tillId: parsedTillId, isDefault: true }
+      where: whereClauseForDefault
     });
 
-    // If no default layout exists, get the first layout
+    // If no default layout exists for the filter type, get the first layout for that filter type
     if (!layout) {
+      let whereClauseForFirst: any = {
+        tillId: parsedTillId,
+        filterType: filterTypeStr
+      };
+      
+      // If filtering by category, also filter by categoryId
+      if (filterTypeStr === 'category' && categoryIdParam !== null && !isNaN(categoryIdParam)) {
+        whereClauseForFirst.categoryId = categoryIdParam;
+      }
+      
       layout = await prisma.productGridLayout.findFirst({
-        where: { tillId: parsedTillId },
+        where: whereClauseForFirst,
         orderBy: { createdAt: 'asc' }
       });
     }
 
-    // If no layouts exist, return a default/fallback layout
+    // If no layouts exist for the filter type, return a default/fallback layout
     if (!layout) {
+      const categoryIdParam = req.query.categoryId ? parseInt(req.query.categoryId as string, 10) : null;
+      const parsedCategoryId = (categoryIdParam !== null && !isNaN(categoryIdParam)) ? categoryIdParam : null;
+      
       res.json({
         id: null,
         tillId: parsedTillId,
-        name: 'Default Layout',
+        name: `Default ${filterType} Layout`,
         layout: {
           columns: 4,
           gridItems: [],
           version: '1.0'
         },
         isDefault: true,
+        filterType: filterType as string || 'all',
+        categoryId: parsedCategoryId,
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -324,4 +404,37 @@ layoutRouter.get('/tills/:tillId/current-layout', async (req: Request, res: Resp
     console.error('Error fetching current layout:', error);
     res.status(500).json({ error: 'Failed to fetch current layout' });
   }
+});
+
+// GET /api/tills/:tillId/layouts-by-filter/:filterType - Get layouts for a specific filter type
+layoutRouter.get('/tills/:tillId/layouts-by-filter/:filterType', async (req: Request, res: Response) => {
+  try {
+    const { tillId, filterType } = req.params;
+    const parsedTillId = parseInt(tillId, 10);
+    
+    if (isNaN(parsedTillId)) {
+      return res.status(400).json({ error: 'Invalid till ID' });
+    }
+
+    // Validate filterType
+    const validFilterTypes = ['all', 'favorites', 'category'];
+    if (!validFilterTypes.includes(filterType)) {
+      return res.status(400).json({ error: 'Invalid filter type. Valid types: all, favorites, category' });
+    }
+
+    // Build the where clause based on filter type
+    const whereClause: any = { tillId: parsedTillId, filterType: filterType };
+    
+    // If the filterType is 'category', we might also want to filter by categoryId if provided
+    // For now, just filter by filterType
+    const layouts = await prisma.productGridLayout.findMany({
+      where: whereClause,
+      orderBy: { createdAt: 'asc' }
+    });
+
+    res.json(layouts);
+  } catch (error) {
+     console.error('Error fetching layouts by filter type:', error);
+     res.status(500).json({ error: 'Failed to fetch layouts by filter type' });
+   }
 });

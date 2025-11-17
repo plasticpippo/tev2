@@ -889,6 +889,107 @@ export const deleteTable = async (tableId: string): Promise<{ success: boolean; 
   }
 };
 
+
+// Define the grid layout data structure
+export interface ProductGridLayout {
+  columns: number;
+  gridItems: {
+    id: string;
+    variantId: number;
+    productId: number;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  }[];
+  version: string;
+}
+
+export interface ProductGridLayoutData {
+  name: string;
+  tillId: number;
+  layout: ProductGridLayout;
+  isDefault: boolean;
+  filterType?: 'all' | 'favorites' | 'category';
+  categoryId?: number | null;
+}
+
+// Function to save a grid layout
+export const saveGridLayout = async (layoutData: ProductGridLayoutData): Promise<ProductGridLayoutData> => {
+  const response = await fetch(apiUrl('/api/grid-layouts/tills/' + layoutData.tillId + '/grid-layouts'), {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: layoutData.name,
+      layout: layoutData.layout,
+      isDefault: layoutData.isDefault,
+      filterType: layoutData.filterType,
+      categoryId: layoutData.categoryId
+    }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to save grid layout: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Function to get grid layouts for a till
+export const getGridLayoutsForTill = async (tillId: number): Promise<ProductGridLayoutData[]> => {
+  const response = await fetch(apiUrl(`/api/grid-layouts/tills/${tillId}/grid-layouts`), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get grid layouts: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Function to get current layout for a till
+export const getCurrentLayoutForTill = async (tillId: number): Promise<ProductGridLayoutData> => {
+  const response = await fetch(apiUrl(`/api/grid-layouts/tills/${tillId}/current-layout`), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get current layout: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Function to get current layout for a till with specific filter type
+export const getCurrentLayoutForTillWithFilter = async (tillId: number, filterType: string, categoryId?: number | null): Promise<ProductGridLayoutData> => {
+  let url = `${apiUrl(`/api/grid-layouts/tills/${tillId}/current-layout?filterType=${filterType}`)}`;
+  if (filterType === 'category' && categoryId !== undefined && categoryId !== null) {
+    url += `&categoryId=${categoryId}`;
+  }
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get current layout: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
 // Function to update table position specifically (for drag/drop operations)
 export const updateTablePosition = async (tableId: string, x: number, y: number): Promise<Table> => {
   try {
@@ -909,7 +1010,7 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
   } catch (error) {
     console.error('Error updating table position:', error);
     throw error;
- }
+  }
 };
 
 // Daily Closings

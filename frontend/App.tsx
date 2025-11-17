@@ -693,6 +693,7 @@ const App: React.FC = () => {
               onAddToCart={handleAddToCart}
               assignedTillId={assignedTillId}
               makableVariantIds={makableVariantIds}
+              tills={appData.tills}
             />
           </div>
           <div className="w-1/3 h-full">
