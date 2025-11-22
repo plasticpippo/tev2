@@ -2,7 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import type { Product, ProductVariant, Category, Till } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 import ProductGridLayoutCustomizer, { type ProductGridLayoutData } from './ProductGridLayoutCustomizer';
-import { getCurrentLayoutForTill, getCurrentLayoutForTillWithFilter } from '../services/apiService';
+import { getCurrentLayoutForTill, getCurrentLayoutForTillWithFilter } from '../services/gridLayoutService';
 
 interface ProductGridProps {
   products: Product[];

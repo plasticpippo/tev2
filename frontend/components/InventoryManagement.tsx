@@ -1,6 +1,8 @@
 import React, { useState, useMemo } from 'react';
 import type { StockItem, StockAdjustment, User, Category, Product } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as inventoryApi from '../services/inventoryService';
+import * as productApi from '../services/productService';
+import * as userApi from '../services/userService';
 import { StockAdjustmentHistory } from './StockAdjustmentHistory';
 import { VKeyboardInput } from './VKeyboardInput';
 
@@ -38,7 +40,7 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
 
         const finalQuantityInBaseUnits = Number(quantity) * unit.multiplier;
 
-        await api.saveStockAdjustment({
+        await inventoryApi.saveStockAdjustment({
             stockItemId,
             itemName: selectedItem?.name || 'Unknown',
             quantity: finalQuantityInBaseUnits,

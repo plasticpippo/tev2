@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import type { User, Transaction, OrderActivityLog, Settings } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as userApi from '../services/userService';
+import * as transactionApi from '../services/transactionService';
+import * as orderApi from '../services/orderService';
+import * as settingApi from '../services/settingService';
 import { VKeyboardInput } from './VKeyboardInput';
 import { ConfirmationModal } from './ConfirmationModal';
 import { UserPerformanceReportModal } from './UserPerformanceReportModal';
@@ -29,7 +32,7 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
         role
     };
 
-    await api.saveUser(userData);
+    await userApi.saveUser(userData);
     onSave();
   };
 
@@ -78,7 +81,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
 
   const confirmDelete = async () => {
     if (deletingUser) {
-        await api.deleteUser(deletingUser.id);
+        await userApi.deleteUser(deletingUser.id);
         setDeletingUser(null);
         onDataUpdate();
     }

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Product, ProductVariant, Category, StockItem } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as productApi from '../services/productService';
+import * as inventoryApi from '../services/inventoryService';
 import { VKeyboardInput } from './VKeyboardInput';
 import { ConfirmationModal } from './ConfirmationModal';
 import { availableColors, getContrastingTextColor } from '../utils/color';
@@ -139,7 +140,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
     if (!name.trim() || !categoryId || variants.some(v => !v.name?.trim())) return;
     
     try {
-      await api.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
+      await productApi.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
@@ -206,7 +207,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
   const confirmDelete = async () => {
     if (deletingProduct) {
       try {
-        await api.deleteProduct(deletingProduct.id);
+        await productApi.deleteProduct(deletingProduct.id);
         setDeletingProduct(null);
         onDataUpdate();
       } catch (error) {

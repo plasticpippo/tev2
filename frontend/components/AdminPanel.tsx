@@ -14,7 +14,15 @@ import { AnalyticsPanel } from './AnalyticsPanel';
 import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
-import * as api from '../services/apiService';
+import * as userApi from '../services/userService';
+import * as productApi from '../services/productService';
+import * as inventoryApi from '../services/inventoryService';
+import * as tillApi from '../services/tillService';
+import * as settingApi from '../services/settingService';
+import * as transactionApi from '../services/transactionService';
+import * as orderApi from '../services/orderService';
+import * as tableApi from '../services/tableService';
+import * as dailyClosingApi from '../services/dailyClosingService';
 
 interface AdminPanelProps {
   currentUser: User;
@@ -51,7 +59,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
 
   const handleSettingsUpdate = async (newSettings: Settings) => {
     // 1. Save the new settings to the persistent source.
-    await api.saveSettings(newSettings);
+    await settingApi.saveSettings(newSettings);
     // 2. Trigger the global data refresh in the App component. This is now the single source of truth.
     onDataUpdate();
   };

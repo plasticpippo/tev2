@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
 import type { StockItem, PurchasingUnit, Product } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as inventoryApi from '../services/inventoryService';
+import * as productApi from '../services/productService';
 import { VKeyboardInput } from './VKeyboardInput';
 import { ConfirmationModal } from './ConfirmationModal';
 import { v4 as uuidv4 } from 'uuid';
@@ -51,7 +52,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           quantity: item?.id ? item.quantity : quantity,
           purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.multiplier > 0)
       };
-      await api.saveStockItem(itemData);
+      await inventoryApi.saveStockItem(itemData);
       onSave();
     } catch (error) {
       console.error('Error saving stock item:', error);
@@ -141,7 +142,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
 
     const confirmDelete = async () => {
         if (deletingItem) {
-            const result = await api.deleteStockItem(deletingItem.id);
+            const result = await inventoryApi.deleteStockItem(deletingItem.id);
             if (result.success) {
                 setDeletingItem(null);
                 onDataUpdate();

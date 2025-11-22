@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { Till } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as tillApi from '../services/tillService';
 import { VKeyboardInput } from './VKeyboardInput';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -16,7 +16,7 @@ const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name.trim()) return;
-    await api.saveTill({ id: till?.id, name });
+    await tillApi.saveTill({ id: till?.id, name });
     onSave();
   };
 
@@ -68,7 +68,7 @@ export const TillManagement: React.FC<TillManagementProps> = ({ tills, onDataUpd
 
   const confirmDelete = async () => {
     if (deletingTill) {
-        await api.deleteTill(deletingTill.id);
+        await tillApi.deleteTill(deletingTill.id);
         setDeletingTill(null);
         onDataUpdate();
     }

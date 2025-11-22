@@ -1,0 +1,451 @@
+import React, { useState, useEffect } from 'react';
+import type { Till, Category } from '../../shared/types';
+import { ProductGridLayoutData, getGridLayoutsForTill, getSharedLayouts, saveGridLayout, deleteGridLayout, setLayoutAsDefault } from '../services/gridLayoutService';
+import { ConfirmationModal } from './ConfirmationModal';
+import { VKeyboardInput } from './VKeyboardInput';
+
+interface ProductGridLayoutManagementProps {
+  tills: Till[];
+  categories: Category[];
+  onDataUpdate: () => void;
+}
+
+interface LayoutWithTillInfo extends ProductGridLayoutData {
+  tillName?: string;
+}
+
+export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementProps> = ({ tills, categories, onDataUpdate }) => {
+  const [layouts, setLayouts] = useState<LayoutWithTillInfo[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+ const [filterTillId, setFilterTillId] = useState<string>('all');
+  const [filterType, setFilterType] = useState<string>('all');
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [deletingLayout, setDeletingLayout] = useState<LayoutWithTillInfo | null>(null);
+  const [editingLayout, setEditingLayout] = useState<LayoutWithTillInfo | null>(null);
+  const [copiedLayoutTillId, setCopiedLayoutTillId] = useState<number | null>(null);
+  const [layoutToCopy, setLayoutToCopy] = useState<LayoutWithTillInfo | null>(null);
+
+  // Load layouts
+ useEffect(() => {
+    loadLayouts();
+  }, [filterTillId, filterType]);
+
+  const loadLayouts = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      let loadedLayouts: LayoutWithTillInfo[] = [];
+      
+      if (filterTillId === 'all') {
+        // Load all layouts (both shared and till-specific)
+        const sharedLayouts = await getSharedLayouts();
+        const allTillLayouts: LayoutWithTillInfo[] = [];
+        
+        for (const till of tills) {
+          try {
+            const tillLayouts = await getGridLayoutsForTill(till.id);
+            allTillLayouts.push(...tillLayouts.map(layout => ({
+              ...layout,
+              tillName: till.name
+            })));
+          } catch (error) {
+            console.error(`Error loading layouts for till ${till.id}:`, error);
+          }
+        }
+        
+        loadedLayouts = [...sharedLayouts.map(layout => ({ ...layout, tillName: 'Shared' })), ...allTillLayouts];
+      } else if (filterTillId === 'shared') {
+        // Load only shared layouts
+        const sharedLayouts = await getSharedLayouts();
+        loadedLayouts = sharedLayouts.map(layout => ({ ...layout, tillName: 'Shared' }));
+      } else {
+        // Load layouts for specific till
+        const tillId = parseInt(filterTillId, 10);
+        if (!isNaN(tillId)) {
+          const tillLayouts = await getGridLayoutsForTill(tillId);
+          const tillName = tills.find(t => t.id === tillId)?.name || `Till ${tillId}`;
+          loadedLayouts = tillLayouts.map(layout => ({
+            ...layout,
+            tillName
+          }));
+        }
+      }
+      
+      // Apply filter type filter
+      if (filterType !== 'all') {
+        loadedLayouts = loadedLayouts.filter(layout => layout.filterType === filterType);
+      }
+      
+      setLayouts(loadedLayouts);
+    } catch (err) {
+      console.error('Error loading layouts:', err);
+      setError('Failed to load layouts: ' + (err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeleteLayout = async () => {
+    if (!deletingLayout) return;
+    
+    try {
+      await deleteGridLayout(deletingLayout.id!);
+      setLayouts(layouts.filter(layout => layout.id !== deletingLayout.id));
+      setDeletingLayout(null);
+      onDataUpdate(); // Notify parent to refresh data if needed
+    } catch (error) {
+      console.error('Error deleting layout:', error);
+      setError('Failed to delete layout: ' + (error as Error).message);
+    }
+  };
+
+  const handleSetAsDefault = async (layout: LayoutWithTillInfo) => {
+    if (!layout.id) return;
+    
+    try {
+      const updatedLayout = await setLayoutAsDefault(layout.id);
+      // Update the layout in our local state
+      setLayouts(layouts.map(l => 
+        l.id === layout.id ? { ...l, isDefault: l.id === updatedLayout.id } : 
+        l.tillId === layout.tillId && l.isDefault ? { ...l, isDefault: false } : l
+      ));
+    } catch (error) {
+      console.error('Error setting layout as default:', error);
+      setError('Failed to set layout as default: ' + (error as Error).message);
+    }
+  };
+
+  const handleEditLayout = (layout: LayoutWithTillInfo) => {
+    setEditingLayout(layout);
+  };
+
+  const handleSaveLayout = async () => {
+    if (!editingLayout) return;
+    
+    try {
+      const updatedLayout = await saveGridLayout(editingLayout);
+      setLayouts(layouts.map(l => l.id === updatedLayout.id ? updatedLayout : l));
+      setEditingLayout(null);
+      onDataUpdate(); // Notify parent to refresh data if needed
+    } catch (error) {
+      console.error('Error saving layout:', error);
+      setError('Failed to save layout: ' + (error as Error).message);
+    }
+  };
+
+  const handleCopyLayout = (layout: LayoutWithTillInfo) => {
+    setLayoutToCopy(layout);
+    setCopiedLayoutTillId(null);
+  };
+
+  const handleConfirmCopyLayout = async () => {
+    if (!layoutToCopy || !copiedLayoutTillId) return;
+    
+    try {
+      // In a real implementation, we would call an API endpoint to copy the layout
+      // For now, we'll simulate by creating a new layout based on the original
+      const newLayoutData = {
+        ...layoutToCopy,
+        id: undefined, // Don't include the ID to create a new record
+        name: `${layoutToCopy.name} (Copy)`,
+        tillId: copiedLayoutTillId,
+        isDefault: false, // New copied layouts are not defaults
+        isShared: false // Copy becomes till-specific
+      };
+      
+      const newLayout = await saveGridLayout(newLayoutData);
+      setLayouts([...layouts, newLayout]);
+      setLayoutToCopy(null);
+      setCopiedLayoutTillId(null);
+      onDataUpdate(); // Notify parent to refresh data if needed
+    } catch (error) {
+      console.error('Error copying layout:', error);
+      setError('Failed to copy layout: ' + (error as Error).message);
+    }
+  };
+
+  // Filter layouts based on search term
+  const filteredLayouts = layouts.filter(layout => {
+    const matchesSearch = layout.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         (layout.tillName && layout.tillName.toLowerCase().includes(searchTerm.toLowerCase()));
+    return matchesSearch;
+ });
+
+  // Get category name by ID
+ const getCategoryName = (categoryId: number | null | undefined): string => {
+    if (!categoryId) return 'N/A';
+    const category = categories.find(c => c.id === categoryId);
+    return category ? category.name : 'Unknown';
+  };
+
+  return (
+    <div className="h-full flex flex-col">
+      <div className="mb-4">
+        <h2 className="text-2xl font-bold text-amber-400 mb-4">Product Grid Layout Management</h2>
+        
+        <div className="flex flex-wrap gap-4 mb-4">
+          <div className="flex flex-col">
+            <label className="text-sm text-slate-400 mb-1">Filter by Till</label>
+            <select
+              value={filterTillId}
+              onChange={(e) => setFilterTillId(e.target.value)}
+              className="bg-slate-800 border border-slate-700 rounded-md p-2 text-sm"
+            >
+              <option value="all">All Tills & Shared</option>
+              <option value="shared">Shared Layouts Only</option>
+              {tills.map(till => (
+                <option key={till.id} value={till.id.toString()}>{till.name}</option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="flex flex-col">
+            <label className="text-sm text-slate-40 mb-1">Filter by Type</label>
+            <select
+              value={filterType}
+              onChange={(e) => setFilterType(e.target.value)}
+              className="bg-slate-800 border border-slate-700 rounded-md p-2 text-sm"
+            >
+              <option value="all">All Types</option>
+              <option value="all">All Products</option>
+              <option value="favorites">Favorites</option>
+              <option value="category">Category</option>
+            </select>
+          </div>
+          
+          <div className="flex flex-col flex-grow max-w-md">
+            <label className="text-sm text-slate-400 mb-1">Search</label>
+            <VKeyboardInput
+              k-type="full"
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search layouts..."
+              className="w-full p-2 bg-slate-800 border border-slate-700 rounded-md text-sm"
+            />
+          </div>
+        </div>
+      
+        {error && (
+          <div className="mb-4 p-3 bg-red-900 text-red-100 rounded-md">
+            {error}
+          </div>
+        )}
+        
+        {loading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-amber-400 text-lg">Loading layouts...</div>
+          </div>
+        ) : (
+          <div className="flex-grow overflow-y-auto">
+            {filteredLayouts.length === 0 ? (
+              <div className="text-center py-8 text-slate-500">
+                No layouts found matching your criteria.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredLayouts.map(layout => (
+                  <div key={layout.id} className="bg-slate-800 p-4 rounded-md">
+                    <div className="flex justify-between items-start mb-2">
+                      <h3 className="font-semibold text-lg truncate max-w-[70%]">{layout.name}</h3>
+                      <span className={`px-2 py-1 rounded text-xs ${
+                        layout.isShared ? 'bg-purple-700 text-purple-100' : 
+                        layout.tillName === 'Shared' ? 'bg-purple-700 text-purple-100' : 
+                        'bg-blue-700 text-blue-100'
+                      }`}>
+                        {layout.isShared || layout.tillName === 'Shared' ? 'Shared' : layout.tillName}
+                      </span>
+                    </div>
+                    
+                    <div className="text-sm text-slate-400 mb-2">
+                      <p>Type: {layout.filterType || 'all'}</p>
+                      <p>Category: {layout.filterType === 'category' ? getCategoryName(layout.categoryId) : 'N/A'}</p>
+                      <p>Items: {layout.layout?.gridItems?.length || 0}</p>
+                    </div>
+                    
+                    <div className="flex items-center mb-3">
+                      <span className={`text-xs px-2 py-1 rounded ${
+                        layout.isDefault ? 'bg-green-700 text-green-100' : 'bg-slate-700 text-slate-300'
+                      }`}>
+                        {layout.isDefault ? 'Default Layout' : 'Custom Layout'}
+                      </span>
+                    </div>
+                    
+                    <div className="flex flex-wrap gap-2">
+                      <button
+                        onClick={() => handleEditLayout(layout)}
+                        className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-3 rounded-md text-sm"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleSetAsDefault(layout)}
+                        disabled={layout.isDefault}
+                        className={`flex-1 font-bold py-2 px-3 rounded-md text-sm ${
+                          layout.isDefault 
+                            ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
+                            : 'bg-amber-600 hover:bg-amber-500 text-white'
+                        }`}
+                      >
+                        {layout.isDefault ? 'Default' : 'Set Default'}
+                      </button>
+                      <button
+                        onClick={() => handleCopyLayout(layout)}
+                        className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-3 rounded-md text-sm"
+                      >
+                        Copy
+                      </button>
+                      <button
+                        onClick={() => setDeletingLayout(layout)}
+                        className="flex-1 bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-md text-sm"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+      
+      {/* Edit Layout Modal */}
+      {editingLayout && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+            <h3 className="text-xl font-bold text-amber-400 mb-4">Edit Layout</h3>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm text-slate-400">Layout Name</label>
+                <VKeyboardInput
+                  k-type="full"
+                  type="text"
+                  value={editingLayout.name}
+                  onChange={(e) => setEditingLayout({...editingLayout, name: e.target.value})}
+                  className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+                  autoFocus
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm text-slate-400">Filter Type</label>
+                <select
+                  value={editingLayout.filterType || 'all'}
+                  onChange={(e) => setEditingLayout({...editingLayout, filterType: e.target.value as any})}
+                  className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+                >
+                  <option value="all">All Products</option>
+                  <option value="favorites">Favorites</option>
+                  <option value="category">Category</option>
+                </select>
+              </div>
+              
+              {editingLayout.filterType === 'category' && (
+                <div>
+                  <label className="block text-sm text-slate-400">Category</label>
+                  <select
+                    value={editingLayout.categoryId || ''}
+                    onChange={(e) => setEditingLayout({...editingLayout, categoryId: parseInt(e.target.value) || null})}
+                    className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+                  >
+                    <option value="">Select a category</option>
+                    {categories.map(category => (
+                      <option key={category.id} value={category.id}>{category.name}</option>
+                    ))}
+                  </select>
+                </div>
+              )}
+              
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="isDefault"
+                  checked={editingLayout.isDefault}
+                  onChange={(e) => setEditingLayout({...editingLayout, isDefault: e.target.checked})}
+                  className="mr-2"
+                />
+                <label htmlFor="isDefault" className="text-sm">Set as Default Layout</label>
+              </div>
+            
+            <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
+              <button 
+                onClick={() => setEditingLayout(null)} 
+                className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleSaveLayout} 
+                className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+              >
+                Save Changes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Copy Layout Modal */}
+      {layoutToCopy && (
+        <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+          <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+            <h3 className="text-xl font-bold text-amber-400 mb-4">Copy Layout to Till</h3>
+            
+            <p className="mb-4">Copy layout "{layoutToCopy.name}" to:</p>
+            
+            <div className="mb-4">
+              <label className="block text-sm text-slate-400">Target Till</label>
+              <select
+                value={copiedLayoutTillId || ''}
+                onChange={(e) => setCopiedLayoutTillId(e.target.value ? parseInt(e.target.value) : null)}
+                className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+              >
+                <option value="">Select a till</option>
+                {tills
+                  .filter(till => layoutToCopy.tillId !== till.id) // Exclude source till
+                  .map(till => (
+                    <option key={till.id} value={till.id}>{till.name}</option>
+                  ))}
+              </select>
+            </div>
+            
+            <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
+              <button 
+                onClick={() => {
+                  setLayoutToCopy(null);
+                  setCopiedLayoutTillId(null);
+                }} 
+                className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={handleConfirmCopyLayout} 
+                disabled={!copiedLayoutTillId}
+                className={`font-bold py-2 px-4 rounded-md ${
+                  copiedLayoutTillId 
+                    ? 'bg-amber-600 hover:bg-amber-500 text-white' 
+                    : 'bg-slate-700 text-slate-40 cursor-not-allowed'
+                }`}
+              >
+                Copy Layout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={!!deletingLayout}
+        message={`Are you sure you want to delete the layout "${deletingLayout?.name}"?`}
+        onConfirm={handleDeleteLayout}
+        onCancel={() => setDeletingLayout(null)}
+      />
+    </div>
+  );
+};

@@ -19,8 +19,8 @@ import type {
   Room, Table
 } from '../shared/types';
 import * as api from './services/apiService';
-import { subscribeToUpdates } from './services/apiService';
-import type { OrderSession } from './services/apiService';
+import { subscribeToUpdates } from './services/apiBase';
+import type { OrderSession } from './services/apiBase';
 
 const App: React.FC = () => {
   // Global App State

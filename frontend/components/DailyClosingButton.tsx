@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import type { Settings, DailyClosing } from '../../shared/types';
 import { ConfirmationModal } from './ConfirmationModal';
-import { createDailyClosing } from '../services/apiService';
+import { createDailyClosing } from '../services/dailyClosingService';
 import { format } from 'date-fns';
 
 interface DailyClosingButtonProps {

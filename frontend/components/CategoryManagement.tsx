@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import type { Category, Till } from '../../shared/types';
-import * as api from '../services/apiService';
+import * as productApi from '../services/productService';
+import * as tillApi from '../services/tillService';
 import { VKeyboardInput } from './VKeyboardInput';
 import { ConfirmationModal } from './ConfirmationModal';
 
@@ -25,7 +26,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
     e.preventDefault();
     if (!name.trim()) return;
     try {
-      await api.saveCategory({ id: category?.id, name, visibleTillIds });
+      await productApi.saveCategory({ id: category?.id, name, visibleTillIds });
       onSave();
     } catch (error) {
       console.error('Error saving category:', error);
@@ -98,7 +99,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
   const confirmDelete = async () => {
     if (deletingCategory) {
       try {
-        await api.deleteCategory(deletingCategory.id);
+        await productApi.deleteCategory(deletingCategory.id);
         setDeletingCategory(null);
         onDataUpdate();
       } catch (error) {

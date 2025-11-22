@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import type { Product, ProductVariant, Till, Category } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
-import { saveGridLayout } from '../services/apiService';
+import { saveGridLayout } from '../services/gridLayoutService';
 
 // Define filter type for layout customization
 type FilterType = 'all' | 'favorites' | 'category';

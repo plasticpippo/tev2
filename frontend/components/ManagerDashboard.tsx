@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import type { Transaction, Tab, User, Till, Settings, DailyClosing } from '../../shared/types';
-import { getDailyClosings } from '../services/apiService';
+import { getDailyClosings } from '../services/dailyClosingService';
 import { format } from 'date-fns';
 
 import { TotalSalesTicker } from './dashboard/TotalSalesTicker';

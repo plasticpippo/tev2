@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import * as api from '../services/apiService';
+import * as userApi from '../services/userService';
 import type { User } from '../../shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
@@ -22,7 +22,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, assignedTillI
     setError('');
     setIsLoading(true);
     try {
-      const user = await api.login(username, password);
+      const user = await userApi.login(username, password);
 
       // New Security Check: If the till is not configured, only an admin can log in.
       if (!assignedTillId) {
