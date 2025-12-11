@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { AppProvider } from '../contexts/AppContext';
+import { AppProvider } from '../contexts/AppProvider';
 import { VirtualKeyboardProvider } from './VirtualKeyboardContext';
 import { MainPOSInterface } from './MainPOSInterface';
 
