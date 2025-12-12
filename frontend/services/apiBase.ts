@@ -44,7 +44,8 @@ export interface ProductGridLayout {
 }
 
 export interface ProductGridLayoutData {
-  name: string;
+  id?: string | number;
+ name: string;
  tillId: number;
   layout: ProductGridLayout;
   isDefault: boolean;

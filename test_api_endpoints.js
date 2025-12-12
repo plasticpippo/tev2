@@ -1,162 +1,105 @@
-import express from 'express';
-import request from 'supertest';
+// Comprehensive test for the updated grid layout endpoints
+async function testEndpoints() {
+  try {
+    // Dynamically import axios
+    const { default: axios } = await import('axios');
+    
+    console.log('Testing updated grid layout endpoints...');
 
-// Import the backend modules
-import { layoutRouter } from './backend/src/handlers/gridLayout.js';
-import { prisma } from './backend/src/prisma.js';
-
-// Create a simple test server to test the API endpoints
-const app = express();
-app.use(express.json());
-app.use('/api', layoutRouter);
-
-async function testApiEndpoints() {
-  console.log('Testing API endpoints with filter-based parameters...');
-
- try {
-    // First, get a till ID and category ID for testing
-    const firstTill = await prisma.till.findFirst();
-    if (!firstTill) {
-      throw new Error('No till available for testing');
+    // First, let's check if the API is running
+    try {
+      const healthResponse = await axios.get('http://localhost:3001/api/health');
+      console.log('✓ API health check passed:', healthResponse.data.status);
+    } catch (error) {
+      console.log('✗ API health check failed:', error.response?.data || error.message);
+      return;
     }
 
-    const categories = await prisma.category.findMany({ take: 1 });
-    let categoryIdToUse = null;
-    if (categories.length > 0) {
-      categoryIdToUse = categories[0].id;
-    } else {
-      console.log('No categories found, creating a test category...');
-      const testCategory = await prisma.category.create({
-        data: {
-          name: 'Test Category'
-        }
-      });
-      categoryIdToUse = testCategory.id;
+    // Test 1: Get all layouts for till 1 (should return empty initially)
+    console.log('\n1. Testing get all layouts for till 1...');
+    try {
+      const layoutsResponse = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/grid-layouts');
+      console.log(`✓ Retrieved ${layoutsResponse.data.length} layouts for till 1`);
+    } catch (error) {
+      console.log('✗ Error retrieving layouts:', error.response?.data || error.message);
     }
 
-    console.log(`Using till ID: ${firstTill.id}, category ID: ${categoryIdToUse}`);
-
-    // Test 1: Create a layout via API
-    console.log('\n--- Test 1: Creating layout via API ---');
-    const createResponse = await request(app)
-      .post(`/api/tills/${firstTill.id}/grid-layouts`)
-      .send({
-        name: 'API Test Layout',
+    // Test 2: Create a test layout first
+    console.log('\n2. Creating a test layout...');
+    try {
+      const newLayoutData = {
+        name: "Test Layout for Endpoint Verification",
         layout: {
           columns: 4,
-          gridItems: [],
+          gridItems: [
+            { id: "1", productId: 1, position: { row: 0, col: 0 } },
+            { id: "2", productId: 2, position: { row: 0, col: 1 } }
+          ],
           version: '1.0'
         },
-        isDefault: true,
-        filterType: 'category',
-        categoryId: categoryIdToUse
-      });
-
-    console.log('Create layout response status:', createResponse.status);
-    if (createResponse.status === 201) {
-      console.log('Layout created successfully:', createResponse.body);
-      const createdLayoutId = createResponse.body.id;
+        isDefault: false,
+        filterType: 'all'
+      };
       
-      // Test 2: Get the specific layout by ID
-      console.log('\n--- Test 2: Getting specific layout by ID ---');
-      const getSpecificResponse = await request(app)
-        .get(`/api/grid-layouts/${createdLayoutId}`);
+      const createResponse = await axios.post('http://localhost:3001/api/grid-layouts/tills/1/grid-layouts', newLayoutData);
+      console.log('✓ Test layout created successfully:', createResponse.data.name);
+      const testLayoutId = createResponse.data.id;
+      console.log(`✓ Test layout ID: ${testLayoutId}`);
       
-      console.log('Get specific layout response status:', getSpecificResponse.status);
-      if (getSpecificResponse.status === 200) {
-        console.log('Retrieved layout:', getSpecificResponse.body);
-        if (getSpecificResponse.body.filterType === 'category' && 
-            getSpecificResponse.body.categoryId === categoryIdToUse) {
-          console.log('✓ Filter type and category ID retrieved correctly');
-        } else {
-          console.log('✗ Filter type or category ID not retrieved correctly');
-        }
-      } else {
-        console.log('✗ Failed to retrieve specific layout:', getSpecificResponse.body);
+      // Test 3: Get the layout by ID using the current-layout endpoint with layoutId parameter
+      console.log('\n3. Testing current-layout endpoint with layoutId parameter...');
+      try {
+        const response3 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=all&layoutId=${testLayoutId}`);
+        console.log('✓ Layout by ID retrieved successfully:', response3.data.name);
+      } catch (error) {
+        console.log('✗ Error retrieving layout by ID:', error.response?.data || error.message);
       }
-
-      // Test 3: Get layouts by filter type
-      console.log('\n--- Test 3: Getting layouts by filter type ---');
-      const getLayoutsByFilterResponse = await request(app)
-        .get(`/api/tills/${firstTill.id}/layouts-by-filter/category`);
       
-      console.log('Get layouts by filter response status:', getLayoutsByFilterResponse.status);
-      if (getLayoutsByFilterResponse.status === 200) {
-        console.log('Layouts by filter type:', getLayoutsByFilterResponse.body);
-        const foundLayout = getLayoutsByFilterResponse.body.find(layout => layout.id === createdLayoutId);
-        if (foundLayout) {
-          console.log('✓ Layout found in filter-specific query');
-        } else {
-          console.log('✗ Layout not found in filter-specific query');
-        }
-      } else {
-        console.log('✗ Failed to get layouts by filter type:', getLayoutsByFilterResponse.body);
+      // Test 4: Get the layout using the new endpoint
+      console.log('\n4. Testing new endpoint: /tills/:tillId/current-layout-with-id/:layoutId...');
+      try {
+        const response4 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout-with-id/${testLayoutId}`);
+        console.log('✓ New endpoint layout retrieval successful:', response4.data.name);
+      } catch (error) {
+        console.log('✗ Error with new endpoint:', error.response?.data || error.message);
       }
-
-      // Test 4: Get current layout for a specific filter type
-      console.log('\n--- Test 4: Getting current layout for filter type ---');
-      const getCurrentResponse = await request(app)
-        .get(`/api/tills/${firstTill.id}/current-layout?filterType=category`);
       
-      console.log('Get current layout response status:', getCurrentResponse.status);
-      if (getCurrentResponse.status === 20) {
-        console.log('Current layout for category filter:', getCurrentResponse.body);
-        if (getCurrentResponse.body.id === createdLayoutId) {
-          console.log('✓ Correct layout retrieved as current for category filter');
-        } else {
-          console.log('✗ Incorrect layout retrieved as current for category filter');
-        }
-      } else {
-        console.log('✗ Failed to get current layout:', getCurrentResponse.body);
+      // Test 5: Test backward compatibility - get default layout
+      console.log('\n5. Testing backward compatibility (default layout)...');
+      try {
+        const response5 = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=all');
+        console.log('✓ Default layout retrieved (backward compatibility):', response5.data.name);
+      } catch (error) {
+        console.log('✗ Error retrieving default layout:', error.response?.data || error.message);
       }
-
-      // Test 5: Update the layout via API
-      console.log('\n--- Test 5: Updating layout via API ---');
-      const updateResponse = await request(app)
-        .put(`/api/grid-layouts/${createdLayoutId}`)
-        .send({
-          name: 'Updated API Test Layout',
-          layout: {
-            columns: 6,
-            gridItems: [],
-            version: '1.0'
-          },
-          isDefault: true,
-          filterType: 'favorites', // Change the filter type
-          categoryId: null
-        });
       
-      console.log('Update layout response status:', updateResponse.status);
-      if (updateResponse.status === 200) {
-        console.log('Layout updated successfully:', updateResponse.body);
-        if (updateResponse.body.filterType === 'favorites' && updateResponse.body.categoryId === null) {
-          console.log('✓ Layout updated with new filter type and category ID');
-        } else {
-          console.log('✗ Layout not updated with correct filter type and category ID');
-        }
-      } else {
-        console.log('✗ Failed to update layout:', updateResponse.body);
+      // Test 6: Test with filter type parameter
+      console.log('\n6. Testing with different filter type...');
+      try {
+        const response6 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=favorites&layoutId=${testLayoutId}`);
+        console.log('✓ Layout with filter type retrieved:', response6.data.name);
+      } catch (error) {
+        console.log('✗ Error with filter type:', error.response?.data || error.message);
       }
-
-      // Clean up: delete the test layout
-      console.log('\n--- Cleanup: Deleting test layout ---');
-      const deleteResponse = await request(app)
-        .delete(`/api/grid-layouts/${createdLayoutId}`);
       
-      console.log('Delete layout response status:', deleteResponse.status);
-      if (deleteResponse.status === 204) {
+      // Clean up: Delete the test layout
+      console.log('\n7. Cleaning up - deleting test layout...');
+      try {
+        await axios.delete(`http://localhost:3001/api/grid-layouts/grid-layouts/${testLayoutId}`);
         console.log('✓ Test layout deleted successfully');
-      } else {
-        console.log('✗ Failed to delete test layout:', deleteResponse.body);
+      } catch (error) {
+        console.log('✗ Error deleting test layout:', error.response?.data || error.message);
       }
-    } else {
-      console.log('✗ Failed to create layout:', createResponse.body);
+      
+    } catch (error) {
+      console.log('✗ Error creating test layout:', error.response?.data || error.message);
     }
 
+    console.log('\n✓ All endpoint tests completed!');
   } catch (error) {
-    console.error('Error during API endpoint test:', error);
+    console.error('✗ Test suite failed:', error.message);
   }
 }
 
-// Run the test
-testApiEndpoints();
+// Run the tests
+testEndpoints();

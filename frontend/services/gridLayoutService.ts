@@ -122,3 +122,45 @@ export const setLayoutAsDefault = async (layoutId: string): Promise<ProductGridL
 
   return response.json();
 };
+
+// Function to get layouts by filter type for a specific till
+export const getLayoutsByFilterType = async (
+  tillId: number,
+  filterType: 'all' | 'favorites' | 'category',
+  categoryId?: number | null
+): Promise<ProductGridLayoutData[]> => {
+  let url = `${apiUrl(`/api/grid-layouts/tills/${tillId}/layouts-by-filter/${filterType}`)}`;
+  
+  if (filterType === 'category' && categoryId !== undefined && categoryId !== null) {
+    url += `?categoryId=${categoryId}`;
+  }
+  
+  const response = await fetch(url, {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get layouts by filter type: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Function to get a specific layout by ID
+export const getLayoutById = async (layoutId: string): Promise<ProductGridLayoutData> => {
+  const response = await fetch(apiUrl(`/api/grid-layouts/${layoutId}`), {
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to get layout by ID: ${response.statusText}`);
+  }
+
+  return response.json();
+};

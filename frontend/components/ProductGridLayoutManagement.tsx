@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import type { Till, Category } from '../../shared/types';
-import { ProductGridLayoutData, getGridLayoutsForTill, getSharedLayouts, saveGridLayout, deleteGridLayout, setLayoutAsDefault } from '../services/gridLayoutService';
+import { getGridLayoutsForTill, getSharedLayouts, saveGridLayout, deleteGridLayout, setLayoutAsDefault } from '../services/gridLayoutService';
 import { ConfirmationModal } from './ConfirmationModal';
 import { VKeyboardInput } from './VKeyboardInput';
+import type { ProductGridLayout, ProductGridLayoutData } from '../services/apiBase';
 
 interface ProductGridLayoutManagementProps {
   tills: Till[];
@@ -10,24 +11,88 @@ interface ProductGridLayoutManagementProps {
   onDataUpdate: () => void;
 }
 
-interface LayoutWithTillInfo extends ProductGridLayoutData {
+interface LayoutWithTillInfo {
+  id?: string | number;
+  name: string;
+  tillId: number;
+  layout: {
+    columns: number;
+    gridItems: {
+      id: string;
+      variantId: number;
+      productId: number;
+      x: number;
+      y: number;
+      width: number;
+      height: number;
+    }[];
+    version: string;
+  };
+  isDefault: boolean;
+  filterType?: 'all' | 'favorites' | 'category';
+  categoryId?: number | null;
   tillName?: string;
+  isShared?: boolean;
 }
 
 export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementProps> = ({ tills, categories, onDataUpdate }) => {
-  const [layouts, setLayouts] = useState<LayoutWithTillInfo[]>([]);
+ const [layouts, setLayouts] = useState<LayoutWithTillInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
- const [filterTillId, setFilterTillId] = useState<string>('all');
+  const [filterTillId, setFilterTillId] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [deletingLayout, setDeletingLayout] = useState<LayoutWithTillInfo | null>(null);
   const [editingLayout, setEditingLayout] = useState<LayoutWithTillInfo | null>(null);
   const [copiedLayoutTillId, setCopiedLayoutTillId] = useState<number | null>(null);
   const [layoutToCopy, setLayoutToCopy] = useState<LayoutWithTillInfo | null>(null);
+  const [showCreateModal, setShowCreateModal] = useState<boolean>(false);
+  const [newLayout, setNewLayout] = useState<Omit<ProductGridLayoutData, 'id' | 'layout'> & { layout?: any }>({
+    name: 'New Layout',
+    tillId: tills[0]?.id || 0,
+    isDefault: false,
+    filterType: 'all',
+    categoryId: null
+  });
+
+  // Handle creating a new layout
+  const handleCreateNewLayout = () => {
+    setNewLayout({
+      name: 'New Layout',
+      tillId: tills[0]?.id || 0,
+      isDefault: false,
+      filterType: 'all',
+      categoryId: null
+    });
+    setShowCreateModal(true);
+  };
+
+  const handleSaveNewLayout = async () => {
+    try {
+      // Create a default layout structure
+      const defaultLayout = {
+        columns: 4,
+        gridItems: [],
+        version: '1.0'
+      };
+
+      const layoutToSave = {
+        ...newLayout,
+        layout: defaultLayout
+      };
+
+      const savedLayout = await saveGridLayout(layoutToSave);
+      setLayouts([...layouts, { ...savedLayout, tillName: tills.find(t => t.id === savedLayout.tillId)?.name || `Till ${savedLayout.tillId}` }]);
+      setShowCreateModal(false);
+      onDataUpdate(); // Notify parent to refresh data if needed
+    } catch (error) {
+      console.error('Error saving new layout:', error);
+      setError('Failed to save new layout: ' + (error as Error).message);
+    }
+  };
 
   // Load layouts
- useEffect(() => {
+  useEffect(() => {
     loadLayouts();
   }, [filterTillId, filterType]);
 
@@ -48,6 +113,13 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
             const tillLayouts = await getGridLayoutsForTill(till.id);
             allTillLayouts.push(...tillLayouts.map(layout => ({
               ...layout,
+              id: layout.id,
+              name: layout.name,
+              tillId: layout.tillId,
+              layout: layout.layout,
+              isDefault: layout.isDefault,
+              filterType: layout.filterType,
+              categoryId: layout.categoryId,
               tillName: till.name
             })));
           } catch (error) {
@@ -55,11 +127,31 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
           }
         }
         
-        loadedLayouts = [...sharedLayouts.map(layout => ({ ...layout, tillName: 'Shared' })), ...allTillLayouts];
+        loadedLayouts = [...sharedLayouts.map(layout => ({
+          ...layout,
+          id: layout.id,
+          name: layout.name,
+          tillId: layout.tillId,
+          layout: layout.layout,
+          isDefault: layout.isDefault,
+          filterType: layout.filterType,
+          categoryId: layout.categoryId,
+          tillName: 'Shared'
+        })), ...allTillLayouts];
       } else if (filterTillId === 'shared') {
         // Load only shared layouts
         const sharedLayouts = await getSharedLayouts();
-        loadedLayouts = sharedLayouts.map(layout => ({ ...layout, tillName: 'Shared' }));
+        loadedLayouts = sharedLayouts.map(layout => ({
+          ...layout,
+          id: layout.id,
+          name: layout.name,
+          tillId: layout.tillId,
+          layout: layout.layout,
+          isDefault: layout.isDefault,
+          filterType: layout.filterType,
+          categoryId: layout.categoryId,
+          tillName: 'Shared'
+        }));
       } else {
         // Load layouts for specific till
         const tillId = parseInt(filterTillId, 10);
@@ -68,6 +160,13 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
           const tillName = tills.find(t => t.id === tillId)?.name || `Till ${tillId}`;
           loadedLayouts = tillLayouts.map(layout => ({
             ...layout,
+            id: layout.id,
+            name: layout.name,
+            tillId: layout.tillId,
+            layout: layout.layout,
+            isDefault: layout.isDefault,
+            filterType: layout.filterType,
+            categoryId: layout.categoryId,
             tillName
           }));
         }
@@ -88,10 +187,12 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
   };
 
   const handleDeleteLayout = async () => {
-    if (!deletingLayout) return;
+    if (!deletingLayout || !deletingLayout.id) return;
     
     try {
-      await deleteGridLayout(deletingLayout.id!);
+      // Convert id to string if it's a number for the API call
+      const layoutId = typeof deletingLayout.id === 'number' ? deletingLayout.id.toString() : deletingLayout.id;
+      await deleteGridLayout(layoutId);
       setLayouts(layouts.filter(layout => layout.id !== deletingLayout.id));
       setDeletingLayout(null);
       onDataUpdate(); // Notify parent to refresh data if needed
@@ -105,11 +206,15 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
     if (!layout.id) return;
     
     try {
-      const updatedLayout = await setLayoutAsDefault(layout.id);
+      // Convert id to string if it's a number for the API call
+      const layoutId = typeof layout.id === 'number' ? layout.id.toString() : layout.id;
+      const updatedLayout = await setLayoutAsDefault(layoutId);
       // Update the layout in our local state
-      setLayouts(layouts.map(l => 
-        l.id === layout.id ? { ...l, isDefault: l.id === updatedLayout.id } : 
-        l.tillId === layout.tillId && l.isDefault ? { ...l, isDefault: false } : l
+      setLayouts(layouts.map(l =>
+        l.id === layout.id ? { ...l, isDefault: l.id === updatedLayout.id } :
+        l.tillId === layout.tillId && l.filterType === layout.filterType &&
+        (layout.filterType !== 'category' || l.categoryId === layout.categoryId) &&
+        l.isDefault ? { ...l, isDefault: false } : l
       ));
     } catch (error) {
       console.error('Error setting layout as default:', error);
@@ -171,10 +276,20 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
     const matchesSearch = layout.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          (layout.tillName && layout.tillName.toLowerCase().includes(searchTerm.toLowerCase()));
     return matchesSearch;
- });
+  });
+
+  // Group layouts by filter type for better organization
+  const groupedLayouts = filteredLayouts.reduce((acc, layout) => {
+    const key = layout.filterType || 'all';
+    if (!acc[key]) {
+      acc[key] = [];
+    }
+    acc[key].push(layout);
+    return acc;
+  }, {} as Record<string, LayoutWithTillInfo[]>);
 
   // Get category name by ID
- const getCategoryName = (categoryId: number | null | undefined): string => {
+  const getCategoryName = (categoryId: number | null | undefined): string => {
     if (!categoryId) return 'N/A';
     const category = categories.find(c => c.id === categoryId);
     return category ? category.name : 'Unknown';
@@ -227,8 +342,18 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
             />
           </div>
         </div>
+        
+        <div className="flex items-end">
+          <button
+            onClick={handleCreateNewLayout}
+            className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md text-sm"
+          >
+            Create New Layout
+          </button>
+        </div>
+      </div>
       
-        {error && (
+      {error && (
           <div className="mb-4 p-3 bg-red-900 text-red-100 rounded-md">
             {error}
           </div>
@@ -245,71 +370,82 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                 No layouts found matching your criteria.
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredLayouts.map(layout => (
-                  <div key={layout.id} className="bg-slate-800 p-4 rounded-md">
-                    <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-semibold text-lg truncate max-w-[70%]">{layout.name}</h3>
-                      <span className={`px-2 py-1 rounded text-xs ${
-                        layout.isShared ? 'bg-purple-700 text-purple-100' : 
-                        layout.tillName === 'Shared' ? 'bg-purple-700 text-purple-100' : 
-                        'bg-blue-700 text-blue-100'
-                      }`}>
-                        {layout.isShared || layout.tillName === 'Shared' ? 'Shared' : layout.tillName}
-                      </span>
-                    </div>
-                    
-                    <div className="text-sm text-slate-400 mb-2">
-                      <p>Type: {layout.filterType || 'all'}</p>
-                      <p>Category: {layout.filterType === 'category' ? getCategoryName(layout.categoryId) : 'N/A'}</p>
-                      <p>Items: {layout.layout?.gridItems?.length || 0}</p>
-                    </div>
-                    
-                    <div className="flex items-center mb-3">
-                      <span className={`text-xs px-2 py-1 rounded ${
-                        layout.isDefault ? 'bg-green-700 text-green-100' : 'bg-slate-700 text-slate-300'
-                      }`}>
-                        {layout.isDefault ? 'Default Layout' : 'Custom Layout'}
-                      </span>
-                    </div>
-                    
-                    <div className="flex flex-wrap gap-2">
-                      <button
-                        onClick={() => handleEditLayout(layout)}
-                        className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-3 rounded-md text-sm"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleSetAsDefault(layout)}
-                        disabled={layout.isDefault}
-                        className={`flex-1 font-bold py-2 px-3 rounded-md text-sm ${
-                          layout.isDefault 
-                            ? 'bg-slate-700 text-slate-400 cursor-not-allowed' 
-                            : 'bg-amber-600 hover:bg-amber-500 text-white'
-                        }`}
-                      >
-                        {layout.isDefault ? 'Default' : 'Set Default'}
-                      </button>
-                      <button
-                        onClick={() => handleCopyLayout(layout)}
-                        className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-3 rounded-md text-sm"
-                      >
-                        Copy
-                      </button>
-                      <button
-                        onClick={() => setDeletingLayout(layout)}
-                        className="flex-1 bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-md text-sm"
-                      >
-                        Delete
-                      </button>
-                    </div>
+              Object.entries(groupedLayouts).map(([filterType, typeLayouts]) => (
+                <div key={filterType} className="mb-6">
+                  <h3 className="text-lg font-semibold text-slate-300 mb-3">
+                    {filterType === 'all' && 'All Products Layouts'}
+                    {filterType === 'favorites' && 'Favorites Layouts'}
+                    {filterType === 'category' && 'Category Layouts'}
+                    <span className="text-sm text-slate-500 ml-2">({typeLayouts.length} layout{typeLayouts.length !== 1 ? 's' : ''})</span>
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {typeLayouts.map(layout => (
+                      <div key={layout.id} className="bg-slate-800 p-4 rounded-md">
+                        <div className="flex justify-between items-start mb-2">
+                          <h3 className="font-semibold text-lg truncate max-w-[70%]">{layout.name}</h3>
+                          <span className={`px-2 py-1 rounded text-xs ${
+                            layout.isShared ? 'bg-purple-700 text-purple-100' :
+                            layout.tillName === 'Shared' ? 'bg-purple-700 text-purple-100' :
+                            'bg-blue-700 text-blue-100'
+                          }`}>
+                            {layout.isShared || layout.tillName === 'Shared' ? 'Shared' : layout.tillName}
+                          </span>
+                        </div>
+                        
+                        <div className="text-sm text-slate-400 mb-2">
+                          <p>Type: {layout.filterType || 'all'}</p>
+                          <p>Category: {layout.filterType === 'category' ? getCategoryName(layout.categoryId) : 'N/A'}</p>
+                          <p>Items: {layout.layout?.gridItems?.length || 0}</p>
+                        </div>
+                        
+                        <div className="flex items-center mb-3">
+                          <span className={`text-xs px-2 py-1 rounded ${
+                            layout.isDefault ? 'bg-green-700 text-green-100' : 'bg-slate-700 text-slate-300'
+                          }`}>
+                            {layout.isDefault ? 'Default Layout' : 'Custom Layout'}
+                          </span>
+                        </div>
+                        
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            onClick={() => handleEditLayout(layout)}
+                            className="flex-1 bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-3 rounded-md text-sm"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleSetAsDefault(layout)}
+                            disabled={layout.isDefault}
+                            className={`flex-1 font-bold py-2 px-3 rounded-md text-sm ${
+                              layout.isDefault
+                                ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                                : 'bg-amber-600 hover:bg-amber-500 text-white'
+                            }`}
+                          >
+                            {layout.isDefault ? 'Default' : 'Set Default'}
+                          </button>
+                          <button
+                            onClick={() => handleCopyLayout(layout)}
+                            className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-3 rounded-md text-sm"
+                          >
+                            Copy
+                          </button>
+                          <button
+                            onClick={() => setDeletingLayout(layout)}
+                            className="flex-1 bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-3 rounded-md text-sm"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </div>
+              ))
             )}
           </div>
         )}
+      </div>
       </div>
       
       {/* Edit Layout Modal */}
@@ -325,7 +461,7 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                   k-type="full"
                   type="text"
                   value={editingLayout.name}
-                  onChange={(e) => setEditingLayout({...editingLayout, name: e.target.value})}
+                  onChange={(e) => setEditingLayout(prev => prev ? {...prev, name: e.target.value} : null)}
                   className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
                   autoFocus
                 />
@@ -335,7 +471,7 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                 <label className="block text-sm text-slate-400">Filter Type</label>
                 <select
                   value={editingLayout.filterType || 'all'}
-                  onChange={(e) => setEditingLayout({...editingLayout, filterType: e.target.value as any})}
+                  onChange={(e) => setEditingLayout(prev => prev ? {...prev, filterType: e.target.value as 'all' | 'favorites' | 'category'} : null)}
                   className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
                 >
                   <option value="all">All Products</option>
@@ -349,7 +485,7 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                   <label className="block text-sm text-slate-400">Category</label>
                   <select
                     value={editingLayout.categoryId || ''}
-                    onChange={(e) => setEditingLayout({...editingLayout, categoryId: parseInt(e.target.value) || null})}
+                    onChange={(e) => setEditingLayout(prev => prev ? {...prev, categoryId: parseInt(e.target.value) || null} : null)}
                     className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
                   >
                     <option value="">Select a category</option>
@@ -365,22 +501,22 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                   type="checkbox"
                   id="isDefault"
                   checked={editingLayout.isDefault}
-                  onChange={(e) => setEditingLayout({...editingLayout, isDefault: e.target.checked})}
+                  onChange={(e) => setEditingLayout(prev => prev ? {...prev, isDefault: e.target.checked} : null)}
                   className="mr-2"
                 />
                 <label htmlFor="isDefault" className="text-sm">Set as Default Layout</label>
               </div>
-            
+            </div>
             <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-              <button 
-                onClick={() => setEditingLayout(null)} 
+              <button
+                onClick={() => setEditingLayout(null)}
                 className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md"
               >
                 Cancel
               </button>
-              <button 
-                onClick={handleSaveLayout} 
-                className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+              <button
+                onClick={handleSaveLayout}
+                className="bg-amber-60 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
               >
                 Save Changes
               </button>
@@ -446,6 +582,7 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
         onConfirm={handleDeleteLayout}
         onCancel={() => setDeletingLayout(null)}
       />
+      </div>
     </div>
   );
 };

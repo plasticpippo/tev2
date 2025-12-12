@@ -32,3 +32,5 @@ Backend is running on port 3001
 
 
 ### ALL documentation must be located at ./docs
+
+## ALL testing must be done it its own subtask

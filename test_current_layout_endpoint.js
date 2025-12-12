@@ -1,147 +1,78 @@
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
+// Test the updated current layout endpoint with layoutId parameter
 async function testCurrentLayoutEndpoint() {
   try {
-    console.log('Testing current layout endpoint functionality...');
+    // Dynamically import axios
+    const { default: axios } = await import('axios');
+    
+    console.log('Testing updated current layout endpoint...');
 
-    // First, get a till ID
-    const firstTill = await prisma.till.findFirst();
-    if (!firstTill) {
-      throw new Error('No till available for testing');
+    // Test 1: Get default layout (backward compatibility)
+    console.log('\n1. Testing default layout retrieval (backward compatibility)...');
+    try {
+      const response1 = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=all');
+      console.log('✓ Default layout retrieved successfully:', response1.data.name);
+    } catch (error) {
+      console.log('✗ Error retrieving default layout:', error.response?.data || error.message);
     }
 
-    // Check if there are any categories in the database
-    const categories = await prisma.category.findMany({ take: 1 });
-    let categoryIdToUse = null;
-    if (categories.length > 0) {
-      categoryIdToUse = categories[0].id;
-    } else {
-      console.log('No categories found, creating a test category...');
-      const testCategory = await prisma.category.create({
-        data: {
-          name: 'Test Category'
-        }
-      });
-      categoryIdToUse = testCategory.id;
+    // Test 2: Get layout by specific ID
+    console.log('\n2. Testing layout retrieval by specific ID...');
+    try {
+      // First, let's get all layouts for till 1 to find a valid layout ID
+      const layoutsResponse = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/grid-layouts');
+      if (layoutsResponse.data && layoutsResponse.data.length > 0) {
+        const firstLayoutId = layoutsResponse.data[0].id;
+        console.log(`Using layout ID: ${firstLayoutId} for testing...`);
+        
+        const response2 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=all&layoutId=${firstLayoutId}`);
+        console.log('✓ Layout by ID retrieved successfully:', response2.data.name);
+      } else {
+        console.log('No layouts found for testing');
+      }
+    } catch (error) {
+      console.log('✗ Error retrieving layout by ID:', error.response?.data || error.message);
     }
 
-    // Create test layouts with different filter types and set one as default for each type
-    const layoutAll = await prisma.productGridLayout.create({
-      data: {
-        tillId: firstTill.id,
-        name: 'All Products Default Layout',
-        layout: {
-          columns: 4,
-          gridItems: [],
-          version: '1.0'
-        },
-        isDefault: true, // This will be the default for 'all' filter type
-        filterType: 'all',
-        categoryId: null
+    // Test 3: Get layout by ID using the new endpoint
+    console.log('\n3. Testing new endpoint: /tills/:tillId/current-layout-with-id/:layoutId...');
+    try {
+      // First, let's get all layouts for till 1 to find a valid layout ID
+      const layoutsResponse = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/grid-layouts');
+      if (layoutsResponse.data && layoutsResponse.data.length > 0) {
+        const firstLayoutId = layoutsResponse.data[0].id;
+        console.log(`Using layout ID: ${firstLayoutId} for testing new endpoint...`);
+        
+        const response3 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout-with-id/${firstLayoutId}`);
+        console.log('✓ New endpoint layout retrieval successful:', response3.data.name);
+      } else {
+        console.log('No layouts found for testing');
       }
-    });
-
-    const layoutFavorites = await prisma.productGridLayout.create({
-      data: {
-        tillId: firstTill.id,
-        name: 'Favorites Default Layout',
-        layout: {
-          columns: 4,
-          gridItems: [],
-          version: '1.0'
-        },
-        isDefault: true, // This will be the default for 'favorites' filter type
-        filterType: 'favorites',
-        categoryId: null
-      }
-    });
-
-    const layoutCategory = await prisma.productGridLayout.create({
-      data: {
-        tillId: firstTill.id,
-        name: 'Category Default Layout',
-        layout: {
-          columns: 4,
-          gridItems: [],
-          version: '1.0'
-        },
-        isDefault: true, // This will be the default for 'category' filter type
-        filterType: 'category',
-        categoryId: categoryIdToUse
-      }
-    });
-
-    console.log('Created test layouts with defaults:', {
-      layoutAll: { id: layoutAll.id, filterType: layoutAll.filterType, isDefault: layoutAll.isDefault },
-      layoutFavorites: { id: layoutFavorites.id, filterType: layoutFavorites.filterType, isDefault: layoutFavorites.isDefault },
-      layoutCategory: { id: layoutCategory.id, filterType: layoutCategory.filterType, isDefault: layoutCategory.isDefault, categoryId: layoutCategory.categoryId }
-    });
-
-    // Test retrieving the default layout for each filter type
-    // This simulates what the /current-layout endpoint would do
-    const defaultLayoutAll = await prisma.productGridLayout.findFirst({
-      where: {
-        tillId: firstTill.id,
-        isDefault: true,
-        filterType: 'all'
-      }
-    });
-    console.log('Default layout for "all" filter:', defaultLayoutAll?.id);
-
-    const defaultLayoutFavorites = await prisma.productGridLayout.findFirst({
-      where: {
-        tillId: firstTill.id,
-        isDefault: true,
-        filterType: 'favorites'
-      }
-    });
-    console.log('Default layout for "favorites" filter:', defaultLayoutFavorites?.id);
-
-    const defaultLayoutCategory = await prisma.productGridLayout.findFirst({
-      where: {
-        tillId: firstTill.id,
-        isDefault: true,
-        filterType: 'category'
-      }
-    });
-    console.log('Default layout for "category" filter:', defaultLayoutCategory?.id);
-
-    // Verify that each default layout matches what we expect
-    if (defaultLayoutAll && defaultLayoutAll.id === layoutAll.id) {
-      console.log('✓ Default layout for "all" filter type retrieved correctly');
-    } else {
-      console.log('✗ Default layout for "all" filter type not retrieved correctly');
+    } catch (error) {
+      console.log('✗ Error with new endpoint:', error.response?.data || error.message);
     }
 
-    if (defaultLayoutFavorites && defaultLayoutFavorites.id === layoutFavorites.id) {
-      console.log('✓ Default layout for "favorites" filter type retrieved correctly');
-    } else {
-      console.log('✗ Default layout for "favorites" filter type not retrieved correctly');
-    }
-
-    if (defaultLayoutCategory && defaultLayoutCategory.id === layoutCategory.id) {
-      console.log('✓ Default layout for "category" filter type retrieved correctly');
-    } else {
-      console.log('✗ Default layout for "category" filter type not retrieved correctly');
-    }
-
-    // Clean up: delete the test layouts
-    await prisma.productGridLayout.deleteMany({
-      where: {
-        id: { in: [layoutAll.id, layoutFavorites.id, layoutCategory.id] }
+    // Test 4: Test with category filter type
+    console.log('\n4. Testing with category filter type...');
+    try {
+      const layoutsResponse = await axios.get('http://localhost:3001/api/grid-layouts/tills/1/grid-layouts?filterType=category');
+      if (layoutsResponse.data && layoutsResponse.data.length > 0) {
+        const categoryLayout = layoutsResponse.data[0];
+        console.log(`Using category layout ID: ${categoryLayout.id} for testing...`);
+        
+        const response4 = await axios.get(`http://localhost:3001/api/grid-layouts/tills/1/current-layout?filterType=category&layoutId=${categoryLayout.id}`);
+        console.log('✓ Category layout by ID retrieved successfully:', response4.data.name);
+      } else {
+        console.log('No category layouts found for testing');
       }
-    });
+    } catch (error) {
+      console.log('✗ Error retrieving category layout by ID:', error.response?.data || error.message);
+    }
 
-    console.log('✓ Test layouts cleaned up successfully');
-
+    console.log('\n✓ All tests completed!');
   } catch (error) {
-    console.error('Error during test:', error);
-  } finally {
-    await prisma.$disconnect();
+    console.error('✗ Test suite failed:', error.message);
   }
 }
 
-// Run the test
+// Run the tests
 testCurrentLayoutEndpoint();

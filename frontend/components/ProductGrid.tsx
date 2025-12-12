@@ -3,6 +3,7 @@ import type { Product, ProductVariant, Category, Till } from '../../shared/types
 import { formatCurrency } from '../utils/formatting';
 import ProductGridLayoutCustomizer, { type ProductGridLayoutData } from './ProductGridLayoutCustomizer';
 import { getCurrentLayoutForTill, getCurrentLayoutForTillWithFilter } from '../services/gridLayoutService';
+import { LayoutSelectionDropdown } from './LayoutSelectionDropdown';
 
 interface ProductGridProps {
   products: Product[];
@@ -17,6 +18,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
   const [selectedFilter, setSelectedFilter] = useState<'favourites' | 'all' | number>('favourites');
   const [showCustomizer, setShowCustomizer] = useState(false);
   const [currentLayout, setCurrentLayout] = useState<ProductGridLayoutData | null>(null);
+  const [selectedLayoutId, setSelectedLayoutId] = useState<string | number | null>(null);
   
   // Load the current layout for the assigned till based on selected filter
   useEffect(() => {
@@ -38,10 +40,11 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
           
           const layout = await getCurrentLayoutForTillWithFilter(assignedTillId, filterType, categoryId);
           setCurrentLayout(layout);
+          setSelectedLayoutId(layout.id || null);
         } catch (error) {
           console.error('Failed to load current layout:', error);
           // If loading fails, set a default layout
-          setCurrentLayout({
+          const defaultLayout: ProductGridLayoutData = {
             name: 'Default Layout',
             tillId: assignedTillId,
             layout: {
@@ -50,13 +53,21 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
               version: '1.0'
             },
             isDefault: true
-          });
+          };
+          setCurrentLayout(defaultLayout);
+          setSelectedLayoutId(null);
         }
       }
     };
     
     loadLayout();
   }, [assignedTillId, selectedFilter]);
+
+  // Handle layout change from the dropdown
+  const handleLayoutChange = (layout: ProductGridLayoutData) => {
+    setCurrentLayout(layout);
+    setSelectedLayoutId(layout.id || null);
+  };
 
   const visibleCategories = useMemo(() => {
     if (!assignedTillId) return categories;
@@ -92,7 +103,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
       <div className="flex flex-col h-full bg-slate-900 rounded-lg">
       <div className="flex-shrink-0 p-4">
         <h2 className="text-2xl font-bold text-amber-400 mb-3">Products</h2>
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2 mb-3">
            <button
             onClick={() => setSelectedFilter('favourites')}
             className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedFilter === 'favourites' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
@@ -115,6 +126,23 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
             All
           </button>
         </div>
+        {/* Layout Selection Dropdown */}
+        {assignedTillId && (
+          <div className="flex justify-end">
+            <LayoutSelectionDropdown
+              tillId={assignedTillId}
+              filterType={
+                selectedFilter === 'favourites' ? 'favorites' :
+                selectedFilter === 'all' ? 'all' :
+                'category'
+              }
+              categoryId={typeof selectedFilter === 'number' ? selectedFilter : null}
+              currentLayoutId={selectedLayoutId}
+              onLayoutChange={handleLayoutChange}
+              className="mb-2"
+            />
+          </div>
+        )}
       </div>
 
       <div className="flex-grow p-4 overflow-y-auto">
@@ -213,6 +241,10 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
         onSaveLayout={(layoutData: ProductGridLayoutData) => {
           // Update the current layout state
           setCurrentLayout(layoutData);
+          // Update the selected layout ID if the saved layout has an ID
+          if (layoutData.id) {
+            setSelectedLayoutId(layoutData.id);
+          }
           // For now, just close the modal
           setShowCustomizer(false);
         }}
