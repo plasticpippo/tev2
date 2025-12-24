@@ -213,7 +213,7 @@ model OrderSession {
 
 model ProductGridLayout {
   id         Int       @id @default(autoincrement())
-  tillId     Int
+  tillId     Int?
   name       String
   layout     Json
   isDefault  Boolean   @default(false)
@@ -221,11 +221,13 @@ model ProductGridLayout {
   updatedAt  DateTime  @updatedAt
   categoryId Int?
   filterType String?   @default("all")
+  shared     Boolean   @default(false)
   category   Category? @relation(fields: [categoryId], references: [id], onUpdate: NoAction)
-  till       Till      @relation(fields: [tillId], references: [id], onDelete: Cascade)
+  till       Till?     @relation(fields: [tillId], references: [id], onDelete: Cascade)
 
   @@index([tillId])
   @@index([filterType])
   @@index([categoryId])
+  @@index([shared])
   @@map("product_grid_layouts")
 }

@@ -34,3 +34,5 @@ Backend is running on port 3001
 ### ALL documentation must be located at ./docs
 
 ## ALL testing must be done it its own subtask
+
+### do not rush! always make sure you are editing things right. the goal is here is quality and not speed

@@ -71,7 +71,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
 
   const visibleCategories = useMemo(() => {
     if (!assignedTillId) return categories;
-    return categories.filter(c => c.visibleTillIds.length === 0 || c.visibleTillIds.includes(assignedTillId));
+    return categories.filter(c => !c.visibleTillIds || c.visibleTillIds.length === 0 || c.visibleTillIds.includes(assignedTillId));
   }, [categories, assignedTillId]);
 
   const visibleProducts = useMemo(() => {

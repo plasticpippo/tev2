@@ -3,7 +3,7 @@ import { useTableContext } from './TableContext';
 import { TableLayoutEditor } from './TableLayoutEditor';
 import { Room, Table } from '../../shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface RoomModalProps {
   room?: Room;
@@ -458,14 +458,16 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
       )}
       
       <ConfirmationModal
-        isOpen={!!deletingRoom}
+        show={!!deletingRoom}
+        title="Confirm Delete"
         message={`Are you sure you want to delete the room "${deletingRoom?.name}"? All tables in this room will also be deleted.`}
         onConfirm={confirmDeleteRoom}
         onCancel={() => setDeletingRoom(null)}
       />
       
       <ConfirmationModal
-        isOpen={!!deletingTable}
+        show={!!deletingTable}
+        title="Confirm Delete"
         message={`Are you sure you want to delete the table "${deletingTable?.name}"?`}
         onConfirm={confirmDeleteTable}
         onCancel={() => setDeletingTable(null)}

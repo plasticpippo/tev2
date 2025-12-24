@@ -1,46 +1,55 @@
 import React from 'react';
 
 interface ConfirmationModalProps {
-  isOpen: boolean;
+  show: boolean;
+  title: string;
   message: string;
   onConfirm: () => void;
-  onCancel: () => void;
+ onCancel: () => void;
   confirmText?: string;
   cancelText?: string;
-  confirmColor?: string;
+  confirmButtonType?: 'primary' | 'secondary' | 'danger';
 }
 
-export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
-  isOpen,
+const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
+  show,
+  title,
   message,
   onConfirm,
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  confirmColor = 'bg-red-600 hover:bg-red-500',
+  confirmButtonType = 'danger'
 }) => {
-  if (!isOpen) {
-    return null;
-  }
+  if (!show) return null;
+
+  const getConfirmButtonClass = () => {
+    switch (confirmButtonType) {
+      case 'primary':
+        return 'bg-blue-600 hover:bg-blue-700';
+      case 'secondary':
+        return 'bg-slate-60 hover:bg-slate-700';
+      case 'danger':
+      default:
+        return 'bg-red-600 hover:bg-red-700';
+    }
+  };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-amber-400">Confirm Action</h2>
-          <button onClick={onCancel} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
-        </div>
-        <p className="text-lg text-slate-300 mb-6">{message}</p>
-        <div className="flex justify-end gap-4">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-slate-800 rounded-lg p-6 w-1/3">
+        <h3 className="text-xl font-bold mb-4 text-amber-400">{title}</h3>
+        <p className="mb-4">{message}</p>
+        <div className="flex justify-end gap-2">
           <button
             onClick={onCancel}
-            className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md transition"
+            className="bg-slate-60 hover:bg-slate-700 text-white py-2 px-4 rounded"
           >
             {cancelText}
           </button>
           <button
             onClick={onConfirm}
-            className={`${confirmColor} text-white font-bold py-2 px-4 rounded-md transition`}
+            className={`${getConfirmButtonClass()} text-white py-2 px-4 rounded`}
           >
             {confirmText}
           </button>
@@ -49,3 +58,5 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     </div>
   );
 };
+
+export default ConfirmationModal;

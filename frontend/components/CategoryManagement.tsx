@@ -109,8 +109,8 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
     }
   };
 
-  const getTillNames = (tillIds: number[]): string => {
-    if (tillIds.length === 0) return "All Tills";
+  const getTillNames = (tillIds: number[] | null): string => {
+    if (!tillIds || tillIds.length === 0) return "All Tills";
     return tillIds.map(id => tills.find(t => t.id === id)?.name).filter(Boolean).join(', ') || 'None';
   }
 

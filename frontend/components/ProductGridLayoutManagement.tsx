@@ -394,7 +394,7 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                         
                         <div className="text-sm text-slate-400 mb-2">
                           <p>Type: {layout.filterType || 'all'}</p>
-                          <p>Category: {layout.filterType === 'category' ? getCategoryName(layout.categoryId) : 'N/A'}</p>
+                          <p>Category: {layout.filterType === 'all' ? 'All Products' : layout.filterType === 'favorites' ? 'Favorites' : layout.filterType === 'category' ? getCategoryName(layout.categoryId) : 'N/A'}</p>
                           <p>Items: {layout.layout?.gridItems?.length || 0}</p>
                         </div>
                         
@@ -480,15 +480,34 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
                 </select>
               </div>
               
-              {editingLayout.filterType === 'category' && (
+              {(editingLayout.filterType === 'category' || editingLayout.filterType === 'all' || editingLayout.filterType === 'favorites') && (
                 <div>
                   <label className="block text-sm text-slate-400">Category</label>
                   <select
-                    value={editingLayout.categoryId || ''}
-                    onChange={(e) => setEditingLayout(prev => prev ? {...prev, categoryId: parseInt(e.target.value) || null} : null)}
+                    value={editingLayout.categoryId !== null ? editingLayout.categoryId : (editingLayout.filterType === 'all' ? 0 : (editingLayout.filterType === 'favorites' ? -1 : ''))}
+                    onChange={(e) => {
+                      const value = e.target.value;
+                      let categoryId: number | null;
+                      if (value === '0') {
+                        categoryId = 0;
+                      } else if (value === '-1') {
+                        categoryId = -1;
+                      } else {
+                        categoryId = value === '' ? null : parseInt(value);
+                      }
+                      setEditingLayout(prev => prev ? {...prev, categoryId} : null);
+                    }}
                     className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
                   >
-                    <option value="">Select a category</option>
+                    {editingLayout.filterType === 'all' && (
+                      <option value={0}>All Products</option>
+                    )}
+                    {editingLayout.filterType === 'favorites' && (
+                      <option value={-1}>Favorites</option>
+                    )}
+                    {editingLayout.filterType === 'category' && (
+                      <option value="">Select a category</option>
+                    )}
                     {categories.map(category => (
                       <option key={category.id} value={category.id}>{category.name}</option>
                     ))}

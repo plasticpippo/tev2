@@ -1,0 +1,128 @@
+import React from 'react';
+import type { Product, Category, ProductVariant } from '../../shared/types';
+import { formatCurrency } from '../utils/formatting';
+
+interface AvailableProductsPanelProps {
+  products: Product[];
+  categories: Category[];
+ showFavoritesOnly: boolean;
+  setShowFavoritesOnly: (show: boolean) => void;
+  selectedCategory: number | 'all';
+  setSelectedCategory: (category: number | 'all') => void;
+  activeFilterType: 'all' | 'favorites' | 'category';
+  setActiveFilterType: (filterType: 'all' | 'favorites' | 'category') => void;
+  activeCategoryId: number | null;
+  setActiveCategoryId: (categoryId: number | null) => void;
+  handleAddItemToGrid: (product: Product, variant: ProductVariant) => void;
+}
+
+const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
+  products,
+  categories,
+  showFavoritesOnly,
+  setShowFavoritesOnly,
+  selectedCategory,
+  setSelectedCategory,
+ activeFilterType,
+  setActiveFilterType,
+  activeCategoryId,
+  setActiveCategoryId,
+  handleAddItemToGrid
+}) => {
+ return (
+    <div className="bg-slate-700 p-4 rounded-lg">
+      <h3 className="text-lg font-semibold mb-2 text-amber-200">Available Products</h3>
+      <div className="flex flex-wrap gap-2 mb-4">
+        <button
+          onClick={() => {
+            const newShowFavorites = !showFavoritesOnly;
+            setShowFavoritesOnly(newShowFavorites);
+            if (newShowFavorites) {
+              setActiveFilterType('favorites');
+              setActiveCategoryId(-1); // Special "Favorites" category
+              setSelectedCategory(-1); // Update selected category state
+            } else if (activeFilterType === 'favorites') {
+              setActiveFilterType('all');
+              setActiveCategoryId(0); // Special "All Products" category
+              setSelectedCategory(0); // Update selected category state
+            }
+          }}
+          className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${showFavoritesOnly ? 'bg-amber-50 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+          aria-label={showFavoritesOnly ? 'Turn off favorites filter' : 'Turn on favorites filter'}
+        >
+          ★ Favourites {showFavoritesOnly ? 'ON' : 'OFF'}
+        </button>
+        {/* Special "All Products" category button */}
+        <button
+          onClick={() => {
+            setSelectedCategory(0); // Special "All Products" category
+            setShowFavoritesOnly(false);
+            setActiveFilterType('all');
+            setActiveCategoryId(0); // Special "All Products" category
+          }}
+          className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === 0 ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+          aria-label="Show all products"
+        >
+          All Products
+        </button>
+        {categories.map(category => (
+          <button
+            key={category.id}
+            onClick={() => {
+              const newSelectedCategory = selectedCategory === category.id ? 'all' : category.id; // Go back to "all" when unselecting
+              setSelectedCategory(newSelectedCategory);
+              
+              if (newSelectedCategory !== 'all') {
+                setActiveFilterType('category');
+                setActiveCategoryId(category.id);
+              } else {
+                setActiveFilterType('all');
+                setActiveCategoryId(0); // Special "All Products" category
+              }
+            }}
+            className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === category.id ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+            aria-label={`Filter by ${category.name} category`}
+          >
+            {category.name}
+          </button>
+        ))}
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded">
+        {(() => {
+          let filteredProducts = products;
+          
+          // Apply filter based on active filter type
+          if (activeFilterType === 'favorites') {
+            filteredProducts = products.filter(product =>
+              product.variants.some(variant => variant.isFavourite)
+            );
+          } else if (activeFilterType === 'category' && activeCategoryId !== null && activeCategoryId !== -1) {
+            filteredProducts = products.filter(product =>
+              product.categoryId === activeCategoryId
+            );
+          } else if (activeFilterType === 'all') {
+            // Show all products for 'all' filter
+            filteredProducts = products;
+          }
+          
+          return filteredProducts.map(product => (
+            product.variants.map((variant, variantIndex) => (
+              <button
+                key={`${product.id}-${variant.id}`}
+                onClick={() => handleAddItemToGrid(product, variant)}
+                className={`rounded-lg p-2 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 ${variant.backgroundColor} hover:brightness-110`}
+                aria-label={`Add ${product.name} ${variant.name} to grid`}
+              >
+                <p className={`font-bold text-xs ${variant.textColor}`}>{product.name}</p>
+                <p className={`text-xs ${variant.textColor}`}>{variant.name}</p>
+                <p className={`text-xs ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
+              </button>
+            ))
+          ));
+        })()}
+      </div>
+    </div>
+  );
+};
+
+export default AvailableProductsPanel;
