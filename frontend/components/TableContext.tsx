@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import { Room, Table } from '../../shared/types';
+import { Room, Table } from '@shared/types';
 
 export type LayoutMode = 'view' | 'edit' | 'drag';
 

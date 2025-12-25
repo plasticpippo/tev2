@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrderActivityLog, OrderItem } from '../../shared/types';
+import type { OrderActivityLog, OrderItem } from '@shared/types';
 import { formatDate } from '../utils/formatting';
 
 export const OrderActivityHistory: React.FC<{ logs: OrderActivityLog[] }> = ({ logs }) => {

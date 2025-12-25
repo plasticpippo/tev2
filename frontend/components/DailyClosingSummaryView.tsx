@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { DailyClosing } from '../../shared/types';
+import type { DailyClosing } from '@shared/types';
 import { getDailyClosings } from '../services/dailyClosingService';
 import { format } from 'date-fns';
 

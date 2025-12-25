@@ -1,5 +1,5 @@
 import React from 'react';
-import type { ProductVariant } from '../../shared/types';
+import type { ProductVariant } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 
 interface GridItem {

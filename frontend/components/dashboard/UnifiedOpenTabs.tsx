@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Tab } from '../../../shared/types';
+import type { Tab } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 
 export const UnifiedOpenTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {

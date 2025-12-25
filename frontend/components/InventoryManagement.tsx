@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { StockItem, StockAdjustment, User, Category, Product } from '../../shared/types';
+import type { StockItem, StockAdjustment, User, Category, Product } from '@shared/types';
 import * as inventoryApi from '../services/inventoryService';
 import * as productApi from '../services/productService';
 import * as userApi from '../services/userService';

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import * as userApi from '../services/userService';
-import type { User } from '../../shared/types';
+import type { User } from '@shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 

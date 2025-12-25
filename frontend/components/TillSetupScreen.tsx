@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Till } from '../../shared/types';
+import type { Till } from '@shared/types';
 
 interface TillSetupScreenProps {
   tills: Till[];

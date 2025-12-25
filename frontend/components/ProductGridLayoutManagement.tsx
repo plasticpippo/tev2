@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import type { Till, Category } from '../../shared/types';
+import type { Till, Category } from '@shared/types';
 import { getGridLayoutsForTill, getSharedLayouts, saveGridLayout, deleteGridLayout, setLayoutAsDefault } from '../services/gridLayoutService';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 import { VKeyboardInput } from './VKeyboardInput';
 import type { ProductGridLayout, ProductGridLayoutData } from '../services/apiBase';
 
@@ -596,7 +596,8 @@ export const ProductGridLayoutManagement: React.FC<ProductGridLayoutManagementPr
       
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
-        isOpen={!!deletingLayout}
+        show={!!deletingLayout}
+        title="Confirm Delete"
         message={`Are you sure you want to delete the layout "${deletingLayout?.name}"?`}
         onConfirm={handleDeleteLayout}
         onCancel={() => setDeletingLayout(null)}

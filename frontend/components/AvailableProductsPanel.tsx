@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Product, Category, ProductVariant } from '../../shared/types';
+import type { Product, Category, ProductVariant } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 
 interface AvailableProductsPanelProps {

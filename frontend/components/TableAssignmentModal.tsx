@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import type { Table, Room } from '../../shared/types';
+import type { Table, Room } from '@shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 
 interface TableAssignmentModalProps {

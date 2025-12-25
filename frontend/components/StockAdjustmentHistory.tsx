@@ -1,5 +1,5 @@
 import React from 'react';
-import type { StockAdjustment } from '../../shared/types';
+import type { StockAdjustment } from '@shared/types';
 import { formatDate } from '../utils/formatting';
 
 export const StockAdjustmentHistory: React.FC<{ adjustments: StockAdjustment[] }> = ({ adjustments }) => {

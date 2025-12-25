@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
-import type { StockItem, PurchasingUnit, Product } from '../../shared/types';
+import type { StockItem, PurchasingUnit, Product } from '@shared/types';
 import * as inventoryApi from '../services/inventoryService';
 import * as productApi from '../services/productService';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 import { v4 as uuidv4 } from 'uuid';
 
 interface StockItemModalProps {
@@ -197,7 +197,8 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                 />
             )}
             <ConfirmationModal
-                isOpen={!!deletingItem}
+                show={!!deletingItem}
+                title="Confirm Delete"
                 message={deleteError || `Are you sure you want to delete "${deletingItem?.name}"? This action cannot be undone.`}
                 onConfirm={deleteError ? () => { setDeletingItem(null); setDeleteError(''); } : confirmDelete}
                 onCancel={() => { setDeletingItem(null); setDeleteError(''); }}

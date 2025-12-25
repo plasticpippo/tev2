@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import type { Tab, OrderItem } from '../../shared/types';
+import type { Tab, OrderItem } from '@shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 
 // Define destination types more clearly

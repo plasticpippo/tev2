@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
-import type { Till } from '../../shared/types';
+import type { Till } from '@shared/types';
 import * as tillApi from '../services/tillService';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface TillModalProps {
   till?: Till;
@@ -140,16 +140,17 @@ export const TillManagement: React.FC<TillManagementProps> = ({ tills, onDataUpd
         />
       )}
       <ConfirmationModal
-        isOpen={!!deletingTill}
+        show={!!deletingTill}
+        title="Confirm Delete"
         message={`Are you sure you want to delete the till "${deletingTill?.name}"? Any device assigned to this till will need to be reconfigured.`}
         onConfirm={confirmDelete}
         onCancel={() => setDeletingTill(null)}
       />
       <ConfirmationModal
-        isOpen={!!assigningTill}
+        show={!!assigningTill}
+        title="Confirm Assignment"
         message={`Are you sure you want to re-assign this terminal to "${assigningTill?.name}"? The application will restart to apply the change.`}
         confirmText="Confirm & Restart"
-        confirmColor="bg-green-600 hover:bg-green-500"
         onConfirm={confirmAssign}
         onCancel={() => setAssigningTill(null)}
       />

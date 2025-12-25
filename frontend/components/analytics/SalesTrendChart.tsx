@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import type { Transaction } from '../../../shared/types';
+import type { Transaction } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 
 interface SalesTrendChartProps {

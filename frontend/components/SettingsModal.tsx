@@ -1,7 +1,7 @@
 
 
 import React from 'react';
-import type { Settings } from '../../shared/types';
+import type { Settings } from '@shared/types';
 import { TaxSettings } from './TaxSettings';
 import { BusinessDaySettings } from './BusinessDaySettings';
 

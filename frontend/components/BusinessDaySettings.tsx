@@ -1,8 +1,8 @@
 
 
 import React, { useState } from 'react';
-import type { Settings } from '../../shared/types';
-import { ConfirmationModal } from './ConfirmationModal';
+import type { Settings } from '@shared/types';
+import ConfirmationModal from './ConfirmationModal';
 
 interface BusinessDaySettingsProps {
   settings: Settings['businessDay'];
@@ -59,7 +59,8 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
             </div>
 
             <ConfirmationModal
-                isOpen={isConfirmModalOpen}
+                show={isConfirmModalOpen}
+                title="Confirm Manual Close"
                 message="Are you sure? This will end the current business day for reporting. All new sales will be part of the next day. This action cannot be undone."
                 confirmText="Yes, End Business Day"
                 onConfirm={handleManualClose}

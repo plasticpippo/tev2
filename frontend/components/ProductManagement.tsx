@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import type { Product, ProductVariant, Category, StockItem } from '../../shared/types';
+import type { Product, ProductVariant, Category, StockItem } from '@shared/types';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 import { availableColors, getContrastingTextColor } from '../utils/color';
 import { formatCurrency } from '../utils/formatting';
 import { v4 as uuidv4 } from 'uuid';
@@ -32,7 +32,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
     };
     
     const handleRemoveConsumption = (index: number) => {
-        const newConsumption = (variant.stockConsumption || []).filter((_, i) => i !== index);
+        const newConsumption = (variant.stockConsumption || []).filter((_: any, i: number) => i !== index);
         onUpdate({ ...variant, stockConsumption: newConsumption });
     };
 
@@ -83,7 +83,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                 <h5 className="text-sm font-medium text-slate-400 mb-2">Stock Consumption (Recipe)</h5>
                 <p className="text-xs text-slate-500 mb-3">Define which stock items are used when this variant is sold.</p>
                 <div className="space-y-2">
-                    {(variant.stockConsumption || []).map((sc, index) => (
+                    {(variant.stockConsumption || []).map((sc: any, index: number) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
                             <select value={sc.stockItemId} onChange={e => handleUpdateConsumption(index, 'stockItemId', e.target.value)} className="flex-grow p-2 bg-slate-600 border border-slate-500 rounded-md text-sm">
                                 {stockItems.map(si => <option key={si.id} value={si.id}>{si.name}</option>)}
@@ -249,7 +249,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
             </div>
              <div className="mt-2 pt-2 border-t border-slate-700 text-sm space-y-1">
                 <p className="font-semibold text-slate-400 text-xs">Variants:</p>
-                {product.variants.map(v => (
+                {product.variants.map((v: any) => (
                     <div key={v.id} className="flex justify-between">
                         <span>{v.name} {v.isFavourite && <span className="text-amber-400">★</span>}</span>
                         <span>{formatCurrency(v.price)}</span>
@@ -269,11 +269,12 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
         />
       )}
        <ConfirmationModal
-        isOpen={!!deletingProduct}
-        message={`Are you sure you want to delete "${deletingProduct?.name}"? This will delete all its variants.`}
-        onConfirm={confirmDelete}
-        onCancel={() => setDeletingProduct(null)}
-      />
+         show={!!deletingProduct}
+         title="Confirm Delete"
+         message={`Are you sure you want to delete "${deletingProduct?.name}"? This will delete all its variants.`}
+         onConfirm={confirmDelete}
+         onCancel={() => setDeletingProduct(null)}
+       />
       {/* Hidden elements to ensure Tailwind includes all color classes in the build */}
       <div className="hidden">
         <div className={availableColors.join(' ')}></div>

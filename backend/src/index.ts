@@ -4,6 +4,10 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { router } from './router';
 import { initPrisma } from './prisma';
+import dotenv from 'dotenv';
+
+// Load environment variables from .env file
+dotenv.config();
 
 // CORS options based on environment variables
 const corsOptions: cors.CorsOptions = {
@@ -11,7 +15,7 @@ const corsOptions: cors.CorsOptions = {
     'http://localhost:3000',
     'http://127.0.0.1:3000',
     'http://localhost:5173',
-    'http://127.0.1:5173'
+    'http://127.0.0.1:5173'
   ],
   credentials: true,
 };
@@ -73,7 +77,7 @@ const startServer = async () => {
     // Initialize Prisma client
     await initPrisma();
     
-    const HOST = process.env.HOST || 'localhost';
+    const HOST = process.env.HOST || '0.0.0.0';
     
     app.listen(PORT, HOST, () => {
       console.log(`Server is running on ${HOST}:${PORT}`);

@@ -17,7 +17,8 @@
     /* Path aliases */
     "baseUrl": ".",
     "paths": {
-      "@shared/*": ["../shared/*"]
+      "@shared/*": ["./shared/*"],
+      "shared/*": ["./shared/*"]
     },
 
     /* Linting */
@@ -26,6 +27,7 @@
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "src/__tests__", "src/test", "src/mocks", "../shared"],
+  "include": ["src", "shared"],
+  "exclude": ["src/__tests__", "src/test", "src/mocks"],
   "references": [{"path": "./tsconfig.node.json"}]
 }

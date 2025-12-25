@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { Transaction, User, Till, Settings } from '../../shared/types';
+import type { Transaction, User, Till, Settings } from '@shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
 

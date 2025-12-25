@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '../../shared/types';
+import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '@shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
 import { UserManagement } from './UserManagement';

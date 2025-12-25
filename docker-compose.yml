@@ -1,17 +1,77 @@
-version: '3.8'
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
-  postgres:
+  # Database service - internal only, not exposed to external network
+  db:
     image: postgres:15
-    container_name: bar_pos_postgres
+    container_name: bar_pos_backend_db
     environment:
-      POSTGRES_USER: totalevo_user
-      POSTGRES_PASSWORD: totalevo_password
-      POSTGRES_DB: bar_pos
-    ports:
-      - "5432:5432"
+      POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
+      POSTGRES_DB: ${POSTGRES_DB:-bar_pos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
+    networks:
+      - pos_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-totalevo_user} -d ${POSTGRES_DB:-bar_pos}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+ # Backend API service - exposed to external network for LAN access
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: bar_pos_backend
+    environment:
+      DATABASE_URL: "postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}"
+      PORT: ${BACKEND_PORT:-3001}
+      HOST: 0.0.0.0
+      NODE_ENV: ${NODE_ENV:-development}
+      CORS_ORIGIN: ${BACKEND_CORS_ORIGIN:-http://frontend:3000,http://localhost:3000,http://127.0.1:3000}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+    networks:
+      - pos_network
+    ports:
+      - "${BACKEND_EXTERNAL_PORT:-3001}:${BACKEND_PORT:-3001}"
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://0.0.0.0:3001/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Frontend service - exposed to external network
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: bar_pos_frontend
+    environment:
+      - VITE_API_URL=${FRONTEND_API_URL:-http://backend:3001}
+      - VITE_HOST=0.0.0.0
+      - VITE_PORT=${FRONTEND_PORT:-3000}
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "${FRONTEND_EXTERNAL_PORT:-3000}:${FRONTEND_PORT:-3000}"
+    restart: unless-stopped
+    networks:
+      - pos_network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  pos_network:
+    driver: bridge
 
 volumes:
   postgres_data:

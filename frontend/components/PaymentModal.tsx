@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
-import type { OrderItem, TaxSettings } from '../../shared/types';
+import type { OrderItem, TaxSettings } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
-import { PAYMENT_METHODS } from '../../shared/constants';
+import { PAYMENT_METHODS } from '@shared/constants';
 import { VKeyboardInput } from './VKeyboardInput';
 
 interface PaymentModalProps {

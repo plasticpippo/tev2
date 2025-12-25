@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Product, ProductVariant, Till, Category } from '../../shared/types';
+import type { Product, ProductVariant, Till, Category } from '@shared/types';
 import LayoutSettingsPanel from './LayoutSettingsPanel';
 import AvailableProductsPanel from './AvailableProductsPanel';
 import GridLayoutPanel from './GridLayoutPanel';

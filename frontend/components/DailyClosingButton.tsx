@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import type { Settings, DailyClosing } from '../../shared/types';
-import { ConfirmationModal } from './ConfirmationModal';
+import type { Settings, DailyClosing } from '@shared/types';
+import ConfirmationModal from './ConfirmationModal';
 import { createDailyClosing } from '../services/dailyClosingService';
 import { format } from 'date-fns';
 
@@ -53,7 +53,8 @@ export const DailyClosingButton: React.FC<DailyClosingButtonProps> = ({ settings
       </div>
 
       <ConfirmationModal
-        isOpen={isConfirmModalOpen}
+        show={isConfirmModalOpen}
+        title="Confirm Daily Closing"
         message="Are you sure? This will end the current business day for reporting. All new sales will be part of the next day. This action cannot be undone."
         confirmText="Yes, End Business Day"
         onConfirm={handleManualClose}

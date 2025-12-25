@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import type { Category, Till } from '../../shared/types';
+import type { Category, Till } from '@shared/types';
 import * as productApi from '../services/productService';
 import * as tillApi from '../services/tillService';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 
 interface CategoryModalProps {
   category?: Category;
@@ -158,11 +158,12 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
         />
       )}
        <ConfirmationModal
-        isOpen={!!deletingCategory}
-        message={`Are you sure you want to delete the category "${deletingCategory?.name}"? Products in this category will become uncategorized.`}
-        onConfirm={confirmDelete}
-        onCancel={() => setDeletingCategory(null)}
-      />
+         show={!!deletingCategory}
+         title="Confirm Delete"
+         message={`Are you sure you want to delete the category "${deletingCategory?.name}"? Products in this category will become uncategorized.`}
+         onConfirm={confirmDelete}
+         onCancel={() => setDeletingCategory(null)}
+       />
     </div>
   );
 };

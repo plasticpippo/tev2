@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import type { User, Transaction, OrderActivityLog, Settings } from '../../shared/types';
+import type { User, Transaction, OrderActivityLog, Settings } from '@shared/types';
 import * as userApi from '../services/userService';
 import * as transactionApi from '../services/transactionService';
 import * as orderApi from '../services/orderService';
 import * as settingApi from '../services/settingService';
 import { VKeyboardInput } from './VKeyboardInput';
-import { ConfirmationModal } from './ConfirmationModal';
+import ConfirmationModal from './ConfirmationModal';
 import { UserPerformanceReportModal } from './UserPerformanceReportModal';
 
 interface UserModalProps {
@@ -146,7 +146,8 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
         />
       )}
       <ConfirmationModal
-        isOpen={!!deletingUser}
+        show={!!deletingUser}
+        title="Confirm Delete"
         message={`Are you sure you want to delete the user "${deletingUser?.name}"?`}
         onConfirm={confirmDelete}
         onCancel={() => setDeletingUser(null)}

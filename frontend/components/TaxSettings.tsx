@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Settings } from '../../shared/types';
+import type { Settings } from '@shared/types';
 
 interface TaxSettingsProps {
   settings: Settings['tax'];

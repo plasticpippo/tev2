@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import type { Transaction, Product, Category, OrderItem } from '../../../shared/types';
+import type { Transaction, Product, Category, OrderItem } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 
 interface TopPerformersProps {

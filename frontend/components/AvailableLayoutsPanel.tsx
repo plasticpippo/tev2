@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Category } from '../../shared/types';
+import type { Category } from '@shared/types';
 
 interface ProductGridLayoutData {
   id?: string | number;

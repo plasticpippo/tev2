@@ -1,5 +1,5 @@
 import React from 'react';
-import type { OrderItem, User, Tab, Table } from '../../shared/types';
+import type { OrderItem, User, Tab, Table } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 
 interface OrderPanelProps {
