@@ -19,7 +19,7 @@ services:
       timeout: 5s
       retries: 5
 
- # Backend API service - exposed to external network for LAN access
+  # Backend API service - internal only, not exposed to external network
   backend:
     build:
       context: ./backend
@@ -30,29 +30,31 @@ services:
       PORT: ${BACKEND_PORT:-3001}
       HOST: 0.0.0.0
       NODE_ENV: ${NODE_ENV:-development}
-      CORS_ORIGIN: ${BACKEND_CORS_ORIGIN:-http://frontend:3000,http://localhost:3000,http://127.0.1:3000}
+      CORS_ORIGIN: ${BACKEND_CORS_ORIGIN}
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - pos_network
+    # Expose backend on host network for frontend access
+    # Accessible on local network but not from internet (depends on network firewall)
     ports:
-      - "${BACKEND_EXTERNAL_PORT:-3001}:${BACKEND_PORT:-3001}"
+      - "0.0.0.0:${BACKEND_EXTERNAL_PORT:-3001}:${BACKEND_PORT:-3001}"
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://0.0.0.0:3001/health"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  # Frontend service - exposed to external network
+  # Frontend service - exposed to external network for LAN access
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
     container_name: bar_pos_frontend
     environment:
-      - VITE_API_URL=${FRONTEND_API_URL:-http://backend:3001}
+      - VITE_API_URL=${FRONTEND_API_URL:-http://localhost:3001}
       - VITE_HOST=0.0.0.0
       - VITE_PORT=${FRONTEND_PORT:-3000}
     depends_on:

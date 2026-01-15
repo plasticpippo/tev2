@@ -1,10 +1,10 @@
 # Environment Variable Configuration for Bar POS System
 
-This document outlines the environment variable configuration for different deployment scenarios in the Bar POS system.
+This document outlines the environment variable configuration for different deployment scenarios in the Bar POS system, specifically focusing on the new architecture where the backend API is not publicly exposed.
 
 ## Overview
 
-The Bar POS system supports flexible configuration through environment variables to accommodate different deployment scenarios including local development, LAN deployment, and production environments.
+The Bar POS system supports flexible configuration through environment variables to accommodate different deployment scenarios including local development, LAN deployment, and production environments. The updated architecture ensures that the backend service is only accessible through internal Docker networking for enhanced security.
 
 ## Environment Variables
 
@@ -17,21 +17,39 @@ The Bar POS system supports flexible configuration through environment variables
 
 ### Backend Configuration
 - `BACKEND_PORT`: Backend server port (default: `3001`)
-- `BACKEND_EXTERNAL_PORT`: External port for backend (default: `3001`)
+- `BACKEND_EXTERNAL_PORT`: External port for backend (commented out since backend is not exposed externally)
 - `NODE_ENV`: Environment mode (default: `development`)
-- `BACKEND_CORS_ORIGIN`: Comma-separated list of allowed origins for CORS (default: `http://frontend:3000,http://localhost:3000,http://127.0.1:3000`)
+- `BACKEND_CORS_ORIGIN`: Comma-separated list of allowed origins for CORS (default: `http://frontend:3000,http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000`)
 
 ### Frontend Configuration
 - `FRONTEND_PORT`: Frontend server port (default: `3000`)
 - `FRONTEND_EXTERNAL_PORT`: External port for frontend (default: `3000`)
-- `FRONTEND_API_URL`: Backend API URL (default: `http://backend:3001`)
+- `FRONTEND_API_URL`: Backend API URL (default: `http://backend:3001`) - this ensures frontend communicates with backend through internal Docker network
+- `LAN_IP`: Local area network IP address for accessing the frontend from other devices (default: `localhost`)
+- `FRONTEND_LAN_URL`: Complete URL to access frontend from LAN (default: `http://${LAN_IP}:3000`)
 
 ### Frontend Vite Configuration
-- `VITE_API_URL`: API URL for Vite proxy (default: `http://192.168.1.241:3001`)
+- `VITE_API_URL`: API URL for Vite proxy (default: `http://backend:3001`) - configured to use internal container name
 - `VITE_HOST`: Host address for Vite server (default: `0.0.0.0`)
 - `VITE_PORT`: Port for Vite server (default: `3000`)
 
-## Deployment Scenarios
+## Updated Deployment Architecture
+
+### Internal Communication Pattern
+With the updated configuration, the architecture follows this pattern:
+- Database service (db) is internal only and not exposed to external networks
+- Backend service runs internally on port 3001 within the Docker network and is not exposed externally
+- Frontend service accesses backend using the container name: `http://backend:3001`
+- Frontend service is exposed to external network for LAN access on port 3000
+- Both backend and frontend services are connected via the `pos_network` Docker network
+
+### Security Benefits
+- Backend service is no longer exposed to external networks
+- Reduces attack surface by limiting access to internal container network only
+- Maintains functionality for frontend-backend communication
+- Preserves LAN access capability for frontend while securing backend
+
+## Configuration Examples
 
 ### Local Development
 For local development, use the default values in the `.env` file:
@@ -46,91 +64,49 @@ DB_PORT=5432
 
 # Backend Configuration
 BACKEND_PORT=3001
-BACKEND_EXTERNAL_PORT=3001
+# BACKEND_EXTERNAL_PORT=3001  # Commented out since backend is not exposed externally
 NODE_ENV=development
-BACKEND_CORS_ORIGIN=http://frontend:3000,http://localhost:3000,http://127.0.1:3000
+BACKEND_CORS_ORIGIN=http://frontend:3000,http://localhost:3000,http://127.0.0.1:3000,http://0.0.0.0:3000
 
 # Frontend Configuration
 FRONTEND_PORT=3000
 FRONTEND_EXTERNAL_PORT=3000
 FRONTEND_API_URL=http://backend:3001
+LAN_IP=${LAN_IP:-localhost}
+FRONTEND_LAN_URL=http://${LAN_IP}:3000
 ```
 
 ### LAN Deployment
-For LAN deployment, update the relevant environment variables to match your network configuration:
+For LAN deployment, the configuration remains largely the same, but you would update the LAN_IP variable:
 
 ```env
-# Database Configuration
-POSTGRES_USER=your_user
-POSTGRES_PASSWORD=your_password
-POSTGRES_DB=your_db
-DB_HOST=your_database_server_ip
-DB_PORT=5432
-
-# Backend Configuration
-BACKEND_PORT=3001
-BACKEND_EXTERNAL_PORT=3001
-NODE_ENV=production
-BACKEND_CORS_ORIGIN=http://your_frontend_ip:3000,http://192.168.1.241:3000
-
-# Frontend Configuration
-FRONTEND_PORT=3000
-FRONTEND_EXTERNAL_PORT=3000
-FRONTEND_API_URL=http://your_backend_ip:3001
-VITE_API_URL=http://your_backend_ip:3001
-VITE_HOST=0.0.0.0
-VITE_PORT=3000
-```
-
-### Production Deployment
-For production deployment, ensure secure values for all environment variables:
-
-```env
-# Database Configuration
-POSTGRES_USER=production_user
-POSTGRES_PASSWORD=secure_password
-POSTGRES_DB=production_db
-DB_HOST=production_database_host
-DB_PORT=5432
-
-# Backend Configuration
-BACKEND_PORT=3001
-BACKEND_EXTERNAL_PORT=3001
-NODE_ENV=production
-BACKEND_CORS_ORIGIN=https://yourdomain.com
-
-# Frontend Configuration
-FRONTEND_PORT=3000
-FRONTEND_EXTERNAL_PORT=3000
-FRONTEND_API_URL=https://api.yourdomain.com
-VITE_API_URL=https://api.yourdomain.com
-VITE_HOST=0.0.0.0
-VITE_PORT=3000
+# Use your actual LAN IP address
+LAN_IP=192.168.1.x
+FRONTEND_LAN_URL=http://${LAN_IP}:3000
 ```
 
 ## Docker Compose Configuration
 
-The docker-compose.yml file uses these environment variables to configure the services:
+The docker-compose.yml file uses these environment variables to configure the services with the updated security model:
 
 ```yaml
 version: '3.8'
 services:
   db:
-    image: postgres:13
+    image: postgres:15
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
       POSTGRES_DB: ${POSTGRES_DB:-bar_pos}
-    ports:
-      - "${DB_PORT:-5432}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pos_network
 
- backend:
+  backend:
     build: ./backend
-    ports:
-      - "${BACKEND_EXTERNAL_PORT:-3001}:${BACKEND_PORT:-3001}"
+    # No external ports exposed - backend is internal only
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}
       - PORT=${BACKEND_PORT:-3001}
@@ -139,6 +115,8 @@ services:
     depends_on:
       - db
     restart: always
+    networks:
+      - pos_network
 
   frontend:
     build: ./frontend
@@ -149,6 +127,12 @@ services:
     depends_on:
       - backend
     restart: always
+    networks:
+      - pos_network
+
+networks:
+  pos_network:
+    driver: bridge
 
 volumes:
   postgres_data:
@@ -156,34 +140,7 @@ volumes:
 
 ## Environment Variable Flexibility in Node.js
 
-When using environment variables in Node.js with the dotenv package, note that bash-style parameter expansion (e.g., `${VAR:-default}`) is not supported by default. To maintain flexibility across different deployment scenarios, you can:
-
-1. Use default values in your application code:
-   ```javascript
-   const port = process.env.PORT || 3001;
-   const dbUrl = process.env.DATABASE_URL || 'postgresql://localhost:5432/bar_pos';
-   ```
-
-2. Provide multiple environment files for different scenarios:
-   - `.env.local` for local development
-   - `.env.production` for production
-   - `.env.staging` for staging environments
-
-3. Use runtime configuration based on NODE_ENV:
-   ```javascript
-   const config = {
-     development: {
-       port: 3001,
-       cors: ['http://localhost:3000', 'http://localhost:5173']
-     },
-     production: {
-       port: 80,
-       cors: ['https://yourdomain.com']
-     }
-   };
-   
-   const currentConfig = config[process.env.NODE_ENV] || config.development;
-   ```
+When using environment variables in Node.js with the dotenv package, note that bash-style parameter expansion (e.g., `${VAR:-default}`) is used in Docker Compose files but should use simple key-value pairs in your .env files for direct Node.js usage (e.g., `PORT=3001`).
 
 ## Configuration Best Practices
 
@@ -195,3 +152,5 @@ When using environment variables in Node.js with the dotenv package, note that b
 6. Ensure CORS settings are appropriate for each deployment environment
 7. Use secure, non-default passwords in production environments
 8. Use Docker's environment variable substitution in docker-compose.yml files (which does support `${VAR:-default}` syntax)
+9. Maintain the security principle of not exposing backend services externally while ensuring internal communication works properly
+10. Test internal communication between containers after configuration changes

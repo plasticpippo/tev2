@@ -62,8 +62,12 @@ const getApiBaseUrl = (): string => {
   if ((import.meta as any).env.DEV) {
      return (import.meta as any).env.VITE_API_URL || 'http://localhost:3001';
    }
-   // In production, you might want to use relative URLs or a different config
-   return (import.meta as any).env.VITE_API_URL || '';
+   // In production, construct the API URL based on the current hostname but different port
+   // This allows the frontend to work when accessed from different IPs (localhost, LAN IP, etc.)
+   const protocol = window.location.protocol;
+   const hostname = window.location.hostname;
+   const backendPort = 3001; // Backend runs on port 3001
+   return `${protocol}//${hostname}:${backendPort}`;
 };
 
 export const API_BASE_URL = getApiBaseUrl();
