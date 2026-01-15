@@ -103,15 +103,12 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
   const debouncedFetchData = useCallback(debounce(fetchData, 300), [fetchData]);
 
   useEffect(() => {
-    // If no till is assigned, we don't need to load all data, just enough to set up.
-    if (!assignedTillId) {
-      setIsLoading(false);
-      return;
-    }
+    // Always fetch data when user is logged in, regardless of assignedTillId
+    // This ensures tills are available for selection after login
     fetchData();
     const unsubscribe = subscribeToUpdates(debouncedFetchData);
     return () => unsubscribe();
-  }, [fetchData, debouncedFetchData, assignedTillId]);
+  }, [fetchData, debouncedFetchData]);
 
   // --- STOCK & PRODUCT COMPUTATIONS ---
   const makableVariantIds = useMemo(() => {
