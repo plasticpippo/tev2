@@ -109,3 +109,8 @@ export {
   getDailyClosings,
   createDailyClosing
 } from './dailyClosingService';
+
+// Export consumption service functions
+export {
+  getConsumptionReport
+} from './consumptionService';

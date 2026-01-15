@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '@shared/types';
+import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '../../shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
 import { UserManagement } from './UserManagement';
@@ -14,6 +14,7 @@ import { AnalyticsPanel } from './AnalyticsPanel';
 import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
+import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -45,7 +46,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -103,6 +104,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           );
       case 'dailyClosingSummary':
           return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
+      case 'itemisedConsumption':
+          return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
       default:
         return <p>Select a view</p>;
     }
@@ -150,6 +153,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <NavButton view="users" label="Users" isFirst/>
                 <NavButton view="tills" label="Tills" />
                 <NavButton view="tables" label="Tables & Layout" />
+                <NavButton view="itemisedConsumption" label="Itemised Consumption" />
                 <div className="pt-2"></div>
                 <NavButton view="settings" label="Settings" isFirst/>
             </nav>

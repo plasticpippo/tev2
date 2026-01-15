@@ -158,3 +158,18 @@ export interface Tab {
     tillName: string;
     tableId?: string;
 }
+
+export interface ConsumptionReportItem {
+    id: string;
+    productId: number;
+    productName: string;
+    variantId: number;
+    variantName: string;
+    categoryId: number;
+    categoryName: string;
+    stockItemId: string;
+    stockItemName: string;
+    stockItemType: string;
+    quantityConsumed: number;
+    transactionDate: string;
+}
