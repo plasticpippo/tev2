@@ -1,4 +1,4 @@
-import type { ProductGridLayoutData } from './frontend/services/apiBase';
+import type { ProductGridLayoutData } from '../frontend/services/apiBase';
 
 // Test the fixes to the filtering and ID comparison logic
 console.log('Testing ProductGridLayoutCustomizer fixes...');

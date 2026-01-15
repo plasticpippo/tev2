@@ -1,4 +1,4 @@
-import { availableColors, getContrastingTextColor } from './frontend/utils/color';
+import { availableColors, getContrastingTextColor } from '../frontend/utils/color';
 
 // Test the color palette functionality
 console.log('Testing color palette functionality...\n');

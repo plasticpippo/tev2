@@ -1,4 +1,4 @@
-import { ProductGridLayoutData } from './frontend/services/apiBase';
+import { ProductGridLayoutData } from '../frontend/services/apiBase';
 
 // Test the layout saving functionality with isDefault flag
 const testLayoutSave = async () => {

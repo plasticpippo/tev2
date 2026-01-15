@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { getCurrentLayoutForTillWithFilter } from './frontend/services/gridLayoutService';
+import { getCurrentLayoutForTillWithFilter } from '../frontend/services/gridLayoutService';
 
 const prisma = new PrismaClient();
 

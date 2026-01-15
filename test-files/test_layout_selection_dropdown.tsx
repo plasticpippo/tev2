@@ -1,8 +1,8 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { LayoutSelectionDropdown } from './frontend/components/LayoutSelectionDropdown';
-import { ProductGridLayoutData } from './frontend/services/apiBase';
+import { LayoutSelectionDropdown } from '../frontend/components/LayoutSelectionDropdown';
+import { ProductGridLayoutData } from '../frontend/services/apiBase';
 
 // Mock the gridLayoutService
 jest.mock('./frontend/services/gridLayoutService', () => ({
