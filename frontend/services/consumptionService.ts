@@ -1,5 +1,5 @@
 import { makeApiRequest, apiUrl } from './apiBase';
-import type { ConsumptionReportItem } from '../../shared/types';
+import type { ConsumptionReportItem, ConsumptionReportResponse } from '../../shared/types';
 
 interface ConsumptionFilters {
   startDate?: string;
@@ -8,7 +8,7 @@ interface ConsumptionFilters {
   stockItemType?: string;
 }
 
-export const getConsumptionReport = async (filters: ConsumptionFilters = {}): Promise<ConsumptionReportItem[]> => {
+export const getConsumptionReport = async (filters: ConsumptionFilters = {}): Promise<ConsumptionReportResponse> => {
   const queryParams = new URLSearchParams();
   
   if (filters.startDate) {

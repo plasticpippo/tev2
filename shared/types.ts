@@ -173,3 +173,15 @@ export interface ConsumptionReportItem {
     quantityConsumed: number;
     transactionDate: string;
 }
+
+export interface ConsumptionReportTotal {
+    stockItemId: string;
+    stockItemName: string;
+    stockItemType: string;
+    totalQuantity: number;
+}
+
+export interface ConsumptionReportResponse {
+    details: ConsumptionReportItem[];
+    totals: ConsumptionReportTotal[];
+}

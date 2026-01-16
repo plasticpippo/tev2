@@ -148,8 +148,28 @@ consumptionReportsRouter.get('/itemised', async (req: Request, res: Response) =>
 
     // Sort by transaction date (most recent first)
     finalResult.sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
+    
+    // Calculate aggregated totals
+    const aggregatedTotals: Record<string, { stockItemId: string; stockItemName: string; stockItemType: string; totalQuantity: number }> = finalResult.reduce((acc, item) => {
+      if (!acc[item.stockItemName]) {
+        acc[item.stockItemName] = {
+          stockItemId: item.stockItemId,
+          stockItemName: item.stockItemName,
+          stockItemType: item.stockItemType,
+          totalQuantity: 0
+        };
+      }
+      acc[item.stockItemName].totalQuantity += item.quantityConsumed;
+      return acc;
+    }, {} as Record<string, { stockItemId: string; stockItemName: string; stockItemType: string; totalQuantity: number }>);
 
-    res.json(finalResult);
+    // Convert aggregated totals to an array and sort by total quantity (descending)
+    const aggregatedTotalsArray = Object.values(aggregatedTotals).sort((a, b) => b.totalQuantity - a.totalQuantity);
+
+    res.json({
+      details: finalResult,
+      totals: aggregatedTotalsArray
+    });
   } catch (error) {
     console.error('Error fetching itemised consumption report:', error);
     res.status(500).json({ error: 'Failed to fetch itemised consumption report. Please try again later.' });
