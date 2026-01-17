@@ -1,9 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import type { Product, ProductVariant, Category, Till } from '@shared/types';
+import type { Product, ProductVariant, Category, Till } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
-import ProductGridLayoutCustomizer, { type ProductGridLayoutData } from './ProductGridLayoutCustomizer';
+import ProductGridLayoutCustomizer from './ProductGridLayoutCustomizer';
+import type { ProductGridLayoutData } from './useProductGridLayoutCustomizer';
 import { getCurrentLayoutForTill, getCurrentLayoutForTillWithFilter } from '../services/gridLayoutService';
 import { LayoutSelectionDropdown } from './LayoutSelectionDropdown';
+import ProductGridItem from './ProductGridItem';
 
 interface ProductGridProps {
   products: Product[];
@@ -147,13 +149,12 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
 
       <div className="flex-grow p-4 overflow-y-auto">
         {currentLayout && currentLayout.layout.gridItems.length > 0 ? (
-          // Render using the custom grid layout
-          <div 
-            className="grid w-full min-h-[500px]"
+          // Render using the custom grid layout with absolute positioning to respect x,y coordinates
+          <div
+            className="relative w-full min-h-[500px] bg-slate-800 rounded-lg p-4"
             style={{
-              gridTemplateColumns: `repeat(${currentLayout.layout.columns}, 1fr)`,
-              gridAutoRows: 'minmax(128px, auto)',
-              gap: '1rem'
+              // Calculate container size based on the maximum grid positions
+              minHeight: '500px',
             }}
           >
             {currentLayout.layout.gridItems.map((gridItem) => {
@@ -168,24 +169,40 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
               
               const isMakable = makableVariantIds.has(variant.id);
               
+              // Calculate position and size based on grid coordinates
+              // Using similar calculations as in EnhancedGridCanvas
+              const gridSize = { width: 120, height: 128 }; // Standard grid size
+              const gutter = 8; // Gap between items
+              const containerPadding = { x: 16, y: 16 }; // Similar to customizer
+              
+              const calculatedWidth = gridItem.width * gridSize.width + (gridItem.width - 1) * gutter;
+              const calculatedHeight = gridItem.height * gridSize.height; // Each grid unit is 128px high
+              const calculatedLeft = containerPadding.x + gridItem.x * (gridSize.width + gutter);
+              const calculatedTop = containerPadding.y + gridItem.y * (gridSize.height + gutter);
+              
               return (
-                <button
+                <div
                   key={gridItem.id}
-                  onClick={() => onAddToCart(variant, product)}
-                  disabled={!isMakable}
-                  className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden flex flex-col justify-between h-full ${variant.backgroundColor} ${isMakable ? 'hover:brightness-110' : 'opacity-50 cursor-not-allowed'}`}
+                  className="absolute w-full h-full"
                   style={{
-                    gridColumn: `${gridItem.x + 1} / span ${gridItem.width}`,
-                    gridRow: `${gridItem.y + 1} / span ${gridItem.height}`,
+                    left: `${calculatedLeft}px`,
+                    top: `${calculatedTop}px`,
+                    width: `${calculatedWidth}px`,
+                    height: `${calculatedHeight}px`,
                   }}
                 >
-                  <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
-                  <div>
-                    <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
-                    <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
-                  </div>
-                  {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">OUT OF STOCK</span></div>}
-                </button>
+                  <ProductGridItem
+                    product={product}
+                    variant={variant}
+                    widthSpan={gridItem.width}
+                    heightSpan={gridItem.height}
+                    isMakable={isMakable}
+                    onClick={() => onAddToCart(variant, product)}
+                    disabled={!isMakable}
+                    useParentDimensions={true}
+                    className="w-full h-full"
+                  />
+                </div>
               );
             })}
           </div>
@@ -195,19 +212,17 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
             {itemsToRender.map(({ product, variant }) => {
               const isMakable = makableVariantIds.has(variant.id);
               return (
-                <button
+                <ProductGridItem
                   key={variant.id}
+                  product={product}
+                  variant={variant}
+                  widthSpan={1}
+                  heightSpan={1}
+                  isMakable={isMakable}
                   onClick={() => onAddToCart(variant, product)}
                   disabled={!isMakable}
-                  className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden h-32 flex flex-col justify-between ${variant.backgroundColor} ${isMakable ? 'hover:brightness-110' : 'opacity-50 cursor-not-allowed'}`}
-                >
-                  <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
-                  <div>
-                    <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
-                    <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
-                  </div>
-                   {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">OUT OF STOCK</span></div>}
-                </button>
+                  className="h-32"
+                />
               )
             })}
           </div>
@@ -238,6 +253,8 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
           'category'
         }
         initialCategoryId={typeof selectedFilter === 'number' ? selectedFilter : null}
+        initialLayoutData={currentLayout}  // Pass the current layout data
+        forceRefresh={showCustomizer}  // Trigger refresh when modal is shown
         onSaveLayout={(layoutData: ProductGridLayoutData) => {
           // Update the current layout state
           setCurrentLayout(layoutData);
@@ -245,7 +262,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
           if (layoutData.id) {
             setSelectedLayoutId(layoutData.id);
           }
-          // For now, just close the modal
+          // Close the modal
           setShowCustomizer(false);
         }}
         onCancel={() => setShowCustomizer(false)}

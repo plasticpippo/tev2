@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react';
 import type { Product, ProductVariant, Till, Category } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 import { saveGridLayout, getGridLayoutsForTill, deleteGridLayout, setLayoutAsDefault, getLayoutById } from '../services/gridLayoutService';
+import type { GridTemplate } from './GridTemplates';
+import type { EnhancedGridItemData, EnhancedProductGridLayout } from './EnhancedGridLayout';
 
 // Define filter type for layout customization
 export type FilterType = 'all' | 'favorites' | 'category';
@@ -42,6 +44,10 @@ export interface GridItem {
   y: number;
   width: number;
   height: number;
+  rotation?: number;
+  borderRadius?: number;
+  zIndex?: number;
+  locked?: boolean;
 }
 
 interface UseProductGridLayoutCustomizerProps {
@@ -53,6 +59,7 @@ interface UseProductGridLayoutCustomizerProps {
   onCancel: () => void;
   initialFilterType?: 'all' | 'favorites' | 'category';
   initialCategoryId?: number | null;
+  initialLayoutData?: ProductGridLayoutData | null;  // Add initial layout data prop
 }
 
 interface ConfirmationModalState {
@@ -70,6 +77,7 @@ export const useProductGridLayoutCustomizer = ({
   onCancel,
   initialFilterType,
   initialCategoryId,
+  initialLayoutData,  // Add initial layout data prop
 }: UseProductGridLayoutCustomizerProps) => {
   const [gridItems, setGridItems] = useState<GridItem[]>([]);
   const [selectedTill, setSelectedTill] = useState<number | null>(currentTillId);
@@ -90,55 +98,67 @@ export const useProductGridLayoutCustomizer = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [showConfirmationModal, setShowConfirmationModal] = useState<ConfirmationModalState>({show: false});
 
-  // Initialize grid items from products
+  // Initialize with the initial layout data if provided
   useEffect(() => {
-    if (products.length > 0) {
-      const initialItems: GridItem[] = [];
-      let x = 0;
-      let y = 0;
-      const itemsPerRow = 4; // Assuming 4 items per row initially
+    if (initialLayoutData) {
+      // Set the initial layout data
+      setLayoutName(initialLayoutData.name);
+      setSelectedTill(initialLayoutData.tillId);
+      setIsDefault(initialLayoutData.isDefault);
+      setActiveFilterType(initialLayoutData.filterType || 'all');
+      setActiveCategoryId(initialLayoutData.categoryId || null);
+      setGridItems(parseGridItems(initialLayoutData.layout.gridItems));
+      setCurrentLayoutId(initialLayoutData.id || null);
+    } else {
+      // Initialize grid items from products if no initial layout data
+      if (products.length > 0) {
+        const initialItems: GridItem[] = [];
+        let x = 0;
+        let y = 0;
+        const itemsPerRow = 4; // Assuming 4 items per row initially
 
-      // Filter products based on active filter type
-      let filteredProducts = [...products];
-      
-      if (activeFilterType === 'favorites') {
-        filteredProducts = products.filter(product =>
-          product.variants.some(variant => variant.isFavourite)
-        );
-      } else if (activeFilterType === 'category' && activeCategoryId !== null && activeCategoryId !== -1) {
-        filteredProducts = products.filter(product => product.categoryId === activeCategoryId);
-      } else if (activeFilterType === 'all') {
-        // Show all products for 'all' filter
-        filteredProducts = products;
-      }
+        // Filter products based on active filter type
+        let filteredProducts = [...products];
+        
+        if (activeFilterType === 'favorites') {
+          filteredProducts = products.filter(product =>
+            product.variants.some(variant => variant.isFavourite)
+          );
+        } else if (activeFilterType === 'category' && activeCategoryId !== null && activeCategoryId !== -1) {
+          filteredProducts = products.filter(product => product.categoryId === activeCategoryId);
+        } else if (activeFilterType === 'all') {
+          // Show all products for 'all' filter
+          filteredProducts = products;
+        }
 
-      filteredProducts.forEach((product) => {
-        product.variants.forEach((variant, variantIndex) => {
-          if (initialItems.length < 20) { // Limit initial items to avoid overcrowding
-            initialItems.push({
-              id: `item-${product.id}-${variant.id}-${variantIndex}`,
-              variantId: variant.id,
-              productId: product.id,
-              name: product.name,
-              price: variant.price,
-              backgroundColor: variant.backgroundColor,
-              textColor: variant.textColor,
-              x,
-              y,
-              width: 1,
-              height: 1,
-            });
-            x++;
-            if (x >= itemsPerRow) {
-              x = 0;
-              y++;
+        filteredProducts.forEach((product) => {
+          product.variants.forEach((variant, variantIndex) => {
+            if (initialItems.length < 20) { // Limit initial items to avoid overcrowding
+              initialItems.push({
+                id: `item-${product.id}-${variant.id}-${variantIndex}`,
+                variantId: variant.id,
+                productId: product.id,
+                name: product.name,
+                price: variant.price,
+                backgroundColor: variant.backgroundColor,
+                textColor: variant.textColor,
+                x,
+                y,
+                width: 1,
+                height: 1,
+              });
+              x++;
+              if (x >= itemsPerRow) {
+                x = 0;
+                y++;
+              }
             }
-          }
+          });
         });
-      });
-      setGridItems(initialItems);
+        setGridItems(initialItems);
+      }
     }
-  }, [products, activeFilterType, activeCategoryId]);
+  }, [products, activeFilterType, activeCategoryId, initialLayoutData]); // Added initialLayoutData to dependency array
   
   // Initialize the filter selection based on initial filter type
   useEffect(() => {
@@ -173,7 +193,9 @@ export const useProductGridLayoutCustomizer = ({
     setLoadingLayouts(true);
     setError(null);
     try {
-      const layouts = await getGridLayoutsForTill(tillId);
+      let layouts = await getGridLayoutsForTill(tillId);
+      // Apply migration to ensure backward compatibility for all layouts
+      layouts = layouts.map(layout => migrateOldLayoutFormat(layout));
       setAvailableLayouts(layouts);
     } catch (err) {
       setError('Failed to load layouts: ' + (err as Error).message);
@@ -186,6 +208,24 @@ export const useProductGridLayoutCustomizer = ({
     setGridItems(prevItems =>
       prevItems.map(item =>
         item.id === id ? { ...item, x: Math.max(0, newX), y: Math.max(0, newY) } : item
+      )
+    );
+  };
+
+  // Handle updating an item's properties (enhanced features)
+  const handleUpdateItem = (id: string, updates: Partial<GridItem>) => {
+    setGridItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id ? { ...item, ...updates } : item
+      )
+    );
+  };
+
+  // Handle resizing an item
+  const handleResizeItem = (id: string, updates: Partial<GridItem>) => {
+    setGridItems(prevItems =>
+      prevItems.map(item =>
+        item.id === id ? { ...item, ...updates } : item
       )
     );
   };
@@ -211,6 +251,11 @@ export const useProductGridLayoutCustomizer = ({
             y: item.y,
             width: item.width,
             height: item.height,
+            // Include enhanced properties if they exist
+            rotation: item.rotation,
+            borderRadius: item.borderRadius,
+            zIndex: item.zIndex,
+            locked: item.locked,
           })),
           version: '1.0',
         },
@@ -250,6 +295,11 @@ export const useProductGridLayoutCustomizer = ({
       } else {
         // Add new layout to the list
         setAvailableLayouts(prevLayouts => [...prevLayouts, result]);
+      }
+      
+      // Update current layout ID if it was newly created
+      if (!currentLayoutId && result.id) {
+        setCurrentLayoutId(result.id);
       }
       
       onSaveLayout(savedLayoutData);
@@ -321,7 +371,11 @@ export const useProductGridLayoutCustomizer = ({
     setLoadingCurrentLayout(true);
     setError(null);
     try {
-      const layout = await getLayoutById(layoutId.toString());
+      let layout = await getLayoutById(layoutId.toString());
+      
+      // Apply migration to ensure backward compatibility
+      layout = migrateOldLayoutFormat(layout);
+      
       // Update component state with layout data
       setLayoutName(layout.name);
       setSelectedTill(layout.tillId);
@@ -356,8 +410,29 @@ export const useProductGridLayoutCustomizer = ({
         y: item.y,
         width: item.width,
         height: item.height,
+        // Include enhanced properties if they exist in the layout
+        rotation: item.rotation,
+        borderRadius: item.borderRadius,
+        zIndex: item.zIndex,
+        locked: item.locked,
       };
     });
+  };
+
+  // Backward compatibility: Migrate old layout format to new enhanced format
+  const migrateOldLayoutFormat = (oldLayout: any): ProductGridLayoutData => {
+    // Check if the layout is in the old format
+    if (!oldLayout.hasOwnProperty('filterType')) {
+      // It's an old layout format, add default values for new properties
+      return {
+        ...oldLayout,
+        filterType: 'all',
+        categoryId: 0
+      };
+    }
+    
+    // Already in new format
+    return oldLayout;
   };
 
   const handleAddItemToGrid = (product: Product, variant: ProductVariant) => {
@@ -417,6 +492,29 @@ export const useProductGridLayoutCustomizer = ({
     setIsDefault(false);
     setCurrentLayoutId(null);
   };
+  
+  // Function to refresh the current layout data
+  const refreshCurrentLayout = async () => {
+    if (currentLayoutId) {
+      try {
+        let layout = await getLayoutById(currentLayoutId.toString());
+        
+        // Apply migration to ensure backward compatibility
+        layout = migrateOldLayoutFormat(layout);
+        
+        // Update component state with layout data
+        setLayoutName(layout.name);
+        setSelectedTill(layout.tillId);
+        setIsDefault(layout.isDefault);
+        setActiveFilterType(layout.filterType || 'all');
+        setActiveCategoryId(layout.categoryId || null);
+        // Parse and set grid items
+        setGridItems(parseGridItems(layout.layout.gridItems));
+      } catch (error) {
+        setError('Failed to refresh layout: ' + (error as Error).message);
+      }
+    }
+  };
 
   const handleCreateNewLayout = () => {
     resetLayout();
@@ -435,8 +533,56 @@ export const useProductGridLayoutCustomizer = ({
     setGridItems([]);
   };
 
+  // Migration function to convert old grid items to enhanced format
+  const migrateGridItem = (item: any): GridItem => {
+    return {
+      id: item.id,
+      variantId: item.variantId,
+      productId: item.productId,
+      name: item.name || 'Unknown Product',
+      price: item.price || 0,
+      backgroundColor: item.backgroundColor || '#3b82f6',
+      textColor: item.textColor || '#ffffff',
+      x: item.x || 0,
+      y: item.y || 0,
+      width: item.width || 1,
+      height: item.height || 1,
+      rotation: item.rotation,
+      borderRadius: item.borderRadius,
+      zIndex: item.zIndex,
+      locked: item.locked,
+    };
+  };
+
+  const applyTemplate = (template: GridTemplate) => {
+    // Convert the template layout to grid items format
+    const newGridItems = template.layout.gridItems.map((item: any) => {
+      // Find the actual product and variant based on the template
+      const product = products.find(p => p.id === item.productId);
+      const variant = product?.variants.find(v => v.id === item.variantId);
+      
+      return {
+        id: `template-${item.id}-${Date.now()}`,
+        variantId: item.variantId,
+        productId: item.productId,
+        name: product?.name || 'Template Item',
+        price: variant?.price || 0,
+        backgroundColor: variant?.backgroundColor || '#3b82f6',
+        textColor: variant?.textColor || '#ffffff',
+        x: item.x,
+        y: item.y,
+        width: item.width,
+        height: item.height,
+      };
+    });
+
+    // Update the grid items with the template
+    setGridItems(newGridItems);
+  };
+
   return {
     gridItems,
+    setGridItems,
     selectedTill,
     setSelectedTill,
     layoutName,
@@ -463,6 +609,8 @@ export const useProductGridLayoutCustomizer = ({
     showConfirmationModal,
     setShowConfirmationModal,
     handleMoveItem,
+    handleUpdateItem,
+    handleResizeItem,
     handleSaveLayout,
     handleSaveAsNewLayout,
     handleLoadLayout,
@@ -471,9 +619,13 @@ export const useProductGridLayoutCustomizer = ({
     handleSetAsDefault,
     handleCreateNewLayout,
     resetLayout,
+    refreshCurrentLayout,
     filteredLayouts,
     handleClearGrid,
     parseGridItems,
     loadLayoutsForTill,
+    applyTemplate,
+    migrateGridItem,
+    migrateOldLayoutFormat,
   };
 };
