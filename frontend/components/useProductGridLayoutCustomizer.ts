@@ -182,11 +182,21 @@ export const useProductGridLayoutCustomizer = ({
     }
   };
 
-  const handleMoveItem = (id: string, newX: number, newY: number) => {
+  const handleMoveItem = (id: string, newX?: number, newY?: number, newWidth?: number, newHeight?: number) => {
     setGridItems(prevItems =>
-      prevItems.map(item =>
-        item.id === id ? { ...item, x: Math.max(0, newX), y: Math.max(0, newY) } : item
-      )
+      prevItems.map(item => {
+        if (item.id === id) {
+          const updatedItem: GridItem = { ...item };
+          
+          if (newX !== undefined) updatedItem.x = Math.max(0, newX);
+          if (newY !== undefined) updatedItem.y = Math.max(0, newY);
+          if (newWidth !== undefined) updatedItem.width = Math.max(1, newWidth);
+          if (newHeight !== undefined) updatedItem.height = Math.max(1, newHeight);
+          
+          return updatedItem;
+        }
+        return item;
+      })
     );
   };
 
@@ -431,6 +441,10 @@ export const useProductGridLayoutCustomizer = ({
     return matchesFilter && matchesSearch;
   });
 
+  const handleRemoveItem = (id: string) => {
+    setGridItems(prevItems => prevItems.filter(item => item.id !== id));
+  };
+
   const handleClearGrid = () => {
     setGridItems([]);
   };
@@ -473,6 +487,7 @@ export const useProductGridLayoutCustomizer = ({
     resetLayout,
     filteredLayouts,
     handleClearGrid,
+    handleRemoveItem,
     parseGridItems,
     loadLayoutsForTill,
   };

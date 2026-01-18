@@ -13,6 +13,8 @@ POSTGRES_DB=bar_pos
 admin user: admin
 admin password: admin123
 
+app is available at http://192.168.1.241:3000
+
 
 ## General Behaviour
 Frontend and backend servers are running in docker

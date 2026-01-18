@@ -70,6 +70,7 @@ const ProductGridLayoutCustomizer: React.FC<ProductGridLayoutCustomizerProps> = 
     handleCreateNewLayout,
     filteredLayouts,
     handleClearGrid,
+    handleRemoveItem,
   } = useProductGridLayoutCustomizer({
     products,
     categories,
@@ -154,6 +155,7 @@ const ProductGridLayoutCustomizer: React.FC<ProductGridLayoutCustomizerProps> = 
               <GridLayoutSection
                 gridItems={gridItems}
                 handleMoveItem={handleMoveItem}
+                handleRemoveItem={handleRemoveItem}
               />
             </div>
           </div>

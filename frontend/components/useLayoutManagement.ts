@@ -43,6 +43,9 @@ interface UseLayoutManagementReturn {
   layouts: LayoutWithTillInfo[];
   loading: boolean;
   error: string | null;
+  deletingLayoutId: string | number | null;
+  updatingLayoutId: string | number | null;
+  creatingLayout: boolean;
   filterTillId: string;
   filterType: string;
   searchTerm: string;
@@ -65,6 +68,9 @@ export const useLayoutManagement = (
   const [layouts, setLayouts] = useState<LayoutWithTillInfo[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingLayoutId, setDeletingLayoutId] = useState<string | number | null>(null);
+  const [updatingLayoutId, setUpdatingLayoutId] = useState<string | number | null>(null);
+  const [creatingLayout, setCreatingLayout] = useState<boolean>(false);
   const [filterTillId, setFilterTillId] = useState<string>('all');
   const [filterType, setFilterType] = useState<string>('all');
   const [searchTerm, setSearchTerm] = useState<string>('');
@@ -167,6 +173,9 @@ export const useLayoutManagement = (
   const handleDeleteLayout = async (layout: LayoutWithTillInfo) => {
     if (!layout.id) return;
     
+    setDeletingLayoutId(layout.id);
+    setError(null);
+    
     try {
       // Convert id to string if it's a number for the API call
       const layoutId = typeof layout.id === 'number' ? layout.id.toString() : layout.id;
@@ -176,6 +185,8 @@ export const useLayoutManagement = (
     } catch (error) {
       console.error('Error deleting layout:', error);
       setError('Failed to delete layout: ' + (error as Error).message);
+    } finally {
+      setDeletingLayoutId(null);
     }
   };
 
@@ -200,17 +211,36 @@ export const useLayoutManagement = (
   };
 
   const handleSaveLayout = async (layout: LayoutWithTillInfo) => {
+    setUpdatingLayoutId(layout.id || 'new');
+    setError(null);
+    
     try {
-      const updatedLayout = await saveGridLayout(layout);
+      let updatedLayout: LayoutWithTillInfo;
+      
+      if (layout.id) {
+        // If layout has an ID, update it
+        const { updateGridLayout } = await import('../services/gridLayoutService');
+        updatedLayout = await updateGridLayout(layout as unknown as ProductGridLayoutData) as LayoutWithTillInfo;
+      } else {
+        // If layout doesn't have an ID, create it
+        const { saveGridLayout } = await import('../services/gridLayoutService');
+        updatedLayout = await saveGridLayout(layout as unknown as ProductGridLayoutData) as LayoutWithTillInfo;
+      }
+      
       setLayouts(layouts.map(l => l.id === updatedLayout.id ? updatedLayout : l));
       onDataUpdate(); // Notify parent to refresh data if needed
     } catch (error) {
       console.error('Error saving layout:', error);
       setError('Failed to save layout: ' + (error as Error).message);
+    } finally {
+      setUpdatingLayoutId(null);
     }
   };
 
   const handleCreateNewLayout = async (newLayoutData: Omit<LayoutWithTillInfo, 'id' | 'layout'> & { layout?: any }) => {
+    setCreatingLayout(true);
+    setError(null);
+    
     try {
       // Create a default layout structure if not provided
       const defaultLayout = {
@@ -224,12 +254,14 @@ export const useLayoutManagement = (
         layout: newLayoutData.layout || defaultLayout
       };
 
-      const savedLayout = await saveGridLayout(layoutToSave);
+      const savedLayout = await saveGridLayout(layoutToSave as any as ProductGridLayoutData);
       setLayouts([...layouts, { ...savedLayout, tillName: tills.find(t => t.id === savedLayout.tillId)?.name || `Till ${savedLayout.tillId}` }]);
       onDataUpdate(); // Notify parent to refresh data if needed
     } catch (error) {
       console.error('Error saving new layout:', error);
       setError('Failed to save new layout: ' + (error as Error).message);
+    } finally {
+      setCreatingLayout(false);
     }
   };
 
@@ -244,6 +276,9 @@ export const useLayoutManagement = (
     layouts,
     loading,
     error,
+    deletingLayoutId,
+    updatingLayoutId,
+    creatingLayout,
     filterTillId,
     filterType,
     searchTerm,

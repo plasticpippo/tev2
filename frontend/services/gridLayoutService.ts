@@ -3,6 +3,19 @@ import type { ProductGridLayoutData } from './apiBase';
 
 // Function to save a grid layout
 export const saveGridLayout = async (layoutData: ProductGridLayoutData): Promise<ProductGridLayoutData> => {
+  // Validate layout data before sending
+  if (!layoutData.name || layoutData.name.trim().length === 0) {
+    throw new Error('Layout name is required');
+  }
+  
+  if (!layoutData.layout) {
+    throw new Error('Layout structure is required');
+  }
+  
+  if (typeof layoutData.tillId !== 'number') {
+    throw new Error('Valid till ID is required');
+  }
+
   const response = await fetch(apiUrl('/api/grid-layouts/tills/' + layoutData.tillId + '/grid-layouts'), {
     method: 'POST',
     headers: {
@@ -13,12 +26,27 @@ export const saveGridLayout = async (layoutData: ProductGridLayoutData): Promise
       layout: layoutData.layout,
       isDefault: layoutData.isDefault,
       filterType: layoutData.filterType,
-      categoryId: layoutData.categoryId
+      categoryId: layoutData.categoryId,
+      shared: layoutData.tillId === null || layoutData.tillId === undefined // Send shared flag if no tillId
     }),
   });
 
   if (!response.ok) {
-    throw new Error(`Failed to save grid layout: ${response.statusText}`);
+    // Try to get detailed error message from response
+    let errorMessage = `Failed to save grid layout: ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage = `Failed to save grid layout: ${errorData.error}`;
+        if (errorData.details) {
+          errorMessage += ` (${errorData.details})`;
+        }
+      }
+    } catch (e) {
+      // If we can't parse the error response, use the default message
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();
@@ -144,6 +172,57 @@ export const getLayoutsByFilterType = async (
 
   if (!response.ok) {
     throw new Error(`Failed to get layouts by filter type: ${response.statusText}`);
+  }
+
+  return response.json();
+};
+
+// Function to update an existing grid layout
+export const updateGridLayout = async (layoutData: ProductGridLayoutData): Promise<ProductGridLayoutData> => {
+  // Validate layout data before sending
+  if (!layoutData.id) {
+    throw new Error('Layout ID is required for updates');
+  }
+  
+  if (!layoutData.name || layoutData.name.trim().length === 0) {
+    throw new Error('Layout name is required');
+  }
+  
+  if (!layoutData.layout) {
+    throw new Error('Layout structure is required');
+  }
+
+  const response = await fetch(apiUrl(`/api/grid-layouts/${layoutData.id}`), {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      name: layoutData.name,
+      layout: layoutData.layout,
+      isDefault: layoutData.isDefault,
+      filterType: layoutData.filterType,
+      categoryId: layoutData.categoryId,
+      shared: layoutData.tillId === null || layoutData.tillId === undefined
+    }),
+  });
+
+  if (!response.ok) {
+    // Try to get detailed error message from response
+    let errorMessage = `Failed to update grid layout: ${response.statusText}`;
+    try {
+      const errorData = await response.json();
+      if (errorData.error) {
+        errorMessage = `Failed to update grid layout: ${errorData.error}`;
+        if (errorData.details) {
+          errorMessage += ` (${errorData.details})`;
+        }
+      }
+    } catch (e) {
+      // If we can't parse the error response, use the default message
+    }
+    
+    throw new Error(errorMessage);
   }
 
   return response.json();

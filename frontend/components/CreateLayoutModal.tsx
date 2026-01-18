@@ -94,6 +94,7 @@ export const CreateLayoutModal: React.FC<CreateLayoutModalProps> = ({
               value={newLayout.name}
               onChange={(e) => setNewLayout(prev => ({...prev, name: e.target.value}))}
               className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+              autoComplete="off"
               autoFocus
             />
           </div>

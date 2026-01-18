@@ -15,6 +15,7 @@ import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
+import { ProductGridLayoutManagement } from './ProductGridLayoutManagement';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -46,7 +47,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'layoutManagement';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -106,6 +107,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
       case 'itemisedConsumption':
           return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
+      case 'layoutManagement':
+          return <ProductGridLayoutManagement tills={tills} categories={categories} onDataUpdate={onDataUpdate} />;
       default:
         return <p>Select a view</p>;
     }
@@ -153,6 +156,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <NavButton view="users" label="Users" isFirst/>
                 <NavButton view="tills" label="Tills" />
                 <NavButton view="tables" label="Tables & Layout" />
+                <NavButton view="layoutManagement" label="Product Grid Layouts" />
                 <NavButton view="itemisedConsumption" label="Itemised Consumption" />
                 <div className="pt-2"></div>
                 <NavButton view="settings" label="Settings" isFirst/>

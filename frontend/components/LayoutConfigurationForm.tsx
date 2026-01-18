@@ -1,5 +1,5 @@
 import React from 'react';
-import type { Till } from '@shared/types';
+import type { Till } from '../../shared/types';
 
 interface LayoutConfigurationFormProps {
   layoutName: string;
@@ -48,6 +48,7 @@ const LayoutConfigurationForm: React.FC<LayoutConfigurationFormProps> = ({
           onChange={(e) => setLayoutName(e.target.value)}
           className="w-full p-2 rounded bg-slate-600 text-white border-slate-50 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-700"
           placeholder="Enter layout name"
+          autoComplete="off"
         />
       </div>
       <div className="mb-3">
