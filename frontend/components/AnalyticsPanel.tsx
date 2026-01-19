@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import type { Transaction, Product, Category, Settings } from '@shared/types';
+import type { Transaction, Product, Category, Settings } from '../shared/types';
 import { getBusinessDayStart } from '../utils/time';
 
 import { HourlySalesChart } from './analytics/HourlySalesChart';
@@ -45,8 +45,8 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ transactions, pr
   }, [transactions, dateRange, settings]);
   
   const DateRangeButton: React.FC<{range: DateRange, label: string}> = ({range, label}) => (
-    <button 
-      onClick={() => setDateRange(range)} 
+    <button
+      onClick={() => setDateRange(range)}
       className={`text-center px-4 py-2 text-sm font-semibold rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
         {label}
     </button>
@@ -72,7 +72,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({ transactions, pr
         <>
             {dateRange === 'today' && <HourlySalesChart transactions={filteredTransactions} settings={settings} />}
             {dateRange !== 'today' && <SalesTrendChart transactions={filteredTransactions} dateRange={dateRange} />}
-            <TopPerformers transactions={filteredTransactions} products={products} categories={categories} />
+            <TopPerformers transactions={filteredTransactions} products={products} categories={categories} includeAllProducts={true} />
         </>
       )}
     </div>

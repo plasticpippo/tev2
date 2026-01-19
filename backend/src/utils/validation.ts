@@ -255,3 +255,81 @@ export const validateStockItem = (stockItem: any): { isValid: boolean; errors: s
     errors
   };
 };
+
+// Analytics validation functions
+export interface AnalyticsParams {
+  startDate?: string;
+  endDate?: string;
+  productId?: number;
+  categoryId?: number;
+  sortBy?: 'revenue' | 'quantity' | 'name';
+  sortOrder?: 'asc' | 'desc';
+  page?: number;
+  limit?: number;
+  includeAllProducts?: boolean;
+}
+
+export const validateAnalyticsParams = (query: any): AnalyticsParams => {
+  const params: AnalyticsParams = {};
+
+  // Validate date parameters
+  if (query.startDate) {
+    const startDate = new Date(query.startDate);
+    if (!isNaN(startDate.getTime())) {
+      params.startDate = query.startDate;
+    }
+  }
+
+  if (query.endDate) {
+    const endDate = new Date(query.endDate);
+    if (!isNaN(endDate.getTime())) {
+      params.endDate = query.endDate;
+    }
+  }
+
+  // Validate numeric parameters
+  if (query.productId) {
+    const productId = parseInt(query.productId, 10);
+    if (!isNaN(productId) && productId > 0) {
+      params.productId = productId;
+    }
+  }
+
+  if (query.categoryId) {
+    const categoryId = parseInt(query.categoryId, 10);
+    if (!isNaN(categoryId) && categoryId > 0) {
+      params.categoryId = categoryId;
+    }
+  }
+
+  // Validate sorting parameters
+  if (query.sortBy && ['revenue', 'quantity', 'name'].includes(query.sortBy)) {
+    params.sortBy = query.sortBy;
+  }
+
+  if (query.sortOrder && ['asc', 'desc'].includes(query.sortOrder)) {
+    params.sortOrder = query.sortOrder;
+  }
+
+  // Validate pagination parameters
+  if (query.page) {
+    const page = parseInt(query.page, 10);
+    if (!isNaN(page) && page > 0) {
+      params.page = page;
+    }
+  }
+
+  if (query.limit) {
+    const limit = parseInt(query.limit, 10);
+    if (!isNaN(limit) && limit > 0 && limit <= 100) {
+      params.limit = limit;
+    }
+  }
+
+  // Validate boolean parameters
+  if (query.includeAllProducts !== undefined) {
+    params.includeAllProducts = query.includeAllProducts === 'true' || query.includeAllProducts === true;
+  }
+
+  return params;
+};

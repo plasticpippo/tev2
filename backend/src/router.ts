@@ -15,6 +15,7 @@ import { layoutRouter } from './handlers/gridLayout';
 import roomsRouter from './handlers/rooms';
 import { dailyClosingsRouter } from './handlers/dailyClosings';
 import { consumptionReportsRouter } from './handlers/consumptionReports';
+import { analyticsRouter } from './handlers/analytics';
 
 export const router = express.Router();
 
@@ -35,6 +36,7 @@ router.use('/tables', tablesRouter);
 router.use('/rooms', roomsRouter);
 router.use('/daily-closings', dailyClosingsRouter);
 router.use('/consumption-reports', consumptionReportsRouter);
+router.use('/analytics', analyticsRouter);
 
 // Health check for the API
 router.get('/health', (req, res) => {

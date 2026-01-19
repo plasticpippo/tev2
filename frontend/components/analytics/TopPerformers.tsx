@@ -1,96 +1,187 @@
-import React, { useMemo, useState } from 'react';
-import type { Transaction, Product, Category, OrderItem } from '../@shared/types';
+import React, { useState, useEffect } from 'react';
+import type { Transaction, Product, Category, OrderItem } from '../../shared/types';
 import { formatCurrency } from '../../utils/formatting';
+import { AdvancedFilter } from './AdvancedFilter';
+import { ProductPerformanceTable } from './ProductPerformanceTable';
+import { PaginationControls } from './PaginationControls';
+import { fetchProductPerformance, fetchTopPerformers, ProductPerformanceResult, AnalyticsParams } from '../../services/analyticsService';
 
 interface TopPerformersProps {
     transactions: Transaction[];
     products: Product[];
     categories: Category[];
+    includeAllProducts?: boolean; // New prop to control whether to show all products or just top performers
 }
 
-type SortBy = 'revenue' | 'quantity';
+export const TopPerformers: React.FC<TopPerformersProps> = ({
+    transactions,
+    products,
+    categories,
+    includeAllProducts = false
+}) => {
+    const [performanceData, setPerformanceData] = useState<ProductPerformanceResult | null>(null);
+    const [loading, setLoading] = useState<boolean>(true);
+    const [error, setError] = useState<string | null>(null);
+    const [filters, setFilters] = useState<AnalyticsParams>({});
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [limit, setLimit] = useState<number>(10);
 
-export const TopPerformers: React.FC<TopPerformersProps> = ({ transactions, products, categories }) => {
-    const [sortBy, setSortBy] = useState<SortBy>('revenue');
-
-    const performanceData = useMemo(() => {
-        const productMap = new Map<number, Product>(products.map(p => [p.id, p]));
-        const categoryMap = new Map<number, Category>(categories.map(c => [c.id, c]));
-
-        const allItems: (OrderItem & { categoryId: number })[] = transactions.flatMap(t =>
-            t.items.map(item => {
-                const product = productMap.get(item.productId);
-                return { ...item, categoryId: product?.categoryId || -1 };
-            })
-        );
-
-        // Product Performance
-        const productPerf = new Map<string, { quantity: number; revenue: number }>();
-        allItems.forEach(item => {
-            const current = productPerf.get(item.name) || { quantity: 0, revenue: 0 };
-            current.quantity += item.quantity;
-            current.revenue += item.price * item.quantity;
-            productPerf.set(item.name, current);
-        });
-
-        const sortedProducts = Array.from(productPerf.entries())
-            .sort(([, a], [, b]) => b[sortBy] - a[sortBy])
-            .slice(0, 5);
-
-        // Category Performance
-        const categoryPerf = new Map<string, { quantity: number; revenue: number }>();
-        allItems.forEach(item => {
-            const category = categoryMap.get(item.categoryId);
-            if (category) {
-                const current = categoryPerf.get(category.name) || { quantity: 0, revenue: 0 };
-                current.quantity += item.quantity;
-                current.revenue += item.price * item.quantity;
-                categoryPerf.set(category.name, current);
+    // Load data when filters change or component mounts
+    useEffect(() => {
+        const loadData = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                
+                // Prepare params with pagination
+                const params: AnalyticsParams = {
+                    ...filters,
+                    page: currentPage,
+                    limit: limit,
+                    includeAllProducts
+                };
+                
+                let result: ProductPerformanceResult;
+                
+                if (includeAllProducts) {
+                    // Use the new expanded endpoint
+                    result = await fetchProductPerformance(params);
+                } else {
+                    // Use the legacy endpoint for backward compatibility
+                    result = await fetchTopPerformers(params);
+                }
+                
+                setPerformanceData(result);
+            } catch (err: any) {
+                setError(err.message || 'Failed to load performance data');
+                console.error('Error loading performance data:', err);
+            } finally {
+                setLoading(false);
             }
-        });
+        };
 
-        const sortedCategories = Array.from(categoryPerf.entries())
-            .sort(([, a], [, b]) => b[sortBy] - a[sortBy])
-            .slice(0, 5);
+        loadData();
+    }, [filters, currentPage, limit, includeAllProducts]);
 
-        return { products: sortedProducts, categories: sortedCategories };
-    }, [transactions, products, categories, sortBy]);
+    const handleFilterChange = (newFilters: AnalyticsParams) => {
+        setFilters(newFilters);
+        setCurrentPage(1); // Reset to first page when filters change
+    };
 
-    const SortButton: React.FC<{ type: SortBy, label: string }> = ({ type, label }) => (
-        <button
-            onClick={() => setSortBy(type)}
-            className={`text-xs px-2 py-1 rounded ${sortBy === type ? 'bg-sky-600 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
-            {label}
-        </button>
-    );
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
-    const PerformanceList: React.FC<{ title: string, data: [string, { quantity: number, revenue: number }][] }> = ({ title, data }) => (
-        <div className="bg-slate-800 p-6 rounded-lg">
-            <div className="flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-slate-300">{title}</h3>
-                <div className="flex gap-2">
-                    <SortButton type="revenue" label="By Revenue" />
-                    <SortButton type="quantity" label="By Quantity" />
+    const handleLimitChange = (newLimit: number) => {
+        setLimit(newLimit);
+        setCurrentPage(1); // Reset to first page when limit changes
+    };
+
+    // Backward compatibility: if not showing all products, display the traditional view
+    if (!includeAllProducts) {
+        // Calculate category performance for backward compatibility
+        const categoryPerformance = performanceData ?
+            Array.from(
+                performanceData.products.reduce((acc, product) => {
+                    const existing = acc.get(product.categoryName) || { totalRevenue: 0, totalQuantity: 0 };
+                    existing.totalRevenue += product.totalRevenue;
+                    existing.totalQuantity += product.totalQuantity;
+                    acc.set(product.categoryName, existing);
+                    return acc;
+                }, new Map<string, { totalRevenue: number; totalQuantity: number }>())
+            )
+            .sort(([, a], [, b]) => b.totalRevenue - a.totalRevenue)
+            .slice(0, 5) : [];
+
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="bg-slate-800 p-6 rounded-lg">
+                    <h3 className="text-xl font-bold text-slate-300 mb-4">Top Selling Products</h3>
+                    {performanceData ? (
+                        <ul className="space-y-3">
+                            {performanceData.products.map((product) => (
+                                <li key={product.id} className="flex justify-between items-center text-sm">
+                                    <span className="font-semibold">{product.name}</span>
+                                    <span className="text-slate-400">
+                                        {formatCurrency(product.totalRevenue)}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>Loading...</p>
+                    )}
+                </div>
+                <div className="bg-slate-800 p-6 rounded-lg">
+                    <h3 className="text-xl font-bold text-slate-300 mb-4">Top Selling Categories</h3>
+                    {performanceData ? (
+                        <ul className="space-y-3">
+                            {categoryPerformance.map(([name, stats]) => (
+                                <li key={name} className="flex justify-between items-center text-sm">
+                                    <span className="font-semibold">{name}</span>
+                                    <span className="text-slate-400">
+                                        {formatCurrency(stats.totalRevenue)}
+                                    </span>
+                                </li>
+                            ))}
+                        </ul>
+                    ) : (
+                        <p>Loading...</p>
+                    )}
                 </div>
             </div>
-            <ul className="space-y-3">
-                {data.map(([name, stats]) => (
-                    <li key={name} className="flex justify-between items-center text-sm">
-                        <span className="font-semibold">{name}</span>
-                        <span className="text-slate-400">
-                            {sortBy === 'revenue' ? formatCurrency(stats.revenue) : `${stats.quantity} sold`}
-                        </span>
-                    </li>
-                ))}
-            </ul>
-        </div>
-    );
+        );
+    }
 
-    // FIX: Added missing return statement. A React component must return a renderable value (JSX, null, etc.).
+    // Expanded view with all products and pagination
     return (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <PerformanceList title="Top Selling Products" data={performanceData.products} />
-            <PerformanceList title="Top Selling Categories" data={performanceData.categories} />
+        <div className="space-y-6">
+            <AdvancedFilter
+                categories={categories}
+                products={products}
+                onFilterChange={handleFilterChange}
+            />
+            
+            {error && (
+                <div className="bg-red-800 text-red-100 p-4 rounded-lg">
+                    Error: {error}
+                </div>
+            )}
+            
+            <ProductPerformanceTable
+                products={performanceData?.products || []}
+                loading={loading}
+            />
+            
+            {performanceData?.metadata && (
+                <PaginationControls
+                    metadata={performanceData.metadata}
+                    onPageChange={handlePageChange}
+                    onLimitChange={handleLimitChange}
+                    currentLimit={limit}
+                />
+            )}
+            
+            {performanceData?.summary && (
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">Total Revenue</h4>
+                        <p className="text-xl font-bold text-slate-300">{formatCurrency(performanceData.summary.totalRevenue)}</p>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">Total Units Sold</h4>
+                        <p className="text-xl font-bold text-slate-300">{performanceData.summary.totalUnitsSold}</p>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">Top Product</h4>
+                        <p className="text-xl font-bold text-slate-300">
+                            {performanceData.summary.topProduct
+                                ? performanceData.summary.topProduct.name
+                                : 'N/A'}
+                        </p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

@@ -17,7 +17,7 @@ app is available at http://192.168.1.241:3000
 
 
 ## General Behaviour
-Frontend and backend servers are running in docker
+Frontend and backend and db servers are running in docker
 to run test new features and fixes you need to use the command
 'docker compose up -d --build'
 
