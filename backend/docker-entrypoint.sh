@@ -1,13 +1,28 @@
 #!/bin/sh
 set -e
 
-# Run pending migrations only once
-echo "Checking for pending database migrations..."
-npx prisma migrate deploy || echo "Migration completed or failed (this is expected if migrations have already been applied)"
-
-# Seed the database with default data
-echo "Seeding the database with default data..."
-npx prisma db seed || echo "Database seeding completed or failed (this is expected if seed data already exists)"
+# Check if we're in a production environment
+if [ "$NODE_ENV" = "production" ]; then
+    echo "Running in production mode"
+    
+    # Run pending migrations only once
+    echo "Checking for pending database migrations..."
+    npx prisma migrate deploy || echo "Migration completed or failed (this is expected if migrations have already been applied)"
+    
+    # Only seed essential data in production (won't overwrite existing data)
+    echo "Checking for essential data in production..."
+    npx prisma db seed || echo "Essential data check completed or failed"
+else
+    echo "Running in development mode"
+    
+    # Run pending migrations only once
+    echo "Checking for pending database migrations..."
+    npx prisma migrate deploy || echo "Migration completed or failed (this is expected if migrations have already been applied)"
+    
+    # Seed the database with default data in development
+    echo "Seeding the database with default data for development..."
+    npx prisma db seed || echo "Database seeding completed or failed"
+fi
 
 # Start the application
 echo "Starting the application..."
