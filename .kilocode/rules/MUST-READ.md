@@ -30,6 +30,8 @@ NO Workarounds! NO shortcuts! ONLY proper coding!
 Frontend is running on port 3000
 
 ### We are testing from LAN with a browser, NOT from localhost
+do not use test files
+use playwright mcp server to directly browse the app
 
 ## DO NOT EVER kill all npm processes. ONLY stop the necessary processes required to achieve your current goal
 
