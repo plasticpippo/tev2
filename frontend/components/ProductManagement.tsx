@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import type { Product, ProductVariant, Category, StockItem } from '@shared/types';
+import type { Product, ProductVariant, Category, StockItem } from '../../shared/types';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
+import ErrorMessage from './ErrorMessage';
 import { availableColors, getContrastingTextColor } from '../utils/color';
 import { formatCurrency } from '../utils/formatting';
 import { v4 as uuidv4 } from 'uuid';
@@ -99,6 +100,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
         </div>
     )
 };
+    
 
 
 interface ProductModalProps {
@@ -113,6 +115,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
   const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+  
+  const removeError = (key: string) => {
+    setErrors(prev => {
+      const {[key]: _, ...rest} = prev;
+      return rest;
+    });
+  };
+  
   const { closeKeyboard } = useVirtualKeyboard();
 
   const handleAddVariant = () => {
@@ -133,20 +146,85 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
     }
   };
   
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    // Close the virtual keyboard before processing the form submission
-    closeKeyboard();
-    if (!name.trim() || !categoryId || variants.some(v => !v.name?.trim())) return;
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
     
+    // Validate product name
+    if (!name.trim()) {
+      newErrors.name = 'Product name is required';
+    } else if (name.trim().length > 255) {
+      newErrors.name = 'Product name must be 255 characters or less';
+    }
+    
+    // Validate category
+    if (!categoryId) {
+      newErrors.category = 'Category is required';
+    }
+    
+    // Validate variants
+    for (let i = 0; i < variants.length; i++) {
+      const variant = variants[i];
+      
+      if (!variant.name?.trim()) {
+        newErrors[`variant-${i}-name`] = 'Variant name is required';
+      }
+      
+      if (typeof variant.price !== 'number' || variant.price < 0) {
+        newErrors[`variant-${i}-price`] = 'Price must be a non-negative number';
+      } else if (variant.price > 999999) {
+        newErrors[`variant-${i}-price`] = 'Price must be 999999 or less';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleRetry = async () => {
+    setApiError(null);
+    const formValid = validateForm();
+    if (!formValid) return;
+    
+    setIsSaving(true);
     try {
       await productApi.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+      setApiError(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+    } finally {
+      setIsSaving(false);
     }
- };
+  };
+
+  const handleClearForm = () => {
+    setName('');
+    setCategoryId('');
+    setVariants([{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+    setErrors({});
+    setApiError(null);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    // Close the virtual keyboard before processing the form submission
+    closeKeyboard();
+    
+    if (!validateForm()) {
+      return;
+    }
+    
+    setIsSaving(true);
+    try {
+      await productApi.saveProduct({ id: product?.id, name, categoryId: Number(categoryId), variants: variants as any });
+      onSave();
+    } catch (error) {
+      console.error('Error saving product:', error);
+      setApiError(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -156,30 +234,78 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
             <p className="text-sm text-slate-400">Define the product's base details and its selling variants.</p>
         </div>
         <div className="p-6 space-y-4 overflow-y-auto">
+            {apiError && (
+              <ErrorMessage
+                message={apiError}
+                type="error"
+                onRetry={handleRetry}
+                onClear={handleClearForm}
+                showRetry={true}
+                showClear={true}
+              />
+            )}
             <div className="grid grid-cols-2 gap-4">
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">Product Name</label>
-                    <VKeyboardInput k-type="full" type="text" placeholder="e.g., Merlot" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md" required autoFocus />
+                    <VKeyboardInput
+                      k-type="full"
+                      type="text"
+                      placeholder="e.g., Merlot"
+                      value={name}
+                      onChange={(e) => {
+                        setName(e.target.value);
+                        if (errors.name) removeError('name');
+                      }}
+                      className={`w-full p-3 bg-slate-900 border rounded-md ${errors.name ? 'border-red-500' : 'border-slate-700'}`}
+                      required
+                      autoFocus
+                    />
+                    {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
                     <p className="text-xs text-slate-500 mt-1">This is the base name for all variants (e.g., "Vodka & Tonic").</p>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-slate-300 mb-1">Category</label>
-                    <select value={categoryId} onChange={e => setCategoryId(Number(e.target.value))} className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md" required>
-                        <option value="" disabled>Select a category...</option>
+                    <select
+                      value={categoryId}
+                      onChange={e => {
+                        setCategoryId(Number(e.target.value));
+                        if (errors.category) removeError('category');
+                      }}
+                      className={`w-full p-3 bg-slate-900 border rounded-md ${errors.category ? 'border-red-500' : 'border-slate-700'}`}
+                      required
+                    >
+                        <option value="">Select a category...</option>
                         {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
+                    {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
                 </div>
             </div>
             <div className="space-y-4">
                 {variants.map((v, index) => (
-                    <VariantForm key={v.id || index} variant={v} onUpdate={(uv) => handleUpdateVariant(index, uv)} onRemove={() => handleRemoveVariant(index)} stockItems={stockItems} />
+                    <VariantForm
+                      key={v.id || index}
+                      variant={v}
+                      onUpdate={(uv) => handleUpdateVariant(index, uv)}
+                      onRemove={() => handleRemoveVariant(index)}
+                      stockItems={stockItems}
+                    />
                 ))}
             </div>
             <button type="button" onClick={handleAddVariant} className="w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md">+ Add Selling Variant</button>
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
           <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-          <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save Product</button>
+          <button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
+            {isSaving ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </span>
+            ) : 'Save Product'}
+          </button>
         </div>
       </form>
     </div>
@@ -197,6 +323,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleSave = () => {
     setIsModalOpen(false);
@@ -204,17 +331,28 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
     onDataUpdate();
   };
 
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
   const confirmDelete = async () => {
     if (deletingProduct) {
+      setIsDeleting(true);
+      setDeleteError(null);
       try {
         await productApi.deleteProduct(deletingProduct.id);
         setDeletingProduct(null);
         onDataUpdate();
       } catch (error) {
         console.error('Error deleting product:', error);
-        alert(error instanceof Error ? error.message : 'Failed to delete product. The product may be in use or referenced elsewhere.');
+        setDeleteError(error instanceof Error ? error.message : 'Failed to delete product. The product may be in use or referenced elsewhere.');
+      } finally {
+        setIsDeleting(false);
       }
     }
+  };
+
+  const handleRetryDelete = async () => {
+    setDeleteError(null);
+    await confirmDelete();
   };
 
   const getCategoryName = (id: number) => categories.find(c => c.id === id)?.name || 'Uncategorized';
@@ -244,7 +382,25 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
                 </div>
                 <div className="flex items-center gap-2">
                     <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md">Edit</button>
-                    <button onClick={() => setDeletingProduct(product)} className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md">Delete</button>
+                    <button
+                      onClick={() => setDeletingProduct(product)}
+                      disabled={isDeleting}
+                      className={`font-bold py-1 px-3 text-sm rounded-md ${
+                        isDeleting
+                          ? 'bg-gray-500 cursor-not-allowed'
+                          : 'bg-red-700 hover:bg-red-600 text-white'
+                      }`}
+                    >
+                      {isDeleting ? (
+                        <span className="flex items-center">
+                          <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                          </svg>
+                          Deleting...
+                        </span>
+                      ) : 'Delete'}
+                    </button>
                 </div>
             </div>
              <div className="mt-2 pt-2 border-t border-slate-700 text-sm space-y-1">
@@ -274,7 +430,18 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
          message={`Are you sure you want to delete "${deletingProduct?.name}"? This will delete all its variants.`}
          onConfirm={confirmDelete}
          onCancel={() => setDeletingProduct(null)}
+         confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+         confirmButtonType="danger"
+         disabled={isDeleting}
        />
+      {deleteError && (
+        <ErrorMessage
+          message={deleteError}
+          type="error"
+          onRetry={handleRetryDelete}
+          showRetry={true}
+        />
+      )}
       {/* Hidden elements to ensure Tailwind includes all color classes in the build */}
       <div className="hidden">
         <div className={availableColors.join(' ')}></div>

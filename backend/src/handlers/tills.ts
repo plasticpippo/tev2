@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Till } from '../types';
+import { validateTill, validateTillName } from '../utils/validation';
 
 export const tillsRouter = express.Router();
 
@@ -39,6 +40,12 @@ tillsRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { name } = req.body as Omit<Till, 'id'>;
     
+    // Validate till data
+    const validation = validateTill({ name });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+    }
+    
     const till = await prisma.till.create({
       data: {
         name
@@ -57,6 +64,14 @@ tillsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name } = req.body as Omit<Till, 'id'>;
+    
+    // Validate till data if name is provided
+    if (name !== undefined) {
+      const nameError = validateTillName(name);
+      if (nameError) {
+        return res.status(400).json({ error: 'Validation failed', details: [nameError] });
+      }
+    }
     
     const till = await prisma.till.update({
       where: { id: Number(id) },

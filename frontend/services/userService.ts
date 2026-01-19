@@ -62,7 +62,9 @@ export const login = async (username: string, password: string): Promise<User> =
   try {
     const response = await fetch(apiUrl('/api/users/login'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: {
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({ username, password })
     });
     

@@ -6,9 +6,10 @@ interface ConfirmationModalProps {
   message: string;
   onConfirm: () => void;
  onCancel: () => void;
-  confirmText?: string;
+  confirmText?: string | React.ReactNode;
   cancelText?: string;
   confirmButtonType?: 'primary' | 'secondary' | 'danger';
+  disabled?: boolean;
 }
 
 const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
@@ -19,7 +20,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
   onCancel,
   confirmText = 'Confirm',
   cancelText = 'Cancel',
-  confirmButtonType = 'danger'
+  confirmButtonType = 'danger',
+  disabled = false
 }) => {
   if (!show) return null;
 
@@ -49,7 +51,8 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
           </button>
           <button
             onClick={onConfirm}
-            className={`${getConfirmButtonClass()} text-white py-2 px-4 rounded`}
+            disabled={disabled}
+            className={`${getConfirmButtonClass()} text-white py-2 px-4 rounded ${disabled ? 'opacity-75 cursor-not-allowed' : ''}`}
           >
             {confirmText}
           </button>

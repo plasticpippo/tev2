@@ -1,105 +1,255 @@
-import { OrderItem } from '../types';
+import type { Product, ProductVariant } from '../types';
 
-/**
- * Validates an order item based on business rules and data integrity checks
- * @param orderItem - The order item to validate
- * @returns Object containing validity status and array of error messages
- */
-export const validateOrderItem = (orderItem: Partial<OrderItem>): { isValid: boolean; errors: string[] } => {
+// Product validation functions
+export const validateProductName = (name: string): string | null => {
+  if (!name || typeof name !== 'string') {
+    return 'Product name is required';
+  }
+  
+  if (name.trim().length === 0) {
+    return 'Product name cannot be empty';
+  }
+  
+  if (name.length > 255) {
+    return 'Product name must be 255 characters or less';
+  }
+  
+  return null;
+};
+
+export const validateCategoryId = (categoryId: number): string | null => {
+  if (typeof categoryId !== 'number') {
+    return 'Category ID must be a number';
+  }
+  
+  if (categoryId <= 0) {
+    return 'Category ID must be greater than 0';
+  }
+  
+  return null;
+};
+
+export const validateProductPrice = (price: number): string | null => {
+  if (typeof price !== 'number') {
+    return 'Price must be a number';
+  }
+  
+  if (price < 0) {
+    return 'Price must be 0 or greater';
+  }
+  
+  if (price > 999999) {
+    return 'Price must be 999999 or less';
+  }
+  
+  return null;
+};
+
+export const validateProductVariant = (variant: ProductVariant): string | null => {
+  if (!variant.name || typeof variant.name !== 'string') {
+    return 'Variant name is required';
+  }
+  
+  if (variant.name.trim().length === 0) {
+    return 'Variant name cannot be empty';
+  }
+  
+  if (variant.name.length > 255) {
+    return 'Variant name must be 255 characters or less';
+  }
+  
+  const priceError = validateProductPrice(variant.price);
+  if (priceError) {
+    return priceError;
+  }
+  
+  return null;
+};
+
+export const validateProduct = (product: any): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
-
-  // Check required fields according to the OrderItem interface
-  if (orderItem.id === undefined || orderItem.id === null) {
-    errors.push('ID is required');
+  
+  const nameError = validateProductName(product.name);
+  if (nameError) {
+    errors.push(nameError);
   }
-
-  if (orderItem.variantId === undefined || orderItem.variantId === null || orderItem.variantId < 0) {
-    errors.push('Variant ID is required and must be a non-negative number');
+  
+  const categoryIdError = validateCategoryId(product.categoryId);
+  if (categoryIdError) {
+    errors.push(categoryIdError);
   }
-
-  if (orderItem.productId === undefined || orderItem.productId === null || orderItem.productId < 0) {
-    errors.push('Product ID is required and must be a non-negative number');
-  }
-
-  if (!orderItem.name || typeof orderItem.name !== 'string' || orderItem.name.trim() === '') {
-    errors.push('Name is required and must be a non-empty string');
-  }
-
-  if (orderItem.price === undefined || orderItem.price === null || orderItem.price < 0) {
-    errors.push('Price is required and must be a non-negative number');
-  }
-
-  if (orderItem.quantity === undefined || orderItem.quantity === null || orderItem.quantity <= 0) {
-    errors.push('Quantity is required and must be a positive number greater than 0');
-  }
-
-  if (orderItem.effectiveTaxRate === undefined || orderItem.effectiveTaxRate === null || 
-      orderItem.effectiveTaxRate < 0 || orderItem.effectiveTaxRate > 1) {
-    errors.push('Effective tax rate is required and must be between 0 and 1 (e.g., 0.19 for 19%)');
-  }
-
-  // Validate numeric fields are finite
-  if (orderItem.price !== undefined && !isFinite(orderItem.price)) {
-    errors.push('Price must be a finite number');
-  }
-
-  if (orderItem.quantity !== undefined && !isFinite(orderItem.quantity)) {
-    errors.push('Quantity must be a finite number');
-  }
-
-  if (orderItem.effectiveTaxRate !== undefined && !isFinite(orderItem.effectiveTaxRate)) {
-    errors.push('Effective tax rate must be a finite number');
-  }
-
-  // Validate quantity precision (should not have excessive decimal places)
-  if (orderItem.quantity !== undefined && Number.isFinite(orderItem.quantity)) {
-    const quantityStr = orderItem.quantity.toString();
-    const decimalPlaces = quantityStr.includes('.') ? quantityStr.split('.')[1].length : 0;
-    
-    // Allow up to 3 decimal places for quantities (for items that can be measured precisely)
-    if (decimalPlaces > 3) {
-      errors.push('Quantity cannot have more than 3 decimal places');
+  
+  if (product.variants && Array.isArray(product.variants)) {
+    for (let i = 0; i < product.variants.length; i++) {
+      const variant = product.variants[i];
+      const variantError = validateProductVariant(variant);
+      if (variantError) {
+        errors.push(`Variant ${i + 1}: ${variantError}`);
+      }
     }
   }
-
+  
   return {
     isValid: errors.length === 0,
     errors
   };
 };
 
-/**
- * Validates multiple order items in an order
- * @param orderItems - Array of order items to validate
- * @returns Object containing validity status and array of error messages
- */
-export const validateOrderItems = (orderItems: Partial<OrderItem>[]): { isValid: boolean; errors: string[] } => {
+// Till validation functions
+export const validateTillName = (name: string): string | null => {
+  if (!name || typeof name !== 'string') {
+    return 'Till name is required';
+  }
+  
+  if (name.trim().length === 0) {
+    return 'Till name cannot be empty';
+  }
+  
+  if (name.length > 100) {
+    return 'Till name must be 100 characters or less';
+  }
+  
+  return null;
+};
+
+export const validateTill = (till: any): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
-  if (!Array.isArray(orderItems)) {
-    return {
-      isValid: false,
-      errors: ['Order items must be an array']
-    };
+  const nameError = validateTillName(till.name);
+  if (nameError) {
+    errors.push(nameError);
   }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
 
-  if (orderItems.length === 0) {
-    return {
-      isValid: false,
-      errors: ['Order must contain at least one item']
-    };
+// Category validation functions
+export const validateCategoryName = (name: string): string | null => {
+  if (!name || typeof name !== 'string') {
+    return 'Category name is required';
   }
+  
+  if (name.trim().length === 0) {
+    return 'Category name cannot be empty';
+  }
+  
+  if (name.length > 255) {
+    return 'Category name must be 255 characters or less';
+  }
+  
+  return null;
+};
 
-  for (let i = 0; i < orderItems.length; i++) {
-    const itemValidation = validateOrderItem(orderItems[i]);
-    
-    if (!itemValidation.isValid) {
-      // Prefix errors with item index for clarity
-      const itemErrors = itemValidation.errors.map(error => `Item ${i + 1}: ${error}`);
-      errors.push(...itemErrors);
+export const validateCategory = (category: any): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  const nameError = validateCategoryName(category.name);
+  if (nameError) {
+    errors.push(nameError);
+  }
+  
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
+// Stock Item validation functions
+export const validateStockItemName = (name: string): string | null => {
+  if (!name || typeof name !== 'string') {
+    return 'Stock item name is required';
+  }
+  
+  if (name.trim().length === 0) {
+    return 'Stock item name cannot be empty';
+  }
+  
+  if (name.length > 255) {
+    return 'Stock item name must be 255 characters or less';
+  }
+  
+  return null;
+};
+
+export const validateStockItemQuantity = (quantity: number): string | null => {
+  if (typeof quantity !== 'number') {
+    return 'Quantity must be a number';
+  }
+  
+  if (quantity < 0) {
+    return 'Quantity must be 0 or greater';
+  }
+  
+  return null;
+};
+
+export const validateStockItemBaseUnit = (baseUnit: string): string | null => {
+  if (!baseUnit || typeof baseUnit !== 'string') {
+    return 'Base unit is required';
+  }
+  
+  if (baseUnit.trim().length === 0) {
+    return 'Base unit cannot be empty';
+  }
+  
+  if (baseUnit.length > 50) {
+    return 'Base unit must be 50 characters or less';
+  }
+  
+  return null;
+};
+
+export const validatePurchasingUnit = (unit: any): string | null => {
+  if (!unit.name || typeof unit.name !== 'string') {
+    return 'Purchasing unit name is required';
+  }
+  
+  if (unit.name.trim().length === 0) {
+    return 'Purchasing unit name cannot be empty';
+  }
+  
+  if (unit.name.length > 50) {
+    return 'Purchasing unit name must be 50 characters or less';
+  }
+  
+  if (typeof unit.multiplier !== 'number' || unit.multiplier <= 0) {
+    return 'Multiplier must be a number greater than 0';
+  }
+  
+  return null;
+};
+
+export const validateStockItem = (stockItem: any): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+  
+  const nameError = validateStockItemName(stockItem.name);
+  if (nameError) {
+    errors.push(nameError);
+  }
+  
+  const quantityError = validateStockItemQuantity(stockItem.quantity);
+  if (quantityError) {
+    errors.push(quantityError);
+  }
+  
+  const baseUnitError = validateStockItemBaseUnit(stockItem.baseUnit);
+  if (baseUnitError) {
+    errors.push(baseUnitError);
+  }
+  
+  if (stockItem.purchasingUnits && Array.isArray(stockItem.purchasingUnits)) {
+    for (let i = 0; i < stockItem.purchasingUnits.length; i++) {
+      const unit = stockItem.purchasingUnits[i];
+      const unitError = validatePurchasingUnit(unit);
+      if (unitError) {
+        errors.push(`Purchasing Unit ${i + 1}: ${unitError}`);
+      }
     }
   }
-
+  
   return {
     isValid: errors.length === 0,
     errors

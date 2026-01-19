@@ -52,6 +52,9 @@ const ProductGridLayoutCustomizer: React.FC<ProductGridLayoutCustomizerProps> = 
     availableLayouts,
     loadingLayouts,
     loadingCurrentLayout,
+    savingLayout,
+    deletingLayout,
+    settingDefaultLayout,
     error,
     currentLayoutId,
     filterType,
@@ -113,6 +116,7 @@ const ProductGridLayoutCustomizer: React.FC<ProductGridLayoutCustomizerProps> = 
                 onCancel={onCancel}
                 currentLayoutId={currentLayoutId}
                 handleClearGrid={handleClearGrid}
+                savingLayout={savingLayout}
               />
             </div>
           </div>
@@ -120,6 +124,8 @@ const ProductGridLayoutCustomizer: React.FC<ProductGridLayoutCustomizerProps> = 
           <div className="md:col-span-1">
             <AvailableLayoutsSection
               loadingLayouts={loadingLayouts}
+              deletingLayout={deletingLayout}
+              settingDefaultLayout={settingDefaultLayout}
               error={error}
               filterType={filterType}
               setFilterType={setFilterType}

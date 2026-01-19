@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Category } from '../types';
+import { validateCategory, validateCategoryName } from '../utils/validation';
 
 export const categoriesRouter = express.Router();
 
@@ -50,6 +51,12 @@ categoriesRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
     
+    // Validate category data
+    const validation = validateCategory({ name });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+    }
+    
     const category = await prisma.category.create({
       data: {
         name,
@@ -74,6 +81,14 @@ categoriesRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
+    
+    // Validate category data if name is provided
+    if (name !== undefined) {
+      const nameError = validateCategoryName(name);
+      if (nameError) {
+        return res.status(400).json({ error: 'Validation failed', details: [nameError] });
+      }
+    }
     
     const category = await prisma.category.update({
       where: { id: Number(id) },

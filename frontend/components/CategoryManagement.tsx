@@ -14,7 +14,8 @@ interface CategoryModalProps {
 
 const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose, onSave }) => {
   const [name, setName] = useState(category?.name || '');
-  const [visibleTillIds, setVisibleTillIds] = useState<number[]>(category?.visibleTillIds || []);
+  const [visibleTillIds, setVisibleTillIds] = useState<number[]>(category?.visibleTillIds ?? []);
+  const [errors, setErrors] = useState<Record<string, string>>({});
 
   const handleTillToggle = (tillId: number) => {
     setVisibleTillIds(prev =>
@@ -22,9 +23,26 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
     );
   };
   
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!name.trim()) {
+      newErrors.name = 'Category name is required';
+    } else if (name.trim().length > 255) {
+      newErrors.name = 'Category name must be 255 characters or less';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     try {
       await productApi.saveCategory({ id: category?.id, name, visibleTillIds });
       onSave();
@@ -45,11 +63,19 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
               k-type="full"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors(prev => {
+                  const {[name]: _, ...rest} = prev;
+                  return rest;
+                });
+              }}
+              maxLength={255}
+              className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.name ? 'border-red-500' : 'border-slate-700'}`}
               autoFocus
               required
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
           <div>
             <label className="block text-sm text-slate-400">Visibility</label>
@@ -111,7 +137,9 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
 
   const getTillNames = (tillIds: number[] | null): string => {
     if (!tillIds || tillIds.length === 0) return "All Tills";
-    return tillIds.map(id => tills.find(t => t.id === id)?.name).filter(Boolean).join(', ') || 'None';
+    // Ensure tillIds is an array before calling .map()
+    const idsArray = Array.isArray(tillIds) ? tillIds : [];
+    return idsArray.map(id => tills.find(t => t.id === id)?.name).filter(Boolean).join(', ') || 'None';
   }
 
   return (

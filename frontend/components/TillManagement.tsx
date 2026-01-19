@@ -12,10 +12,28 @@ interface TillModalProps {
 
 const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
   const [name, setName] = useState(till?.name || '');
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!name.trim()) {
+      newErrors.name = 'Till name is required';
+    } else if (name.trim().length > 100) {
+      newErrors.name = 'Till name must be 100 characters or less';
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
+    
     await tillApi.saveTill({ id: till?.id, name });
     onSave();
   };
@@ -31,11 +49,18 @@ const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
               k-type="full"
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
-              className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors(prev => {
+                  const {[name]: _, ...rest} = prev;
+                  return rest;
+                });
+              }}
+              className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.name ? 'border-red-500' : 'border-slate-700'}`}
               autoFocus
               required
             />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">

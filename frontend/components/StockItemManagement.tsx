@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
-import type { StockItem, PurchasingUnit, Product } from '@shared/types';
+import type { StockItem, PurchasingUnit, Product } from '../shared/types';
 import * as inventoryApi from '../services/inventoryService';
 import * as productApi from '../services/productService';
 import { VKeyboardInput } from './VKeyboardInput';
@@ -20,6 +20,8 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
   const [baseUnit, setBaseUnit] = useState(item?.baseUnit || 'pcs');
   const [quantity, setQuantity] = useState(item?.quantity || 0);
   const [purchasingUnits, setPurchasingUnits] = useState<PurchasingUnit[]>(item?.purchasingUnits || []);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleAddPurchasingUnit = () => {
     setPurchasingUnits([...purchasingUnits, { id: uuidv4(), name: '', multiplier: 1 }]);
@@ -39,10 +41,48 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
     setPurchasingUnits(purchasingUnits.filter((_, i) => i !== index));
   };
 
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+    
+    if (!name.trim()) {
+      newErrors.name = 'Stock item name is required';
+    } else if (name.length > 255) {
+      newErrors.name = 'Stock item name must be 255 characters or less';
+    }
+    
+    if (!baseUnit.trim()) {
+      newErrors.baseUnit = 'Base unit is required';
+    } else if (baseUnit.length > 50) {
+      newErrors.baseUnit = 'Base unit must be 50 characters or less';
+    }
+    
+    if (quantity < 0) {
+      newErrors.quantity = 'Quantity must be 0 or greater';
+    }
+    
+    // Validate purchasing units
+    for (let i = 0; i < purchasingUnits.length; i++) {
+      const unit = purchasingUnits[i];
+      if (unit.name && unit.name.length > 50) {
+        newErrors[`purchasingUnit-${i}-name`] = 'Unit name must be 50 characters or less';
+      }
+      if (unit.name && unit.multiplier <= 0) {
+        newErrors[`purchasingUnit-${i}-multiplier`] = 'Multiplier must be greater than 0';
+      }
+    }
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !baseUnit.trim()) return;
+    
+    if (!validateForm()) {
+      return;
+    }
 
+    setIsSaving(true);
     try {
       const itemData = {
           id: item?.id,
@@ -50,13 +90,15 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           type,
           baseUnit,
           quantity: item?.id ? item.quantity : quantity,
-          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.multiplier > 0)
+          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.name.trim() && pu.multiplier > 0)
       };
       await inventoryApi.saveStockItem(itemData);
       onSave();
     } catch (error) {
       console.error('Error saving stock item:', error);
       alert(error instanceof Error ? error.message : 'Failed to save stock item. Please check your data and try again.');
+    } finally {
+      setIsSaving(false);
     }
   };
 
@@ -67,7 +109,22 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
         <div className="p-6 space-y-4 overflow-y-auto">
           <div>
             <label className="block text-sm text-slate-400">Item Name</label>
-            <VKeyboardInput k-type="full" type="text" value={name} onChange={(e) => setName(e.target.value)} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required autoFocus />
+            <VKeyboardInput
+              k-type="full"
+              type="text"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                if (errors.name) setErrors(prev => {
+                  const {[name]: _, ...rest} = prev;
+                  return rest;
+                });
+              }}
+              className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.name ? 'border-red-500' : 'border-slate-700'}`}
+              required
+              autoFocus
+            />
+            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
           </div>
           <div className="grid grid-cols-2 gap-4">
               <div>
@@ -79,13 +136,43 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
               </div>
                <div>
                 <label className="block text-sm text-slate-400">Base Tracking Unit</label>
-                <VKeyboardInput k-type="full" type="text" value={baseUnit} onChange={(e) => setBaseUnit(e.target.value)} placeholder="e.g., pcs, ml, g" className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
+                <VKeyboardInput
+                  k-type="full"
+                  type="text"
+                  value={baseUnit}
+                  onChange={(e) => {
+                    setBaseUnit(e.target.value);
+                    if (errors.baseUnit) setErrors(prev => {
+                      const {[baseUnit]: _, ...rest} = prev;
+                      return rest;
+                    });
+                  }}
+                  placeholder="e.g., pcs, ml, g"
+                  className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.baseUnit ? 'border-red-500' : 'border-slate-700'}`}
+                  required
+                />
+                {errors.baseUnit && <p className="text-red-500 text-xs mt-1">{errors.baseUnit}</p>}
               </div>
           </div>
           {!item && (
               <div>
                 <label className="block text-sm text-slate-400">Initial Quantity (in Base Unit)</label>
-                <VKeyboardInput k-type="numeric" type="number" value={quantity === 0 ? '' : quantity} onChange={e => setQuantity(parseFloat(e.target.value) || 0)} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
+                <VKeyboardInput
+                  k-type="numeric"
+                  type="number"
+                  value={quantity === 0 ? '' : quantity}
+                  onChange={e => {
+                    const value = parseFloat(e.target.value) || 0;
+                    setQuantity(value);
+                    if (errors.quantity) setErrors(prev => {
+                      const {[quantity]: _, ...rest} = prev;
+                      return rest;
+                    });
+                  }}
+                  className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.quantity ? 'border-red-500' : 'border-slate-700'}`}
+                  required
+                />
+                {errors.quantity && <p className="text-red-500 text-xs mt-1">{errors.quantity}</p>}
               </div>
           )}
           
@@ -94,14 +181,45 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
               <p className="text-xs text-slate-500 mb-3">Define how you buy this item for easy stock intake (e.g., a "Bottle" is 750 base units of "ml").</p>
               <div className="space-y-2">
                   {purchasingUnits.map((unit, index) => (
-                      <div key={unit.id} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
-                          <VKeyboardInput k-type="full" type="text" value={unit.name} onChange={e => handleUpdatePurchasingUnit(index, 'name', e.target.value)} placeholder="Unit Name (e.g., Bottle)" className="flex-grow p-2 bg-slate-700 border border-slate-600 rounded-md text-sm"/>
-                          <span className="text-slate-400">=</span>
-                          <VKeyboardInput k-type="numeric" type="number" value={unit.multiplier} onChange={e => handleUpdatePurchasingUnit(index, 'multiplier', e.target.value)} placeholder="Multiplier" className="w-24 p-2 bg-slate-700 border border-slate-600 rounded-md text-sm" />
-                          <span className="text-slate-400 text-sm">{baseUnit}</span>
-                          <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
-                      </div>
-                  ))}
+                       <div key={unit.id} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
+                           <VKeyboardInput
+                             k-type="full"
+                             type="text"
+                             value={unit.name}
+                             onChange={e => {
+                               handleUpdatePurchasingUnit(index, 'name', e.target.value);
+                               // Clear any error for this specific unit if there was one
+                               if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) setErrors(prev => {
+                                 const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, ...rest} = prev;
+                                 return rest;
+                               });
+                             }}
+                             maxLength={50}
+                             placeholder="Unit Name (e.g., Bottle)"
+                             className={`flex-grow p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
+                           />
+                           <span className="text-slate-400">=</span>
+                           <VKeyboardInput
+                             k-type="numeric"
+                             type="number"
+                             value={unit.multiplier}
+                             onChange={e => {
+                               const value = parseFloat(e.target.value) || 1;
+                               handleUpdatePurchasingUnit(index, 'multiplier', value);
+                               // Clear any error for this specific unit if there was one
+                               if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) setErrors(prev => {
+                                 const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, ...rest} = prev;
+                                 return rest;
+                               });
+                             }}
+                             placeholder="Multiplier"
+                             className={`w-24 p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
+                           />
+                           <span className="text-slate-400 text-sm">{baseUnit}</span>
+                           <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
+                           {(errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) && <p className="text-red-500 text-xs mt-1 col-span-2">{errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]}</p>}
+                       </div>
+                   ))}
               </div>
               <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">+ Add Purchasing Unit</button>
           </div>
@@ -109,7 +227,17 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
           <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-          <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save</button>
+          <button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
+            {isSaving ? (
+              <span className="flex items-center">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Saving...
+              </span>
+            ) : 'Save'}
+          </button>
         </div>
       </form>
     </div>
@@ -128,6 +256,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
     const [editingItem, setEditingItem] = useState<StockItem | undefined>(undefined);
     const [deletingItem, setDeletingItem] = useState<StockItem | null>(null);
     const [deleteError, setDeleteError] = useState<string>('');
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleSave = () => {
         setIsModalOpen(false);
@@ -142,12 +271,17 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
 
     const confirmDelete = async () => {
         if (deletingItem) {
-            const result = await inventoryApi.deleteStockItem(deletingItem.id);
-            if (result.success) {
-                setDeletingItem(null);
-                onDataUpdate();
-            } else {
-                setDeleteError(result.message || 'An unknown error occurred.');
+            setIsDeleting(true);
+            try {
+                const result = await inventoryApi.deleteStockItem(deletingItem.id);
+                if (result.success) {
+                    setDeletingItem(null);
+                    onDataUpdate();
+                } else {
+                    setDeleteError(result.message || 'An unknown error occurred.');
+                }
+            } finally {
+                setIsDeleting(false);
             }
         }
     };
@@ -180,9 +314,22 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                             </button>
                             <button
                                 onClick={() => handleDeleteClick(item)}
-                                className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md"
+                                disabled={isDeleting}
+                                className={`font-bold py-1 px-3 text-sm rounded-md ${
+                                  isDeleting
+                                    ? 'bg-gray-500 cursor-not-allowed'
+                                    : 'bg-red-700 hover:bg-red-600 text-white'
+                                }`}
                             >
-                                Delete
+                              {isDeleting ? (
+                                <span className="flex items-center">
+                                  <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                  </svg>
+                                  Deleting...
+                                </span>
+                              ) : 'Delete'}
                             </button>
                         </div>
                     </div>
@@ -202,7 +349,8 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                 message={deleteError || `Are you sure you want to delete "${deletingItem?.name}"? This action cannot be undone.`}
                 onConfirm={deleteError ? () => { setDeletingItem(null); setDeleteError(''); } : confirmDelete}
                 onCancel={() => { setDeletingItem(null); setDeleteError(''); }}
-                confirmText={deleteError ? 'OK' : 'Confirm'}
+                confirmText={isDeleting ? 'Deleting...' : (deleteError ? 'OK' : 'Confirm')}
+                disabled={isDeleting}
             />
         </div>
     );

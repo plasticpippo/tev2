@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockItem } from '../types';
+import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
 
 export const stockItemsRouter = express.Router();
 
@@ -56,6 +57,12 @@ stockItemsRouter.get('/:id', async (req: Request, res: Response) => {
 stockItemsRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    
+    // Validate stock item data
+    const validation = validateStockItem({ name, quantity, baseUnit, purchasingUnits: purchasingUnits || [] });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+    }
     
     const stockItem = await prisma.stockItem.create({
       data: {
@@ -210,6 +217,48 @@ stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
     }
     
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    
+    // Validate stock item data if any field is provided
+    if (name !== undefined || quantity !== undefined || baseUnit !== undefined || purchasingUnits !== undefined) {
+      const stockItemToUpdate = {
+        name: name !== undefined ? name : '',
+        quantity: quantity !== undefined ? quantity : 0,
+        baseUnit: baseUnit !== undefined ? baseUnit : 'unit',
+        purchasingUnits: purchasingUnits !== undefined ? purchasingUnits : []
+      };
+      
+      // Only validate the fields that are being updated
+      const errors: string[] = [];
+      
+      if (name !== undefined) {
+        const nameError = validateStockItemName(name);
+        if (nameError) errors.push(nameError);
+      }
+      
+      if (quantity !== undefined) {
+        const quantityError = validateStockItemQuantity(quantity);
+        if (quantityError) errors.push(quantityError);
+      }
+      
+      if (baseUnit !== undefined) {
+        const baseUnitError = validateStockItemBaseUnit(baseUnit);
+        if (baseUnitError) errors.push(baseUnitError);
+      }
+      
+      if (purchasingUnits !== undefined && Array.isArray(purchasingUnits)) {
+        for (let i = 0; i < purchasingUnits.length; i++) {
+          const unit = purchasingUnits[i];
+          const unitError = validatePurchasingUnit(unit);
+          if (unitError) {
+            errors.push(`Purchasing Unit ${i + 1}: ${unitError}`);
+          }
+        }
+      }
+      
+      if (errors.length > 0) {
+        return res.status(400).json({ error: 'Validation failed', details: errors });
+      }
+    }
     
     // Build update data object with only defined values
     const updateData: any = {};

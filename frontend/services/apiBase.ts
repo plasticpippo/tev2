@@ -1,4 +1,5 @@
 import type { OrderItem } from '../../shared/types';
+import { HTTP_ERROR_MESSAGES, CUSTOM_ERROR_MESSAGES } from '../utils/errorMessages';
 
 // Define OrderSession interface for frontend
 export interface OrderSession {
@@ -116,14 +117,31 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
     .then(async response => {
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+        
+        // Extract path from URL for custom error messages
+        const urlObj = new URL(url);
+        const path = urlObj.pathname;
+        
+        // Check for custom error message based on path and status
+        const customMessage = CUSTOM_ERROR_MESSAGES[path]?.[response.status];
+        const defaultHttpMessage = HTTP_ERROR_MESSAGES[response.status];
+        const serverMessage = errorData.error;
+        
+        // Build error message in order of preference: custom -> server -> default HTTP message
+        const errorMessage = customMessage || serverMessage || defaultHttpMessage || `HTTP error! status: ${response.status}`;
+        
         throw new Error(errorMessage);
       }
       return await response.json();
     })
     .catch(error => {
       console.error(`Error making request to ${url}:`, error);
-      throw error;
+      // If it's already an Error object, just rethrow it
+      if (error instanceof Error) {
+        throw error;
+      }
+      // Otherwise, wrap it in an Error object
+      throw new Error(error.message || 'An unexpected error occurred');
     })
     .finally(() => {
       // Clean up the cache when the request completes

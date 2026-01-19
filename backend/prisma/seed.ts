@@ -13,13 +13,14 @@ async function seedDatabase() {
     console.log('Seeding database...');
 
     // Clear existing data (optional, for development)
+    // Delete tables in reverse order of foreign key dependencies
     await prisma.settings.deleteMany({});
     await prisma.orderActivityLog.deleteMany({});
-    await prisma.stockConsumption.deleteMany({}); // Clear stock consumptions first
-    await prisma.stockAdjustment.deleteMany({});
-    await prisma.tab.deleteMany({});
     await prisma.transaction.deleteMany({});
-    await prisma.stockItem.deleteMany({});
+    await prisma.tab.deleteMany({});
+    await prisma.orderSession.deleteMany({}); // Added this to handle order_sessions_userId_fkey constraint
+    await prisma.stockConsumption.deleteMany({});
+    await prisma.stockAdjustment.deleteMany({});
     await prisma.productVariant.deleteMany({});
     await prisma.product.deleteMany({});
     await prisma.category.deleteMany({});

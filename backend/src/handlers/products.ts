@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Product, ProductVariant } from '../types';
+import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
 
 export const productsRouter = express.Router();
 
@@ -53,6 +54,12 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
 productsRouter.post('/', async (req: Request, res: Response) => {
   try {
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
+    
+    // Validate product data
+    const validation = validateProduct({ name, categoryId, variants });
+    if (!validation.isValid) {
+      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+    }
     
     // Validate category exists
     const category = await prisma.category.findUnique({
@@ -136,6 +143,42 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
+    
+    // Validate product data if provided
+    if (name !== undefined || categoryId !== undefined || variants !== undefined) {
+      const productToValidate = {
+        name: name !== undefined ? name : '',
+        categoryId: categoryId !== undefined ? categoryId : 0,
+        variants: variants !== undefined ? variants : []
+      };
+      
+      // Only validate fields that are provided
+      const validationErrors = [];
+      
+      if (name !== undefined) {
+        const nameError = validateProductName(name);
+        if (nameError) validationErrors.push(nameError);
+      }
+      
+      if (categoryId !== undefined) {
+        const categoryIdError = validateCategoryId(categoryId);
+        if (categoryIdError) validationErrors.push(categoryIdError);
+      }
+      
+      if (variants !== undefined && Array.isArray(variants)) {
+        for (let i = 0; i < variants.length; i++) {
+          const variant = variants[i];
+          const variantError = validateProductVariant(variant);
+          if (variantError) {
+            validationErrors.push(`Variant ${i + 1}: ${variantError}`);
+          }
+        }
+      }
+      
+      if (validationErrors.length > 0) {
+        return res.status(400).json({ error: 'Validation failed', details: validationErrors });
+      }
+    }
     
     // If categoryId is provided, validate that it exists
     if (categoryId !== undefined) {

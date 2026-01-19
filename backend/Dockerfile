@@ -28,11 +28,18 @@ COPY src/ ./src/
 # Build the application with explicit config
 RUN npx tsc --project tsconfig.json
 
-# Install only production dependencies for smaller image
-RUN npm ci --only=production && npm cache clean --force
+# Install all dependencies including dev dependencies for seeding
+RUN npm install && npm cache clean --force
+
+# Compile seed file to dist directory
+RUN npx tsc prisma/seed.ts --outDir dist --target ES2020 --module commonjs --esModuleInterop
 
 # Expose port
 EXPOSE 3001
 
-# Run the application
-CMD ["npm", "start"]
+# Copy entrypoint script
+COPY docker-entrypoint.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
+# Use entrypoint script to run migrations and seeding before starting app
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]

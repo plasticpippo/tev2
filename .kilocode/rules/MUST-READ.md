@@ -30,14 +30,14 @@ NO Workarounds! NO shortcuts! ONLY proper coding!
 Frontend is running on port 3000
 
 ### We are testing from LAN with a browser, NOT from localhost
-do not use test files
-use playwright mcp server to directly browse the app
+# Instructions for e2e testing
+ - do NOT use test files
+ - use playwright mcp server to directly browse the app
+ - ALL testing must be done it their own subtasks and all test files must be in the ./test-files folder
 
 ## DO NOT EVER kill all npm processes. ONLY stop the necessary processes required to achieve your current goal
 
 
 ### ALL documentation must be located at ./docs
-
-## ALL testing must be done it their own subtasks and all test files must be in the ./test-files folder
 
 ### do not rush! always make sure you are editing things right. the goal is here is quality and not speed

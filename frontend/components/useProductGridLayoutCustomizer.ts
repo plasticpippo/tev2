@@ -84,6 +84,9 @@ export const useProductGridLayoutCustomizer = ({
   const [availableLayouts, setAvailableLayouts] = useState<ProductGridLayoutData[]>([]);
   const [loadingLayouts, setLoadingLayouts] = useState<boolean>(false);
   const [loadingCurrentLayout, setLoadingCurrentLayout] = useState<boolean>(false);
+  const [savingLayout, setSavingLayout] = useState<boolean>(false);
+  const [deletingLayout, setDeletingLayout] = useState<boolean>(false);
+  const [settingDefaultLayout, setSettingDefaultLayout] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [currentLayoutId, setCurrentLayoutId] = useState<string | number | null>(null);
   const [filterType, setFilterType] = useState<FilterType>('all');
@@ -206,6 +209,7 @@ export const useProductGridLayoutCustomizer = ({
       return;
     }
     
+    setSavingLayout(true);
     try {
       // Create the extended layout data with filterType and categoryId
       const extendedLayoutData: any = {
@@ -266,6 +270,8 @@ export const useProductGridLayoutCustomizer = ({
     } catch (error) {
       console.error('Error saving layout:', error);
       alert('Failed to save layout: ' + (error as Error).message);
+    } finally {
+      setSavingLayout(false);
     }
   };
 
@@ -275,6 +281,7 @@ export const useProductGridLayoutCustomizer = ({
       return;
     }
     
+    setSavingLayout(true);
     try {
       // Create the extended layout data with filterType and categoryId
       const extendedLayoutData: any = {
@@ -324,6 +331,8 @@ export const useProductGridLayoutCustomizer = ({
     } catch (error) {
       console.error('Error saving layout as new:', error);
       alert('Failed to save layout as new: ' + (error as Error).message);
+    } finally {
+      setSavingLayout(false);
     }
   };
 
@@ -388,6 +397,7 @@ export const useProductGridLayoutCustomizer = ({
   };
 
   const handleDeleteLayout = async (layoutId: string | number) => {
+    setDeletingLayout(true);
     try {
       await deleteGridLayout(layoutId.toString());
       // Remove from local list and reload layouts
@@ -398,10 +408,13 @@ export const useProductGridLayoutCustomizer = ({
       }
     } catch (error) {
       setError('Failed to delete layout: ' + (error as Error).message);
+    } finally {
+      setDeletingLayout(false);
     }
   };
 
   const handleSetAsDefault = async (layoutId: string | number) => {
+    setSettingDefaultLayout(true);
     try {
       const result = await setLayoutAsDefault(layoutId.toString());
       // Update local layouts list
@@ -418,6 +431,8 @@ export const useProductGridLayoutCustomizer = ({
       }
     } catch (error) {
       setError('Failed to set layout as default: ' + (error as Error).message);
+    } finally {
+      setSettingDefaultLayout(false);
     }
   };
 
@@ -468,6 +483,9 @@ export const useProductGridLayoutCustomizer = ({
     availableLayouts,
     loadingLayouts,
     loadingCurrentLayout,
+    savingLayout,
+    deletingLayout,
+    settingDefaultLayout,
     error,
     currentLayoutId,
     filterType,
