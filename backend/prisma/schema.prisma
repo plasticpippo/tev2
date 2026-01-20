@@ -63,7 +63,6 @@ model Category {
   id                 Int                 @id @default(autoincrement())
   name               String
   visibleTillIds     Json?
-  productGridLayouts ProductGridLayout[]
   products           Product[]
 
   @@map("categories")
@@ -133,7 +132,6 @@ model Tab {
 model Till {
   id                 Int                 @id @default(autoincrement())
   name               String
-  productGridLayouts ProductGridLayout[]
 
   @@map("tills")
 }
@@ -211,23 +209,3 @@ model OrderSession {
   @@map("order_sessions")
 }
 
-model ProductGridLayout {
-  id         Int       @id @default(autoincrement())
-  tillId     Int?
-  name       String
-  layout     Json
-  isDefault  Boolean   @default(false)
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-  categoryId Int?
-  filterType String?   @default("all")
-  shared     Boolean   @default(false)
-  category   Category? @relation(fields: [categoryId], references: [id], onUpdate: NoAction)
-  till       Till?     @relation(fields: [tillId], references: [id], onDelete: Cascade)
-
-  @@index([tillId])
-  @@index([filterType])
-  @@index([categoryId])
-  @@index([shared])
-  @@map("product_grid_layouts")
-}

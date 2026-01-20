@@ -15,7 +15,6 @@ import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
-import { ProductGridLayoutManagement } from './ProductGridLayoutManagement';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -107,8 +106,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
       case 'itemisedConsumption':
           return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
-      case 'layoutManagement':
-          return <ProductGridLayoutManagement tills={tills} categories={categories} onDataUpdate={onDataUpdate} />;
       default:
         return <p>Select a view</p>;
     }

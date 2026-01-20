@@ -26,7 +26,7 @@ export default defineConfig({
     strictPort: false, // Don't fail if the port is occupied
     proxy: {
       '/api': {
-        target: env.VITE_API_URL || 'http://127.0.0.1:3001',
+        target: env.VITE_API_URL || 'http://192.168.1.241:3001',  // Use LAN IP for proper proxying
         changeOrigin: true,
         secure: false, // Set to true if using HTTPS for the target
         // Log proxy activity for debugging

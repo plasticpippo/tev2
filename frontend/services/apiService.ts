@@ -15,9 +15,7 @@ export {
 // Export types
 export type {
   OrderSession,
-  DailyClosing,
-  ProductGridLayout,
-  ProductGridLayoutData
+  DailyClosing
 } from './apiBase';
 
 // Export user service functions
@@ -93,16 +91,6 @@ export {
   updateTablePosition
 } from './tableService';
 
-// Export grid layout service functions
-export {
-  saveGridLayout,
-  getGridLayoutsForTill,
-  getCurrentLayoutForTill,
-  getCurrentLayoutForTillWithFilter,
- getSharedLayouts,
-  deleteGridLayout,
-  setLayoutAsDefault
-} from './gridLayoutService';
 
 // Export daily closing service functions
 export {

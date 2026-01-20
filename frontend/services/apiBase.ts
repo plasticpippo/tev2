@@ -29,30 +29,6 @@ export interface DailyClosing {
  userName: string;
 }
 
-// Define ProductGridLayout interface
-export interface ProductGridLayout {
-  columns: number;
-  gridItems: {
-    id: string;
-    variantId: number;
-    productId: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-  }[];
-  version: string;
-}
-
-export interface ProductGridLayoutData {
-  id?: string | number;
- name: string;
- tillId: number;
-  layout: ProductGridLayout;
-  isDefault: boolean;
-  filterType?: 'all' | 'favorites' | 'category';
-  categoryId?: number | null;
-}
 
 // Request deduplication cache
 const requestCache = new Map<string, Promise<any>>();

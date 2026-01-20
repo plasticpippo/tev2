@@ -93,11 +93,11 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
           
           // Apply filter based on active filter type
           if (activeFilterType === 'favorites') {
-            filteredProducts = products.filter(product =>
-              product.variants.some(variant => variant.isFavourite)
+            filteredProducts = products.filter((product: Product) =>
+              product.variants.some((variant: ProductVariant) => variant.isFavourite)
             );
           } else if (activeFilterType === 'category' && activeCategoryId !== null && activeCategoryId !== -1) {
-            filteredProducts = products.filter(product =>
+            filteredProducts = products.filter((product: Product) =>
               product.categoryId === activeCategoryId
             );
           } else if (activeFilterType === 'all') {
@@ -105,17 +105,19 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
             filteredProducts = products;
           }
           
-          return filteredProducts.map(product => (
-            product.variants.map((variant, variantIndex) => (
+          return filteredProducts.map((product: Product) => (
+            product.variants.map((variant: ProductVariant, variantIndex: number) => (
               <button
                 key={`${product.id}-${variant.id}`}
                 onClick={() => handleAddItemToGrid(product, variant)}
-                className={`rounded-lg p-2 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 ${variant.backgroundColor} hover:brightness-110`}
+                className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-32 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
                 aria-label={`Add ${product.name} ${variant.name} to grid`}
               >
-                <p className={`font-bold text-xs ${variant.textColor}`}>{product.name}</p>
-                <p className={`text-xs ${variant.textColor}`}>{variant.name}</p>
-                <p className={`text-xs ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
+                <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
+                <div>
+                  <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
+                  <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
+                </div>
               </button>
             ))
           ));
