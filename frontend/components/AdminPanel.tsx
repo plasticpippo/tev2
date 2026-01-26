@@ -46,7 +46,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'layoutManagement';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -153,7 +153,6 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <NavButton view="users" label="Users" isFirst/>
                 <NavButton view="tills" label="Tills" />
                 <NavButton view="tables" label="Tables & Layout" />
-                <NavButton view="layoutManagement" label="Product Grid Layouts" />
                 <NavButton view="itemisedConsumption" label="Itemised Consumption" />
                 <div className="pt-2"></div>
                 <NavButton view="settings" label="Settings" isFirst/>
