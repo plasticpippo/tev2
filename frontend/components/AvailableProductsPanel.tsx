@@ -1,6 +1,7 @@
 import React from 'react';
 import type { Product, Category, ProductVariant } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
+import HelpGuide from './HelpGuide';
 
 interface AvailableProductsPanelProps {
   products: Product[];
@@ -30,9 +31,12 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
   handleAddItemToGrid
 }) => {
  return (
-    <div className="bg-slate-700 p-4 rounded-lg">
-      <h3 className="text-lg font-semibold mb-2 text-amber-200">Available Products</h3>
-      <div className="flex flex-wrap gap-2 mb-4">
+    <div className="bg-slate-700 p-4 rounded-lg" role="region" aria-labelledby="available-products-heading">
+      <div className="flex justify-between items-center mb-2">
+        <h3 id="available-products-heading" className="text-lg font-semibold text-amber-200">Available Products</h3>
+        <HelpGuide feature="available-products" title="Available Products Panel" description="Drag products from this panel onto the grid canvas to add them to your layout." position="left" />
+      </div>
+      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Product filtering options">
         <button
           onClick={() => {
             const newShowFavorites = !showFavoritesOnly;
@@ -87,7 +91,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded" role="list" aria-label="List of available products to add to the grid">
         {(() => {
           let filteredProducts = products;
           
@@ -112,6 +116,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
                 onClick={() => handleAddItemToGrid(product, variant)}
                 className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-32 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
                 aria-label={`Add ${product.name} ${variant.name} to grid`}
+                role="listitem"
               >
                 <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
                 <div>
