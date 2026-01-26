@@ -1,8 +1,9 @@
 import React from 'react';
 import { useAppContext } from '../contexts/AppContext';
+import { LayoutProvider, useLayout } from '../src/contexts/LayoutContext';
+import { ProductGridLayout } from '../src/components/layout/ProductGridLayout';
 
 import { LoginScreen } from './LoginScreen';
-import { ProductGrid } from './ProductGrid';
 import { OrderPanel } from './OrderPanel';
 import { AdminPanel } from './AdminPanel';
 import { PaymentModal } from './PaymentModal';
@@ -111,32 +112,47 @@ export const MainPOSInterface: React.FC = () => {
             Admin Panel
           </button>
         )}
+        
         <main className="flex-grow flex gap-4 overflow-hidden">
-          <div className="w-2/3 h-full">
-            <ProductGrid
-              products={appData.products}
-              categories={appData.categories}
-              onAddToCart={handleAddToCart}
-              assignedTillId={assignedTillId}
-              makableVariantIds={makableVariantIds}
-              tills={appData.tills}
-            />
-          </div>
-          <div className="w-1/3 h-full">
-            <OrderPanel
-              orderItems={orderItems}
-              user={currentUser}
-              onUpdateQuantity={handleUpdateQuantity}
-              onClearOrder={() => clearOrder(true)}
-              onPayment={() => setIsPaymentModalOpen(true)}
-              onOpenTabs={() => setIsTabsModalOpen(true)}
-              onLogout={handleLogout}
-              activeTab={activeTab}
-              onSaveTab={handleSaveTab}
-              assignedTable={assignedTable}
-              onOpenTableAssignment={handleOpenTableAssignment}
-            />
-          </div>
+          {assignedTillId ? (
+            <LayoutProvider tillId={assignedTillId} initialCategoryId={'favourites'}>
+              <>
+                <div className="w-2/3 h-full flex flex-col">
+                  {/* Product Grid with Layout System */}
+                  <div className="flex-1 overflow-y-auto bg-slate-900">
+                    <ProductGridLayout
+                      products={appData.products}
+                      categories={appData.categories}
+                      onAddToCart={handleAddToCart}
+                      makableVariantIds={makableVariantIds}
+                      assignedTillId={assignedTillId}
+                    />
+                  </div>
+                </div>
+                
+                <div className="w-1/3 h-full">
+                  <OrderPanel
+                    orderItems={orderItems}
+                    user={currentUser}
+                    onUpdateQuantity={handleUpdateQuantity}
+                    onClearOrder={() => clearOrder(true)}
+                    onPayment={() => setIsPaymentModalOpen(true)}
+                    onOpenTabs={() => setIsTabsModalOpen(true)}
+                    onLogout={handleLogout}
+                    activeTab={activeTab}
+                    onSaveTab={handleSaveTab}
+                    assignedTable={assignedTable}
+                    onOpenTableAssignment={handleOpenTableAssignment}
+                  />
+                </div>
+                <LayoutLoadingOverlay />
+              </>
+            </LayoutProvider>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-500 w-full">
+              Please assign a till to continue
+            </div>
+          )}
         </main>
       </div>
 
@@ -181,4 +197,24 @@ export const MainPOSInterface: React.FC = () => {
       <VirtualKeyboard />
     </>
   );
+};
+
+// Component to show loading states for layout operations
+const LayoutLoadingOverlay: React.FC = () => {
+  const { isLoading, isSaving } = useLayout();
+  
+  if (isLoading || isSaving) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="bg-slate-800 p-6 rounded-lg">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
+          <p className="text-white mt-4">
+            {isSaving ? 'Saving layout...' : 'Loading layout...'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+  
+  return null;
 };

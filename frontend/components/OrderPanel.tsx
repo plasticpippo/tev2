@@ -1,6 +1,9 @@
 import React from 'react';
-import type { OrderItem, User, Tab, Table } from '@shared/types';
+import type { OrderItem, User, Tab, Table } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
+import { EditLayoutButton } from '../src/components/EditLayoutButton';
+import { EditModeOverlay } from '../src/components/EditModeOverlay';
+import { useLayout } from '../src/contexts/LayoutContext';
 
 interface OrderPanelProps {
   orderItems: OrderItem[];
@@ -144,19 +147,67 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
 );
 
 export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpdateQuantity, onClearOrder, onPayment, onOpenTabs, onLogout, activeTab, onSaveTab, assignedTable, onOpenTableAssignment }) => {
+  // Try to get layout context (will be undefined if not within LayoutProvider)
+  let layoutContext;
+  try {
+    layoutContext = useLayout();
+  } catch {
+    // Not within LayoutProvider, that's okay
+    layoutContext = null;
+  }
+
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="bg-slate-900 text-white rounded-lg p-4 flex flex-col h-full">
-      {renderHeader(user, activeTab, assignedTable, onLogout, onOpenTableAssignment)}
-      
-      <div className="flex-grow overflow-y-auto pr-2">
-        {renderOrderItems(orderItems, onUpdateQuantity)}
+    <div className="w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col">
+      {/* Existing header with user info */}
+      <div className="p-4 border-b border-slate-700 flex justify-between items-start">
+        <div>
+          <p className="text-gray-400 text-sm">Logged in as:</p>
+          <p className="text-white font-semibold">
+            {user?.name} 
+            <span className="text-purple-400 text-xs ml-2">
+              ({user?.role})
+            </span>
+          </p>
+        </div>
+        <button onClick={onLogout} className="text-sm bg-red-700 hover:bg-red-600 font-bold py-2 px-3 rounded-md transition">
+          Logout
+        </button>
       </div>
 
-      <div className="mt-auto pt-4 border-t border-slate-700 flex-shrink-0 space-y-2">
+      {/* Main order content area */}
+      <div className="flex-1 p-4 relative overflow-y-auto">
+        {/* Your existing order items display */}
+        <h2 className="text-2xl font-bold text-yellow-500 mb-4">Current Order</h2>
+        
+        {/* Your existing order items rendering code */}
+        {orderItems.length === 0 ? (
+          <div className="text-center text-gray-500 mt-20">
+            Select products to add them here.
+          </div>
+        ) : (
+          // Your existing order items map
+          <div>
+            {renderOrderItems(orderItems, onUpdateQuantity)}
+          </div>
+        )}
+
+        {/* Edit Mode Overlay - covers this section when in edit mode */}
+        {layoutContext && <EditModeOverlay />}
+      </div>
+
+      {/* Edit Layout Button Section - above bottom actions */}
+      {layoutContext && user?.role === 'Admin' && (
+        <div className="p-4 border-t border-slate-700">
+          <EditLayoutButton userRole="admin" />
+        </div>
+      )}
+
+      {/* Your existing bottom buttons (subtotal, payment, etc.) */}
+      <div className="p-4 border-t border-slate-700">
         {orderItems.length > 0 && (
-          <div className="flex justify-between text-xl">
+          <div className="flex justify-between text-xl mb-4">
             <span>Subtotal</span>
             <span className="font-bold">{formatCurrency(subtotal)}</span>
           </div>

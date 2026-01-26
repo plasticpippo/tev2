@@ -10,17 +10,23 @@ COPY package*.json ./
 # Install dependencies
 RUN npm install
 
-# Copy source code
-COPY . .
+# Create directory structure to mirror project root
+RUN mkdir -p frontend
+
+# Copy frontend source code to frontend directory
+COPY . ./frontend/
+
+# Copy shared directory from project root to app root
+COPY ../shared ./shared
 
 # Build the application
-RUN npm run build
+RUN cd frontend && npm run build
 
 # Use nginx to serve the built application
 FROM nginx:alpine
 
 # Copy built application from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
 COPY nginx.conf /etc/nginx/nginx.conf

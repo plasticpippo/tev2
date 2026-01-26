@@ -17,6 +17,7 @@ async function seedDatabase() {
     const tillCount = await prisma.till.count();
     const categoryCount = await prisma.category.count();
     const settingsCount = await prisma.settings.count();
+    const productCount = await prisma.product.count();
 
     // Only seed essential data if none exists
     if (userCount === 0) {
@@ -57,31 +58,54 @@ async function seedDatabase() {
       console.log(`Tills already exist (${tillCount}), skipping till seeding`);
     }
 
-    if (categoryCount === 0) {
+    if (categoryCount <= 2) { // Allow for special categories (-1, 0) but seed if no regular categories exist
       console.log('Seeding categories...');
       
-      // Create categories
-      const categories = await Promise.all([
-        prisma.category.create({
-          data: {
-            name: 'Red Wine',
-            visibleTillIds: [] // JSON field with empty array
-          },
-        }),
-        prisma.category.create({
-          data: {
-            name: 'Beer',
-            visibleTillIds: [1] // Visible only on Main Bar
-          },
-        }),
-        prisma.category.create({
-          data: {
-            name: 'Cocktails',
-            visibleTillIds: [] // Visible on all
-          },
-        }),
-      ]);
-      console.log('Created categories:', categories.length);
+      // Check if regular categories (id > 0) exist
+      const regularCategoryCount = await prisma.category.count({
+        where: {
+          id: { gt: 0 } // greater than 0
+        }
+      });
+
+      if (regularCategoryCount === 0) {
+        // Create regular categories
+        const categories = await Promise.all([
+          prisma.category.create({
+            data: {
+              name: 'Red Wine',
+              visibleTillIds: [] // JSON field with empty array
+            },
+          }),
+          prisma.category.create({
+            data: {
+              name: 'Beer',
+              visibleTillIds: [1] // Visible only on Main Bar
+            },
+          }),
+          prisma.category.create({
+            data: {
+              name: 'Cocktails',
+              visibleTillIds: [] // Visible on all
+            },
+          }),
+          prisma.category.create({
+            data: {
+              name: 'Whiskey',
+              visibleTillIds: [] // Visible on all
+            },
+          }),
+          prisma.category.create({
+            data: {
+              name: 'Soft Drinks',
+              visibleTillIds: [] // Visible on all
+            },
+          }),
+        ]);
+        console.log('Created regular categories:', categories.length);
+      } else {
+        console.log(`Regular categories already exist (${regularCategoryCount}), skipping category seeding`);
+      }
     } else {
       console.log(`Categories already exist (${categoryCount}), skipping category seeding`);
     }
@@ -100,6 +124,143 @@ async function seedDatabase() {
       console.log('Created settings');
     } else {
       console.log(`Settings already exist (${settingsCount}), skipping settings seeding`);
+    }
+
+    // Seed products and variants if none exist
+    if (productCount === 0) {
+      console.log('Seeding products and variants...');
+      
+      // Find categories to link products to
+      const redWineCategory = await prisma.category.findFirst({ where: { name: 'Red Wine' } });
+      const beerCategory = await prisma.category.findFirst({ where: { name: 'Beer' } });
+      const cocktailCategory = await prisma.category.findFirst({ where: { name: 'Cocktails' } });
+      const whiskeyCategory = await prisma.category.findFirst({ where: { name: 'Whiskey' } });
+      const softDrinksCategory = await prisma.category.findFirst({ where: { name: 'Soft Drinks' } });
+
+      if (redWineCategory && beerCategory && cocktailCategory && whiskeyCategory && softDrinksCategory) {
+        // Create products and their variants
+        const wineProduct = await prisma.product.create({
+          data: {
+            name: 'Cabernet Sauvignon',
+            categoryId: redWineCategory.id,
+            variants: {
+              create: [
+                {
+                  name: 'Glass',
+                  price: 8.50,
+                  isFavourite: true,
+                  backgroundColor: '#8B0000',
+                  textColor: '#FFFFFF'
+                },
+                {
+                  name: 'Bottle',
+                  price: 32.00,
+                  backgroundColor: '#A52A2A',
+                  textColor: '#FFFFFF'
+                }
+              ]
+            }
+          }
+        });
+
+        const beerProduct = await prisma.product.create({
+          data: {
+            name: 'IPA',
+            categoryId: beerCategory.id,
+            variants: {
+              create: [
+                {
+                  name: 'Draft',
+                  price: 6.00,
+                  isFavourite: true,
+                  backgroundColor: '#DAA520',
+                  textColor: '#000000'
+                },
+                {
+                  name: 'Bottle',
+                  price: 7.00,
+                  backgroundColor: '#DEB887',
+                  textColor: '#000000'
+                }
+              ]
+            }
+          }
+        });
+
+        const cocktailProduct = await prisma.product.create({
+          data: {
+            name: 'Mojito',
+            categoryId: cocktailCategory.id,
+            variants: {
+              create: [
+                {
+                  name: 'Regular',
+                  price: 12.00,
+                  isFavourite: true,
+                  backgroundColor: '#32CD32',
+                  textColor: '#FFFFFF'
+                }
+              ]
+            }
+          }
+        });
+
+        const whiskeyProduct = await prisma.product.create({
+          data: {
+            name: 'Scotch Whiskey',
+            categoryId: whiskeyCategory.id,
+            variants: {
+              create: [
+                {
+                  name: 'Neat',
+                  price: 10.00,
+                  isFavourite: false,
+                  backgroundColor: '#CD853F',
+                  textColor: '#FFFFFF'
+                },
+                {
+                  name: 'On the Rocks',
+                  price: 10.00,
+                  isFavourite: true,
+                  backgroundColor: '#D2691E',
+                  textColor: '#FFFFFF'
+                }
+              ]
+            }
+          }
+        });
+
+        const sodaProduct = await prisma.product.create({
+          data: {
+            name: 'Coca Cola',
+            categoryId: softDrinksCategory.id,
+            variants: {
+              create: [
+                {
+                  name: 'Can',
+                  price: 3.50,
+                  isFavourite: false,
+                  backgroundColor: '#FF0000',
+                  textColor: '#FFFFFF'
+                },
+                {
+                  name: 'Bottle',
+                  price: 4.00,
+                  isFavourite: false,
+                  backgroundColor: '#8B0000',
+                  textColor: '#FFFFFF'
+                }
+              ]
+            }
+          }
+        });
+
+        console.log('Created products and variants:', [wineProduct, beerProduct, cocktailProduct, whiskeyProduct, sodaProduct].length);
+      } else {
+        console.log('Some categories not found, skipping product seeding');
+      }
+    } else {
+      console.log(`Products already exist (${productCount}), skipping product seeding`);
     }
 
     console.log('Database seeding check completed successfully!');

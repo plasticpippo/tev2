@@ -145,3 +145,41 @@ export interface OrderSession {
   logoutTime: string | null;
 }
 
+export interface VariantLayoutPosition {
+  variantId: number;
+  gridColumn: number;
+  gridRow: number;
+}
+
+export interface VariantLayout {
+  id: number;
+  tillId: number;
+  categoryId: number;
+  variantId: number;
+  gridColumn: number;
+  gridRow: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SharedLayoutPosition {
+  id: number;
+  sharedLayoutId: number;
+  variantId: number;
+  gridColumn: number;
+  gridRow: number;
+}
+
+export interface SharedLayout {
+  id: number;
+  name: string;
+  categoryId: number;
+  createdAt: string;
+  updatedAt: string;
+  positions: SharedLayoutPosition[];
+  category?: {
+    id: number;
+    name: string;
+  };
+}
+

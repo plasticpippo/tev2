@@ -144,3 +144,16 @@ export interface OrderSession {
     updatedAt: string;
     logoutTime: string | null;
 }
+
+export interface VariantLayoutPosition {
+  variantId: number;
+  gridColumn: number;
+  gridRow: number;
+}
+
+export interface SharedLayoutData {
+  id?: number;
+  name: string;
+  categoryId: number;
+  positions: VariantLayoutPosition[];
+}
