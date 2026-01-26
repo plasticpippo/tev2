@@ -134,8 +134,11 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
     return cells;
   };
 
-  // Only show grid for numbered categories (not favourites or all)
-  const showEditGrid = isEditMode && typeof currentCategoryId === 'number';
+  // Allow editing for favourites AND numbered categories
+  const showEditGrid = isEditMode && (
+    currentCategoryId === 'favourites' ||
+    typeof currentCategoryId === 'number'
+  );
 
   return (
     <div className="flex flex-col h-full bg-slate-900 rounded-lg">
@@ -166,13 +169,29 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
               }}
             >
               <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
-                4-COLUMN GRID • {typeof currentCategoryId === 'number' ? categories.find(c => c.id === currentCategoryId)?.name : currentCategoryId}
+                4-COLUMN GRID • {
+                  currentCategoryId === 'favourites'
+                    ? 'Favourites'
+                    : typeof currentCategoryId === 'number'
+                      ? categories.find(c => c.id === currentCategoryId)?.name
+                      : currentCategoryId
+                }
               </div>
             </div>
           )}
 
-          {/* Warning for favourites/all in edit mode - REMOVE THIS SECTION */}
-          {/* We'll allow editing favourites now, so remove the warning */}
+          {/* Warning only for 'all' in edit mode */}
+          {isEditMode && currentCategoryId === 'all' && (
+            <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-900/80">
+              <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-md text-center">
+                <p className="font-bold text-lg mb-2">⚠️ Edit Mode Disabled</p>
+                <p className="text-sm">
+                  Layout customization is not available for "All" filter.
+                  Please select a specific category or Favourites to customize its layout.
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Product grid */}
           <div

@@ -81,20 +81,25 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     }
   }, [tillId]);
 
-  // Load layout when category changes (only if not 'favourites' or 'all')
+  // Load layout when category changes (including favourites)
   useEffect(() => {
-    if (typeof currentCategoryId === 'number' && tillId) {
+    if (currentCategoryId === 'favourites' && tillId) {
+      loadLayoutForCategory('favourites');
+    } else if (typeof currentCategoryId === 'number' && tillId) {
       loadLayoutForCategory(currentCategoryId);
     }
   }, [currentCategoryId, tillId]);
 
   // Load layout for a specific category from API
-  const loadLayoutForCategory = useCallback(async (categoryId: number) => {
+  const loadLayoutForCategory = useCallback(async (categoryId: number | 'favourites') => {
     if (!tillId) return;
+    
+    // Convert 'favourites' to special ID
+    const categoryIdToFetch = categoryId === 'favourites' ? -1 : categoryId;
     
     setIsLoading(true);
     try {
-      const layouts = await getTillLayout(tillId, categoryId);
+      const layouts = await getTillLayout(tillId, categoryIdToFetch);
       
       const positions: ButtonPosition[] = layouts.map(l => ({
         variantId: l.variantId,
@@ -104,26 +109,26 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
       setCurrentTillLayout(prev => {
         // Update or add the category layout
-        const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryId);
+        const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryIdToFetch);
         const newLayouts = [...prev.layouts];
         
         if (existingIndex >= 0) {
-          newLayouts[existingIndex] = { categoryId, positions };
+          newLayouts[existingIndex] = { categoryId: categoryIdToFetch, positions };
         } else {
-          newLayouts.push({ categoryId, positions });
+          newLayouts.push({ categoryId: categoryIdToFetch, positions });
         }
         
         return { ...prev, layouts: newLayouts };
       });
 
       setSavedTillLayout(prev => {
-        const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryId);
+        const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryIdToFetch);
         const newLayouts = [...prev.layouts];
         
         if (existingIndex >= 0) {
-          newLayouts[existingIndex] = { categoryId, positions };
+          newLayouts[existingIndex] = { categoryId: categoryIdToFetch, positions };
         } else {
-          newLayouts.push({ categoryId, positions });
+          newLayouts.push({ categoryId: categoryIdToFetch, positions });
         }
         
         return { ...prev, layouts: newLayouts };
@@ -154,8 +159,16 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
   // Get current category layout
   const getCurrentCategoryLayout = useCallback((): CategoryLayout | undefined => {
-    if (typeof currentCategoryId !== 'number') return undefined;
-    return currentTillLayout.layouts.find(l => l.categoryId === currentCategoryId);
+    // Convert 'favourites' to special ID
+    const categoryIdToUse = currentCategoryId === 'favourites'
+      ? -1
+      : typeof currentCategoryId === 'number'
+        ? currentCategoryId
+        : undefined;
+    
+    if (categoryIdToUse === undefined) return undefined;
+    
+    return currentTillLayout.layouts.find(l => l.categoryId === categoryIdToUse);
   }, [currentTillLayout, currentCategoryId]);
 
   // Get button position for a specific variant
@@ -166,18 +179,23 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
   // Update button position
   const updateButtonPosition = useCallback((
-    variantId: number, 
-    gridColumn: number, 
+    variantId: number,
+    gridColumn: number,
     gridRow: number
   ) => {
-    if (typeof currentCategoryId !== 'number') {
-      console.warn('Cannot update position: currentCategoryId is not a number');
+    // Convert favourites to -1
+    const categoryIdToUse = currentCategoryId === 'favourites'
+      ? -1
+      : currentCategoryId;
+      
+    if (typeof categoryIdToUse !== 'number') {
+      console.warn('Cannot update position: currentCategoryId is not valid');
       return;
     }
 
     setCurrentTillLayout(prevLayout => {
       const newLayouts = prevLayout.layouts.map(categoryLayout => {
-        if (categoryLayout.categoryId !== currentCategoryId) {
+        if (categoryLayout.categoryId !== categoryIdToUse) {
           return categoryLayout;
         }
 
@@ -207,10 +225,10 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       });
 
       // If category doesn't exist yet, add it
-      const categoryExists = newLayouts.some(l => l.categoryId === currentCategoryId);
+      const categoryExists = newLayouts.some(l => l.categoryId === categoryIdToUse);
       if (!categoryExists) {
         newLayouts.push({
-          categoryId: currentCategoryId,
+          categoryId: categoryIdToUse,
           positions: [{ variantId, gridColumn, gridRow }]
         });
       }
@@ -226,8 +244,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
   // Save layout to API
   const saveLayout = useCallback(async () => {
-    if (!tillId || typeof currentCategoryId !== 'number') {
-      console.error('Cannot save: missing tillId or valid categoryId');
+    if (!tillId) {
+      console.error('Cannot save: missing tillId');
+      return;
+    }
+    
+    // Convert favourites to -1
+    const categoryIdToSave = currentCategoryId === 'favourites'
+      ? -1
+      : currentCategoryId;
+      
+    if (typeof categoryIdToSave !== 'number') {
+      console.error('Cannot save: invalid categoryId');
       return;
     }
 
@@ -245,14 +273,15 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         gridRow: p.gridRow
       }));
 
-      await saveTillLayout(tillId, currentCategoryId, positions);
+      await saveTillLayout(tillId, categoryIdToSave, positions);
       
       // Update saved layout to match current
       setSavedTillLayout(currentTillLayout);
       setIsDirty(false);
       
       // Show success message
-      alert('Layout saved successfully!');
+      const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'category';
+      alert(`Layout saved successfully for ${categoryName}!`);
     } catch (error) {
       console.error('Error saving layout:', error);
       alert(`Failed to save layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -263,28 +292,40 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
   // Reset layout to default (delete from API)
   const resetLayout = useCallback(async () => {
-    if (!tillId || typeof currentCategoryId !== 'number') {
-      console.error('Cannot reset: missing tillId or valid categoryId');
+    if (!tillId) {
+      console.error('Cannot reset: missing tillId');
+      return;
+    }
+    
+    // Convert favourites to -1
+    const categoryIdToReset = currentCategoryId === 'favourites'
+      ? -1
+      : currentCategoryId;
+      
+    if (typeof categoryIdToReset !== 'number') {
+      console.error('Cannot reset: invalid categoryId');
       return;
     }
 
-    if (!window.confirm('Reset layout to default? This will remove all custom positions for this category.')) {
+    const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'this category';
+    
+    if (!window.confirm(`Reset layout to default? This will remove all custom positions for ${categoryName}.`)) {
       return;
     }
 
     setIsSaving(true);
     try {
-      await resetTillLayout(tillId, currentCategoryId);
+      await resetTillLayout(tillId, categoryIdToReset);
       
       // Remove this category from current and saved layouts
       setCurrentTillLayout(prev => ({
         ...prev,
-        layouts: prev.layouts.filter(l => l.categoryId !== currentCategoryId)
+        layouts: prev.layouts.filter(l => l.categoryId !== categoryIdToReset)
       }));
       
       setSavedTillLayout(prev => ({
         ...prev,
-        layouts: prev.layouts.filter(l => l.categoryId !== currentCategoryId)
+        layouts: prev.layouts.filter(l => l.categoryId !== categoryIdToReset)
       }));
       
       setIsDirty(false);
@@ -316,8 +357,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
   // Save current layout as shared layout
   const saveAsSharedLayout = useCallback(async (name: string) => {
-    if (!tillId || typeof currentCategoryId !== 'number') {
-      console.error('Cannot save as shared: missing tillId or valid categoryId');
+    if (!tillId) {
+      console.error('Cannot save as shared: missing tillId');
+      return;
+    }
+
+    // Convert favourites to -1
+    const categoryIdToUse = currentCategoryId === 'favourites'
+      ? -1
+      : currentCategoryId;
+      
+    if (typeof categoryIdToUse !== 'number') {
+      console.error('Cannot save as shared: invalid categoryId');
       return;
     }
 
@@ -335,12 +386,12 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         gridRow: p.gridRow
       }));
 
-      await createSharedLayout(name, currentCategoryId, positions);
+      await createSharedLayout(name, categoryIdToUse, positions);
       
       alert(`Shared layout "${name}" created successfully!`);
       
       // Refresh shared layouts list
-      await refreshSharedLayouts(currentCategoryId);
+      await refreshSharedLayouts(categoryIdToUse);
     } catch (error) {
       console.error('Error creating shared layout:', error);
       alert(`Failed to create shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -364,11 +415,16 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       if (loadedLayouts.length > 0) {
         const categoryId = loadedLayouts[0].categoryId;
         
-        // Reload the layout for this category
-        await loadLayoutForCategory(categoryId);
+        // Convert special ID -1 back to 'favourites'
+        const categoryToLoad = categoryId === -1 ? 'favourites' : categoryId;
         
-        // Switch to this category
-        setCurrentCategory(categoryId);
+        // Reload the layout for this category
+        if (typeof categoryToLoad === 'number' || categoryToLoad === 'favourites') {
+          await loadLayoutForCategory(categoryToLoad);
+          
+          // Switch to this category
+          setCurrentCategory(categoryToLoad);
+        }
         
         alert('Shared layout loaded successfully!');
       }

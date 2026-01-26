@@ -13,10 +13,15 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', async (req: Request, res
   try {
     const { tillId, categoryId } = req.params;
     
+    console.log(`Fetching layout for tillId: ${tillId}, categoryId: ${categoryId}`);
+    
+    // Parse categoryId to ensure it's a number
+    const parsedCategoryId = Number(categoryId);
+    
     const layouts = await prisma.variantLayout.findMany({
       where: {
         tillId: Number(tillId),
-        categoryId: Number(categoryId)
+        categoryId: parsedCategoryId
       },
       orderBy: [
         { gridRow: 'asc' },
@@ -39,6 +44,8 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
     const { positions } = req.body as {
       positions: Array<{ variantId: number; gridColumn: number; gridRow: number }>
     };
+    
+    console.log(`Saving layout for tillId: ${tillId}, categoryId: ${categoryId}`);
     
     // Validate input
     if (!Array.isArray(positions)) {
@@ -75,14 +82,21 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
       return res.status(404).json({ error: 'Till not found' });
     }
     
-    // Verify category exists
-    const category = await prisma.category.findUnique({
-      where: { id: Number(categoryId) }
-    });
+    // Parse categoryId to ensure it's a number
+    const parsedCategoryId = Number(categoryId);
     
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+    // Note: We allow negative category IDs for pseudo-categories like Favourites (ID: -1)
+    // Verify category exists only for positive IDs
+    if (parsedCategoryId > 0) {
+      const category = await prisma.category.findUnique({
+        where: { id: parsedCategoryId }
+      });
+      
+      if (!category) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
     }
+    // If categoryId is -1, it's the Favourites pseudo-category - allow it
     
     // Use transaction to replace all positions for this till+category
     const result = await prisma.$transaction(async (tx) => {
@@ -90,7 +104,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
       await tx.variantLayout.deleteMany({
         where: {
           tillId: Number(tillId),
-          categoryId: Number(categoryId)
+          categoryId: parsedCategoryId
         }
       });
       
@@ -100,7 +114,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
           tx.variantLayout.create({
             data: {
               tillId: Number(tillId),
-              categoryId: Number(categoryId),
+              categoryId: parsedCategoryId,
               variantId: pos.variantId,
               gridColumn: pos.gridColumn,
               gridRow: pos.gridRow
@@ -125,10 +139,16 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', async (req: Request, 
   try {
     const { tillId, categoryId } = req.params;
     
+    console.log(`Deleting layout for tillId: ${tillId}, categoryId: ${categoryId}`);
+    
+    // Parse categoryId to ensure it's a number
+    const parsedCategoryId = Number(categoryId);
+    
+    // Note: We allow negative category IDs for pseudo-categories like Favourites (ID: -1)
     await prisma.variantLayout.deleteMany({
       where: {
         tillId: Number(tillId),
-        categoryId: Number(categoryId)
+        categoryId: parsedCategoryId
       }
     });
     
@@ -149,7 +169,11 @@ layoutsRouter.get('/shared', async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.query;
     
-    const whereClause = categoryId ? { categoryId: Number(categoryId) } : {};
+    let whereClause = {};
+    if (categoryId) {
+      const parsedCategoryId = Number(categoryId);
+      whereClause = { categoryId: parsedCategoryId };
+    }
     
     const sharedLayouts = await prisma.sharedLayout.findMany({
       where: whereClause,
@@ -214,12 +238,14 @@ layoutsRouter.post('/shared', async (req: Request, res: Response) => {
       positions: Array<{ variantId: number; gridColumn: number; gridRow: number }>;
     };
     
+    console.log(`Creating shared layout for category: ${categoryId}`);
+    
     // Validate input
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Layout name is required' });
     }
     
-    if (!categoryId) {
+    if (categoryId === undefined || categoryId === null) {
       return res.status(400).json({ error: 'Category ID is required' });
     }
     
@@ -248,13 +274,16 @@ layoutsRouter.post('/shared', async (req: Request, res: Response) => {
       }
     }
     
-    // Verify category exists
-    const category = await prisma.category.findUnique({
-      where: { id: categoryId }
-    });
-    
-    if (!category) {
-      return res.status(404).json({ error: 'Category not found' });
+    // Note: For shared layouts, we allow negative category IDs for pseudo-categories like Favourites (ID: -1)
+    // Verify category exists only for positive IDs
+    if (categoryId > 0) {
+      const category = await prisma.category.findUnique({
+        where: { id: categoryId }
+      });
+      
+      if (!category) {
+        return res.status(404).json({ error: 'Category not found' });
+      }
     }
     
     // Create shared layout with positions
