@@ -172,7 +172,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 router.put('/:id/position', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { positionX, positionY } = req.body;
+    const { positionX, positionY, x, y } = req.body;
 
     const table = await prisma.table.findUnique({
       where: { id },
@@ -182,15 +182,15 @@ router.put('/:id/position', authenticateToken, async (req: Request, res: Respons
       return res.status(404).json({ error: 'Table not found' });
     }
 
-    if (positionX === undefined || positionY === undefined) {
-      return res.status(400).json({ error: 'positionX and positionY are required' });
+    if ((positionX === undefined && x === undefined) || (positionY === undefined && y === undefined)) {
+      return res.status(400).json({ error: 'Either positionX/positionY or x/y coordinates are required' });
     }
 
     const updatedTable = await prisma.table.update({
       where: { id },
       data: {
-        x: parseFloat(positionX),
-        y: parseFloat(positionY),
+        x: parseFloat(positionX ?? x),
+        y: parseFloat(positionY ?? y),
       },
       include: {
         room: true,

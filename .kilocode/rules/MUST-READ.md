@@ -1,5 +1,7 @@
 # YOU MUST NOT IGNORE THE DETAILS BELOW
 
+## NO EMOJIS anywhere in the frontend!!! 
+
 ### DO NOT use plawright npm package for testing, you MUST use Playwright MCP Server
 
 ### Config is:

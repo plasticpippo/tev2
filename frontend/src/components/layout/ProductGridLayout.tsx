@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
 import { DraggableProductButton } from './DraggableProductButton';
 import { CategoryTabs } from '../CategoryTabs';
@@ -67,12 +67,28 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   // Get current category layout
   const categoryLayout = getCurrentCategoryLayout();
 
-  // Calculate grid rows needed
-  const maxRow = categoryLayout?.positions.reduce((max, pos) => 
+  // Calculate grid rows needed (minimum 5 rows)
+  // Use the highest positioned row, NOT the item count
+  const maxRow = categoryLayout?.positions.reduce((max, pos) =>
     Math.max(max, pos.gridRow), 0
   ) || 0;
-  const gridRows = Math.max(maxRow, Math.ceil(itemsToRender.length / GRID_COLUMNS), 3);
-
+  
+  // Don't calculate based on item count - this causes auto-compacting
+  // Just use the max row position or minimum (5)
+  const gridRows = Math.max(maxRow, 5);
+  
+  // Debug logging for grid calculations
+  useEffect(() => {
+    if (isEditMode) {
+      console.log('Grid Debug Info:', {
+        maxRow,
+        gridRows,
+        itemCount: itemsToRender.length,
+        positions: categoryLayout?.positions
+      });
+    }
+  }, [isEditMode, gridRows, maxRow, itemsToRender.length, categoryLayout]);
+  
   const handleDragOver = (e: React.DragEvent<HTMLDivElement>, col: number, row: number) => {
     if (!isEditMode) return;
     
@@ -119,7 +135,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             onDrop={(e) => handleDrop(e, col, row)}
             className={`
               border-2 border-dashed rounded-lg transition-colors
-              ${isEditMode ? 'border-slate-600' : 'border-transparent'}
+              ${isEditMode ? 'border-slate-600 bg-slate-800/30' : 'border-transparent'}
               ${isHighlighted ? 'bg-yellow-500/20 border-yellow-500' : ''}
             `}
             style={{
@@ -198,22 +214,32 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             className="relative grid gap-4 z-10"
             style={{
               gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
-              gridAutoRows: 'min-content'
+              gridTemplateRows: `repeat(${gridRows}, minmax(128px, auto))`,  // Explicit row heights
+              gridAutoRows: 'minmax(128px, auto)'
             }}
           >
             {/* Drop zone cells */}
             {isEditMode && renderGridCells()}
-
+            
             {/* Product buttons */}
-            {itemsToRender.map(({ product, variant }) => (
-              <DraggableProductButton
-                key={variant.id}
-                variant={variant}
-                product={product}
-                onClick={() => handleProductClick(variant, product)}
-                isMakable={makableVariantIds.has(variant.id)}
-              />
-            ))}
+            {itemsToRender.map(({ product, variant }: { product: Product, variant: ProductVariant }) => {
+              const position = categoryLayout?.positions.find(p => p.variantId === variant.id);
+              
+              // Only render positioned buttons in edit mode
+              if (isEditMode && !position) {
+                return null;
+              }
+              
+              return (
+                <DraggableProductButton
+                  key={variant.id}
+                  variant={variant}
+                  product={product}
+                  onClick={() => handleProductClick(variant, product)}
+                  isMakable={makableVariantIds.has(variant.id)}
+                />
+              );
+            })}
           </div>
 
           {/* Empty state */}

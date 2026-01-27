@@ -6,6 +6,7 @@ import { UIStateProvider } from './UIStateContext';
 import { TableAssignmentProvider } from './TableAssignmentContext';
 import { PaymentProvider } from './PaymentContext';
 import { TabManagementProvider } from './TabManagementContext';
+import { TableProvider } from './TableContext';
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -20,11 +21,13 @@ export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
         <OrderProvider>
           <UIStateProvider>
             <TableAssignmentProvider>
-              <TabManagementProvider>
-                <PaymentProvider>
-                  {children}
-                </PaymentProvider>
-              </TabManagementProvider>
+              <PaymentProvider>
+                <TabManagementProvider>
+                  <TableProvider>
+                    {children}
+                  </TableProvider>
+                </TabManagementProvider>
+              </PaymentProvider>
             </TableAssignmentProvider>
           </UIStateProvider>
         </OrderProvider>

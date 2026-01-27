@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
-import { Room, Table } from '@shared/types';
+import { Room, Table } from '../../shared/types';
 
 export type LayoutMode = 'view' | 'edit' | 'drag';
 
@@ -22,7 +22,7 @@ interface TableContextType {
   addTable: (table: Omit<Table, 'id' | 'createdAt' | 'updatedAt'>) => Promise<Table>;
   updateTable: (id: string, table: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt'>>) => Promise<Table>;
   deleteTable: (id: string) => Promise<void>;
-  updateTablePosition: (id: string, x: number, y: number) => void;
+  updateTablePosition: (id: string, x: number, y: number) => Promise<void>;
   refreshData: () => Promise<void>;
 }
 
@@ -218,12 +218,39 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   }, []);
 
   // Update table position (for drag and drop)
-  const updateTablePosition = useCallback((id: string, x: number, y: number) => {
-    setTables(prev => 
-      prev.map(table => 
+  const updateTablePosition = useCallback(async (id: string, x: number, y: number) => {
+    // Optimistically update the local state for immediate UI feedback
+    setTables(prev =>
+      prev.map(table =>
         table.id === id ? { ...table, x, y } : table
       )
     );
+
+    // Then update the backend
+    try {
+      const response = await fetch(`/api/tables/${id}/position`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ x, y }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to update table position: ${response.statusText}`);
+      }
+
+      // Optionally refresh the table data if needed
+      // await fetchTables();
+    } catch (error) {
+      console.error('Error updating table position:', error);
+      // Revert the optimistic update in case of error
+      setTables(prev =>
+        prev.map(table =>
+          table.id === id ? { ...table, x: table.x, y: table.y } : table
+        )
+      );
+    }
   }, []);
 
   // Refresh all data

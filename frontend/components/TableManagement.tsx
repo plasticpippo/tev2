@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { useTableContext } from './TableContext';
+import { useTableContext } from '../contexts/TableContext';
 import { TableLayoutEditor } from './TableLayoutEditor';
-import { Room, Table } from '@shared/types';
+import { Room, Table } from '../../shared/types';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
 

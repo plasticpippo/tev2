@@ -4,6 +4,7 @@ import * as api from '../services/apiService';
 import { useSessionContext } from './SessionContext';
 import { useOrderContext } from './OrderContext';
 import { useGlobalDataContext } from './GlobalDataContext';
+import { useUIStateContext } from './UIStateContext';
 
 interface TableAssignmentContextType {
   assignedTable: Table | null;
@@ -49,10 +50,10 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
     }
  };
 
+  const { setIsTableAssignmentModalOpen } = useUIStateContext();
+
   const handleOpenTableAssignment = () => {
-    // This function just sets a UI state which would be handled by UIStateContext
-    // For now, we'll just log that this should open the modal
-    console.log("Opening table assignment modal");
+    setIsTableAssignmentModalOpen(true);
   };
 
   const value: TableAssignmentContextType = {

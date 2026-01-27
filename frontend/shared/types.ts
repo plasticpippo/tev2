@@ -170,6 +170,30 @@ export interface SharedLayoutPosition {
   gridRow: number;
 }
 
+export interface Room {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  tables: Table[];
+}
+
+export interface Table {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  status: 'available' | 'occupied' | 'reserved' | 'unavailable';
+  roomId: string;
+  createdAt: string;
+  updatedAt: string;
+  room: Room;
+  tabs: any[]; // Can be refined later based on actual tab type
+}
+
 export interface SharedLayout {
   id: number;
   name: string;

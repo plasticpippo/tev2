@@ -50,11 +50,14 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     setIsDragging(false);
   };
 
-  // Inline styles for grid positioning
+  // If no position saved, render outside the grid (will be hidden or at end)
   const gridStyle: React.CSSProperties = position ? {
     gridColumn: position.gridColumn,
     gridRow: position.gridRow,
-  } : {};
+  } : {
+    // No grid positioning - will render in document flow after positioned items
+    display: isEditMode ? 'none' : 'block'  // Hide unpositioned buttons in edit mode
+  };
 
   return (
     <div

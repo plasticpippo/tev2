@@ -126,14 +126,20 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
     </div>
     
     <div className="space-y-2">
-      {orderItems.length > 0 && !assignedTable && (
+      {/* Assign to Table button - only show when there are items */}
+      {orderItems.length > 0 && (
         <button
           onClick={onOpenTableAssignment}
-          className="w-full bg-amber-600 hover:bg-amber-500 font-bold py-3 rounded-md transition"
+          className={`w-full py-3 rounded-md font-bold transition ${
+            assignedTable
+              ? 'bg-blue-600 hover:bg-blue-500 text-white'
+              : 'bg-purple-600 hover:bg-purple-500 text-white'
+          }`}
         >
-          Assign to Table
+          {assignedTable ? `📍 Table: ${assignedTable.name}` : '🪑 Assign to Table'}
         </button>
       )}
+      
       {orderItems.length > 0 && (
         <button
           onClick={onPayment}
