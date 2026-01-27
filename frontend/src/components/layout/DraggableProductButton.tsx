@@ -77,7 +77,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
         ${isDragging ? 'opacity-50' : 'opacity-100'}
         ${isEditMode ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''}
         ${!isMakable && !isEditMode ? 'opacity-50' : ''}
-        h-32
+        h-40
         shadow-md
       `}
     >
@@ -98,16 +98,16 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       )}
 
       {/* Product name */}
-      <p className={`font-bold ${variant.textColor} text-sm`}>
+      <p className={`font-bold ${variant.textColor} text-2xl`}>
         {product.name}
       </p>
 
       {/* Variant info */}
       <div>
-        <p className={`text-sm font-semibold ${variant.textColor}`}>
+        <p className={`text-lg font-semibold ${variant.textColor}`}>
           {variant.name}
         </p>
-        <p className={`text-sm ${variant.textColor} opacity-80`}>
+        <p className={`text-lg ${variant.textColor} opacity-80`}>
           {formatCurrency(variant.price)}
         </p>
       </div>

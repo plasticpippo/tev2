@@ -29,7 +29,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
       <button
         onClick={() => setCurrentCategory('favourites')}
         className={`
-          px-4 py-2 rounded-lg font-semibold transition-colors text-sm
+          px-4 py-2 rounded-lg font-semibold transition-colors text-base
           ${currentCategoryId === 'favourites'
             ? 'bg-amber-600 text-white'
             : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
@@ -45,7 +45,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           key={category.id}
           onClick={() => setCurrentCategory(category.id)}
           className={`
-            px-4 py-2 rounded-lg font-semibold transition-colors text-sm
+            px-4 py-2 rounded-lg font-semibold transition-colors text-base
             ${currentCategoryId === category.id
               ? 'bg-amber-600 text-white'
               : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
@@ -60,7 +60,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
       <button
         onClick={() => setCurrentCategory('all')}
         className={`
-          ml-auto px-4 py-2 rounded-lg font-semibold transition-colors text-sm
+          ml-auto px-4 py-2 rounded-lg font-semibold transition-colors text-base
           ${currentCategoryId === 'all'
             ? 'bg-slate-600 text-white'
             : 'bg-slate-700 text-gray-300 hover:bg-slate-600'

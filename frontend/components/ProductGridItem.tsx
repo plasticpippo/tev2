@@ -59,10 +59,10 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
         })
       }}
     >
-      <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
+      <p className={`font-bold ${variant.textColor} text-lg`}>{product.name}</p>
       <div>
-        <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
-        <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
+        <p className={`text-base font-semibold ${variant.textColor}`}>{variant.name}</p>
+        <p className={`text-base ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
       </div>
       {!isMakable && (
         <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
