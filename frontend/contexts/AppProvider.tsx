@@ -6,7 +6,8 @@ import { UIStateProvider } from './UIStateContext';
 import { TableAssignmentProvider } from './TableAssignmentContext';
 import { PaymentProvider } from './PaymentContext';
 import { TabManagementProvider } from './TabManagementContext';
-import { TableProvider } from './TableContext';
+import { TableProvider } from '../components/TableContext';
+import { ToastProvider } from './ToastContext';
 
 interface AppProviderProps {
   children: React.ReactNode;
@@ -15,23 +16,25 @@ interface AppProviderProps {
 // The AppProvider composes all the individual context providers
 // The order of providers is important as some contexts depend on others
 export const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
-  return (
-    <SessionProvider>
-      <GlobalDataProvider>
-        <OrderProvider>
-          <UIStateProvider>
-            <TableAssignmentProvider>
-              <PaymentProvider>
-                <TabManagementProvider>
-                  <TableProvider>
-                    {children}
-                  </TableProvider>
-                </TabManagementProvider>
-              </PaymentProvider>
-            </TableAssignmentProvider>
-          </UIStateProvider>
-        </OrderProvider>
-      </GlobalDataProvider>
-    </SessionProvider>
-  );
+    return (
+      <ToastProvider>
+        <SessionProvider>
+          <GlobalDataProvider>
+            <OrderProvider>
+              <UIStateProvider>
+                <TableAssignmentProvider>
+                  <PaymentProvider>
+                    <TabManagementProvider>
+                      <TableProvider>
+                        {children}
+                      </TableProvider>
+                    </TabManagementProvider>
+                  </PaymentProvider>
+                </TableAssignmentProvider>
+              </UIStateProvider>
+            </OrderProvider>
+          </GlobalDataProvider>
+        </SessionProvider>
+      </ToastProvider>
+    );
 };

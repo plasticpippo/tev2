@@ -1,5 +1,6 @@
 import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
 import { Room, Table } from '../../shared/types';
+import { useToast } from '../contexts/ToastContext';
 
 export type LayoutMode = 'view' | 'edit' | 'drag';
 
@@ -35,6 +36,8 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  
+  const { addToast } = useToast();
 
   // Fetch rooms from API
   const fetchRooms = useCallback(async () => {
@@ -45,12 +48,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const data = await response.json();
       setRooms(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching rooms');
+      const errorMessage = err instanceof Error ? err.message : 'Error fetching rooms';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error fetching rooms:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Fetch tables from API
   const fetchTables = useCallback(async () => {
@@ -61,15 +66,17 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const data = await response.json();
       setTables(data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error fetching tables');
+      const errorMessage = err instanceof Error ? err.message : 'Error fetching tables';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error fetching tables:', err);
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Add a new room
-  const addRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>) => {
     try {
       setLoading(true);
       const response = await fetch('/api/rooms', {
@@ -80,21 +87,27 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(roomData),
       });
       
-      if (!response.ok) throw new Error('Failed to add room');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add room');
+      }
       const newRoom = await response.json();
       setRooms(prev => [...prev, newRoom]);
+      addToast(`Room "${newRoom.name}" created successfully`, 'success');
       return newRoom;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error adding room');
+      const errorMessage = err instanceof Error ? err.message : 'Error adding room';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error adding room:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Update a room
-  const updateRoom = useCallback(async (id: string, roomData: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateRoom = useCallback(async (id: string, roomData: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>>) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/rooms/${id}`, {
@@ -105,18 +118,24 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(roomData),
       });
       
-      if (!response.ok) throw new Error('Failed to update room');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update room');
+      }
       const updatedRoom = await response.json();
       setRooms(prev => prev.map(room => room.id === id ? updatedRoom : room));
+      addToast('Room updated successfully', 'success');
       return updatedRoom;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error updating room');
+      const errorMessage = err instanceof Error ? err.message : 'Error updating room';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error updating room:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Delete a room
   const deleteRoom = useCallback(async (id: string) => {
@@ -129,24 +148,30 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         },
       });
       
-      if (!response.ok) throw new Error('Failed to delete room');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete room');
+      }
       setRooms(prev => prev.filter(room => room.id !== id));
       // Also remove tables in this room
       setTables(prev => prev.filter(table => table.roomId !== id));
       if (selectedRoomId === id) {
         setSelectedRoomId(null);
       }
+      addToast('Room deleted successfully', 'success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error deleting room');
+      const errorMessage = err instanceof Error ? err.message : 'Error deleting room';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error deleting room:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, [selectedRoomId]);
+  }, [addToast, selectedRoomId]);
 
   // Add a new table
-  const addTable = useCallback(async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const addTable = useCallback(async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>) => {
     try {
       setLoading(true);
       const response = await fetch('/api/tables', {
@@ -157,21 +182,27 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(tableData),
       });
       
-      if (!response.ok) throw new Error('Failed to add table');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to add table');
+      }
       const newTable = await response.json();
       setTables(prev => [...prev, newTable]);
+      addToast(`Table "${newTable.name}" created successfully`, 'success');
       return newTable;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error adding table');
+      const errorMessage = err instanceof Error ? err.message : 'Error adding table';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error adding table:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Update a table
-  const updateTable = useCallback(async (id: string, tableData: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt'>>) => {
+  const updateTable = useCallback(async (id: string, tableData: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>>) => {
     try {
       setLoading(true);
       const response = await fetch(`/api/tables/${id}`, {
@@ -182,18 +213,24 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         body: JSON.stringify(tableData),
       });
       
-      if (!response.ok) throw new Error('Failed to update table');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to update table');
+      }
       const updatedTable = await response.json();
       setTables(prev => prev.map(table => table.id === id ? updatedTable : table));
+      addToast('Table updated successfully', 'success');
       return updatedTable;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error updating table');
+      const errorMessage = err instanceof Error ? err.message : 'Error updating table';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error updating table:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Delete a table
   const deleteTable = useCallback(async (id: string) => {
@@ -206,16 +243,22 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         },
       });
       
-      if (!response.ok) throw new Error('Failed to delete table');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to delete table');
+      }
       setTables(prev => prev.filter(table => table.id !== id));
+      addToast('Table deleted successfully', 'success');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error deleting table');
+      const errorMessage = err instanceof Error ? err.message : 'Error deleting table';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error deleting table:', err);
       throw err;
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [addToast]);
 
   // Update table position (for drag and drop)
   const updateTablePosition = useCallback(async (id: string, x: number, y: number) => {
@@ -237,12 +280,13 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       });
 
       if (!response.ok) {
-        throw new Error(`Failed to update table position: ${response.statusText}`);
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to update table position: ${response.statusText}`);
       }
-
-      // Optionally refresh the table data if needed
-      // await fetchTables();
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to update table position';
+      setError(errorMessage);
+      addToast(errorMessage, 'error');
       console.error('Error updating table position:', error);
       // Revert the optimistic update in case of error
       setTables(prev =>
@@ -251,7 +295,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         )
       );
     }
-  }, []);
+  }, [addToast]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
@@ -278,11 +322,11 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setSelectedRoomId,
         fetchRooms,
         fetchTables,
-        addRoom,
-        updateRoom,
+        addRoom: addRoom as (room: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>) => Promise<Room>,
+        updateRoom: updateRoom as (id: string, room: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>>) => Promise<Room>,
         deleteRoom,
-        addTable,
-        updateTable,
+        addTable: addTable as (table: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>) => Promise<Table>,
+        updateTable: updateTable as (id: string, table: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>>) => Promise<Table>,
         deleteTable,
         updateTablePosition,
         refreshData,

@@ -62,21 +62,21 @@ export const EditModeToolbar: React.FC = () => {
               : 'bg-gray-600 text-gray-400 cursor-not-allowed'
           }`}
         >
-          {isDirty ? '💾 Save Layout' : '✓ Saved'}
+          {isDirty ? 'SAVE Layout' : '✓ Saved'}
         </button>
 
         <button
           onClick={handleReset}
           className="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
         >
-          🔄 Reset to Default
+          RESET to Default
         </button>
 
         <button
           onClick={handleCancel}
           className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
         >
-          ✕ Cancel & Exit
+          CANCEL & Exit
         </button>
       </div>
 

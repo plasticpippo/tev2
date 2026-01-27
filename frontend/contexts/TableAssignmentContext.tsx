@@ -11,6 +11,9 @@ interface TableAssignmentContextType {
   setAssignedTable: React.Dispatch<React.SetStateAction<Table | null>>;
   handleTableAssign: (tableId: string) => Promise<void>;
   handleOpenTableAssignment: () => void;
+  handleTableUnassign: () => Promise<void>;
+  syncTableWithActiveTab: (tableId: string | null) => Promise<void>;
+  clearTableAssignment: () => void;
 }
 
 const TableAssignmentContext = createContext<TableAssignmentContextType | undefined>(undefined);
@@ -27,28 +30,56 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
   const { appData } = useGlobalDataContext();
 
   const handleTableAssign = async (tableId: string) => {
-    if (tableId) {
-      // Get the full table object from appData
-      const table = appData.tables.find(t => t.id === tableId);
-      if (!table) {
-        console.error(`Table with ID ${tableId} not found`);
-        return;
+    try {
+      if (tableId) {
+        // Get the full table object from appData
+        const table = appData.tables.find(t => t.id === tableId);
+        if (!table) {
+          console.error(`Table with ID ${tableId} not found`);
+          return;
+        }
+        
+        setAssignedTable(table);
+        
+        // If there's an active tab, update it with the new table assignment
+        if (activeTab && assignedTillId) {
+          await api.saveTab({ ...activeTab, tableId });
+        }
+      } else {
+        // Clear table assignment
+        setAssignedTable(null);
+        if (activeTab && assignedTillId) {
+          await api.saveTab({ ...activeTab, tableId: undefined });
+        }
       }
-      
-      setAssignedTable(table);
-      
-      // If there's an active tab, update it with the new table assignment
-      if (activeTab && assignedTillId) {
-        await api.saveTab({ ...activeTab, tableId });
-      }
-    } else {
-      // Clear table assignment
+    } catch (error) {
+      console.error('Error handling table assignment:', error);
+      // Optionally, you could throw the error or handle it differently
+      // For example, you could show an error message to the user
+    }
+ };
+
+  const handleTableUnassign = async () => {
+    try {
       setAssignedTable(null);
       if (activeTab && assignedTillId) {
         await api.saveTab({ ...activeTab, tableId: undefined });
       }
+    } catch (error) {
+      console.error('Error unassigning table:', error);
     }
- };
+  };
+
+  const syncTableWithActiveTab = async (tableId: string | null) => {
+    try {
+      if (activeTab && assignedTillId) {
+        const updatedTab = { ...activeTab, tableId: tableId || undefined };
+        await api.saveTab(updatedTab);
+      }
+    } catch (error) {
+      console.error('Error syncing table with active tab:', error);
+    }
+  };
 
   const { setIsTableAssignmentModalOpen } = useUIStateContext();
 
@@ -56,11 +87,18 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
     setIsTableAssignmentModalOpen(true);
   };
 
+  const clearTableAssignment = () => {
+    setAssignedTable(null);
+  };
+
   const value: TableAssignmentContextType = {
     assignedTable,
     setAssignedTable,
     handleTableAssign,
-    handleOpenTableAssignment
+    handleOpenTableAssignment,
+    handleTableUnassign,
+    syncTableWithActiveTab,
+    clearTableAssignment
   };
 
   return (

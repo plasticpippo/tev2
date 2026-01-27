@@ -21,7 +21,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   const { currentUser, assignedTillId } = useSessionContext();
   const { orderItems, clearOrder, activeTab } = useOrderContext();
   const { appData, currentTillName } = useGlobalDataContext();
-  const { assignedTable } = useTableAssignmentContext();
+  const { assignedTable, clearTableAssignment } = useTableAssignmentContext();
   const { setIsPaymentModalOpen } = useUIStateContext();
 
   const handleConfirmPayment = async (paymentMethod: string, tip: number) => {
@@ -139,7 +139,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       // Update table status to available after payment
       if (assignedTable) {
         await api.saveTable({ ...assignedTable, status: 'available' });
-        // setAssignedTable(null); // This would be called from TableAssignmentContext
+        clearTableAssignment(); // This clears the table assignment using the TableAssignmentContext method
       }
       
       clearOrder(false);

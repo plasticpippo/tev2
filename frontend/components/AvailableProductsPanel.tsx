@@ -54,7 +54,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
           className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${showFavoritesOnly ? 'bg-amber-50 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
           aria-label={showFavoritesOnly ? 'Turn off favorites filter' : 'Turn on favorites filter'}
         >
-          ★ Favourites {showFavoritesOnly ? 'ON' : 'OFF'}
+          FAV Favourites {showFavoritesOnly ? 'ON' : 'OFF'}
         </button>
         {/* Special "All Products" category button */}
         <button

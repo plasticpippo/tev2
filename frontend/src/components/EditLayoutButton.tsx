@@ -24,7 +24,7 @@ export const EditLayoutButton: React.FC<EditLayoutButtonProps> = ({ userRole }) 
       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-sm transition-colors flex items-center gap-2"
       title="Edit product layout"
     >
-      <span>✏️</span>
+      <span>EDIT</span>
       <span>Edit Layout</span>
     </button>
   );

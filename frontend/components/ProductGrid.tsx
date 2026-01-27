@@ -53,7 +53,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
             onClick={() => setSelectedFilter('favourites')}
             className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedFilter === 'favourites' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
           >
-            ★ Favourites
+            FAV Favourites
           </button>
           {visibleCategories.map(category => (
             <button

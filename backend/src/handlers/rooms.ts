@@ -4,10 +4,22 @@ import { authenticateToken } from '../middleware/auth';
 
 const router = Router();
 
+// Middleware to log all room requests
+router.use((req, res, next) => {
+  console.log(`[Rooms API] ${req.method} ${req.path}`, {
+    body: req.body,
+    params: req.params,
+  });
+  next();
+});
+
 // GET /api/rooms - Retrieve all rooms
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const rooms = await prisma.room.findMany({
+      include: {
+        tables: true, // Include associated tables
+      },
       orderBy: {
         id: 'asc',
       },
@@ -16,7 +28,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     res.json(rooms);
   } catch (error) {
     console.error('Error fetching rooms:', error);
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: 'Failed to fetch rooms', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
@@ -26,6 +38,9 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     const { id } = req.params;
     const room = await prisma.room.findUnique({
       where: { id },
+      include: {
+        tables: true, // Include associated tables
+      },
     });
 
     if (!room) {
@@ -35,7 +50,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     res.json(room);
  } catch (error) {
     console.error('Error fetching room:', error);
-    res.status(500).json({ error: 'Failed to fetch room' });
+    res.status(500).json({ error: 'Failed to fetch room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
@@ -54,12 +69,15 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
         name,
         description,
       },
+      include: {
+        tables: true, // Include associated tables in response
+      },
     });
 
     res.status(201).json(newRoom);
   } catch (error) {
     console.error('Error creating room:', error);
-    res.status(500).json({ error: 'Failed to create room' });
+    res.status(500).json({ error: 'Failed to create room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
@@ -83,12 +101,15 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
         ...(name !== undefined && { name }),
         ...(description !== undefined && { description }),
       },
+      include: {
+        tables: true, // Include associated tables in response
+      },
     });
 
     res.json(updatedRoom);
   } catch (error) {
     console.error('Error updating room:', error);
-    res.status(500).json({ error: 'Failed to update room' });
+    res.status(500).json({ error: 'Failed to update room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 
@@ -113,7 +134,10 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     });
 
     if (tables > 0) {
-      return res.status(400).json({ error: 'Cannot delete room with assigned tables. Please move or delete tables first.' });
+      return res.status(400).json({
+        error: `Cannot delete room with ${tables} assigned table(s). Please delete or reassign tables first.`,
+        tableCount: tables
+      });
     }
 
     await prisma.room.delete({
@@ -123,7 +147,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     res.status(204).send();
   } catch (error) {
     console.error('Error deleting room:', error);
-    res.status(500).json({ error: 'Failed to delete room' });
+    res.status(500).json({ error: 'Failed to delete room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
 

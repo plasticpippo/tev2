@@ -90,7 +90,7 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
       {/* Visual indicator for locked items */}
       {locked && (
         <div className="absolute top-1 right-1 w-3 h-3 bg-gray-800 bg-opacity-50 rounded-full flex items-center justify-center">
-          <span className="text-xs text-white">🔒</span>
+          <span className="text-xs text-white">LOCK</span>
         </div>
       )}
     </div>

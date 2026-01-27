@@ -118,6 +118,7 @@ export interface Room {
     description?: string;
     createdAt: string;
     updatedAt: string;
+    tables: Table[];
 }
 
 export interface DailyClosing {
@@ -145,8 +146,11 @@ export interface Table {
     height: number;
     status: 'available' | 'occupied' | 'reserved' | 'unavailable';
     roomId: string;
+    items?: any[]; // Added for storing order items directly on tables
     createdAt: string;
     updatedAt: string;
+    room: Room;
+    tabs: any[]; // Can be refined later based on actual tab type
 }
 
 export interface Tab {

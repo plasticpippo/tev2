@@ -136,7 +136,7 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
               : 'bg-purple-600 hover:bg-purple-500 text-white'
           }`}
         >
-          {assignedTable ? `📍 Table: ${assignedTable.name}` : '🪑 Assign to Table'}
+          {assignedTable ? `TABLE: ${assignedTable.name}` : 'ASSIGN TABLE'}
         </button>
       )}
       

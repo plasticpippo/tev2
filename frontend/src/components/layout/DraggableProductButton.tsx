@@ -118,7 +118,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       {/* Favourite indicator */}
       {variant.isFavourite && !isEditMode && (
         <div className="absolute top-1 left-1">
-          <span className="text-yellow-400 text-sm">★</span>
+          <span className="text-yellow-400 text-sm">FAV</span>
         </div>
       )}
     </div>

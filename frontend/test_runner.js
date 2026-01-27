@@ -21,15 +21,15 @@ try {
   process.exit(1);
 }
 
-console.log('🚀 Starting Comprehensive Grid Layout Customization Tests...\n');
+console.log('STARTING Comprehensive Grid Layout Customization Tests...\n');
 
 // Install Playwright browsers if not already installed
 try {
-  console.log('📦 Installing Playwright browsers...');
+  console.log('INSTALLING Playwright browsers...');
   execSync('npx playwright install --with-deps', { stdio: 'inherit' });
-  console.log('✅ Playwright browsers installed successfully\n');
+  console.log('SUCCESS Playwright browsers installed successfully\n');
 } catch (error) {
-  console.error('⚠️  Failed to install Playwright browsers. They might already be installed.\n');
+  console.error('WARNING: Failed to install Playwright browsers. They might already be installed.\n');
 }
 
 // Run the tests
@@ -39,8 +39,8 @@ try {
     stdio: 'inherit',
     cwd: __dirname
   });
-  console.log('\n✅ All tests completed successfully!');
+  console.log('\nSUCCESS: All tests completed successfully!');
 } catch (error) {
-  console.error('\n❌ Some tests failed. Please check the output above.');
+  console.error('\nFAILED: Some tests failed. Please check the output above.');
   process.exit(1);
 }

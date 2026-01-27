@@ -4,6 +4,8 @@ import { VirtualKeyboardProvider } from './components/VirtualKeyboardContext';
 import { LoginScreen } from './LoginScreen';
 import { MainPOSInterface } from './components/MainPOSInterface';
 import { useAppContext } from './contexts/AppContext';
+import { ToastProvider } from './contexts/ToastContext';
+import ToastContainer from './components/ToastContainer';
 import ErrorBoundary from './components/ErrorBoundary';
 import './src/index.css';
 
@@ -20,11 +22,14 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <ErrorBoundary>
-      <VirtualKeyboardProvider>
-        <AppProvider>
-          <AppContent />
-        </AppProvider>
-      </VirtualKeyboardProvider>
+      <ToastProvider>
+        <VirtualKeyboardProvider>
+          <AppProvider>
+            <AppContent />
+            <ToastContainer />
+          </AppProvider>
+        </VirtualKeyboardProvider>
+      </ToastProvider>
     </ErrorBoundary>
   );
 }

@@ -1,5 +1,5 @@
 export interface OrderItem {
-  id: string; 
+  id: string;
   variantId: number;
   productId: number;
   name: string;
@@ -11,7 +11,7 @@ export interface OrderItem {
 export interface ProductVariant {
   id: number;
   productId: number;
-  name: string; 
+  name: string;
   price: number;
   isFavourite?: boolean;
   stockConsumption: {
@@ -19,12 +19,12 @@ export interface ProductVariant {
     quantity: number;
   }[];
   backgroundColor: string;
-  textColor: string; 
+  textColor: string;
 }
 
 export interface Product {
   id: number;
-  name: string; 
+  name: string;
   categoryId: number;
   variants: ProductVariant[];
 }
@@ -32,7 +32,7 @@ export interface Product {
 export interface Category {
   id: number;
  name: string;
- visibleTillIds: number[];
+ visibleTillIds: number[] | null;  // Made nullable to match frontend types
 }
 
 export interface User {
@@ -86,8 +86,8 @@ export interface Till {
 
 export interface PurchasingUnit {
     id: string;
-    name: string; 
-    multiplier: number; 
+    name: string;
+    multiplier: number;
 }
 
 export interface StockItem {
@@ -156,4 +156,30 @@ export interface SharedLayoutData {
   name: string;
   categoryId: number;
   positions: VariantLayoutPosition[];
+}
+
+// Table and Room interfaces for table management
+export interface Room {
+  id: string;
+  name: string;
+  description?: string;
+  createdAt: string;
+  updatedAt: string;
+  tables: Table[];
+}
+
+export interface Table {
+  id: string;
+  name: string;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  status: 'available' | 'occupied' | 'reserved' | 'unavailable';
+  roomId: string;
+  items?: any[]; // Added for storing order items directly on tables
+  createdAt: string;
+  updatedAt: string;
+  room: Room;
+  tabs: any[]; // Can be refined later based on actual tab type
 }

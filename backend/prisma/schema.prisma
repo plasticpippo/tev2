@@ -111,6 +111,7 @@ model Table {
   height    Float    @default(100)
   status    String   @default("available")
   roomId    String   @db.Uuid
+  items     Json?    // Added for storing order items directly on tables
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)

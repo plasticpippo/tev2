@@ -13,7 +13,7 @@ export const getRooms = async (): Promise<Room[]> => {
   }
 };
 
-export const saveRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Room> => {
+export const saveRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'> & { id?: string }): Promise<Room> => {
   try {
     const method = roomData.id ? 'PUT' : 'POST';
     const url = roomData.id ? apiUrl(`/api/rooms/${roomData.id}`) : apiUrl('/api/rooms');
@@ -70,7 +70,7 @@ export const getTables = async (): Promise<Table[]> => {
   }
 };
 
-export const saveTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt'> & { id?: string }): Promise<Table> => {
+export const saveTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'> & { id?: string }): Promise<Table> => {
   try {
     const method = tableData.id ? 'PUT' : 'POST';
     const url = tableData.id ? apiUrl(`/api/tables/${tableData.id}`) : apiUrl('/api/tables');
@@ -121,7 +121,7 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
     const response = await fetch(apiUrl(`/api/tables/${tableId}/position`), {
       method: 'PUT',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ positionX: x, positionY: y })
+      body: JSON.stringify({ x, y })  // Changed from positionX/positionY to x/y
     });
     
     if (!response.ok) {
@@ -135,5 +135,5 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
   } catch (error) {
     console.error('Error updating table position:', error);
     throw error;
- }
+  }
 };

@@ -407,7 +407,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
                 <p className="font-semibold text-slate-400 text-xs">Variants:</p>
                 {product.variants.map((v: any) => (
                     <div key={v.id} className="flex justify-between">
-                        <span>{v.name} {v.isFavourite && <span className="text-amber-400">★</span>}</span>
+                        <span>{v.name} {v.isFavourite && <span className="text-amber-400">FAV</span>}</span>
                         <span>{formatCurrency(v.price)}</span>
                     </div>
                 ))}

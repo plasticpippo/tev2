@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { Table, Room } from '../../shared/types';
+import { useToast } from '../contexts/ToastContext';
 
 interface TableAssignmentModalProps {
   isOpen: boolean;
@@ -10,16 +11,19 @@ interface TableAssignmentModalProps {
   currentTableId?: string | null;
 }
 
-export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({ 
-  isOpen, 
-  onClose, 
-  tables, 
-  rooms, 
+export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
+  isOpen,
+  onClose,
+  tables,
+  rooms,
   onTableAssign,
-  currentTableId 
+  currentTableId
 }) => {
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(currentTableId || null);
+  const [isAssigning, setIsAssigning] = useState(false);
+  
+  const { addToast } = useToast();
 
   // Auto-select first room on open if none selected
   React.useEffect(() => {
@@ -34,22 +38,39 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
   if (!isOpen) return null;
 
   // Filter tables for selected room
-  const roomTables = selectedRoomId 
+  const roomTables = selectedRoomId
     ? tables.filter(table => table.roomId === selectedRoomId)
     : [];
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (selectedTableId) {
-      onTableAssign(selectedTableId);
-      onClose();
+      setIsAssigning(true);
+      try {
+        await onTableAssign(selectedTableId);
+        const table = tables.find(t => t.id === selectedTableId);
+        addToast(`Order assigned to ${table?.name || 'table'}`, 'success');
+        onClose();
+      } catch (error) {
+        addToast('Failed to assign table', 'error');
+      } finally {
+        setIsAssigning(false);
+      }
     }
   };
 
-  const handleClear = () => {
-    onTableAssign('');
-    onClose();
+  const handleClear = async () => {
+    setIsAssigning(true);
+    try {
+      await onTableAssign('');
+      addToast('Table assignment cleared', 'success');
+      onClose();
+    } catch (error) {
+      addToast('Failed to clear table assignment', 'error');
+    } finally {
+      setIsAssigning(false);
+    }
   };
 
   const getStatusColor = (status: string) => {
@@ -99,10 +120,11 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Assign to Table</h2>
-          <button 
-            onClick={onClose} 
-            className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" 
+          <button
+            onClick={onClose}
+            className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
             aria-label="Close"
+            disabled={isAssigning}
           >
             &times;
           </button>
@@ -125,7 +147,9 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                     ? 'bg-amber-600 text-white'
                     : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
                   }
+                  ${isAssigning ? 'opacity-50 cursor-not-allowed' : ''}
                 `}
+                disabled={isAssigning}
               >
                 {room.name}
               </button>
@@ -156,9 +180,9 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
             {/* Canvas for visual layout */}
             <div className="flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 relative overflow-auto min-h-[400px]">
               {roomTables.length > 0 ? (
-                <div 
+                <div
                   className="relative mx-auto"
-                  style={{ 
+                  style={{
                     width: `${canvasWidth}px`,
                     height: `${canvasHeight}px`,
                     minWidth: '500px',
@@ -166,7 +190,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                   }}
                 >
                   {/* Grid background */}
-                  <div 
+                  <div
                     className="absolute inset-0 opacity-10 pointer-events-none"
                     style={{
                       backgroundImage: `
@@ -187,21 +211,21 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                         key={table.id}
                         onClick={() => setSelectedTableId(table.id)}
                         className={`
-                          absolute w-16 h-16 rounded-full flex items-center justify-center 
+                          absolute w-16 h-16 rounded-full flex items-center justify-center
                           text-white font-bold border-4 transition-all duration-150
                           ${getStatusColor(table.status)}
                           ${table.status === 'available' || table.status === 'reserved'
-                            ? 'cursor-pointer hover:shadow-lg hover:shadow-amber-500/50 hover:scale-110' 
+                            ? 'cursor-pointer hover:shadow-lg hover:shadow-amber-500/50 hover:scale-110'
                             : 'cursor-not-allowed opacity-60'
                           }
                           ${isSelected ? 'ring-4 ring-amber-400 shadow-2xl shadow-amber-500/70 scale-110 z-20' : 'z-10'}
                           ${isCurrent ? 'ring-4 ring-blue-400' : ''}
                         `}
-                        style={{ 
-                          left: `${table.x - canvasBounds.minX}px`, 
+                        style={{
+                          left: `${table.x - canvasBounds.minX}px`,
                           top: `${table.y - canvasBounds.minY}px`
                         }}
-                        disabled={table.status === 'occupied' || table.status === 'unavailable'}
+                        disabled={table.status === 'occupied' || table.status === 'unavailable' || isAssigning}
                         title={`${table.name} - {table.status}`}
                       >
                         <span className="text-sm font-bold select-none">{table.name}</span>
@@ -212,7 +236,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="text-slate-500 text-6xl mb-4">🪑</div>
+                    <div className="text-slate-500 text-6xl mb-4">TABLE</div>
                     <p className="text-slate-400 text-lg">No tables in this room</p>
                     <p className="text-slate-500 text-sm mt-2">Add tables in Admin Panel</p>
                   </div>
@@ -225,7 +249,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
         {!selectedRoomId && rooms.length > 0 && (
           <div className="flex-grow flex items-center justify-center bg-slate-900 rounded-lg border-2 border-slate-700 min-h-[400px]">
             <div className="text-center">
-              <div className="text-slate-500 text-6xl mb-4">🏢</div>
+              <div className="text-slate-500 text-6xl mb-4">ROOM</div>
               <p className="text-slate-400 text-lg">Select a room to view tables</p>
             </div>
           </div>
@@ -251,34 +275,36 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
           </div>
         )}
 
-        {/* Action Buttons */}
+        {/* Action Buttons with loading state */}
         <div className="flex justify-between pt-4 border-t border-slate-700">
           <div className="flex gap-2">
             {currentTableId && (
               <button
                 onClick={handleClear}
-                className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md transition"
+                disabled={isAssigning}
+                className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
               >
-                Clear Table
+                {isAssigning ? 'Clearing...' : 'Clear Table'}
               </button>
             )}
             <button
               onClick={onClose}
-              className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md transition"
+              disabled={isAssigning}
+              className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
             >
               Cancel
             </button>
           </div>
           <button
             onClick={handleConfirm}
-            disabled={!selectedTableId}
+            disabled={!selectedTableId || isAssigning}
             className={`font-bold py-2 px-6 rounded-md transition ${
-              selectedTableId
+              selectedTableId && !isAssigning
                 ? 'bg-amber-600 hover:bg-amber-500 text-white'
                 : 'bg-slate-700 text-slate-500 cursor-not-allowed'
             }`}
           >
-            Assign to Table
+            {isAssigning ? 'Assigning...' : 'Assign to Table'}
           </button>
         </div>
 

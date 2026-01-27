@@ -15,6 +15,7 @@ import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
+import { TableErrorBoundary } from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -98,9 +99,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           return <OrderActivityHistory logs={orderActivityLogs} />;
       case 'tables':
           return (
-            <TableProvider>
-              <TableManagement />
-            </TableProvider>
+            <TableErrorBoundary>
+              <TableProvider>
+                <TableManagement />
+              </TableProvider>
+            </TableErrorBoundary>
           );
       case 'dailyClosingSummary':
           return <DailyClosingSummaryView currentUserRole={currentUser.role} />;

@@ -1,12 +1,12 @@
-import React, { useState, useRef, useCallback, useEffect } from 'react';
-import { useTableContext } from '../contexts/TableContext';
+import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useTableContext } from './TableContext';
 import { Table } from '../../shared/types';
 
 interface TableLayoutEditorProps {
   selectedRoomId: string | null;
 }
 
-export const TableLayoutEditor: React.FC<TableLayoutEditorProps> = ({ selectedRoomId }) => {
+const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selectedRoomId }) => {
   const { tables, rooms, layoutMode, updateTablePosition } = useTableContext();
   const [draggingTableId, setDraggingTableId] = useState<string | null>(null);
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number }>>({});
@@ -14,13 +14,20 @@ export const TableLayoutEditor: React.FC<TableLayoutEditorProps> = ({ selectedRo
   const dragStartPosRef = useRef<{ x: number; y: number } | null>(null);
   const updateTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Filter tables to only show those in the selected room
-  const roomTables = selectedRoomId 
-    ? tables.filter(table => table.roomId === selectedRoomId)
-    : [];
+  // Memoize expensive calculations
+  const memoizedData = useMemo(() => {
+    // Filter tables to only show those in the selected room
+    const roomTables = selectedRoomId 
+      ? tables.filter(table => table.roomId === selectedRoomId)
+      : [];
 
-  // Get selected room for display
-  const selectedRoom = rooms.find(room => room.id === selectedRoomId);
+    // Get selected room for display
+    const selectedRoom = rooms.find(room => room.id === selectedRoomId);
+
+    return { roomTables, selectedRoom };
+  }, [tables, rooms, selectedRoomId]);
+
+  const { roomTables, selectedRoom } = memoizedData;
 
   // Initialize local positions from table data
   useEffect(() => {
@@ -206,7 +213,7 @@ export const TableLayoutEditor: React.FC<TableLayoutEditorProps> = ({ selectedRo
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                 {layoutMode === 'edit' ? 'Edit Mode' : 'Drag Mode'}
               </div>
-            )}
+            ))}
             
             {/* Table count indicator */}
             <div className="absolute top-4 right-4 bg-slate-700 text-white px-3 py-2 rounded-md text-xs font-medium shadow-lg">
@@ -237,7 +244,7 @@ export const TableLayoutEditor: React.FC<TableLayoutEditorProps> = ({ selectedRo
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="text-slate-500 text-6xl mb-4">🏢</div>
+              <div className="text-slate-500 text-6xl mb-4">BUILDING</div>
               <p className="text-slate-400 text-lg">Select a room to view its layout</p>
               <p className="text-slate-500 text-sm mt-2">Create a room first if none exist</p>
             </div>
@@ -259,10 +266,12 @@ export const TableLayoutEditor: React.FC<TableLayoutEditorProps> = ({ selectedRo
                 <div className="w-2 h-2 bg-amber-400 rounded-full animate-ping"></div>
                 Dragging...
               </div>
-            )}
+            ))}
           </div>
         </div>
       )}
     </div>
   );
 };
+
+export const TableLayoutEditor = React.memo(TableLayoutEditorComponent);
