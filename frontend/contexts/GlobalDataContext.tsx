@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react';
+import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import type {
   User, Product, Category, Settings,
   Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog,
@@ -60,14 +60,27 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
   
   const { assignedTillId } = useSessionContext();
 
+  // Ref to store timeout ID for cleanup on unmount
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
   // Debounce function to prevent rapid API calls
   const debounce = (func: Function, delay: number) => {
-    let timeoutId: NodeJS.Timeout;
     return (...args: any[]) => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => func.apply(null, args), delay);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      debounceTimeoutRef.current = setTimeout(() => func.apply(null, args), delay);
     };
- };
+  };
+
+  // Cleanup timeout on unmount to prevent memory leaks
+  useEffect(() => {
+    return () => {
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const fetchData = useCallback(async () => {
     try {

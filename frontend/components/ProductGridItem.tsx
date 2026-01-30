@@ -11,18 +11,8 @@ interface ProductGridItemProps {
   onClick: () => void;
   disabled?: boolean;
   className?: string;
-}
-
-interface ProductGridItemProps {
-  product: Product;
-  variant: ProductVariant;
-  widthSpan: number; // Number of grid columns this item should span
-  heightSpan: number; // Number of grid rows this item should span
-  isMakable: boolean;
-  onClick: () => void;
-  disabled?: boolean;
-  className?: string;
   useParentDimensions?: boolean; // Flag to indicate whether to use parent container's dimensions
+  gridHeight?: number; // Configurable grid height in pixels (default: 128)
 }
 
 const ProductGridItem: React.FC<ProductGridItemProps> = ({
@@ -34,10 +24,11 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
   onClick,
   disabled = false,
   className = '',
-  useParentDimensions = false
+  useParentDimensions = false,
+  gridHeight = 128
 }) => {
-  // Calculate the height based on the heightSpan (each grid unit is approximately 128px tall)
-  const calculatedHeight = heightSpan * 128; // 128px per grid unit as used in EnhancedGridCanvas
+  // Calculate the height based on the heightSpan using configurable grid height
+  const calculatedHeight = heightSpan * gridHeight; // Use configurable grid height per grid unit
 
   return (
     <button

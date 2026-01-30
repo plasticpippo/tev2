@@ -7,6 +7,7 @@ import ConfirmationModal from './ConfirmationModal';
 import { LoadingOverlay } from './LoadingOverlay';
 import { useKeyboardShortcuts } from '../hooks/useKeyboardShortcuts';
 import { validateRoom, validateTable, ValidationError } from '../utils/validation';
+import { sanitizeName, SanitizationError } from '../utils/sanitization';
 
 interface RoomModalProps {
   room?: Room;
@@ -26,8 +27,21 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
     setIsSubmitting(true);
     setErrors([]);
     
+    // Sanitize room name
+    let sanitizedName: string;
+    try {
+      sanitizedName = sanitizeName(name);
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        setErrors([{ field: 'name', message: error.message }]);
+        setIsSubmitting(false);
+        return;
+      }
+      throw error;
+    }
+    
     // Validate room data
-    const roomData = { name, description };
+    const roomData = { name: sanitizedName, description };
     const validation = validateRoom(roomData, rooms);
     
     if (!validation.isValid) {
@@ -38,9 +52,9 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
     
     try {
       if (room) {
-        await updateRoom(room.id, { name, description: description || undefined });
+        await updateRoom(room.id, { name: sanitizedName, description: description || undefined });
       } else {
-        await addRoom({ name, description: description || undefined, tables: [] });
+        await addRoom({ name: sanitizedName, description: description || undefined, tables: [] });
       }
       onSave();
     } catch (err) {
@@ -174,9 +188,22 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
     setIsSubmitting(true);
     setErrors([]);
     
+    // Sanitize table name
+    let sanitizedName: string;
+    try {
+      sanitizedName = sanitizeName(name);
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        setErrors([{ field: 'name', message: error.message }]);
+        setIsSubmitting(false);
+        return;
+      }
+      throw error;
+    }
+    
     // Validate table data
     const tableData = {
-      name,
+      name: sanitizedName,
       roomId,
       x: parseFloat(x),
       y: parseFloat(y),

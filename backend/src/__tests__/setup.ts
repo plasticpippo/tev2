@@ -1,6 +1,20 @@
 // Jest setup file for backend tests
 import { jest } from '@jest/globals';
 
+// Mock isomorphic-dompurify to avoid ES module issues
+jest.mock('isomorphic-dompurify', () => {
+  return {
+    __esModule: true,
+    default: {
+      sanitize: (input: string, options?: any) => {
+        // Simple HTML sanitization for testing - strips tags
+        if (typeof input !== 'string') return '';
+        return input.replace(/<[^>]*>/g, '');
+      }
+    }
+  };
+});
+
 // Mock the Prisma client globally
 jest.mock('../prisma', () => {
   const mockPrismaClient = {
@@ -101,6 +115,22 @@ jest.mock('../prisma', () => {
       update: jest.fn(),
       delete: jest.fn(),
       deleteMany: jest.fn(),
+    },
+    room: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      findFirst: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+    },
+    table: {
+      findMany: jest.fn(),
+      findUnique: jest.fn(),
+      create: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      count: jest.fn(),
     },
     $connect: jest.fn(),
     $disconnect: jest.fn(),

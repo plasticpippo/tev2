@@ -21,8 +21,9 @@ export const validateCategoryId = (categoryId: number): string | null => {
     return 'Category ID must be a number';
   }
   
-  if (categoryId <= 0) {
-    return 'Category ID must be greater than 0';
+  // Allow -1 for Favourites pseudo-category, and positive values for real categories
+  if (categoryId !== -1 && categoryId <= 0) {
+    return 'Category ID must be greater than 0 or -1 for Favourites';
   }
   
   return null;

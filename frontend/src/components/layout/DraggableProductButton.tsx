@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
-import type { ProductVariant, Product } from '../../../shared/types';
+import type { ProductVariant, Product } from '@shared/types';
 import { formatCurrency } from '../../../utils/formatting';
 
 interface DraggableProductButtonProps {

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback, useEffect, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
 import {
   ButtonPosition,
   CategoryLayout,
@@ -14,6 +14,8 @@ import {
   createSharedLayout,
   loadSharedLayoutToTill
 } from '../../services/layoutService';
+import { sanitizeName, SanitizationError } from '../../utils/sanitization';
+import { useToast } from '../../contexts/ToastContext';
 
 interface LayoutContextValue {
   // State
@@ -58,6 +60,8 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   tillId,
   initialCategoryId = 'favourites'
 }) => {
+  const { addToast } = useToast();
+  
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentCategoryId, setCurrentCategoryId] = useState<number | 'favourites' | 'all'>(initialCategoryId);
   const [currentTillLayout, setCurrentTillLayout] = useState<TillLayout>({
@@ -73,6 +77,20 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   const [isLoading, setIsLoading] = useState(false);
   const [sharedLayouts, setSharedLayouts] = useState<SharedLayout[]>([]);
 
+  // Refs for cleanup and request cancellation
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isMountedRef = useRef(true);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
+
   // Update tillId when it changes
   useEffect(() => {
     if (tillId) {
@@ -81,26 +99,30 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     }
   }, [tillId]);
 
-  // Load layout when category changes (including favourites)
-  useEffect(() => {
-    if (currentCategoryId === 'favourites' && tillId) {
-      loadLayoutForCategory('favourites');
-    } else if (typeof currentCategoryId === 'number' && tillId) {
-      loadLayoutForCategory(currentCategoryId);
-    }
-  }, [currentCategoryId, tillId]);
-
-  // Load layout for a specific category from API
+  // Load layout for a specific category from API - defined before useEffect to avoid hoisting issues
   const loadLayoutForCategory = useCallback(async (categoryId: number | 'favourites') => {
     if (!tillId) return;
-    
+
+    // Cancel any in-flight request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new abort controller for this request
+    abortControllerRef.current = new AbortController();
+
     // Convert 'favourites' to special ID
     const categoryIdToFetch = categoryId === 'favourites' ? -1 : categoryId;
-    
+
     setIsLoading(true);
     try {
-      const layouts = await getTillLayout(tillId, categoryIdToFetch);
-      
+      const layouts = await getTillLayout(tillId, categoryIdToFetch, abortControllerRef.current.signal);
+
+      // Don't update state if component unmounted or request was aborted
+      if (!isMountedRef.current || abortControllerRef.current.signal.aborted) {
+        return;
+      }
+
       const positions: ButtonPosition[] = layouts.map(l => ({
         variantId: l.variantId,
         gridColumn: l.gridColumn,
@@ -111,34 +133,53 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         // Update or add the category layout
         const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryIdToFetch);
         const newLayouts = [...prev.layouts];
-        
+
         if (existingIndex >= 0) {
           newLayouts[existingIndex] = { categoryId: categoryIdToFetch, positions };
         } else {
           newLayouts.push({ categoryId: categoryIdToFetch, positions });
         }
-        
+
         return { ...prev, layouts: newLayouts };
       });
 
       setSavedTillLayout(prev => {
         const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryIdToFetch);
         const newLayouts = [...prev.layouts];
-        
+
         if (existingIndex >= 0) {
           newLayouts[existingIndex] = { categoryId: categoryIdToFetch, positions };
         } else {
           newLayouts.push({ categoryId: categoryIdToFetch, positions });
         }
-        
+
         return { ...prev, layouts: newLayouts };
       });
     } catch (error) {
+      // Don't log or update state if request was aborted
+      if (error instanceof Error && error.name === 'AbortError') {
+        return;
+      }
+      if (!isMountedRef.current) {
+        return;
+      }
       console.error('Error loading layout:', error);
     } finally {
-      setIsLoading(false);
+      // Only clear loading state if this request wasn't aborted
+      if (isMountedRef.current && !abortControllerRef.current?.signal.aborted) {
+        setIsLoading(false);
+      }
     }
   }, [tillId]);
+
+  // Load layout when category changes (including favourites)
+  useEffect(() => {
+    if (currentCategoryId === 'favourites' && tillId) {
+      loadLayoutForCategory('favourites');
+    } else if (typeof currentCategoryId === 'number' && tillId) {
+      loadLayoutForCategory(currentCategoryId);
+    }
+  }, [currentCategoryId, tillId, loadLayoutForCategory]);
 
   // Enter edit mode
   const enterEditMode = useCallback(() => {
@@ -281,10 +322,10 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       
       // Show success message
       const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'category';
-      alert(`Layout saved successfully for ${categoryName}!`);
+      addToast(`Layout saved successfully for ${categoryName}!`, 'success');
     } catch (error) {
       console.error('Error saving layout:', error);
-      alert(`Failed to save layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addToast(`Failed to save layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -307,12 +348,6 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       return;
     }
 
-    const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'this category';
-    
-    if (!window.confirm(`Reset layout to default? This will remove all custom positions for ${categoryName}.`)) {
-      return;
-    }
-
     setIsSaving(true);
     try {
       await resetTillLayout(tillId, categoryIdToReset);
@@ -329,10 +364,10 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       }));
       
       setIsDirty(false);
-      alert('Layout reset to default!');
+      addToast('Layout reset to default!', 'success');
     } catch (error) {
       console.error('Error resetting layout:', error);
-      alert(`Failed to reset layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addToast(`Failed to reset layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -362,6 +397,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       return;
     }
 
+    // Sanitize layout name
+    let sanitizedName: string;
+    try {
+      sanitizedName = sanitizeName(name);
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        addToast(`Invalid layout name: ${error.message}`, 'error');
+        return;
+      }
+      throw error;
+    }
+
     // Convert favourites to -1
     const categoryIdToUse = currentCategoryId === 'favourites'
       ? -1
@@ -374,7 +421,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     const categoryLayout = getCurrentCategoryLayout();
     if (!categoryLayout || categoryLayout.positions.length === 0) {
-      alert('Cannot save empty layout as shared layout');
+      addToast('Cannot save empty layout as shared layout', 'error');
       return;
     }
 
@@ -386,15 +433,15 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         gridRow: p.gridRow
       }));
 
-      await createSharedLayout(name, categoryIdToUse, positions);
+      await createSharedLayout(sanitizedName, categoryIdToUse, positions);
       
-      alert(`Shared layout "${name}" created successfully!`);
+      addToast(`Shared layout "${sanitizedName}" created successfully!`, 'success');
       
       // Refresh shared layouts list
       await refreshSharedLayouts(categoryIdToUse);
     } catch (error) {
       console.error('Error creating shared layout:', error);
-      alert(`Failed to create shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addToast(`Failed to create shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
     } finally {
       setIsSaving(false);
     }
@@ -426,11 +473,11 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
           setCurrentCategory(categoryToLoad);
         }
         
-        alert('Shared layout loaded successfully!');
+        addToast('Shared layout loaded successfully!', 'success');
       }
     } catch (error) {
       console.error('Error loading shared layout:', error);
-      alert(`Failed to load shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      addToast(`Failed to load shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
     } finally {
       setIsSaving(false);
     }

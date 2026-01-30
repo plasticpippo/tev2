@@ -2,9 +2,10 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
 import { DraggableProductButton } from './DraggableProductButton';
 import { CategoryTabs } from '../CategoryTabs';
-import type { Product, ProductVariant, Category } from '../../../../shared/types';
+import type { Product, ProductVariant, Category } from '@shared/types';
 
 const GRID_COLUMNS = 4;
+const GRID_ROW_HEIGHT = 128; // Configurable grid row height in pixels
 
 interface ProductGridLayoutProps {
   products: Product[];
@@ -44,23 +45,23 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   // Get items to render based on current category filter
   const itemsToRender = useMemo(() => {
     if (currentCategoryId === 'favourites') {
-      return visibleProducts.flatMap(product =>
+      return visibleProducts.flatMap((product: Product) =>
         product.variants
-          .filter(variant => variant.isFavourite)
-          .map(variant => ({ product, variant }))
+          .filter((variant: ProductVariant) => variant.isFavourite)
+          .map((variant: ProductVariant) => ({ product, variant }))
       );
     }
 
     if (currentCategoryId === 'all') {
-      return visibleProducts.flatMap(product =>
-        product.variants.map(variant => ({ product, variant }))
+      return visibleProducts.flatMap((product: Product) =>
+        product.variants.map((variant: ProductVariant) => ({ product, variant }))
       );
     }
 
     // Specific category
-    const filteredProducts = visibleProducts.filter(p => p.categoryId === currentCategoryId);
-    return filteredProducts.flatMap(product =>
-      product.variants.map(variant => ({ product, variant }))
+    const filteredProducts = visibleProducts.filter((p: Product) => p.categoryId === currentCategoryId);
+    return filteredProducts.flatMap((product: Product) =>
+      product.variants.map((variant: ProductVariant) => ({ product, variant }))
     );
   }, [visibleProducts, currentCategoryId]);
 
@@ -141,7 +142,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             style={{
               gridColumn: col,
               gridRow: row,
-              minHeight: '128px'
+              minHeight: `${GRID_ROW_HEIGHT}px`
             }}
           />
         );
@@ -181,7 +182,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                   repeating-linear-gradient(0deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%),
                   repeating-linear-gradient(90deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%)
                 `,
-                backgroundSize: '100% 128px, calc(100% / 4) 100%'
+                backgroundSize: `100% ${GRID_ROW_HEIGHT}px, calc(100% / 4) 100%`
               }}
             >
               <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
@@ -214,8 +215,8 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             className="relative grid gap-4 z-10"
             style={{
               gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
-              gridTemplateRows: `repeat(${gridRows}, minmax(128px, auto))`,  // Explicit row heights
-              gridAutoRows: 'minmax(128px, auto)'
+              gridTemplateRows: `repeat(${gridRows}, minmax(${GRID_ROW_HEIGHT}px, auto))`,  // Explicit row heights
+              gridAutoRows: `minmax(${GRID_ROW_HEIGHT}px, auto)`
             }}
           >
             {/* Drop zone cells */}

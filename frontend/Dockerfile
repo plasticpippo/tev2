@@ -5,7 +5,7 @@ FROM node:20-alpine AS builder
 WORKDIR /app
 
 # Copy package files
-COPY package*.json ./
+COPY frontend/package*.json ./
 
 # Install dependencies
 RUN npm install
@@ -13,11 +13,11 @@ RUN npm install
 # Create directory structure to mirror project root
 RUN mkdir -p frontend
 
-# Copy frontend source code to frontend directory
-COPY . ./frontend/
+# Copy frontend source code to frontend directory first
+COPY frontend/ ./frontend/
 
-# Copy shared directory from project root to app root
-COPY ../shared ./shared
+# Copy shared directory directly into frontend directory
+COPY shared ./frontend/shared
 
 # Build the application
 RUN cd frontend && npm run build
@@ -29,7 +29,7 @@ FROM nginx:alpine
 COPY --from=builder /app/frontend/dist /usr/share/nginx/html
 
 # Copy custom nginx configuration
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY frontend/nginx.conf /etc/nginx/nginx.conf
 
 # Expose port
 EXPOSE 3000

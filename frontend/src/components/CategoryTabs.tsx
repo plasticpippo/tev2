@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLayout } from '../contexts/LayoutContext';
-import type { Category } from '../../../shared/types';
+import type { Category } from '@shared/types';
 
 interface CategoryTabsProps {
   categories: Category[];

@@ -6,6 +6,7 @@ export const validateTableData = (data: {
   width?: number;
   height?: number;
   status?: string;
+  capacity?: number;
 }) => {
   const errors: string[] = [];
 
@@ -47,6 +48,13 @@ export const validateTableData = (data: {
     const validStatuses = ['available', 'occupied', 'reserved', 'unavailable'];
     if (!validStatuses.includes(data.status)) {
       errors.push(`status must be one of: ${validStatuses.join(', ')}`);
+    }
+  }
+
+  if (data.capacity !== undefined) {
+    const capacity = parseInt(data.capacity.toString(), 10);
+    if (isNaN(capacity) || capacity <= 0) {
+      errors.push('capacity must be a positive integer');
     }
   }
 

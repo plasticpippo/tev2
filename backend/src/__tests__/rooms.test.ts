@@ -29,6 +29,9 @@ describe('Rooms API', () => {
       expect(response.body).toEqual(mockRooms);
       expect(prisma.room.findMany).toHaveBeenCalledTimes(1);
       expect(prisma.room.findMany).toHaveBeenCalledWith({
+        include: {
+          tables: true,
+        },
         orderBy: {
           id: 'asc',
         },
@@ -42,7 +45,7 @@ describe('Rooms API', () => {
         .get('/api/rooms')
         .expect(500);
 
-      expect(response.body).toEqual({ error: 'Failed to fetch rooms' });
+      expect(response.body).toEqual({ error: 'Failed to fetch rooms', details: 'Database error' });
     });
   });
 
@@ -58,7 +61,10 @@ describe('Rooms API', () => {
 
       expect(response.body).toEqual(mockRoom);
       expect(prisma.room.findUnique).toHaveBeenCalledWith({
-        where: { id: 'room1' }
+        where: { id: 'room1' },
+        include: {
+          tables: true,
+        },
       });
     });
 
@@ -79,7 +85,7 @@ describe('Rooms API', () => {
         .get('/api/rooms/room1')
         .expect(500);
 
-      expect(response.body).toEqual({ error: 'Failed to fetch room' });
+      expect(response.body).toEqual({ error: 'Failed to fetch room', details: 'Database error' });
     });
   });
 
@@ -98,6 +104,9 @@ describe('Rooms API', () => {
       expect(response.body).toEqual(createdRoom);
       expect(prisma.room.create).toHaveBeenCalledWith({
         data: newRoomData,
+        include: {
+          tables: true,
+        },
       });
     });
 
@@ -119,7 +128,7 @@ describe('Rooms API', () => {
         .send(newRoomData)
         .expect(500);
 
-      expect(response.body).toEqual({ error: 'Failed to create room' });
+      expect(response.body).toEqual({ error: 'Failed to create room', details: 'Database error' });
     });
   });
 
@@ -143,6 +152,9 @@ describe('Rooms API', () => {
           name: 'Updated Room',
           description: 'Updated description',
         },
+        include: {
+          tables: true,
+        },
       });
     });
 
@@ -163,6 +175,9 @@ describe('Rooms API', () => {
         where: { id: 'room1' },
         data: {
           name: 'Updated Room Only',
+        },
+        include: {
+          tables: true,
         },
       });
     });
@@ -187,7 +202,7 @@ describe('Rooms API', () => {
         .send({ name: 'Updated Room' })
         .expect(500);
 
-      expect(response.body).toEqual({ error: 'Failed to update room' });
+      expect(response.body).toEqual({ error: 'Failed to update room', details: 'Database error' });
     });
   });
 
@@ -230,7 +245,7 @@ describe('Rooms API', () => {
         .delete('/api/rooms/room1')
         .expect(400);
 
-      expect(response.body).toEqual({ error: 'Cannot delete room with assigned tables. Please move or delete tables first.' });
+      expect(response.body).toEqual({ error: 'Cannot delete room with 2 assigned table(s). Please delete or reassign tables first.', tableCount: 2 });
       expect(prisma.table.count).toHaveBeenCalledWith({
         where: {
           roomId: 'room1',
@@ -250,7 +265,7 @@ describe('Rooms API', () => {
         .delete('/api/rooms/room1')
         .expect(500);
 
-      expect(response.body).toEqual({ error: 'Failed to delete room' });
+      expect(response.body).toEqual({ error: 'Failed to delete room', details: 'Database error' });
     });
   });
 });

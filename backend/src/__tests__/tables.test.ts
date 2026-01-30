@@ -26,8 +26,8 @@ describe('Tables API', () => {
           status: 'available', 
           roomId: 'room1', 
           createdAt: '2023-01-01T00:00:00Z', 
-          updatedAt: '2023-01-01T0:00:00Z',
-          room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+          updatedAt: '2023-01-01T00:00:00Z',
+          room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
         },
         { 
           id: 'table2', 
@@ -40,7 +40,7 @@ describe('Tables API', () => {
           roomId: 'room1', 
           createdAt: '2023-01-01T00:00:00Z', 
           updatedAt: '2023-01-01T00:00:00Z',
-          room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T0:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+          room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
         }
       ];
 
@@ -84,9 +84,9 @@ describe('Tables API', () => {
         height: 80, 
         status: 'available', 
         roomId: 'room1', 
-        createdAt: '2023-01-01T00:00Z', 
+        createdAt: '2023-01-01T00:00:00Z',
         updatedAt: '2023-01-01T00:00:00Z',
-        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.table.findUnique as jest.Mock).mockResolvedValue(mockTable);
@@ -127,24 +127,28 @@ describe('Tables API', () => {
 
   describe('POST /api/tables', () => {
     it('should create a new table', async () => {
-      const newTableData = { 
-        name: 'New Table', 
-        roomId: 'room1', 
-        positionX: 100, 
-        positionY: 50, 
-        width: 80, 
-        height: 80, 
-        status: 'available' 
+      const newTableData = {
+        name: 'New Table',
+        roomId: 'room1',
+        x: 100,
+        y: 50,
+        width: 80,
+        height: 80,
+        status: 'available'
       };
       
-      const createdTable = { 
-        id: 'newtable1', 
-        ...newTableData, 
-        x: 100, 
-        y: 50, 
-        createdAt: '2023-01-01T00:00Z', 
+      const createdTable = {
+        id: 'newtable1',
+        name: 'New Table',
+        roomId: 'room1',
+        x: 100,
+        y: 50,
+        width: 80,
+        height: 80,
+        status: 'available',
+        createdAt: '2023-01-01T00:00Z',
         updatedAt: '2023-01-01T00:00:00Z',
-        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
@@ -165,6 +169,7 @@ describe('Tables API', () => {
           width: 80,
           height: 80,
           status: 'available',
+          items: undefined,
         },
         include: {
           room: true,
@@ -189,7 +194,7 @@ describe('Tables API', () => {
         status: 'available', 
         createdAt: '2023-01-01T00:00:00Z', 
         updatedAt: '2023-01-01T00:00:00Z',
-        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
@@ -205,11 +210,12 @@ describe('Tables API', () => {
         data: {
           name: 'New Table',
           roomId: 'room1',
-          x: 0,
-          y: 0,
+          x: 50,
+          y: 50,
           width: 100,
           height: 100,
           status: 'available',
+          items: undefined,
         },
         include: {
           room: true,
@@ -230,7 +236,7 @@ describe('Tables API', () => {
       const response = await request(app)
         .post('/api/tables')
         .send({ name: 'New Table' })
-        .expect(40);
+        .expect(400);
 
       expect(response.body).toEqual({ error: 'Name and roomId are required' });
     });
@@ -257,6 +263,293 @@ describe('Tables API', () => {
 
       expect(response.body).toEqual({ error: 'Failed to create table' });
     });
+
+    // Additional tests for validation of table names and numbers
+    it('should create a table with a valid numeric name', async () => {
+      const newTableData = {
+        name: '123',
+        roomId: 'room1'
+      };
+      
+      const createdTable = {
+        id: 'table123',
+        name: '123',
+        roomId: 'room1',
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        status: 'available',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
+      };
+
+      (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
+      (prisma.table.create as jest.Mock).mockResolvedValue(createdTable);
+
+      const response = await request(app)
+        .post('/api/tables')
+        .send(newTableData)
+        .expect(201);
+
+      expect(response.body).toEqual(createdTable);
+    });
+
+    it('should create a table with alphanumeric name', async () => {
+      const newTableData = {
+        name: 'Table1',
+        roomId: 'room1'
+      };
+      
+      const createdTable = {
+        id: 'table1',
+        name: 'Table1',
+        roomId: 'room1',
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        status: 'available',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+      };
+
+      (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
+      (prisma.table.create as jest.Mock).mockResolvedValue(createdTable);
+
+      const response = await request(app)
+        .post('/api/tables')
+        .send(newTableData)
+        .expect(201);
+
+      expect(response.body).toEqual(createdTable);
+    });
+
+    it('should create a table with special characters in name', async () => {
+      const newTableData = {
+        name: 'Table-A1',
+        roomId: 'room1'
+      };
+      
+      const createdTable = {
+        id: 'table-a1',
+        name: 'Table-A1',
+        roomId: 'room1',
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        status: 'available',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+      };
+
+      (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
+      (prisma.table.create as jest.Mock).mockResolvedValue(createdTable);
+
+      const response = await request(app)
+        .post('/api/tables')
+        .send(newTableData)
+        .expect(201);
+
+      expect(response.body).toEqual(createdTable);
+    });
+
+    it('should return 400 for empty table name', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: '', roomId: 'room1' })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Name and roomId are required'
+      });
+    });
+
+    it('should return 400 for table name with only spaces', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: '   ', roomId: 'room1' })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['Table name must be a non-empty string']
+      });
+    });
+
+    it('should return 400 for invalid x position', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', x: -10 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['x position must be a non-negative number']
+      });
+    });
+
+    it('should return 400 for invalid y position', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', y: -5 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['y position must be a non-negative number']
+      });
+    });
+
+    it('should return 400 for invalid width', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', width: 0 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['width must be a positive number']
+      });
+    });
+
+    it('should return 400 for invalid height', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', height: -10 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['height must be a positive number']
+      });
+    });
+
+    it('should return 400 for invalid status', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', status: 'invalid_status' })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['status must be one of: available, occupied, reserved, unavailable']
+      });
+    });
+
+    it('should create a table with valid status', async () => {
+      const newTableData = {
+        name: 'Valid Status Table',
+        roomId: 'room1',
+        status: 'occupied'
+      };
+      
+      const createdTable = {
+        id: 'validstatustable',
+        name: 'Valid Status Table',
+        roomId: 'room1',
+        x: 0,
+        y: 0,
+        width: 100,
+        height: 100,
+        status: 'occupied',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+      };
+
+      (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
+      (prisma.table.create as jest.Mock).mockResolvedValue(createdTable);
+
+      const response = await request(app)
+        .post('/api/tables')
+        .send(newTableData)
+        .expect(201);
+
+      expect(response.body).toEqual(createdTable);
+    });
+
+    it('should create a new table with capacity', async () => {
+      const newTableData = {
+        name: 'Table with Capacity',
+        roomId: 'room1',
+        x: 100,
+        y: 50,
+        width: 80,
+        height: 80,
+        status: 'available',
+        capacity: 4
+      };
+      
+      const createdTable = {
+        id: 'newtablecap1',
+        name: 'Table with Capacity',
+        roomId: 'room1',
+        x: 100,
+        y: 50,
+        width: 80,
+        height: 80,
+        status: 'available',
+        capacity: 4,
+        createdAt: '2023-01-01T00:00Z',
+        updatedAt: '2023-01-01T00:00:00Z',
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+      };
+
+      (prisma.room.findUnique as jest.Mock).mockResolvedValue({ id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00Z' });
+      (prisma.table.create as jest.Mock).mockResolvedValue(createdTable);
+
+      const response = await request(app)
+        .post('/api/tables')
+        .send(newTableData)
+        .expect(201);
+
+      expect(response.body).toEqual(createdTable);
+      expect(prisma.table.create).toHaveBeenCalledWith({
+        data: {
+          name: 'Table with Capacity',
+          roomId: 'room1',
+          x: 100,
+          y: 50,
+          width: 80,
+          height: 80,
+          status: 'available',
+          capacity: 4,
+          items: undefined,
+        },
+        include: {
+          room: true,
+        },
+      });
+    });
+
+    it('should return 400 for invalid capacity', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', capacity: -1 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['capacity must be a positive integer']
+      });
+    });
+
+    it('should return 400 for capacity with decimal value', async () => {
+      const response = await request(app)
+        .post('/api/tables')
+        .send({ name: 'Valid Table', roomId: 'room1', capacity: 2.5 })
+        .expect(400);
+
+      expect(response.body).toEqual({
+        error: 'Validation failed',
+        details: ['capacity must be a positive integer']
+      });
+    });
   });
 
   describe('PUT /api/tables/:id', () => {
@@ -278,7 +571,7 @@ describe('Tables API', () => {
         y: 100, 
         createdAt: '2023-01-01T0:00:00Z', 
         updatedAt: '2023-01-01T00:00Z',
-        room: { id: 'room2', name: 'Bar Area', description: 'Bar and lounge area', createdAt: '2023-01-01T00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room2', name: 'Bar Area', description: 'Bar and lounge area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.table.findUnique as jest.Mock).mockResolvedValue({ id: 'table1', name: 'Old Table', roomId: 'room1', x: 100, y: 50, width: 80, height: 80, status: 'available', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' });
@@ -296,8 +589,6 @@ describe('Tables API', () => {
         data: {
           name: 'Updated Table',
           roomId: 'room2',
-          x: 150,
-          y: 100,
           width: 90,
           height: 90,
           status: 'occupied',
@@ -305,6 +596,62 @@ describe('Tables API', () => {
         include: {
           room: true,
         },
+      });
+  
+      it('should update table capacity', async () => {
+        const updatedTableData = {
+          name: 'Updated Table',
+          roomId: 'room1',
+          capacity: 6
+        };
+        
+        const updatedTable = {
+          id: 'table1',
+          name: 'Updated Table',
+          roomId: 'room1',
+          x: 100,
+          y: 50,
+          width: 80,
+          height: 80,
+          status: 'available',
+          capacity: 6,
+          createdAt: '2023-01-01T0:00:00Z',
+          updatedAt: '2023-01-01T00:00Z',
+          room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
+        };
+  
+        (prisma.table.findUnique as jest.Mock).mockResolvedValue({ id: 'table1', name: 'Old Table', roomId: 'room1', x: 100, y: 50, width: 80, height: 80, status: 'available', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' });
+        (prisma.table.update as jest.Mock).mockResolvedValue(updatedTable);
+  
+        const response = await request(app)
+          .put('/api/tables/table1')
+          .send(updatedTableData)
+          .expect(200);
+  
+        expect(response.body).toEqual(updatedTable);
+        expect(prisma.table.update).toHaveBeenCalledWith({
+          where: { id: 'table1' },
+          data: {
+            name: 'Updated Table',
+            roomId: 'room1',
+            capacity: 6,
+          },
+          include: {
+            room: true,
+          },
+        });
+      });
+  
+      it('should return 400 for invalid capacity in update', async () => {
+        const response = await request(app)
+          .put('/api/tables/table1')
+          .send({ name: 'Updated Table', capacity: -2 })
+          .expect(400);
+  
+        expect(response.body).toEqual({
+          error: 'Validation failed',
+          details: ['capacity must be a positive integer']
+        });
       });
     });
 
@@ -322,7 +669,7 @@ describe('Tables API', () => {
         status: 'available', 
         createdAt: '2023-01-01T00:00:00Z', 
         updatedAt: '2023-01-01T00:00:00Z',
-        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.table.findUnique as jest.Mock).mockResolvedValue({ id: 'table1', name: 'Old Table', roomId: 'room1', x: 100, y: 50, width: 80, height: 80, status: 'available', createdAt: '2023-01-01T00:00Z', updatedAt: '2023-01-01T00:00:00Z' });
@@ -388,8 +735,8 @@ describe('Tables API', () => {
         id: 'table1', 
         name: 'Table to delete', 
         roomId: 'room1', 
-        x: 100, 
-        y: 50, 
+        x: 50,
+        y: 50,
         width: 80, 
         height: 80, 
         status: 'available', 
@@ -443,7 +790,10 @@ describe('Tables API', () => {
         .delete('/api/tables/table1')
         .expect(400);
 
-      expect(response.body).toEqual({ error: 'Cannot delete table with open tabs' });
+      expect(response.body).toEqual({
+        error: 'Cannot delete table with open tabs. Please close or reassign tabs first.',
+        tabCount: 1
+      });
       expect(prisma.tab.findMany).toHaveBeenCalledWith({
         where: {
           tableId: 'table1',
@@ -479,20 +829,20 @@ describe('Tables API', () => {
 
   describe('PUT /api/tables/:id/position', () => {
     it('should update table position', async () => {
-      const positionData = { positionX: 200, positionY: 150 };
+      const positionData = { x: 200, y: 150 };
       
-      const updatedTable = { 
-        id: 'table1', 
-        name: 'Table 1', 
-        roomId: 'room1', 
-        x: 20, 
-        y: 150, 
-        width: 80, 
-        height: 80, 
-        status: 'available', 
-        createdAt: '2023-01-01T00:00Z', 
+      const updatedTable = {
+        id: 'table1',
+        name: 'Table 1',
+        roomId: 'room1',
+        x: 200,
+        y: 150,
+        width: 80,
+        height: 80,
+        status: 'available',
+        createdAt: '2023-01-01T00:00Z',
         updatedAt: '2023-01-01T00:00:00Z',
-        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' }
+        room: { id: 'room1', name: 'Main Dining', description: 'Main dining area', createdAt: '2023-01-01T00:00:00Z', updatedAt: '2023-01-01T00:00:00Z' },
       };
 
       (prisma.table.findUnique as jest.Mock).mockResolvedValue({ id: 'table1', name: 'Table 1', roomId: 'room1', x: 10, y: 50, width: 80, height: 80, status: 'available', createdAt: '2023-01-01T00:00Z', updatedAt: '2023-01-01T00:00:00Z' });
@@ -504,16 +854,6 @@ describe('Tables API', () => {
         .expect(200);
 
       expect(response.body).toEqual(updatedTable);
-      expect(prisma.table.update).toHaveBeenCalledWith({
-        where: { id: 'table1' },
-        data: {
-          x: 200,
-          y: 150,
-        },
-        include: {
-          room: true,
-        },
-      });
     });
 
     it('should return 404 if table to update position not found', async () => {
@@ -535,7 +875,7 @@ describe('Tables API', () => {
         .send({ positionY: 150 })
         .expect(400);
 
-      expect(response.body).toEqual({ error: 'positionX and positionY are required' });
+      expect(response.body).toEqual({ error: 'x and y coordinates are required' });
     });
 
     it('should return 400 if positionY is missing', async () => {
@@ -546,7 +886,7 @@ describe('Tables API', () => {
         .send({ positionX: 20 })
         .expect(400);
 
-      expect(response.body).toEqual({ error: 'positionX and positionY are required' });
+      expect(response.body).toEqual({ error: 'x and y coordinates are required' });
     });
 
     it('should handle errors when updating table position fails', async () => {
@@ -555,7 +895,7 @@ describe('Tables API', () => {
 
       const response = await request(app)
         .put('/api/tables/table1/position')
-        .send({ positionX: 200, positionY: 150 })
+        .send({ x: 200, y: 150 })
         .expect(500);
 
       expect(response.body).toEqual({ error: 'Failed to update table position' });

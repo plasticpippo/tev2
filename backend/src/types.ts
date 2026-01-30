@@ -1,3 +1,22 @@
+import { Request } from 'express';
+import { Table as PrismaTable } from '@prisma/client';
+import { SharedLayout, VariantLayout } from '@prisma/client';
+
+// Extend Express Request interface to include user, table, and layout properties
+declare global {
+  namespace Express {
+    interface Request {
+      user?: {
+        id: number;
+        username: string;
+        role: string;
+      };
+      table?: PrismaTable;
+      layout?: VariantLayout | SharedLayout;
+    }
+  }
+}
+
 export interface OrderItem {
   id: string;
   variantId: number;

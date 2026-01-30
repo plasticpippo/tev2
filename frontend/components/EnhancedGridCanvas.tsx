@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
 import { formatCurrency } from '../utils/formatting';
 import type { ProductVariant } from '../../shared/types';
 import ProductGridItem from './ProductGridItem';
@@ -53,11 +53,25 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
   disabled = false,
 }) => {
   const [draggingItem, setDraggingItem] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
+  const [dragPreviewPosition, setDragPreviewPosition] = useState<{ x: number; y: number } | null>(null);
   const [resizingItem, setResizingItem] = useState<{ id: string; direction: string; startX: number; startY: number; startWidth: number; startHeight: number; startXPos: number; startYPos: number } | null>(null);
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
   const [keyboardFocusedItem, setKeyboardFocusedItem] = useState<string | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const canvasRef = useRef<HTMLDivElement>(null);
+  
+  // Refs for resize handlers to avoid stale closures
+  const resizingItemRef = useRef(resizingItem);
+  const gridItemsRef = useRef(gridItems);
+  
+  // Keep refs in sync with state
+  useEffect(() => {
+    resizingItemRef.current = resizingItem;
+  }, [resizingItem]);
+  
+  useEffect(() => {
+    gridItemsRef.current = gridItems;
+  }, [gridItems]);
 
   const calculatePositionFromMouse = (clientX: number, clientY: number) => {
     if (!canvasRef.current) return { x: 0, y: 0 };
@@ -69,10 +83,10 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     // Apply snap-to-grid if enabled
     if (snapToGrid) {
       x = Math.max(0, Math.floor(x / (gridSize.width + gutter)));
-      y = Math.max(0, Math.floor(y / (128 + gutter))); // Use fixed 128px height
+      y = Math.max(0, Math.floor(y / (gridSize.height + gutter))); // Use configurable grid height
     } else {
       x = Math.max(0, Math.round(x / (gridSize.width + gutter)));
-      y = Math.max(0, Math.round(y / (128 + gutter))); // Use fixed 128px height
+      y = Math.max(0, Math.round(y / (gridSize.height + gutter))); // Use configurable grid height
     }
     
     return { x, y };
@@ -96,11 +110,9 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     if (!draggingItem || !canvasRef.current) return;
     
     const { x, y } = calculatePositionFromMouse(e.clientX, e.clientY);
-    const item = gridItems.find(i => i.id === draggingItem.id);
-    
-    if (item) {
-      handleMoveItem(item.id, x, y);
-    }
+    // Only update local preview state, not parent state
+    // This prevents excessive re-renders (60+ fps during drag)
+    setDragPreviewPosition({ x, y });
   };
 
   const handleDrop = (e: React.DragEvent) => {
@@ -108,57 +120,23 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     if (!draggingItem) return;
     
     const { x, y } = calculatePositionFromMouse(e.clientX, e.clientY);
+    // Only call handleMoveItem on drop, not during dragOver
     handleMoveItem(draggingItem.id, x, y);
     
     setDraggingItem(null);
+    setDragPreviewPosition(null);
     setIsDragging(false);
     onDragEnd?.(draggingItem.id);
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent, item: EnhancedGridItem) => {
-    if (disabled || item.locked) return;
-    
-    // Prevent default behavior for arrow keys to avoid scrolling
-    if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
-      e.preventDefault();
-    }
-    
-    let newX = item.x;
-    let newY = item.y;
-    const moveAmount = e.shiftKey ? 2 : 1; // Larger moves with shift
-    
-    switch (e.key) {
-      case 'ArrowUp':
-        newY = Math.max(0, item.y - moveAmount);
-        break;
-      case 'ArrowDown':
-        newY = item.y + moveAmount;
-        break;
-      case 'ArrowLeft':
-        newX = Math.max(0, item.x - moveAmount);
-        break;
-      case 'ArrowRight':
-        newX = item.x + moveAmount;
-        break;
-      case ' ':
-      case 'Enter':
-        setKeyboardFocusedItem(item.id);
-        return;
-      default:
-        return;
-    }
-    
-    handleMoveItem(item.id, newX, newY);
-  };
-
-  // Generate grid lines for visualization
-  const renderGridLines = () => {
+  // Memoize grid lines to prevent recalculation on every render
+  const gridLines = useMemo(() => {
     if (!showGridLines) return null;
     
     const lines = [];
     const totalWidth = columns * gridSize.width + (columns - 1) * gutter;
     const totalRows = Math.ceil(gridItems.reduce((max, item) => Math.max(max, item.y + item.height), 0) + 2);
-    const totalHeight = totalRows * 128 + (totalRows - 1) * gutter; // Using 128px per grid unit
+    const totalHeight = totalRows * gridSize.height + (totalRows - 1) * gutter; // Using configurable grid height per grid unit
     
     // Vertical lines
     for (let i = 0; i <= columns; i++) {
@@ -193,7 +171,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     }
     
     return lines;
-  };
+  }, [showGridLines, columns, gridSize.width, gridSize.height, gutter, containerPadding.x, containerPadding.y, gridItems]);
 
   const handleResizeStart = (e: React.MouseEvent, item: EnhancedGridItem, direction: string) => {
     if (disabled || item.locked) return;
@@ -221,60 +199,62 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     e.preventDefault();
   };
 
-  const handleMouseMove = (e: MouseEvent) => {
-    if (!resizingItem || !canvasRef.current) return;
+  // Use ref-based handler to avoid stale closures in event listeners
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const currentResizingItem = resizingItemRef.current;
+    if (!currentResizingItem || !canvasRef.current) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
     const currentX = e.clientX - rect.left;
     const currentY = e.clientY - rect.top;
     
-    const deltaX = currentX - resizingItem.startX;
-    const deltaY = currentY - resizingItem.startY;
+    const deltaX = currentX - currentResizingItem.startX;
+    const deltaY = currentY - currentResizingItem.startY;
     
-    const item = gridItems.find(i => i.id === resizingItem.id);
+    const item = gridItemsRef.current.find(i => i.id === currentResizingItem.id);
     if (!item) return;
     
     // Calculate new dimensions based on resize direction
-    let newWidth = resizingItem.startWidth;
-    let newHeight = resizingItem.startHeight;
-    let newX = resizingItem.startXPos;
-    let newY = resizingItem.startYPos;
+    let newWidth = currentResizingItem.startWidth;
+    let newHeight = currentResizingItem.startHeight;
+    let newX = currentResizingItem.startXPos;
+    let newY = currentResizingItem.startYPos;
     
     // Adjust dimensions based on resize direction
-    switch(resizingItem.direction) {
+    switch(currentResizingItem.direction) {
       case 'se': // Southeast (bottom-right)
-        newWidth = Math.max(1, resizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
-        newHeight = Math.max(1, resizingItem.startHeight + Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
+        newWidth = Math.max(1, currentResizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
+        newHeight = Math.max(1, currentResizingItem.startHeight + Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
         break;
       case 'ne': // Northeast (top-right)
-        newWidth = Math.max(1, resizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
-        newHeight = Math.max(1, resizingItem.startHeight - Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
-        newY = resizingItem.startYPos - (newHeight - resizingItem.startHeight);
+        newWidth = Math.max(1, currentResizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
+        newHeight = Math.max(1, currentResizingItem.startHeight - Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
+        newY = currentResizingItem.startYPos - (newHeight - currentResizingItem.startHeight);
         break;
       case 'sw': // Southwest (bottom-left)
-        newWidth = Math.max(1, resizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
-        newX = resizingItem.startXPos - (newWidth - resizingItem.startWidth);
-        newHeight = Math.max(1, resizingItem.startHeight + Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
+        newWidth = Math.max(1, currentResizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
+        newX = currentResizingItem.startXPos - (newWidth - currentResizingItem.startWidth);
+        newHeight = Math.max(1, currentResizingItem.startHeight + Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
         break;
       case 'nw': // Northwest (top-left)
-        newWidth = Math.max(1, resizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
-        newHeight = Math.max(1, resizingItem.startHeight - Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
-        newX = resizingItem.startXPos - (newWidth - resizingItem.startWidth);
-        newY = resizingItem.startYPos - (newHeight - resizingItem.startHeight);
+        newWidth = Math.max(1, currentResizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
+        newHeight = Math.max(1, currentResizingItem.startHeight - Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
+        newX = currentResizingItem.startXPos - (newWidth - currentResizingItem.startWidth);
+        newY = currentResizingItem.startYPos - (newHeight - currentResizingItem.startHeight);
         break;
       case 'e': // East (right edge)
-        newWidth = Math.max(1, resizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
+        newWidth = Math.max(1, currentResizingItem.startWidth + Math.round(deltaX / (gridSize.width + gutter)));
         break;
       case 'w': // West (left edge)
-        newWidth = Math.max(1, resizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
-        newX = resizingItem.startXPos - (newWidth - resizingItem.startWidth);
+        newWidth = Math.max(1, currentResizingItem.startWidth - Math.round(deltaX / (gridSize.width + gutter)));
+        newX = currentResizingItem.startXPos - (newWidth - currentResizingItem.startWidth);
         break;
       case 'n': // North (top edge)
-        newHeight = Math.max(1, resizingItem.startHeight - Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
-        newY = resizingItem.startYPos - (newHeight - resizingItem.startHeight);
+        newHeight = Math.max(1, currentResizingItem.startHeight - Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
+        newY = currentResizingItem.startYPos - (newHeight - currentResizingItem.startHeight);
         break;
       case 's': // South (bottom edge)
-        newHeight = Math.max(1, resizingItem.startHeight + Math.round(deltaY / (128 + gutter))); // Use fixed 128px height
+        newHeight = Math.max(1, currentResizingItem.startHeight + Math.round(deltaY / (gridSize.height + gutter))); // Use configurable grid height
         break;
     }
     
@@ -284,21 +264,21 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
     
     // Update item with new dimensions
     if (handleResizeItem) {
-      handleResizeItem(resizingItem.id, {
+      handleResizeItem(currentResizingItem.id, {
         width: newWidth,
         height: newHeight,
         x: newX,
         y: newY
       });
     } else {
-      handleUpdateItem(resizingItem.id, {
+      handleUpdateItem(currentResizingItem.id, {
         width: newWidth,
         height: newHeight,
         x: newX,
         y: newY
       });
     }
-  };
+  }, [gridSize.width, gridSize.height, gutter, handleResizeItem, handleUpdateItem]);
 
   const handleMouseUp = () => {
     if (resizingItem) {
@@ -307,6 +287,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
   };
 
   // Add event listeners when resizing starts
+  // Using refs for handlers to avoid stale closures and unnecessary re-registrations
   useEffect(() => {
     if (resizingItem) {
       document.addEventListener('mousemove', handleMouseMove);
@@ -317,7 +298,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
         document.removeEventListener('mouseup', handleMouseUp);
       };
     }
-  }, [resizingItem]);
+  }, [resizingItem, handleMouseMove]); // handleMouseMove is now stable with useCallback
 
   return (
     <div 
@@ -335,7 +316,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
       aria-label="Product grid layout"
     >
       {/* Render grid lines */}
-      {renderGridLines()}
+      {gridLines}
       
       {/* Render grid items */}
       {gridItems.map((item) => {
@@ -345,9 +326,9 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
         
         // Calculate dimensions separately to ensure isolation
         const calculatedWidth = item.width * gridSize.width + (item.width - 1) * gutter;
-        // Use a fixed height of 128px per grid unit to match the sales view proportions (h-32 equivalent)
-        // This ensures consistency with the ProductGrid component which uses h-32 (128px)
-        const calculatedHeight = item.height * 128; // Each grid unit is 128px high
+        // Use configurable grid height per grid unit to match the sales view proportions
+        // This ensures consistency with the ProductGrid component
+        const calculatedHeight = item.height * gridSize.height; // Each grid unit uses configurable height
         const calculatedLeft = containerPadding.x + item.x * (gridSize.width + gutter);
         const calculatedTop = containerPadding.y + item.y * (gridSize.height + gutter);
         
@@ -382,14 +363,12 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
             onMouseLeave={() => setHoveredItem(null)}
             onFocus={() => setKeyboardFocusedItem(item.id)}
             onBlur={() => setKeyboardFocusedItem(null)}
-            onKeyDown={(e) => handleKeyDown(e, item)}
             role="gridcell"
             aria-label={`Product ${item.name}, price ${formatCurrency(item.price)}, position ${item.x}, ${item.y}, ${item.width} by ${item.height} grid units`}
             tabIndex={0}
           >
             <p className={`font-bold ${item.textColor}`}>{item.name}</p>
             <div>
-              <p className={`text-sm font-semibold ${item.textColor}`}>{item.name}</p>
               <p className={`text-sm ${item.textColor} opacity-80`}>{formatCurrency(item.price)}</p>
             </div>
             
@@ -474,7 +453,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
             left: `${containerPadding.x}px`,
             top: `${containerPadding.y}px`,
             width: `${columns * gridSize.width + (columns - 1) * gutter}px`,
-            height: `${Math.max(400, (Math.max(...gridItems.map(i => i.y + i.height), 3) * 128 +
+            height: `${Math.max(400, (Math.max(...gridItems.map(i => i.y + i.height), 3) * gridSize.height +
                                   Math.max(0, Math.max(...gridItems.map(i => i.y + i.height), 3) - 1) * gutter))}px`,
           }}
           aria-hidden="true"

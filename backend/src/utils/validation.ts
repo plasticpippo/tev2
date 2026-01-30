@@ -269,6 +269,59 @@ export interface AnalyticsParams {
   includeAllProducts?: boolean;
 }
 
+// Room validation functions
+export const validateRoomName = (name: string, existingNames: string[] = []): string | null => {
+  if (!name || typeof name !== 'string') {
+    return 'Room name is required';
+  }
+
+  if (name.trim().length === 0) {
+    return 'Room name cannot be empty';
+  }
+
+  if (name.length > 100) {
+    return 'Room name must be 100 characters or less';
+  }
+
+  if (existingNames.some(n => n.toLowerCase() === name.trim().toLowerCase() && n !== name)) {
+    return 'A room with this name already exists';
+  }
+
+  // Check for special characters that might cause issues
+  if (!/^[a-zA-Z0-9\s\-_(),.'&]+$/.test(name)) {
+    return 'Room name contains invalid characters';
+  }
+
+  return null;
+};
+
+export const validateRoomDescription = (description: string): string | null => {
+  if (description && description.length > 500) {
+    return 'Description must be 500 characters or less';
+  }
+
+  return null;
+};
+
+export const validateRoom = (room: any, allRooms: any[] = []): { isValid: boolean; errors: string[] } => {
+  const errors: string[] = [];
+
+  const nameError = validateRoomName(room.name, allRooms.filter(r => r.id !== room.id).map(r => r.name));
+  if (nameError) {
+    errors.push(nameError);
+  }
+
+  const descriptionError = validateRoomDescription(room.description || '');
+  if (descriptionError) {
+    errors.push(descriptionError);
+  }
+
+  return {
+    isValid: errors.length === 0,
+    errors
+  };
+};
+
 export const validateAnalyticsParams = (query: any): AnalyticsParams => {
   const params: AnalyticsParams = {};
 

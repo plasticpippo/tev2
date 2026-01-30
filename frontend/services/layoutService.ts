@@ -1,4 +1,5 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { sanitizeName, SanitizationError } from '../utils/sanitization';
 
 // ============================================
 // TYPES
@@ -51,17 +52,22 @@ export interface SharedLayout {
  */
 export const getTillLayout = async (
   tillId: number,
-  categoryId: number
+  categoryId: number,
+  signal?: AbortSignal
 ): Promise<VariantLayout[]> => {
   const cacheKey = `getTillLayout_${tillId}_${categoryId}`;
   try {
     const result = await makeApiRequest(
       apiUrl(`/api/layouts/till/${tillId}/category/${categoryId}`),
-      undefined,
+      { signal },
       cacheKey
     );
     return result;
   } catch (error) {
+    // Don't log abort errors - they're expected when cancelling
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw error;
+    }
     console.error('Error fetching till layout:', error);
     return [];
   }
@@ -183,10 +189,13 @@ export const createSharedLayout = async (
   positions: VariantLayoutPosition[]
 ): Promise<SharedLayout> => {
   try {
+    // Sanitize layout name for defense-in-depth
+    const sanitizedName = sanitizeName(name);
+
     const response = await fetch(apiUrl('/api/layouts/shared'), {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ name, categoryId, positions })
+      body: JSON.stringify({ name: sanitizedName, categoryId, positions })
     });
 
     if (!response.ok) {
@@ -199,6 +208,9 @@ export const createSharedLayout = async (
     notifyUpdates();
     return createdLayout;
   } catch (error) {
+    if (error instanceof SanitizationError) {
+      throw new Error(`Invalid layout name: ${error.message}`);
+    }
     console.error('Error creating shared layout:', error);
     throw error;
   }

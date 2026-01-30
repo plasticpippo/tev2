@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
 import { useTableContext } from './TableContext';
-import { Table } from '../../shared/types';
+import { Table } from '@shared/types';
 
 interface TableLayoutEditorProps {
   selectedRoomId: string | null;
@@ -213,7 +213,7 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
                 {layoutMode === 'edit' ? 'Edit Mode' : 'Drag Mode'}
               </div>
-            ))}
+            )}
             
             {/* Table count indicator */}
             <div className="absolute top-4 right-4 bg-slate-700 text-white px-3 py-2 rounded-md text-xs font-medium shadow-lg">
@@ -266,7 +266,7 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
                 <div className="w-2 h-2 bg-amber-400 rounded-full animate-ping"></div>
                 Dragging...
               </div>
-            ))}
+            )}
           </div>
         </div>
       )}

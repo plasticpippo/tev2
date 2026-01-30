@@ -1,6 +1,8 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
+import { validateRoomName } from '../utils/validation';
+import { sanitizeName, sanitizeDescription, SanitizationError } from '../utils/sanitization';
 
 const router = Router();
 
@@ -64,10 +66,51 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Name is required' });
     }
 
+    // Sanitize name and description
+    let sanitizedName: string;
+    let sanitizedDescription: string | undefined;
+    try {
+      sanitizedName = sanitizeName(name);
+      if (description !== undefined) {
+        sanitizedDescription = sanitizeDescription(description);
+      }
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      throw error;
+    }
+
+    // Validate room name
+    const nameValidationError = validateRoomName(sanitizedName);
+    if (nameValidationError) {
+      return res.status(400).json({ error: nameValidationError });
+    }
+
+    // Check for duplicate room names
+    const existingRoomWithSameName = await prisma.room.findFirst({
+      where: {
+        name: {
+          equals: sanitizedName,
+          mode: 'insensitive' // Case insensitive comparison
+        }
+      }
+    });
+
+    if (existingRoomWithSameName) {
+      return res.status(400).json({ error: 'A room with this name already exists' });
+    }
+
+    // Validate description length
+    if (description && description.length > 500) {
+      return res.status(400).json({ error: 'Description must be 500 characters or less' });
+    }
+
     const newRoom = await prisma.room.create({
       data: {
-        name,
-        description,
+        name: sanitizedName,
+        description: sanitizedDescription,
       },
       include: {
         tables: true, // Include associated tables in response
@@ -87,6 +130,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, description } = req.body;
 
+    // Find the room to update
     const room = await prisma.room.findUnique({
       where: { id },
     });
@@ -95,11 +139,61 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'Room not found' });
     }
 
+    // Sanitize name and description if provided
+    let sanitizedName: string | undefined;
+    let sanitizedDescription: string | undefined;
+    if (name !== undefined || description !== undefined) {
+      try {
+        if (name !== undefined) {
+          sanitizedName = sanitizeName(name);
+        }
+        if (description !== undefined) {
+          sanitizedDescription = sanitizeDescription(description);
+        }
+      } catch (error) {
+        if (error instanceof SanitizationError) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+        throw error;
+      }
+    }
+
+    // If name is provided, validate it
+    if (sanitizedName !== undefined) {
+      const nameValidationError = validateRoomName(sanitizedName);
+      if (nameValidationError) {
+        return res.status(400).json({ error: nameValidationError });
+      }
+
+      // Check for duplicate room names (excluding the current room)
+      const existingRoomWithSameName = await prisma.room.findFirst({
+        where: {
+          name: {
+            equals: sanitizedName,
+            mode: 'insensitive' // Case insensitive comparison
+          },
+          id: {
+            not: id // Exclude current room from duplicate check
+          }
+        }
+      });
+
+      if (existingRoomWithSameName) {
+        return res.status(400).json({ error: 'A room with this name already exists' });
+      }
+    }
+
+    // If description is provided and too long, return error
+    if (description !== undefined && description.length > 500) {
+      return res.status(400).json({ error: 'Description must be 500 characters or less' });
+    }
+
     const updatedRoom = await prisma.room.update({
       where: { id },
       data: {
-        ...(name !== undefined && { name }),
-        ...(description !== undefined && { description }),
+        ...(sanitizedName !== undefined && { name: sanitizedName }),
+        ...(sanitizedDescription !== undefined && { description: sanitizedDescription }),
       },
       include: {
         tables: true, // Include associated tables in response

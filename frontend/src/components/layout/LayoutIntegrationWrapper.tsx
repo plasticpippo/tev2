@@ -1,7 +1,7 @@
 import React from 'react';
 import { LayoutProvider } from '../../contexts/LayoutContext';
 import { ProductGridLayout } from './ProductGridLayout';
-import type { Product, ProductVariant, Category } from '../../../shared/types';
+import type { Product, ProductVariant, Category } from '@shared/types';
 
 interface LayoutIntegrationWrapperProps {
   products: Product[];

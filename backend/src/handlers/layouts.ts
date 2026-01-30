@@ -1,5 +1,9 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
+import { authenticateToken } from '../middleware/auth';
+import { verifyLayoutOwnership } from '../middleware/authorization';
+import { writeLimiter } from '../middleware/rateLimiter';
+import { sanitizeName, SanitizationError } from '../utils/sanitization';
 
 export const layoutsRouter = express.Router();
 
@@ -9,7 +13,7 @@ export const layoutsRouter = express.Router();
 
 // GET /api/layouts/till/:tillId/category/:categoryId
 // Get layout for a specific till and category
-layoutsRouter.get('/till/:tillId/category/:categoryId', async (req: Request, res: Response) => {
+layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { tillId, categoryId } = req.params;
     
@@ -38,7 +42,7 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', async (req: Request, res
 
 // POST /api/layouts/till/:tillId/category/:categoryId
 // Save/update layout for a specific till and category
-layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, res: Response) => {
+layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { tillId, categoryId } = req.params;
     const { positions } = req.body as {
@@ -117,7 +121,8 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
               categoryId: parsedCategoryId,
               variantId: pos.variantId,
               gridColumn: pos.gridColumn,
-              gridRow: pos.gridRow
+              gridRow: pos.gridRow,
+              ownerId: req.user?.id // Set ownerId from authenticated user
             }
           })
         )
@@ -135,19 +140,40 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', async (req: Request, re
 
 // DELETE /api/layouts/till/:tillId/category/:categoryId
 // Reset layout for a specific till and category (delete all positions)
-layoutsRouter.delete('/till/:tillId/category/:categoryId', async (req: Request, res: Response) => {
+layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { tillId, categoryId } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
     
     console.log(`Deleting layout for tillId: ${tillId}, categoryId: ${categoryId}`);
     
     // Parse categoryId to ensure it's a number
     const parsedCategoryId = Number(categoryId);
+    const parsedTillId = Number(tillId);
+    
+    // Check ownership: find one layout to verify ownership
+    const existingLayout = await prisma.variantLayout.findFirst({
+      where: {
+        tillId: parsedTillId,
+        categoryId: parsedCategoryId
+      }
+    }) as { ownerId: number | null } | null;
+    
+    // If layouts exist, verify ownership
+    if (existingLayout) {
+      const isOwner = existingLayout.ownerId !== null && existingLayout.ownerId === userId;
+      const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+      
+      if (!isOwner && !isAdmin && existingLayout.ownerId !== null) {
+        return res.status(403).json({ error: 'Access denied. You do not own this layout.' });
+      }
+    }
     
     // Note: We allow negative category IDs for pseudo-categories like Favourites (ID: -1)
     await prisma.variantLayout.deleteMany({
       where: {
-        tillId: Number(tillId),
+        tillId: parsedTillId,
         categoryId: parsedCategoryId
       }
     });
@@ -165,7 +191,7 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', async (req: Request, 
 
 // GET /api/layouts/shared
 // Get all shared layouts
-layoutsRouter.get('/shared', async (req: Request, res: Response) => {
+layoutsRouter.get('/shared', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { categoryId } = req.query;
     
@@ -200,7 +226,7 @@ layoutsRouter.get('/shared', async (req: Request, res: Response) => {
 
 // GET /api/layouts/shared/:id
 // Get a specific shared layout
-layoutsRouter.get('/shared/:id', async (req: Request, res: Response) => {
+layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -230,7 +256,7 @@ layoutsRouter.get('/shared/:id', async (req: Request, res: Response) => {
 
 // POST /api/layouts/shared
 // Create a new shared layout
-layoutsRouter.post('/shared', async (req: Request, res: Response) => {
+layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { name, categoryId, positions } = req.body as {
       name: string;
@@ -244,7 +270,19 @@ layoutsRouter.post('/shared', async (req: Request, res: Response) => {
     if (!name || !name.trim()) {
       return res.status(400).json({ error: 'Layout name is required' });
     }
-    
+
+    // Sanitize name
+    let sanitizedName: string;
+    try {
+      sanitizedName = sanitizeName(name);
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      throw error;
+    }
+
     if (categoryId === undefined || categoryId === null) {
       return res.status(400).json({ error: 'Category ID is required' });
     }
@@ -289,8 +327,9 @@ layoutsRouter.post('/shared', async (req: Request, res: Response) => {
     // Create shared layout with positions
     const sharedLayout = await prisma.sharedLayout.create({
       data: {
-        name: name.trim(),
+        name: sanitizedName,
         categoryId,
+        ownerId: req.user?.id, // Set ownerId from authenticated user
         positions: {
           create: positions.map(pos => ({
             variantId: pos.variantId,
@@ -314,7 +353,7 @@ layoutsRouter.post('/shared', async (req: Request, res: Response) => {
 
 // PUT /api/layouts/shared/:id
 // Update an existing shared layout
-layoutsRouter.put('/shared/:id', async (req: Request, res: Response) => {
+layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, positions } = req.body as {
@@ -335,7 +374,21 @@ layoutsRouter.put('/shared/:id', async (req: Request, res: Response) => {
     if (name !== undefined && !name.trim()) {
       return res.status(400).json({ error: 'Layout name cannot be empty' });
     }
-    
+
+    // Sanitize name if provided
+    let sanitizedName: string | undefined;
+    if (name !== undefined) {
+      try {
+        sanitizedName = sanitizeName(name);
+      } catch (error) {
+        if (error instanceof SanitizationError) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+        throw error;
+      }
+    }
+
     // Validate positions if provided
     if (positions !== undefined) {
       if (!Array.isArray(positions) || positions.length === 0) {
@@ -367,8 +420,8 @@ layoutsRouter.put('/shared/:id', async (req: Request, res: Response) => {
     const updated = await prisma.$transaction(async (tx) => {
       // Update name if provided
       const updateData: any = {};
-      if (name !== undefined) {
-        updateData.name = name.trim();
+      if (sanitizedName !== undefined) {
+        updateData.name = sanitizedName;
       }
       
       let result = await tx.sharedLayout.update({
@@ -419,7 +472,7 @@ layoutsRouter.put('/shared/:id', async (req: Request, res: Response) => {
 
 // DELETE /api/layouts/shared/:id
 // Delete a shared layout
-layoutsRouter.delete('/shared/:id', async (req: Request, res: Response) => {
+layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, writeLimiter, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -446,7 +499,7 @@ layoutsRouter.delete('/shared/:id', async (req: Request, res: Response) => {
 
 // POST /api/layouts/shared/:id/load-to-till/:tillId
 // Load a shared layout into a specific till (creates copy as till-specific layout)
-layoutsRouter.post('/shared/:id/load-to-till/:tillId', async (req: Request, res: Response) => {
+layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id, tillId } = req.params;
     

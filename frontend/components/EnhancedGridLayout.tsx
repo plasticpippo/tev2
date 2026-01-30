@@ -1,4 +1,5 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { produce } from 'immer';
 import EnhancedGridCanvas from './EnhancedGridCanvas';
 import EnhancedGridItem from './EnhancedGridItem';
 import type { ProductVariant } from '../../shared/types';
@@ -129,117 +130,155 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
   // Memoize grid items to prevent unnecessary re-renders
   const memoizedGridItems = useMemo(() => layout.gridItems, [layout.gridItems]);
 
+  // Reset history when layout changes externally (e.g., loading a different saved layout)
+  const previousLayoutIdRef = useRef<string | number | undefined>(layout.id);
+  useEffect(() => {
+    const currentLayoutId = layout.id;
+    if (currentLayoutId !== previousLayoutIdRef.current) {
+      historyManager.clear();
+      previousLayoutIdRef.current = currentLayoutId;
+    }
+  }, [layout.id, historyManager]);
+
+  // Deep copy helper for layout state using Immer for better performance
+  const deepCopyLayout = useCallback((layoutToCopy: EnhancedProductGridLayout): EnhancedProductGridLayout => {
+    return produce(layoutToCopy, draft => {
+      // No mutations needed - Immer creates an efficient immutable copy
+    });
+  }, []);
+
   // Save state to history for undo/redo functionality
-  const saveToHistory = useCallback((action: HistoryEntry['action'], affectedItems: string[]) => {
+  const saveToHistory = useCallback((action: HistoryEntry['action'], affectedItems: string[], beforeState: EnhancedProductGridLayout, afterState: EnhancedProductGridLayout) => {
     if (!enableHistory) return;
-    
+
     const newEntry: HistoryEntry = {
       timestamp: new Date(),
       action,
-      beforeState: layout,
-      afterState: { ...layout, gridItems: [...layout.gridItems] },
+      beforeState,
+      afterState,
       affectedItems,
     };
-    
+
     historyManager.push(newEntry);
-  }, [layout, enableHistory, historyManager]);
+  }, [enableHistory, historyManager]);
 
   // Handle moving an item on the grid
   const handleMoveItem = useCallback((id: string, newX: number, newY: number) => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const updatedItems = layout.gridItems.map(item =>
       item.id === id ? { ...item, x: Math.max(0, newX), y: Math.max(0, newY) } : item
     );
-    
+
     const updatedLayout = { ...layout, gridItems: updatedItems };
     onUpdateLayout(updatedLayout);
-    saveToHistory('move', [id]);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('move', [id], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
 
   // Handle updating an item's properties
   const handleUpdateItem = useCallback((id: string, updates: Partial<EnhancedGridItemData>) => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const updatedItems = layout.gridItems.map(item =>
       item.id === id ? { ...item, ...updates } : item
     );
-    
+
     const updatedLayout = { ...layout, gridItems: updatedItems };
     onUpdateLayout(updatedLayout);
-    saveToHistory('update', [id]);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('update', [id], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
 
   // Handle resizing an item
   const handleResizeItem = useCallback((id: string, updates: Partial<EnhancedGridItemData>) => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const updatedItems = layout.gridItems.map(item =>
       item.id === id ? { ...item, ...updates } : item
     );
-    
+
     const updatedLayout = { ...layout, gridItems: updatedItems };
     onUpdateLayout(updatedLayout);
-    saveToHistory('resize', [id]);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('resize', [id], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
 
   // Handle adding a new item to the grid
   const handleAddItem = useCallback((item: Omit<EnhancedGridItemData, 'id' | 'x' | 'y'>, x: number, y: number) => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const newItem: EnhancedGridItemData = {
       ...item,
       id: `item-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       x: Math.max(0, x),
       y: Math.max(0, y),
     };
-    
+
     const updatedItems = [...layout.gridItems, newItem];
     const updatedLayout = { ...layout, gridItems: updatedItems };
     onUpdateLayout(updatedLayout);
-    saveToHistory('add', [newItem.id]);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('add', [newItem.id], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
 
   // Handle removing an item from the grid
   const handleRemoveItem = useCallback((id: string) => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const updatedItems = layout.gridItems.filter(item => item.id !== id);
     const updatedLayout = { ...layout, gridItems: updatedItems };
     onUpdateLayout(updatedLayout);
-    saveToHistory('remove', [id]);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('remove', [id], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
 
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!enableKeyboardNavigation) return;
-    
+
     // Undo/Redo shortcuts
     if (e.ctrlKey) {
       switch (e.key) {
         case 'z':
           if (!e.shiftKey) {
             e.preventDefault();
-            const entry = historyManager.undo();
-            if (entry) {
-              onUpdateLayout(entry.beforeState);
-            }
+            handleUndoRef.current();
           } else {
             // Redo with Ctrl+Shift+Z
             e.preventDefault();
-            const entry = historyManager.redo();
-            if (entry) {
-              onUpdateLayout(entry.afterState);
-            }
+            handleRedoRef.current();
           }
           break;
         case 'y':
           // Redo with Ctrl+Y
           e.preventDefault();
-          const redoEntry = historyManager.redo();
-          if (redoEntry) {
-            onUpdateLayout(redoEntry.afterState);
-          }
+          handleRedoRef.current();
           break;
         case '+':
         case '=':
@@ -256,16 +295,20 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
           break;
       }
     }
-    
+
     // Move selected item with arrow keys
+    // Check if event was already handled to prevent duplicate processing
+    if (e.defaultPrevented) return;
+    
     if (selectedItem && ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
       e.preventDefault();
-      const item = layout.gridItems.find(i => i.id === selectedItem);
+      const currentGridItems = layoutGridItemsRef.current;
+      const item = currentGridItems.find((i: EnhancedGridItemData) => i.id === selectedItem);
       if (item) {
         let newX = item.x;
         let newY = item.y;
         const moveAmount = e.shiftKey ? 2 : 1; // Larger moves with shift
-        
+
         switch (e.key) {
           case 'ArrowUp':
             newY = Math.max(0, item.y - moveAmount);
@@ -280,11 +323,11 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
             newX = item.x + moveAmount;
             break;
         }
-        
-        handleMoveItem(selectedItem, newX, newY);
+
+        handleMoveItemRef.current(selectedItem, newX, newY);
       }
     }
-  }, [selectedItem, layout.gridItems, enableKeyboardNavigation, historyManager, onUpdateLayout, handleMoveItem]);
+  }, [selectedItem, enableKeyboardNavigation]);
 
   // Handle undo action
   const handleUndo = useCallback(() => {
@@ -305,11 +348,30 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
   // Handle clear grid
   const handleClearGrid = useCallback(() => {
     if (disabled) return;
-    
+
+    // Capture state BEFORE mutation
+    const beforeState = deepCopyLayout(layout);
+
     const updatedLayout = { ...layout, gridItems: [] };
     onUpdateLayout(updatedLayout);
-    saveToHistory('clear', []);
-  }, [layout, onUpdateLayout, disabled, saveToHistory]);
+
+    // Capture state AFTER mutation
+    const afterState = deepCopyLayout(updatedLayout);
+    saveToHistory('clear', [], beforeState, afterState);
+  }, [layout, onUpdateLayout, disabled, saveToHistory, deepCopyLayout]);
+
+  // Use refs to avoid stale closure issues with keyboard handler
+  const handleUndoRef = useRef(handleUndo);
+  const handleRedoRef = useRef(handleRedo);
+  const handleMoveItemRef = useRef(handleMoveItem);
+  const layoutGridItemsRef = useRef(layout.gridItems);
+
+  useEffect(() => {
+    handleUndoRef.current = handleUndo;
+    handleRedoRef.current = handleRedo;
+    handleMoveItemRef.current = handleMoveItem;
+    layoutGridItemsRef.current = layout.gridItems;
+  }, [handleUndo, handleRedo, handleMoveItem, layout.gridItems]);
 
   return (
     <div

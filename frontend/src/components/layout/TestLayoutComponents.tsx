@@ -2,7 +2,7 @@
 import React from 'react';
 import { LayoutIntegrationWrapper } from './LayoutIntegrationWrapper';
 import { EditModeOverlay } from '../EditModeOverlay';
-import type { Product, ProductVariant, Category } from '../../../shared/types';
+import type { Product, ProductVariant, Category } from '@shared/types';
 
 export const TestLayoutComponents: React.FC = () => {
   // Mock data for testing

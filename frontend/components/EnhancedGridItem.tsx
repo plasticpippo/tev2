@@ -2,6 +2,16 @@ import React, { memo } from 'react';
 import { formatCurrency } from '../utils/formatting';
 import type { ProductVariant } from '../../shared/types';
 
+interface Transform {
+  x: number;
+  y: number;
+}
+
+interface ResizeTransform {
+  scaleX: number;
+  scaleY: number;
+}
+
 interface EnhancedGridItemProps {
   id: string;
   variantId: number;
@@ -20,7 +30,10 @@ interface EnhancedGridItemProps {
   locked?: boolean;
   isSelected?: boolean;
   isDragging?: boolean;
+  isResizing?: boolean;
   isHovered?: boolean;
+  dragTransform?: Transform;
+  resizeTransform?: ResizeTransform;
   onDoubleClick?: () => void;
   onClick?: () => void;
   onMouseEnter?: () => void;
@@ -43,7 +56,10 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
   locked = false,
   isSelected = false,
   isDragging = false,
+  isResizing = false,
   isHovered = false,
+  dragTransform,
+  resizeTransform,
   onDoubleClick,
   onClick,
   onMouseEnter,
@@ -51,6 +67,25 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
   style = {},
   className = '',
 }) => {
+  // Combine multiple transforms into a single string
+  const getTransform = (): string | undefined => {
+    const transforms: string[] = [];
+
+    if (isDragging && dragTransform) {
+      transforms.push(`translate(${dragTransform.x}px, ${dragTransform.y}px)`);
+    }
+
+    if (isResizing && resizeTransform) {
+      transforms.push(`scale(${resizeTransform.scaleX}, ${resizeTransform.scaleY})`);
+    }
+
+    if (rotation) {
+      transforms.push(`rotate(${rotation}deg)`);
+    }
+
+    return transforms.length > 0 ? transforms.join(' ') : undefined;
+  };
+
   const baseClasses = `
     absolute rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden flex flex-col justify-between
     ${backgroundColor}
@@ -67,7 +102,7 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
       className={combinedClassName}
       style={{
         ...style,
-        transform: rotation ? `rotate(${rotation}deg)` : 'none',
+        transform: getTransform(),
         borderRadius: borderRadius ? `${borderRadius}px` : undefined,
         zIndex: isDragging ? 50 : (zIndex || 10),
       }}
@@ -83,7 +118,6 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
         {name}
       </p>
       <div>
-        <p className={`text-sm font-semibold ${textColor}`}>{name}</p>
         <p className={`text-sm ${textColor} opacity-80`}>{formatCurrency(price)}</p>
       </div>
       
@@ -116,8 +150,12 @@ export default memo(EnhancedGridItem, (prevProps, nextProps) => {
     prevProps.locked === nextProps.locked &&
     prevProps.isSelected === nextProps.isSelected &&
     prevProps.isDragging === nextProps.isDragging &&
+    prevProps.isResizing === nextProps.isResizing &&
     prevProps.isHovered === nextProps.isHovered &&
     prevProps.className === nextProps.className &&
+    // Compare transform objects deeply
+    JSON.stringify(prevProps.dragTransform) === JSON.stringify(nextProps.dragTransform) &&
+    JSON.stringify(prevProps.resizeTransform) === JSON.stringify(nextProps.resizeTransform) &&
     // Compare style objects deeply
     JSON.stringify(prevProps.style) === JSON.stringify(nextProps.style)
   );

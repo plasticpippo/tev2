@@ -1,6 +1,7 @@
-import React, { createContext, useState, useContext, useCallback, useEffect } from 'react';
+import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react';
 import { Room, Table } from '../../shared/types';
 import { useToast } from '../contexts/ToastContext';
+import { getRooms, saveRoom, deleteRoom as deleteRoomService, getTables, saveTable, deleteTable as deleteTableService, updateTablePosition as updateTablePositionService } from '../services/tableService';
 
 export type LayoutMode = 'view' | 'edit' | 'drag';
 
@@ -36,24 +37,29 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
-  
+
   const { addToast } = useToast();
+  const isMountedRef = useRef(true);
 
   // Fetch rooms from API
   const fetchRooms = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/rooms');
-      if (!response.ok) throw new Error('Failed to fetch rooms');
-      const data = await response.json();
-      setRooms(data);
+      const data = await getRooms();
+      if (isMountedRef.current) {
+        setRooms(data);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error fetching rooms';
-      setError(errorMessage);
+      if (isMountedRef.current) {
+        setError(errorMessage);
+      }
       addToast(errorMessage, 'error');
       console.error('Error fetching rooms:', err);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [addToast]);
 
@@ -61,17 +67,21 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const fetchTables = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await fetch('/api/tables');
-      if (!response.ok) throw new Error('Failed to fetch tables');
-      const data = await response.json();
-      setTables(data);
+      const data = await getTables();
+      if (isMountedRef.current) {
+        setTables(data);
+      }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : 'Error fetching tables';
-      setError(errorMessage);
+      if (isMountedRef.current) {
+        setError(errorMessage);
+      }
       addToast(errorMessage, 'error');
       console.error('Error fetching tables:', err);
     } finally {
-      setLoading(false);
+      if (isMountedRef.current) {
+        setLoading(false);
+      }
     }
   }, [addToast]);
 
@@ -79,19 +89,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(roomData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add room');
-      }
-      const newRoom = await response.json();
+      const newRoom = await saveRoom(roomData);
       setRooms(prev => [...prev, newRoom]);
       addToast(`Room "${newRoom.name}" created successfully`, 'success');
       return newRoom;
@@ -110,19 +108,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateRoom = useCallback(async (id: string, roomData: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>>) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/rooms/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(roomData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update room');
-      }
-      const updatedRoom = await response.json();
+      const updatedRoom = await saveRoom({ ...roomData, id } as Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'> & { id?: string });
       setRooms(prev => prev.map(room => room.id === id ? updatedRoom : room));
       addToast('Room updated successfully', 'success');
       return updatedRoom;
@@ -141,17 +127,12 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteRoom = useCallback(async (id: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/rooms/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete room');
+      const result = await deleteRoomService(id);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to delete room');
       }
+
       setRooms(prev => prev.filter(room => room.id !== id));
       // Also remove tables in this room
       setTables(prev => prev.filter(table => table.roomId !== id));
@@ -174,19 +155,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const addTable = useCallback(async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>) => {
     try {
       setLoading(true);
-      const response = await fetch('/api/tables', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(tableData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to add table');
-      }
-      const newTable = await response.json();
+      const newTable = await saveTable(tableData);
       setTables(prev => [...prev, newTable]);
       addToast(`Table "${newTable.name}" created successfully`, 'success');
       return newTable;
@@ -205,19 +174,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const updateTable = useCallback(async (id: string, tableData: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>>) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/tables/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(tableData),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to update table');
-      }
-      const updatedTable = await response.json();
+      const updatedTable = await saveTable({ ...tableData, id } as Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'> & { id?: string });
       setTables(prev => prev.map(table => table.id === id ? updatedTable : table));
       addToast('Table updated successfully', 'success');
       return updatedTable;
@@ -236,17 +193,12 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const deleteTable = useCallback(async (id: string) => {
     try {
       setLoading(true);
-      const response = await fetch(`/api/tables/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Failed to delete table');
+      const result = await deleteTableService(id);
+
+      if (!result.success) {
+        throw new Error(result.message || 'Failed to delete table');
       }
+
       setTables(prev => prev.filter(table => table.id !== id));
       addToast('Table deleted successfully', 'success');
     } catch (err) {
@@ -262,6 +214,11 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Update table position (for drag and drop)
   const updateTablePosition = useCallback(async (id: string, x: number, y: number) => {
+    // Store original values before optimistic update for potential rollback
+    const originalTable = tables.find(t => t.id === id);
+    const originalX = originalTable?.x;
+    const originalY = originalTable?.y;
+
     // Optimistically update the local state for immediate UI feedback
     setTables(prev =>
       prev.map(table =>
@@ -271,31 +228,22 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
     // Then update the backend
     try {
-      const response = await fetch(`/api/tables/${id}/position`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ x, y }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || `Failed to update table position: ${response.statusText}`);
-      }
+      await updateTablePositionService(id, x, y);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to update table position';
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error updating table position:', error);
-      // Revert the optimistic update in case of error
-      setTables(prev =>
-        prev.map(table =>
-          table.id === id ? { ...table, x: table.x, y: table.y } : table
-        )
-      );
+      // Revert the optimistic update using original values
+      if (originalX !== undefined && originalY !== undefined) {
+        setTables(prev =>
+          prev.map(table =>
+            table.id === id ? { ...table, x: originalX, y: originalY } : table
+          )
+        );
+      }
     }
-  }, [addToast]);
+  }, [addToast, tables]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
@@ -304,7 +252,12 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   // Load initial data when context is mounted
   useEffect(() => {
+    isMountedRef.current = true;
     refreshData();
+
+    return () => {
+      isMountedRef.current = false;
+    };
   }, [refreshData]);
 
   return (

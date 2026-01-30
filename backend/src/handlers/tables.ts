@@ -1,7 +1,9 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
+import { verifyTableOwnership } from '../middleware/authorization';
 import { validateTableData } from '../utils/tableValidation';
+import { sanitizeName, SanitizationError } from '../utils/sanitization';
 
 const router = Router();
 
@@ -58,11 +60,23 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 // POST /api/tables - Create new table
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const { name, roomId, x, y, width, height, status, items } = req.body;
+    const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
 
     // Validate required fields
     if (!name || !roomId) {
       return res.status(400).json({ error: 'Name and roomId are required' });
+    }
+
+    // Sanitize name
+    let sanitizedName: string;
+    try {
+      sanitizedName = sanitizeName(name);
+    } catch (error) {
+      if (error instanceof SanitizationError) {
+        res.status(400).json({ error: error.message });
+        return;
+      }
+      throw error;
     }
 
     // Verify room exists
@@ -75,7 +89,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     }
 
     // Validate table data
-    const validation = validateTableData({ name, roomId, x, y, width, height, status });
+    const validation = validateTableData({ name, roomId, x, y, width, height, status, capacity });
     if (!validation.isValid) {
       return res.status(400).json({
         error: 'Validation failed',
@@ -85,14 +99,16 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     const newTable = await prisma.table.create({
       data: {
-        name,
+        name: sanitizedName,
         roomId,
         x: x !== undefined ? parseFloat(x.toString()) : 50,
         y: y !== undefined ? parseFloat(y.toString()) : 50,
         width: width !== undefined ? parseFloat(width.toString()) : 100,
         height: height !== undefined ? parseFloat(height.toString()) : 100,
         status: status || 'available',
+        capacity: capacity !== undefined ? parseInt(capacity.toString(), 10) : undefined,
         items: items !== undefined ? items : undefined, // Include items if provided
+        ownerId: req.user?.id, // Set ownerId from authenticated user
       },
       include: {
         room: true,
@@ -107,10 +123,10 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // PUT /api/tables/:id - Update table
-router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, roomId, x, y, width, height, status, items } = req.body;
+    const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
 
     const table = await prisma.table.findUnique({
       where: { id },
@@ -118,6 +134,20 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 
     if (!table) {
       return res.status(404).json({ error: 'Table not found' });
+    }
+
+    // Sanitize name if provided
+    let sanitizedName: string | undefined;
+    if (name !== undefined) {
+      try {
+        sanitizedName = sanitizeName(name);
+      } catch (error) {
+        if (error instanceof SanitizationError) {
+          res.status(400).json({ error: error.message });
+          return;
+        }
+        throw error;
+      }
     }
 
     // Check if room exists if roomId is being updated
@@ -132,7 +162,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     }
 
     // Validate table data if any field is provided
-    const validation = validateTableData({ name, roomId, x, y, width, height, status });
+    const validation = validateTableData({ name, roomId, x, y, width, height, status, capacity });
     if (!validation.isValid) {
       return res.status(400).json({
         error: 'Validation failed',
@@ -143,13 +173,14 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     const updatedTable = await prisma.table.update({
       where: { id },
       data: {
-        ...(name !== undefined && { name }),
+        ...(sanitizedName !== undefined && { name: sanitizedName }),
         ...(roomId !== undefined && { roomId }),
         ...(x !== undefined && { x: parseFloat(x.toString()) }),
         ...(y !== undefined && { y: parseFloat(y.toString()) }),
         ...(width !== undefined && { width: parseFloat(width.toString()) }),
         ...(height !== undefined && { height: parseFloat(height.toString()) }),
         ...(status !== undefined && { status }),
+        ...(capacity !== undefined && { capacity: parseInt(capacity.toString(), 10) }),
         ...(items !== undefined && { items }), // Include items if provided
       },
       include: {
@@ -165,7 +196,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // DELETE /api/tables/:id - Delete table
-router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -203,7 +234,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 });
 
 // PUT /api/tables/:id/position - Update only table position (for drag/drop)
-router.put('/:id/position', authenticateToken, async (req: Request, res: Response) => {
+router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { x, y } = req.body;

@@ -9,6 +9,10 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.test.json'
     }]
   },
+  // Allow ES modules from isomorphic-dompurify and its dependencies
+  transformIgnorePatterns: [
+    'node_modules/(?!(isomorphic-dompurify|html-encoding-sniffer|@exodus)/)'
+  ],
   collectCoverageFrom: [
     'src/**/*.ts',
     '!src/__tests__/**',

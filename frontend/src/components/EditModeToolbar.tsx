@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useLayout } from '../contexts/LayoutContext';
+import ConfirmationModal from '../../components/ConfirmationModal';
 
 export const EditModeToolbar: React.FC = () => {
   const { saveLayout, resetLayout, discardChanges, isDirty } = useLayout();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const handleSave = () => {
     saveLayout();
@@ -10,12 +12,19 @@ export const EditModeToolbar: React.FC = () => {
 
   const handleCancel = () => {
     if (isDirty) {
-      if (window.confirm('You have unsaved changes. Discard changes and exit edit mode?')) {
-        discardChanges();
-      }
+      setShowConfirmModal(true);
     } else {
       discardChanges();
     }
+  };
+
+  const handleConfirmDiscard = () => {
+    setShowConfirmModal(false);
+    discardChanges();
+  };
+
+  const handleCancelDiscard = () => {
+    setShowConfirmModal(false);
   };
 
   const handleReset = () => {
@@ -86,6 +95,18 @@ export const EditModeToolbar: React.FC = () => {
           Grid: 4 columns • Fixed button size
         </p>
       </div>
+
+      {/* Confirmation Modal */}
+      <ConfirmationModal
+        show={showConfirmModal}
+        title="Unsaved Changes"
+        message="You have unsaved changes. Discard changes and exit edit mode?"
+        onConfirm={handleConfirmDiscard}
+        onCancel={handleCancelDiscard}
+        confirmText="Discard Changes"
+        cancelText="Keep Editing"
+        confirmButtonType="danger"
+      />
     </div>
   );
 };

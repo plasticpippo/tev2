@@ -50,8 +50,8 @@ services:
   # Frontend service - exposed to external network for LAN access
   frontend:
     build:
-      context: ./frontend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: frontend/Dockerfile
     container_name: bar_pos_frontend
     environment:
       - VITE_API_URL=${FRONTEND_API_URL:-http://localhost:3001}

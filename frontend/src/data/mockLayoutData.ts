@@ -1,7 +1,7 @@
 // This file is now mainly for reference/testing
 // Real data comes from API via productService and layoutService
 
-import type { Category } from '../../shared/types';
+import type { Category } from '@shared/types';
 
 // Categories are still useful for demo
 export const mockCategories: Category[] = [
