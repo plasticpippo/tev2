@@ -16,6 +16,7 @@ import {
 } from '../../services/layoutService';
 import { sanitizeName, SanitizationError } from '../../utils/sanitization';
 import { useToast } from '../../contexts/ToastContext';
+import { DirtyStateManager } from '../utils/DirtyStateManager';
 
 interface LayoutContextValue {
   // State
@@ -25,7 +26,7 @@ interface LayoutContextValue {
   isDirty: boolean;
   isSaving: boolean;
   isLoading: boolean;
-  
+
   // Actions
   enterEditMode: () => void;
   exitEditMode: () => void;
@@ -35,16 +36,20 @@ interface LayoutContextValue {
   resetLayout: () => Promise<void>;
   discardChanges: () => void;
   loadLayoutForCategory: (categoryId: number) => Promise<void>;
-  
+
   // Shared layouts
   sharedLayouts: SharedLayout[];
   refreshSharedLayouts: (categoryId?: number) => Promise<void>;
   saveAsSharedLayout: (name: string) => Promise<void>;
   loadSharedLayout: (sharedLayoutId: number) => Promise<void>;
-  
+
   // Helpers
   getCurrentCategoryLayout: () => CategoryLayout | undefined;
   getButtonPosition: (variantId: number) => ButtonPosition | undefined;
+
+  // Dirty state tracking (new for BUG-014)
+  getDirtyFields: () => string[];
+  isFieldDirty: (field: string) => boolean;
 }
 
 const LayoutContext = createContext<LayoutContextValue | undefined>(undefined);
@@ -55,27 +60,43 @@ interface LayoutProviderProps {
   initialCategoryId?: number | 'favourites' | 'all';
 }
 
-export const LayoutProvider: React.FC<LayoutProviderProps> = ({ 
-  children, 
+// Default/empty layout
+const createDefaultLayout = (tillId: number): TillLayout => ({
+  tillId: tillId || 0,
+  layouts: []
+});
+
+export const LayoutProvider: React.FC<LayoutProviderProps> = ({
+  children,
   tillId,
   initialCategoryId = 'favourites'
 }) => {
   const { addToast } = useToast();
-  
+
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentCategoryId, setCurrentCategoryId] = useState<number | 'favourites' | 'all'>(initialCategoryId);
-  const [currentTillLayout, setCurrentTillLayout] = useState<TillLayout>({
-    tillId: tillId || 0,
-    layouts: []
-  });
-  const [savedTillLayout, setSavedTillLayout] = useState<TillLayout>({
-    tillId: tillId || 0,
-    layouts: []
-  });
+  const [currentTillLayout, setCurrentTillLayout] = useState<TillLayout>(createDefaultLayout(tillId || 0));
+  // isDirty is now computed from DirtyStateManager for backward compatibility
   const [isDirty, setIsDirty] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [sharedLayouts, setSharedLayouts] = useState<SharedLayout[]>([]);
+
+  // DirtyStateManager for field-level dirty tracking (BUG-014)
+  const dirtyStateManagerRef = useRef<DirtyStateManager<TillLayout> | null>(null);
+
+  // Initialize DirtyStateManager
+  useEffect(() => {
+    dirtyStateManagerRef.current = new DirtyStateManager<TillLayout>(createDefaultLayout(tillId || 0));
+  }, []);
+
+  // Update DirtyStateManager and isDirty state when currentTillLayout changes
+  const updateDirtyState = useCallback((newLayout: TillLayout) => {
+    if (dirtyStateManagerRef.current) {
+      dirtyStateManagerRef.current.update(newLayout);
+      setIsDirty(dirtyStateManagerRef.current.isDirty());
+    }
+  }, []);
 
   // Refs for cleanup and request cancellation
   const abortControllerRef = useRef<AbortController | null>(null);
@@ -94,10 +115,14 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   // Update tillId when it changes
   useEffect(() => {
     if (tillId) {
-      setCurrentTillLayout(prev => ({ ...prev, tillId }));
-      setSavedTillLayout(prev => ({ ...prev, tillId }));
+      setCurrentTillLayout(prev => {
+        const newLayout = { ...prev, tillId };
+        // Update dirty state after state change
+        setTimeout(() => updateDirtyState(newLayout), 0);
+        return newLayout;
+      });
     }
-  }, [tillId]);
+  }, [tillId, updateDirtyState]);
 
   // Load layout for a specific category from API - defined before useEffect to avoid hoisting issues
   const loadLayoutForCategory = useCallback(async (categoryId: number | 'favourites') => {
@@ -110,16 +135,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     // Create new abort controller for this request
     abortControllerRef.current = new AbortController();
+    // Capture the controller for this specific request to avoid race conditions
+    const currentController = abortControllerRef.current;
 
     // Convert 'favourites' to special ID
     const categoryIdToFetch = categoryId === 'favourites' ? -1 : categoryId;
 
     setIsLoading(true);
     try {
-      const layouts = await getTillLayout(tillId, categoryIdToFetch, abortControllerRef.current.signal);
+      const layouts = await getTillLayout(tillId, categoryIdToFetch, currentController.signal);
 
       // Don't update state if component unmounted or request was aborted
-      if (!isMountedRef.current || abortControllerRef.current.signal.aborted) {
+      if (!isMountedRef.current || currentController.signal.aborted) {
         return;
       }
 
@@ -140,20 +167,20 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
           newLayouts.push({ categoryId: categoryIdToFetch, positions });
         }
 
-        return { ...prev, layouts: newLayouts };
-      });
-
-      setSavedTillLayout(prev => {
-        const existingIndex = prev.layouts.findIndex(l => l.categoryId === categoryIdToFetch);
-        const newLayouts = [...prev.layouts];
-
-        if (existingIndex >= 0) {
-          newLayouts[existingIndex] = { categoryId: categoryIdToFetch, positions };
-        } else {
-          newLayouts.push({ categoryId: categoryIdToFetch, positions });
+        const newLayout = { ...prev, layouts: newLayouts };
+        
+        // Update DirtyStateManager to reflect loaded state as clean
+        if (dirtyStateManagerRef.current) {
+          dirtyStateManagerRef.current.update(newLayout);
+          // Use setTimeout to avoid state updates during render
+          setTimeout(() => {
+            if (dirtyStateManagerRef.current) {
+              setIsDirty(dirtyStateManagerRef.current.isDirty());
+            }
+          }, 0);
         }
-
-        return { ...prev, layouts: newLayouts };
+        
+        return newLayout;
       });
     } catch (error) {
       // Don't log or update state if request was aborted
@@ -166,11 +193,12 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       console.error('Error loading layout:', error);
     } finally {
       // Only clear loading state if this request wasn't aborted
-      if (isMountedRef.current && !abortControllerRef.current?.signal.aborted) {
+      // Use the captured controller to avoid race conditions with newer requests
+      if (isMountedRef.current && !currentController.signal.aborted) {
         setIsLoading(false);
       }
     }
-  }, [tillId]);
+  }, [tillId]); // Removed currentTillLayout to prevent infinite loop
 
   // Load layout when category changes (including favourites)
   useEffect(() => {
@@ -184,13 +212,17 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   // Enter edit mode
   const enterEditMode = useCallback(() => {
     setIsEditMode(true);
-    setIsDirty(false);
-  }, []);
+    // Initialize DirtyStateManager with current state as baseline
+    if (dirtyStateManagerRef.current) {
+      dirtyStateManagerRef.current.update(currentTillLayout);
+      setIsDirty(false);
+    }
+  }, [currentTillLayout]);
 
   // Exit edit mode
   const exitEditMode = useCallback(() => {
     setIsEditMode(false);
-    setIsDirty(false);
+    // isDirty is now managed by DirtyStateManager
   }, []);
 
   // Set current category
@@ -206,9 +238,9 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       : typeof currentCategoryId === 'number'
         ? currentCategoryId
         : undefined;
-    
+
     if (categoryIdToUse === undefined) return undefined;
-    
+
     return currentTillLayout.layouts.find(l => l.categoryId === categoryIdToUse);
   }, [currentTillLayout, currentCategoryId]);
 
@@ -228,7 +260,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     const categoryIdToUse = currentCategoryId === 'favourites'
       ? -1
       : currentCategoryId;
-      
+
     if (typeof categoryIdToUse !== 'number') {
       console.warn('Cannot update position: currentCategoryId is not valid');
       return;
@@ -246,7 +278,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         );
 
         let newPositions: ButtonPosition[];
-        
+
         if (existingPositionIndex >= 0) {
           // Update existing position
           newPositions = [...categoryLayout.positions];
@@ -274,13 +306,19 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         });
       }
 
-      return {
+      const newTillLayout = {
         ...prevLayout,
         layouts: newLayouts
       };
-    });
 
-    setIsDirty(true);
+      // Update DirtyStateManager with new layouts - verifies values actually changed
+      if (dirtyStateManagerRef.current) {
+        dirtyStateManagerRef.current.update(newTillLayout);
+        setIsDirty(dirtyStateManagerRef.current.isDirty());
+      }
+
+      return newTillLayout;
+    });
   }, [currentCategoryId]);
 
   // Save layout to API
@@ -289,12 +327,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       console.error('Cannot save: missing tillId');
       return;
     }
-    
+
+    // Race condition protection: prevent save if already saving
+    if (dirtyStateManagerRef.current?.getIsSaving()) {
+      console.warn('Save operation already in progress, skipping');
+      return;
+    }
+
     // Convert favourites to -1
     const categoryIdToSave = currentCategoryId === 'favourites'
       ? -1
       : currentCategoryId;
-      
+
     if (typeof categoryIdToSave !== 'number') {
       console.error('Cannot save: invalid categoryId');
       return;
@@ -315,11 +359,13 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       }));
 
       await saveTillLayout(tillId, categoryIdToSave, positions);
-      
-      // Update saved layout to match current
-      setSavedTillLayout(currentTillLayout);
-      setIsDirty(false);
-      
+
+      // Use dirtyStateManager.markSaved() with race condition protection
+      if (dirtyStateManagerRef.current) {
+        await dirtyStateManagerRef.current.markSaved();
+        setIsDirty(dirtyStateManagerRef.current.isDirty());
+      }
+
       // Show success message
       const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'category';
       addToast(`Layout saved successfully for ${categoryName}!`, 'success');
@@ -329,7 +375,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId, currentTillLayout, getCurrentCategoryLayout]);
+  }, [tillId, currentCategoryId, currentTillLayout, getCurrentCategoryLayout, addToast]);
 
   // Reset layout to default (delete from API)
   const resetLayout = useCallback(async () => {
@@ -337,12 +383,12 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       console.error('Cannot reset: missing tillId');
       return;
     }
-    
+
     // Convert favourites to -1
     const categoryIdToReset = currentCategoryId === 'favourites'
       ? -1
       : currentCategoryId;
-      
+
     if (typeof categoryIdToReset !== 'number') {
       console.error('Cannot reset: invalid categoryId');
       return;
@@ -351,19 +397,24 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     setIsSaving(true);
     try {
       await resetTillLayout(tillId, categoryIdToReset);
-      
-      // Remove this category from current and saved layouts
-      setCurrentTillLayout(prev => ({
-        ...prev,
-        layouts: prev.layouts.filter(l => l.categoryId !== categoryIdToReset)
-      }));
-      
-      setSavedTillLayout(prev => ({
-        ...prev,
-        layouts: prev.layouts.filter(l => l.categoryId !== categoryIdToReset)
-      }));
-      
-      setIsDirty(false);
+
+      // Remove this category from current layout
+      setCurrentTillLayout(prev => {
+        const newTillLayout = {
+          ...prev,
+          layouts: prev.layouts.filter(l => l.categoryId !== categoryIdToReset)
+        };
+
+        // Update DirtyStateManager with reset data
+        if (dirtyStateManagerRef.current) {
+          dirtyStateManagerRef.current.reset();
+          dirtyStateManagerRef.current.update(newTillLayout);
+          setIsDirty(dirtyStateManagerRef.current.isDirty());
+        }
+
+        return newTillLayout;
+      });
+
       addToast('Layout reset to default!', 'success');
     } catch (error) {
       console.error('Error resetting layout:', error);
@@ -371,14 +422,29 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId]);
+  }, [tillId, currentCategoryId, addToast]);
 
   // Discard changes and revert to saved
   const discardChanges = useCallback(() => {
-    setCurrentTillLayout(savedTillLayout);
-    setIsDirty(false);
+    if (dirtyStateManagerRef.current) {
+      // Use dirtyStateManager.discardChanges() to revert to saved state
+      dirtyStateManagerRef.current.discardChanges();
+      // Update currentTillLayout to match the saved state
+      setCurrentTillLayout(dirtyStateManagerRef.current.getCurrentData());
+      setIsDirty(dirtyStateManagerRef.current.isDirty());
+    }
     exitEditMode();
-  }, [savedTillLayout, exitEditMode]);
+  }, [exitEditMode]);
+
+  // Get dirty fields array
+  const getDirtyFields = useCallback((): string[] => {
+    return dirtyStateManagerRef.current?.getDirtyFields() || [];
+  }, []);
+
+  // Check if a specific field is dirty
+  const isFieldDirty = useCallback((field: string): boolean => {
+    return dirtyStateManagerRef.current?.isDirty(field) || false;
+  }, []);
 
   // Refresh shared layouts list
   const refreshSharedLayouts = useCallback(async (categoryId?: number) => {
@@ -413,7 +479,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     const categoryIdToUse = currentCategoryId === 'favourites'
       ? -1
       : currentCategoryId;
-      
+
     if (typeof categoryIdToUse !== 'number') {
       console.error('Cannot save as shared: invalid categoryId');
       return;
@@ -434,9 +500,9 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       }));
 
       await createSharedLayout(sanitizedName, categoryIdToUse, positions);
-      
+
       addToast(`Shared layout "${sanitizedName}" created successfully!`, 'success');
-      
+
       // Refresh shared layouts list
       await refreshSharedLayouts(categoryIdToUse);
     } catch (error) {
@@ -445,7 +511,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId, getCurrentCategoryLayout, refreshSharedLayouts]);
+  }, [tillId, currentCategoryId, getCurrentCategoryLayout, refreshSharedLayouts, addToast]);
 
   // Load shared layout into current till
   const loadSharedLayout = useCallback(async (sharedLayoutId: number) => {
@@ -457,22 +523,22 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     setIsSaving(true);
     try {
       const loadedLayouts = await loadSharedLayoutToTill(sharedLayoutId, tillId);
-      
+
       // Find the category of the loaded layout
       if (loadedLayouts.length > 0) {
         const categoryId = loadedLayouts[0].categoryId;
-        
+
         // Convert special ID -1 back to 'favourites'
         const categoryToLoad = categoryId === -1 ? 'favourites' : categoryId;
-        
+
         // Reload the layout for this category
         if (typeof categoryToLoad === 'number' || categoryToLoad === 'favourites') {
           await loadLayoutForCategory(categoryToLoad);
-          
+
           // Switch to this category
           setCurrentCategory(categoryToLoad);
         }
-        
+
         addToast('Shared layout loaded successfully!', 'success');
       }
     } catch (error) {
@@ -481,7 +547,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, loadLayoutForCategory, setCurrentCategory]);
+  }, [tillId, loadLayoutForCategory, setCurrentCategory, addToast]);
 
   const value: LayoutContextValue = {
     isEditMode,
@@ -503,7 +569,9 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     saveAsSharedLayout,
     loadSharedLayout,
     getCurrentCategoryLayout,
-    getButtonPosition
+    getButtonPosition,
+    getDirtyFields,
+    isFieldDirty
   };
 
   return (

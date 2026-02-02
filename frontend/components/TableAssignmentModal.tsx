@@ -35,14 +35,36 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     }
   }, [isOpen, selectedRoomId, rooms, currentTableId]);
 
-  if (!isOpen) return null;
-
-  // Filter tables for selected room
+  // Filter tables for selected room - MUST be before any conditional returns
   const roomTables = selectedRoomId
     ? tables.filter(table => table.roomId === selectedRoomId)
     : [];
 
   const selectedRoom = rooms.find(r => r.id === selectedRoomId);
+
+  // Calculate canvas bounds for scaling - MUST be before any conditional returns
+  const canvasBounds = useMemo(() => {
+    if (roomTables.length === 0) return { minX: 0, minY: 0, maxX: 600, maxY: 400 };
+    
+    const positions = roomTables.map(t => ({ x: t.x, y: t.y, w: t.width || 64, h: t.height || 64 }));
+    const minX = Math.min(...positions.map(p => p.x));
+    const minY = Math.min(...positions.map(p => p.y));
+    const maxX = Math.max(...positions.map(p => p.x + p.w));
+    const maxY = Math.max(...positions.map(p => p.y + p.h));
+    
+    return {
+      minX: Math.max(0, minX - 50),
+      minY: Math.max(0, minY - 50),
+      maxX: maxX + 50,
+      maxY: maxY + 50
+    };
+  }, [roomTables]);
+
+  const canvasWidth = canvasBounds.maxX - canvasBounds.minX;
+  const canvasHeight = canvasBounds.maxY - canvasBounds.minY;
+
+  // Early return AFTER all hooks are called
+  if (!isOpen) return null;
 
   const handleConfirm = async () => {
     if (selectedTableId) {
@@ -92,27 +114,6 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
       default: return 'text-gray-400';
     }
   };
-
-  // Calculate canvas bounds for scaling
-  const canvasBounds = useMemo(() => {
-    if (roomTables.length === 0) return { minX: 0, minY: 0, maxX: 600, maxY: 400 };
-    
-    const positions = roomTables.map(t => ({ x: t.x, y: t.y, w: t.width || 64, h: t.height || 64 }));
-    const minX = Math.min(...positions.map(p => p.x));
-    const minY = Math.min(...positions.map(p => p.y));
-    const maxX = Math.max(...positions.map(p => p.x + p.w));
-    const maxY = Math.max(...positions.map(p => p.y + p.h));
-    
-    return {
-      minX: Math.max(0, minX - 50),
-      minY: Math.max(0, minY - 50),
-      maxX: maxX + 50,
-      maxY: maxY + 50
-    };
-  }, [roomTables]);
-
-  const canvasWidth = canvasBounds.maxX - canvasBounds.minX;
-  const canvasHeight = canvasBounds.maxY - canvasBounds.minY;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">

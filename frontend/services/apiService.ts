@@ -6,9 +6,11 @@ export {
   API_BASE_URL,
   apiUrl,
   getAuthHeaders,
+  isAuthTokenReady,
   makeApiRequest,
   subscribers,
   subscribeToUpdates,
+  clearAllSubscribers,
   notifyUpdates
 } from './apiBase';
 

@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
 import type { User } from '../../shared/types';
 import * as api from '../services/apiService';
+import { clearAllSubscribers } from '../services/apiBase';
 
 interface SessionContextType {
   currentUser: User | null;
@@ -22,7 +23,18 @@ interface SessionProviderProps {
 }
 
 export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
+  // Restore user session from localStorage on initial load
+  const [currentUser, setCurrentUser] = useState<User | null>(() => {
+    const savedUser = localStorage.getItem('currentUser');
+    if (savedUser) {
+      try {
+        return JSON.parse(savedUser);
+      } catch (e) {
+        return null;
+      }
+    }
+    return null;
+  });
   const [assignedTillId, setAssignedTillId] = useState<number | null>(() => {
     const savedTill = localStorage.getItem('assignedTillId');
     return savedTill ? parseInt(savedTill, 10) : null;
@@ -45,6 +57,8 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
         console.error('Failed to update order session status on logout:', error);
       }
     }
+    // Clear all subscribers to prevent API calls from in-flight operations after logout
+    clearAllSubscribers();
     setCurrentUser(null);
     // Clear stored user from localStorage using API service
     await api.logout();

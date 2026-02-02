@@ -14,13 +14,15 @@ const corsOptions: cors.CorsOptions = {
   origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : [
     'http://localhost:3000',
     'http://127.0.0.1:3000',
-    'http://192.168.1.241:3000',  // Add your LAN IP
+    'http://192.168.1.241:3000',  // LAN IP for frontend access
     'http://localhost:5173',
     'http://127.0.0.1:5173'
   ],
   credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  optionsSuccessStatus: 204,
+  preflightContinue: false,
 };
 
 // Rate limiting configuration for different endpoints
@@ -44,14 +46,15 @@ const authRateLimit = rateLimit({
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
+// Enable CORS with configured options - MUST be before rate limiting
+// to ensure CORS headers are present even on rate-limited responses
+app.use(cors(corsOptions));
+
 // Security middleware
 app.use(helmet());
 
 // Apply general rate limiting
 app.use(generalRateLimit);
-
-// Enable CORS with configured options
-app.use(cors(corsOptions));
 
 // Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));

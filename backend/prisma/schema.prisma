@@ -116,7 +116,7 @@ model Table {
   roomId    String   @db.Uuid
   capacity  Int?     // Optional field to store table capacity
   items     Json?    // Added for storing order items directly on tables
-  ownerId   Int?     // Optional owner field for ownership verification
+  ownerId   Int?     @map("owner_id") // Optional owner field for ownership verification
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   room      Room     @relation(fields: [roomId], references: [id], onDelete: Cascade)
@@ -230,7 +230,7 @@ model VariantLayout {
   variantId  Int
   gridColumn Int      // 1-4 for 4-column grid
   gridRow    Int      // 1-based row number
-  ownerId    Int?     // Optional owner field for ownership verification
+  ownerId    Int?     @map("owner_id") // Optional owner field for ownership verification
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   
@@ -249,7 +249,7 @@ model SharedLayout {
   id         Int                    @id @default(autoincrement())
   name       String
   categoryId Int
-  ownerId    Int?                   // Optional owner field for ownership verification
+  ownerId    Int?                   @map("owner_id") // Optional owner field for ownership verification
   createdAt  DateTime               @default(now())
   updatedAt  DateTime               @updatedAt
   
@@ -279,3 +279,4 @@ model SharedLayoutPosition {
 
 
 
+// Schema updated: Mon Feb  2 10:44:34 AM CET 2026

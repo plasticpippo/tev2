@@ -1,7 +1,9 @@
 import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react';
 import { Room, Table } from '../../shared/types';
 import { useToast } from '../contexts/ToastContext';
+import { useSessionContext } from '../contexts/SessionContext';
 import { getRooms, saveRoom, deleteRoom as deleteRoomService, getTables, saveTable, deleteTable as deleteTableService, updateTablePosition as updateTablePositionService } from '../services/tableService';
+import { isAuthTokenReady } from '../services/apiBase';
 
 export type LayoutMode = 'view' | 'edit' | 'drag';
 
@@ -39,6 +41,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [error, setError] = useState<string | null>(null);
 
   const { addToast } = useToast();
+  const { currentUser } = useSessionContext();
   const isMountedRef = useRef(true);
 
   // Fetch rooms from API
@@ -250,15 +253,50 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     await Promise.all([fetchRooms(), fetchTables()]);
   }, [fetchRooms, fetchTables]);
 
-  // Load initial data when context is mounted
+  // Load initial data when context is mounted and user is authenticated
   useEffect(() => {
     isMountedRef.current = true;
-    refreshData();
+    
+    // Only fetch data if user is authenticated AND auth token is ready
+    if (currentUser) {
+      // Check if authentication token is ready before making API calls
+      if (!isAuthTokenReady()) {
+        // Token not ready yet, wait and try again
+        const checkTokenInterval = setInterval(() => {
+          // Stop polling if user logged out or component unmounted
+          if (!currentUser || !isMountedRef.current) {
+            clearInterval(checkTokenInterval);
+            return;
+          }
+          if (isAuthTokenReady() && isMountedRef.current) {
+            clearInterval(checkTokenInterval);
+            refreshData();
+          }
+        }, 50); // Check every 50ms
+        
+        // Cleanup interval after 5 seconds to prevent infinite checking
+        setTimeout(() => clearInterval(checkTokenInterval), 5000);
+        
+        return () => {
+          clearInterval(checkTokenInterval);
+          isMountedRef.current = false;
+        };
+      }
+      
+      // Token is ready, fetch data with a small delay for state propagation
+      const timer = setTimeout(() => {
+        // Only fetch if still mounted and user is still logged in
+        if (isMountedRef.current && currentUser) {
+          refreshData();
+        }
+      }, 100);
+      return () => clearTimeout(timer);
+    }
 
     return () => {
       isMountedRef.current = false;
     };
-  }, [refreshData]);
+  }, [refreshData, currentUser]);
 
   return (
     <TableContext.Provider

@@ -71,6 +71,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, assignedTillI
               autoOpenOnMount
               k-type="full"
               type="text"
+              autoComplete="username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               className="w-full p-3 bg-slate-900 text-white border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"
@@ -81,6 +82,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, assignedTillI
             <VKeyboardInput
               k-type="full"
               type="password"
+              autoComplete="current-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full p-3 bg-slate-900 text-white border border-slate-700 rounded-md focus:ring-2 focus:ring-amber-500 focus:outline-none transition"

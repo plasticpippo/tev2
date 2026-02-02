@@ -9,7 +9,7 @@ export type FieldComparator<T = any> = (a: T, b: T) => boolean;
 /**
  * Configuration options for DirtyStateManager
  */
-export interface DirtyStateManagerConfig<T> {
+export interface DirtyStateManagerConfig {
   /** Custom comparators for specific fields */
   fieldComparators?: Record<string, FieldComparator>;
   /** Whether to track nested field changes separately */
@@ -29,7 +29,7 @@ export class DirtyStateManager<T extends Record<string, any>> {
   private savedData: T;
   private currentData: T;
   private dirtyFields: Set<string>;
-  private config: DirtyStateManagerConfig<T>;
+  private config: DirtyStateManagerConfig;
   private isSaving: boolean;
 
   /**
@@ -38,7 +38,7 @@ export class DirtyStateManager<T extends Record<string, any>> {
    * @param initialData - The initial data object to track
    * @param config - Optional configuration for custom comparators
    */
-  constructor(initialData: T, config: DirtyStateManagerConfig<T> = {}) {
+  constructor(initialData: T, config: DirtyStateManagerConfig = {}) {
     this.initialData = cloneDeep(initialData);
     this.savedData = cloneDeep(initialData);
     this.currentData = cloneDeep(initialData);
@@ -48,27 +48,6 @@ export class DirtyStateManager<T extends Record<string, any>> {
       ...config,
     };
     this.isSaving = false;
-  }
-
-  /**
-   * Gets a value at a nested path using dot notation
-   *
-   * @param obj - The object to traverse
-   * @param path - The dot-notated path (e.g., "gridSettings.columns")
-   * @returns The value at the path, or undefined if not found
-   */
-  private getValueAtPath(obj: any, path: string): any {
-    const keys = path.split('.');
-    let current = obj;
-
-    for (const key of keys) {
-      if (current === null || current === undefined || typeof current !== 'object') {
-        return undefined;
-      }
-      current = current[key];
-    }
-
-    return current;
   }
 
   /**
@@ -184,7 +163,6 @@ export class DirtyStateManager<T extends Record<string, any>> {
       console.warn('DirtyStateManager: Update called while save operation is in progress');
     }
 
-    const oldValue = this.getValueAtPath(this.savedData, path);
     const topLevelField = path.split('.')[0];
 
     this.currentData = this.setValueAtPath(this.currentData, path, value);

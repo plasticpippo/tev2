@@ -59,7 +59,7 @@ export const getTillLayout = async (
   try {
     const result = await makeApiRequest(
       apiUrl(`/api/layouts/till/${tillId}/category/${categoryId}`),
-      { signal },
+      { signal, headers: getAuthHeaders() },
       cacheKey
     );
     return result;
@@ -145,8 +145,8 @@ export const resetTillLayout = async (
 export const getSharedLayouts = async (
   categoryId?: number
 ): Promise<SharedLayout[]> => {
-  const cacheKey = categoryId 
-    ? `getSharedLayouts_${categoryId}` 
+  const cacheKey = categoryId
+    ? `getSharedLayouts_${categoryId}`
     : 'getSharedLayouts';
   
   try {
@@ -154,7 +154,7 @@ export const getSharedLayouts = async (
       ? apiUrl(`/api/layouts/shared?categoryId=${categoryId}`)
       : apiUrl('/api/layouts/shared');
     
-    const result = await makeApiRequest(url, undefined, cacheKey);
+    const result = await makeApiRequest(url, { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
     console.error('Error fetching shared layouts:', error);
@@ -170,7 +170,7 @@ export const getSharedLayout = async (id: number): Promise<SharedLayout | null> 
   try {
     const result = await makeApiRequest(
       apiUrl(`/api/layouts/shared/${id}`),
-      undefined,
+      { headers: getAuthHeaders() },
       cacheKey
     );
     return result;

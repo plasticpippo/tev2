@@ -14,11 +14,16 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   const { currentCategoryId, setCurrentCategory } = useLayout();
 
   // Filter categories visible for this till
+  // Exclude categories named "Favorites" or "Favourites" since there's a hardcoded ⭐ Favourites button
   const visibleCategories = React.useMemo(() => {
-    if (!assignedTillId) return categories;
-    return categories.filter(c => 
-      !c.visibleTillIds || 
-      c.visibleTillIds.length === 0 || 
+    const filtered = categories.filter(c =>
+      c.name.toLowerCase() !== 'favorites' &&
+      c.name.toLowerCase() !== 'favourites'
+    );
+    if (!assignedTillId) return filtered;
+    return filtered.filter(c =>
+      !c.visibleTillIds ||
+      c.visibleTillIds.length === 0 ||
       c.visibleTillIds.includes(assignedTillId)
     );
   }, [categories, assignedTillId]);

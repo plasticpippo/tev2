@@ -266,8 +266,6 @@ describe('DirtyStateManager', () => {
     });
 
     it('should update deeply nested fields', () => {
-      const manager = new DirtyStateManager(initialData);
-
       // Note: This would require buttons to be objects with nested properties
       // Testing with a hypothetical deeply nested structure
       const dataWithDeepNesting = {
@@ -487,10 +485,10 @@ describe('DirtyStateManager', () => {
   });
 
   describe('discardChanges', () => {
-    it('should revert to last saved state', () => {
+    it('should revert to last saved state', async () => {
       const manager = new DirtyStateManager(initialData);
       manager.updateField('version', 5);
-      manager.markSaved();
+      await manager.markSaved();
 
       manager.updateField('version', 10);
       expect(manager.isDirty()).toBe(true);

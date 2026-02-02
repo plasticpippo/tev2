@@ -5,9 +5,9 @@ import type { Room, Table } from '../../shared/types';
 export const getRooms = async (): Promise<Room[]> => {
   const cacheKey = 'getRooms';
   try {
-    const result = await makeApiRequest(apiUrl('/api/rooms'), undefined, cacheKey);
+    const result = await makeApiRequest(apiUrl('/api/rooms'), { headers: getAuthHeaders() }, cacheKey);
     return result;
- } catch (error) {
+  } catch (error) {
     console.error('Error fetching rooms:', error);
     return [];
   }
@@ -62,7 +62,7 @@ export const deleteRoom = async (roomId: string): Promise<{ success: boolean; me
 export const getTables = async (): Promise<Table[]> => {
   const cacheKey = 'getTables';
   try {
-    const result = await makeApiRequest(apiUrl('/api/tables'), undefined, cacheKey);
+    const result = await makeApiRequest(apiUrl('/api/tables'), { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
     console.error('Error fetching tables:', error);

@@ -76,6 +76,10 @@ export const login = async (username: string, password: string): Promise<User> =
     const userData = await response.json();
     // Store user in localStorage upon successful login for API authentication
     localStorage.setItem('currentUser', JSON.stringify(userData));
+    // Also store the token separately for easier access by getAuthHeaders
+    if (userData.token) {
+      localStorage.setItem('authToken', userData.token);
+    }
     return userData;
   } catch (error) {
     console.error('Error during login:', error);
@@ -87,5 +91,7 @@ export const login = async (username: string, password: string): Promise<User> =
 export const logout = async (): Promise<void> => {
   // Clear user data from localStorage
   localStorage.removeItem('currentUser');
+  // Also clear the auth token
+  localStorage.removeItem('authToken');
   console.log('User logged out and data cleared');
 };

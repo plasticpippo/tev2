@@ -58,11 +58,49 @@ export const apiUrl = (path: string): string => {
 
 // Helper function to get headers with credentials
 export const getAuthHeaders = (): Record<string, string> => {
-  return {
+  const headers: Record<string, string> = {
     'Content-Type': 'application/json',
-    // In a real implementation, you might include a token here if using JWT
-    // 'Authorization': `Bearer ${localStorage.getItem('authToken')}`
   };
+  
+  // Get token from localStorage - try both token and currentUser formats
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  } else {
+    // Fallback: check if currentUser contains a token
+    const currentUserStr = localStorage.getItem('currentUser');
+    if (currentUserStr) {
+      try {
+        const currentUser = JSON.parse(currentUserStr);
+        if (currentUser.token) {
+          headers['Authorization'] = `Bearer ${currentUser.token}`;
+        }
+      } catch (e) {
+        // Invalid JSON in localStorage, ignore
+      }
+    }
+  }
+  
+  return headers;
+};
+
+// Helper function to check if authentication token is available
+export const isAuthTokenReady = (): boolean => {
+  const token = localStorage.getItem('authToken');
+  if (token) return true;
+  
+  // Check if currentUser contains a token
+  const currentUserStr = localStorage.getItem('currentUser');
+  if (currentUserStr) {
+    try {
+      const currentUser = JSON.parse(currentUserStr);
+      return !!currentUser.token;
+    } catch (e) {
+      return false;
+    }
+  }
+  
+  return false;
 };
 
 // --- SUBSCRIBER for real-time updates ---
@@ -72,7 +110,12 @@ export const subscribeToUpdates = (callback: () => void): (() => void) => {
   subscribers.push(callback);
   return () => {
     subscribers = subscribers.filter(sub => sub !== callback);
- };
+  };
+};
+
+export const clearAllSubscribers = (): void => {
+  console.log("Clearing all subscribers...");
+  subscribers = [];
 };
 
 export const notifyUpdates = () => {
@@ -82,15 +125,29 @@ export const notifyUpdates = () => {
 
 // --- API FUNCTIONS ---
 
-// Helper function for making API requests with deduplication
+// Timeout duration in milliseconds (10 seconds)
+const API_TIMEOUT_MS = 10000;
+
+// Helper function for making API requests with deduplication and timeout
 export const makeApiRequest = async (url: string, options?: RequestInit, cacheKey?: string): Promise<any> => {
   // If a cache key is provided, check if we have a pending request
   if (cacheKey && requestCache.has(cacheKey)) {
     return requestCache.get(cacheKey);
   }
 
-  const requestPromise = fetch(url, options)
+  // Create an AbortController for timeout handling
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
+
+  // Merge the abort signal with any existing options
+  const fetchOptions: RequestInit = {
+    ...options,
+    signal: controller.signal,
+  };
+
+  const requestPromise = fetch(url, fetchOptions)
     .then(async response => {
+      clearTimeout(timeoutId);
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 
@@ -111,8 +168,13 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
       return await response.json();
     })
     .catch(error => {
-      // Don't log or rethrow abort errors - they're expected when cancelling
+      clearTimeout(timeoutId);
+      // Handle AbortError specifically for timeout
       if (error instanceof Error && error.name === 'AbortError') {
+        throw new Error('Request timed out. Please check your network connection and try again.');
+      }
+      // Don't log or rethrow abort errors - they're expected when cancelling
+      if (error instanceof Error && error.message?.includes('aborted')) {
         throw error;
       }
       console.error(`Error making request to ${url}:`, error);

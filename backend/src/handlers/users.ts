@@ -1,6 +1,9 @@
 import express, { Request, Response } from 'express';
+import { SignJWT } from 'jose';
 import { prisma } from '../prisma';
 import type { User } from '../types';
+
+const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-for-development-only';
 
 export const usersRouter = express.Router();
 
@@ -113,7 +116,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     }
     
     const user = await prisma.user.findUnique({
-      where: { 
+      where: {
         username,
         password_HACK: password
       }
@@ -123,7 +126,23 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
-    res.json(user);
+    // Generate JWT token
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const token = await new SignJWT({
+      id: user.id,
+      username: user.username,
+      role: user.role
+    })
+      .setProtectedHeader({ alg: 'HS256' })
+      .setIssuedAt()
+      .setExpirationTime('24h')
+      .sign(secret);
+    
+    // Return user data with token
+    res.json({
+      ...user,
+      token
+    });
   } catch (error) {
     console.error('Error during login:', error);
     res.status(500).json({ error: 'Login failed due to server error. Please try again later.' });

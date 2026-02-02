@@ -56,8 +56,9 @@ export const MainPOSInterface: React.FC = () => {
   } = useAppContext();
 
   // --- RENDER LOGIC ---
-  if (isLoading) {
-    return <div className="bg-slate-90 text-white w-screen h-screen flex items-center justify-center">Loading POS...</div>;
+  // Check if essential data is loaded (settings is required)
+  if (isLoading || !appData.settings) {
+    return <div className="bg-slate-900 text-white w-screen h-screen flex items-center justify-center">Loading POS...</div>;
   }
   
   if (!assignedTillId && currentUser?.role === 'Admin') {

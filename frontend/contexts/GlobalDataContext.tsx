@@ -5,7 +5,7 @@ import type {
   Room, Table, ProductVariant
 } from '../../shared/types';
 import * as api from '../services/apiService';
-import { subscribeToUpdates } from '../services/apiBase';
+import { subscribeToUpdates, isAuthTokenReady } from '../services/apiBase';
 import { useSessionContext } from './SessionContext';
 
 interface GlobalDataContextType {
@@ -58,7 +58,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
  });
   const [isLoading, setIsLoading] = useState(true);
   
-  const { assignedTillId } = useSessionContext();
+  const { assignedTillId, currentUser, handleLogout } = useSessionContext();
 
   // Ref to store timeout ID for cleanup on unmount
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -83,6 +83,14 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
   }, []);
 
   const fetchData = useCallback(async () => {
+    // Check if user is still authenticated before making API calls
+    // This prevents API calls after logout (e.g., from in-flight operations that trigger notifyUpdates)
+    if (!currentUser || !isAuthTokenReady()) {
+      console.log("fetchData: User not authenticated, skipping API calls");
+      setIsLoading(false);
+      return;
+    }
+
     try {
       const [
         products, categories, users, tills, settings, transactions, tabs,
@@ -110,18 +118,61 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [currentUser]);
 
   // Debounced version of fetchData to prevent multiple rapid calls
   const debouncedFetchData = useCallback(debounce(fetchData, 300), [fetchData]);
 
   useEffect(() => {
-    // Always fetch data when user is logged in, regardless of assignedTillId
-    // This ensures tills are available for selection after login
+    // Only fetch data when user is authenticated AND token is ready
+    // This prevents API calls on the login screen and ensures auth token is available
+    if (!currentUser) {
+      setIsLoading(false);
+      return;
+    }
+    
+    // Check if authentication token is ready before making API calls
+    if (!isAuthTokenReady()) {
+      // Token not ready yet, wait and try again
+      const checkTokenInterval = setInterval(() => {
+        // Stop polling if user logged out
+        if (!currentUser) {
+          clearInterval(checkTokenInterval);
+          return;
+        }
+        if (isAuthTokenReady()) {
+          clearInterval(checkTokenInterval);
+          setIsLoading(true);
+          fetchData();
+        }
+      }, 50); // Check every 50ms
+
+      // Cleanup interval after 5 seconds to prevent infinite checking
+      const timeoutId = setTimeout(() => {
+        clearInterval(checkTokenInterval);
+        // If token still not ready after timeout, clear loading state to prevent indefinite hang
+        if (!isAuthTokenReady()) {
+          console.error('Auth token failed to become ready within timeout period');
+          setIsLoading(false);
+          // Clear the invalid user session to force re-login
+          handleLogout();
+        }
+      }, 5000);
+
+      return () => {
+        clearInterval(checkTokenInterval);
+        clearTimeout(timeoutId);
+      };
+    }
+    
+    // Set loading to true before fetching data
+    setIsLoading(true);
+    
+    // Fetch data when user is logged in and token is ready
     fetchData();
     const unsubscribe = subscribeToUpdates(debouncedFetchData);
     return () => unsubscribe();
-  }, [fetchData, debouncedFetchData]);
+  }, [fetchData, debouncedFetchData, currentUser, handleLogout]);
 
   // --- STOCK & PRODUCT COMPUTATIONS ---
   const makableVariantIds = useMemo(() => {
