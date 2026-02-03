@@ -56,14 +56,64 @@ export const apiUrl = (path: string): string => {
   return `${API_BASE_URL}/${cleanPath}`;
 };
 
+// Helper function to decode JWT token to check if it's expired
+const isTokenExpired = (token: string): boolean => {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    const currentTime = Math.floor(Date.now() / 1000);
+    // Consider token as expired 5 minutes before actual expiration for safety
+    return payload.exp < currentTime + 300;
+  } catch (e) {
+    // If we can't decode the token, assume it's invalid/expired
+    return true;
+  }
+};
+
+// Helper function to check if token is about to expire (within 10 minutes)
+export const isTokenExpiringSoon = (): boolean => {
+  const token = localStorage.getItem('authToken');
+  if (token) {
+    return isTokenExpired(token);
+  }
+  
+  // Also check the token in currentUser
+  const currentUserStr = localStorage.getItem('currentUser');
+  if (currentUserStr) {
+    try {
+      const currentUser = JSON.parse(currentUserStr);
+      if (currentUser.token) {
+        return isTokenExpired(currentUser.token);
+      }
+    } catch (e) {
+      // Invalid JSON in localStorage, ignore
+    }
+  }
+  
+  return true; // If no token found, it's considered expiring/missing
+};
+
 // Helper function to get headers with credentials
 export const getAuthHeaders = (): Record<string, string> => {
+  let token = localStorage.getItem('authToken');
+  
+  // Check if token exists and is expired
+  if (token && isTokenExpired(token)) {
+    console.log('Token is expired, clearing it from storage');
+    localStorage.removeItem('authToken');
+    localStorage.removeItem('currentUser');
+    token = null;
+    
+    // Redirect to login if on a protected route
+    if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
+      window.location.href = '/';
+    }
+  }
+  
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
   };
   
   // Get token from localStorage - try both token and currentUser formats
-  const token = localStorage.getItem('authToken');
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
   } else {
@@ -73,7 +123,18 @@ export const getAuthHeaders = (): Record<string, string> => {
       try {
         const currentUser = JSON.parse(currentUserStr);
         if (currentUser.token) {
-          headers['Authorization'] = `Bearer ${currentUser.token}`;
+          // Check if this token is also expired
+          if (isTokenExpired(currentUser.token)) {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('currentUser');
+            
+            // Redirect to login if on a protected route
+            if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
+              window.location.href = '/';
+            }
+          } else {
+            headers['Authorization'] = `Bearer ${currentUser.token}`;
+          }
         }
       } catch (e) {
         // Invalid JSON in localStorage, ignore
@@ -148,6 +209,28 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
   const requestPromise = fetch(url, fetchOptions)
     .then(async response => {
       clearTimeout(timeoutId);
+      
+      // Handle 403 Forbidden specifically (usually means token is invalid/expired)
+      if (response.status === 403) {
+        const errorData = await response.json().catch(() => ({}));
+        
+        // Check if the error is related to token expiration
+        if (errorData.error && (errorData.error.includes('Invalid or expired token') || errorData.error.includes('expired'))) {
+          console.log('Token expired or invalid, clearing authentication and redirecting to login');
+          
+          // Clear authentication data
+          localStorage.removeItem('authToken');
+          localStorage.removeItem('currentUser');
+          
+          // Redirect to login if on a protected route
+          if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
+            window.location.href = '/';
+          }
+        }
+        
+        throw new Error(errorData.error || 'Invalid or expired token. Please log in again.');
+      }
+      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
 

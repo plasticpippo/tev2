@@ -110,7 +110,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
           }
           
           return filteredProducts.map((product: Product) => (
-            product.variants.map((variant: ProductVariant, variantIndex: number) => (
+                       product.variants.map((variant: ProductVariant) => (
               <button
                 key={`${product.id}-${variant.id}`}
                 onClick={() => handleAddItemToGrid(product, variant)}

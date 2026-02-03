@@ -82,7 +82,7 @@ export const saveTillLayout = async (
   positions: VariantLayoutPosition[]
 ): Promise<VariantLayout[]> => {
   try {
-    const response = await fetch(
+    const result = await makeApiRequest(
       apiUrl(`/api/layouts/till/${tillId}/category/${categoryId}`),
       {
         method: 'POST',
@@ -90,16 +90,8 @@ export const saveTillLayout = async (
         body: JSON.stringify({ positions })
       }
     );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    const savedLayouts = await response.json();
     notifyUpdates();
-    return savedLayouts;
+    return result;
   } catch (error) {
     console.error('Error saving till layout:', error);
     throw error;
@@ -114,20 +106,13 @@ export const resetTillLayout = async (
   categoryId: number
 ): Promise<void> => {
   try {
-    const response = await fetch(
+    await makeApiRequest(
       apiUrl(`/api/layouts/till/${tillId}/category/${categoryId}`),
       {
         method: 'DELETE',
         headers: getAuthHeaders()
       }
     );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
     notifyUpdates();
   } catch (error) {
     console.error('Error resetting till layout:', error);
@@ -192,21 +177,13 @@ export const createSharedLayout = async (
     // Sanitize layout name for defense-in-depth
     const sanitizedName = sanitizeName(name);
 
-    const response = await fetch(apiUrl('/api/layouts/shared'), {
+    const result = await makeApiRequest(apiUrl('/api/layouts/shared'), {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify({ name: sanitizedName, categoryId, positions })
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    const createdLayout = await response.json();
     notifyUpdates();
-    return createdLayout;
+    return result;
   } catch (error) {
     if (error instanceof SanitizationError) {
       throw new Error(`Invalid layout name: ${error.message}`);
@@ -227,21 +204,13 @@ export const updateSharedLayout = async (
   }
 ): Promise<SharedLayout> => {
   try {
-    const response = await fetch(apiUrl(`/api/layouts/shared/${id}`), {
+    const result = await makeApiRequest(apiUrl(`/api/layouts/shared/${id}`), {
       method: 'PUT',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates)
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    const updatedLayout = await response.json();
     notifyUpdates();
-    return updatedLayout;
+    return result;
   } catch (error) {
     console.error('Error updating shared layout:', error);
     throw error;
@@ -253,17 +222,10 @@ export const updateSharedLayout = async (
  */
 export const deleteSharedLayout = async (id: number): Promise<void> => {
   try {
-    const response = await fetch(apiUrl(`/api/layouts/shared/${id}`), {
+    await makeApiRequest(apiUrl(`/api/layouts/shared/${id}`), {
       method: 'DELETE',
       headers: getAuthHeaders()
     });
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
     notifyUpdates();
   } catch (error) {
     console.error('Error deleting shared layout:', error);
@@ -280,21 +242,13 @@ export const loadSharedLayoutToTill = async (
   tillId: number
 ): Promise<VariantLayout[]> => {
   try {
-    const response = await fetch(
+    const result = await makeApiRequest(
       apiUrl(`/api/layouts/shared/${sharedLayoutId}/load-to-till/${tillId}`),
       {
         method: 'POST',
         headers: getAuthHeaders()
       }
     );
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
-      throw new Error(errorMessage);
-    }
-
-    const result = await response.json();
     notifyUpdates();
     return result.layouts;
   } catch (error) {

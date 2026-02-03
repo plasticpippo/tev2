@@ -8,6 +8,7 @@ interface DraggableProductButtonProps {
   product: Product;
   onClick?: () => void; // For normal POS mode (adding to order)
   isMakable?: boolean; // Whether variant can be made (stock available)
+  isPositioned?: boolean; // Whether the button has a saved position in the grid
 }
 
 export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
@@ -51,13 +52,14 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
   };
 
   // If no position saved, render outside the grid (will be hidden or at end)
-  const gridStyle: React.CSSProperties = position ? {
-    gridColumn: position.gridColumn,
-    gridRow: position.gridRow,
-  } : {
-    // No grid positioning - will render in document flow after positioned items
-    display: isEditMode ? 'none' : 'block'  // Hide unpositioned buttons in edit mode
-  };
+    const gridStyle: React.CSSProperties = position ? {
+      gridColumn: position.gridColumn,
+      gridRow: position.gridRow,
+    } : {
+      // No grid positioning - will render in document flow after positioned items
+      // For unpositioned items in edit mode, we don't apply grid positioning
+      // The parent component handles positioning for unpositioned items
+    };
 
   return (
     <div

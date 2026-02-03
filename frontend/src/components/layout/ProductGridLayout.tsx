@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
 import { DraggableProductButton } from './DraggableProductButton';
 import { CategoryTabs } from '../CategoryTabs';
+import AvailableProductsPanel from '../../../components/AvailableProductsPanel';
 import type { Product, ProductVariant, Category } from '@shared/types';
 
 const GRID_COLUMNS = 4;
@@ -22,14 +23,18 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   makableVariantIds,
   assignedTillId
 }) => {
-  const { 
-    currentCategoryId, 
-    getCurrentCategoryLayout, 
+  const {
+    currentCategoryId,
+    getCurrentCategoryLayout,
     updateButtonPosition,
-    isEditMode 
+    isEditMode
   } = useLayout();
   
   const [dragOverCell, setDragOverCell] = useState<{ col: number; row: number } | null>(null);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
+  const [activeFilterType, setActiveFilterType] = useState<'all' | 'favorites' | 'category'>('all');
+  const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
 
   // Filter products by visible categories for this till
   const visibleProducts = useMemo(() => {
@@ -116,10 +121,42 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   };
 
   const handleProductClick = (variant: ProductVariant, product: Product) => {
-    if (!isEditMode) {
-      onAddToCart(variant, product);
-    }
-  };
+      if (!isEditMode) {
+        onAddToCart(variant, product);
+      }
+    };
+  
+    const handleAddItemToGrid = (_product: Product, variant: ProductVariant) => {
+          // Find an empty grid position to place the new item
+          const categoryLayout = getCurrentCategoryLayout();
+          const existingPositions = categoryLayout?.positions || [];
+          
+          // Find the first available position (starting from row 1, column 1)
+          let newRow = 1;
+          let newCol = 1;
+          let positionFound = false;
+          
+          // Look for an empty spot in the current grid
+          while (!positionFound) {
+            const positionExists = existingPositions.some(pos =>
+              pos.gridRow === newRow && pos.gridColumn === newCol
+            );
+            
+            if (!positionExists) {
+              positionFound = true;
+            } else {
+              // Move to next position
+              newCol++;
+              if (newCol > GRID_COLUMNS) {
+                newCol = 1;
+                newRow++;
+              }
+            }
+          }
+          
+          // Add the item to the layout at the found position
+          updateButtonPosition(variant.id, newCol, newRow);
+        };
 
   // Create grid cells for drop zones
   const renderGridCells = () => {
@@ -170,87 +207,134 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
         />
       </div>
 
-      {/* Product grid area */}
-      <div className="flex-1 overflow-y-auto">
-        <div className="relative w-full h-full p-4">
-          {/* Edit mode grid overlay */}
-          {showEditGrid && (
-            <div
-              className="absolute inset-0 pointer-events-none z-0 p-4"
-              style={{
-                backgroundImage: `
-                  repeating-linear-gradient(0deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%),
-                  repeating-linear-gradient(90deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%)
-                `,
-                backgroundSize: `100% ${GRID_ROW_HEIGHT}px, calc(100% / 4) 100%`
-              }}
-            >
-              <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
-                4-COLUMN GRID • {
-                  currentCategoryId === 'favourites'
-                    ? 'Favourites'
-                    : typeof currentCategoryId === 'number'
-                      ? categories.find(c => c.id === currentCategoryId)?.name
-                      : currentCategoryId
-                }
-              </div>
-            </div>
-          )}
-
-          {/* Warning only for 'all' in edit mode */}
-          {isEditMode && currentCategoryId === 'all' && (
-            <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-900/80">
-              <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-md text-center">
-                <p className="font-bold text-lg mb-2">⚠️ Edit Mode Disabled</p>
-                <p className="text-sm">
-                  Layout customization is not available for "All" filter.
-                  Please select a specific category or Favourites to customize its layout.
-                </p>
-              </div>
-            </div>
-          )}
-
-          {/* Product grid */}
-          <div
-            className="relative grid gap-4 z-10"
-            style={{
-              gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
-              gridTemplateRows: `repeat(${gridRows}, minmax(${GRID_ROW_HEIGHT}px, auto))`,  // Explicit row heights
-              gridAutoRows: `minmax(${GRID_ROW_HEIGHT}px, auto)`
-            }}
-          >
-            {/* Drop zone cells */}
-            {isEditMode && renderGridCells()}
+            {/* Product grid area */}
+            <div className="flex-1 overflow-y-auto">
+                    <div className="relative w-full h-full p-4">
+                      {/* Available Products Panel in edit mode - placed before the grid */}
+                      {isEditMode && currentCategoryId !== 'all' && (
+                        <div className="mb-6 z-20">
+                          <AvailableProductsPanel
+                            products={products}
+                            categories={categories}
+                            showFavoritesOnly={showFavoritesOnly}
+                            setShowFavoritesOnly={setShowFavoritesOnly}
+                            selectedCategory={selectedCategory}
+                            setSelectedCategory={setSelectedCategory}
+                            activeFilterType={activeFilterType}
+                            setActiveFilterType={setActiveFilterType}
+                            activeCategoryId={activeCategoryId}
+                            setActiveCategoryId={setActiveCategoryId}
+                            handleAddItemToGrid={handleAddItemToGrid}
+                          />
+                        </div>
+                      )}
             
-            {/* Product buttons */}
-            {itemsToRender.map(({ product, variant }: { product: Product, variant: ProductVariant }) => {
-              const position = categoryLayout?.positions.find(p => p.variantId === variant.id);
-              
-              // Only render positioned buttons in edit mode
-              if (isEditMode && !position) {
-                return null;
-              }
-              
-              return (
-                <DraggableProductButton
-                  key={variant.id}
-                  variant={variant}
-                  product={product}
-                  onClick={() => handleProductClick(variant, product)}
-                  isMakable={makableVariantIds.has(variant.id)}
-                />
-              );
-            })}
-          </div>
-
-          {/* Empty state */}
-          {itemsToRender.length === 0 && (
-            <div className="flex items-center justify-center h-64 text-gray-500">
-              No products in this category
-            </div>
-          )}
-        </div>
-      </div>
+                      {/* Edit mode grid overlay */}
+                      {showEditGrid && (
+                        <div
+                          className="absolute inset-0 pointer-events-none z-0 p-4"
+                          style={{
+                            backgroundImage: `
+                              repeating-linear-gradient(0deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%),
+                              repeating-linear-gradient(90deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%)
+                            `,
+                            backgroundSize: `100% ${GRID_ROW_HEIGHT}px, calc(100% / 4) 100%`
+                          }}
+                        >
+                          <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
+                            4-COLUMN GRID • {
+                              currentCategoryId === 'favourites'
+                                ? 'Favourites'
+                                : typeof currentCategoryId === 'number'
+                                  ? categories.find(c => c.id === currentCategoryId)?.name
+                                  : currentCategoryId
+                            }
+                          </div>
+                        </div>
+                      )}
+            
+                      {/* Warning only for 'all' in edit mode */}
+                      {isEditMode && currentCategoryId === 'all' && (
+                        <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-900/80">
+                          <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-md text-center">
+                            <p className="font-bold text-lg mb-2">⚠️ Edit Mode Disabled</p>
+                            <p className="text-sm">
+                              Layout customization is not available for "All" filter.
+                              Please select a specific category or Favourites to customize its layout.
+                            </p>
+                          </div>
+                        </div>
+                      )}
+            
+                      {/* Product grid */}
+                      <div
+                        className="relative grid gap-4 z-10"
+                        style={{
+                          gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
+                          gridTemplateRows: `repeat(${gridRows}, minmax(${GRID_ROW_HEIGHT}px, auto))`,  // Explicit row heights
+                          gridAutoRows: `minmax(${GRID_ROW_HEIGHT}px, auto)`
+                        }}
+                      >
+                        {/* Drop zone cells */}
+                        {isEditMode && renderGridCells()}
+                        
+                        {/* Product buttons */}
+                        {itemsToRender.map(({ product, variant }: { product: Product, variant: ProductVariant }) => {
+                          const position = categoryLayout?.positions.find(p => p.variantId === variant.id);
+                          
+                          return (
+                            <DraggableProductButton
+                              key={variant.id}
+                              variant={variant}
+                              product={product}
+                              onClick={() => handleProductClick(variant, product)}
+                              isMakable={makableVariantIds.has(variant.id)}
+                              isPositioned={!!position}
+                            />
+                          );
+                        })}
+                        
+                        {/* Render unpositioned items at the bottom of the grid during edit mode */}
+                        {isEditMode && (
+                          <>
+                            {(() => {
+                              const positionedVariantIds = new Set(
+                                categoryLayout?.positions.map(p => p.variantId) || []
+                              );
+                              
+                              const unpositionedItems = itemsToRender.filter(({ variant }) =>
+                                !positionedVariantIds.has(variant.id)
+                              );
+                              
+                              return unpositionedItems.length > 0 ? (
+                                <div className="mt-6 pt-6 border-t border-slate-600 col-span-full">
+                                  <h3 className="text-lg font-semibold mb-3 text-amber-400">Unplaced Products - Drag to Grid</h3>
+                                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+                                    {unpositionedItems.map(({ product, variant }) => (
+                                      <DraggableProductButton
+                                        key={`${variant.id}-unplaced`}
+                                        variant={variant}
+                                        product={product}
+                                        isMakable={makableVariantIds.has(variant.id)}
+                                        isPositioned={false}
+                                      />
+                                    ))}
+                                  </div>
+                                </div>
+                              ) : null;
+                            })()}
+                          </>
+                        )}
+                      </div>
+            
+                      {/* Empty state */}
+                      {itemsToRender.length === 0 && (
+                        <div className="flex items-center justify-center h-64 text-gray-500">
+                          No products in this category
+                        </div>
+                      )}
+                    </div>
+                  </div>
     </div>
   );
 };

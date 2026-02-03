@@ -371,7 +371,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       addToast(`Layout saved successfully for ${categoryName}!`, 'success');
     } catch (error) {
       console.error('Error saving layout:', error);
-      addToast(`Failed to save layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check if the error is related to authentication
+      if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
+        addToast('Session expired. Please log in again.', 'error');
+        // Redirect to login after a delay to allow the user to see the message
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        addToast(`Failed to save layout: ${errorMessage}`, 'error');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -418,7 +429,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       addToast('Layout reset to default!', 'success');
     } catch (error) {
       console.error('Error resetting layout:', error);
-      addToast(`Failed to reset layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check if the error is related to authentication
+      if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
+        addToast('Session expired. Please log in again.', 'error');
+        // Redirect to login after a delay to allow the user to see the message
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        addToast(`Failed to reset layout: ${errorMessage}`, 'error');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -507,7 +529,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       await refreshSharedLayouts(categoryIdToUse);
     } catch (error) {
       console.error('Error creating shared layout:', error);
-      addToast(`Failed to create shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check if the error is related to authentication
+      if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
+        addToast('Session expired. Please log in again.', 'error');
+        // Redirect to login after a delay to allow the user to see the message
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        addToast(`Failed to create shared layout: ${errorMessage}`, 'error');
+      }
     } finally {
       setIsSaving(false);
     }
@@ -543,7 +576,18 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       }
     } catch (error) {
       console.error('Error loading shared layout:', error);
-      addToast(`Failed to load shared layout: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      
+      // Check if the error is related to authentication
+      if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
+        addToast('Session expired. Please log in again.', 'error');
+        // Redirect to login after a delay to allow the user to see the message
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 2000);
+      } else {
+        addToast(`Failed to load shared layout: ${errorMessage}`, 'error');
+      }
     } finally {
       setIsSaving(false);
     }
