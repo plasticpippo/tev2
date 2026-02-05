@@ -165,13 +165,13 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col">
-      {/* Existing header with user info */}
-      <div className="p-4 border-b border-slate-700 flex justify-between items-start">
+    <div className="w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full">
+      {/* Header section - stays at top */}
+      <div className="p-4 border-b border-slate-700 flex-shrink-0 flex justify-between items-start">
         <div>
           <p className="text-gray-400 text-sm">Logged in as:</p>
           <p className="text-white font-semibold">
-            {user?.name} 
+            {user?.name}
             <span className="text-purple-400 text-xs ml-2">
               ({user?.role})
             </span>
@@ -182,22 +182,22 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
         </button>
       </div>
 
-      {/* Main order content area */}
-      <div className="flex-1 p-4 relative overflow-y-auto">
-        {/* Your existing order items display */}
-        <h2 className="text-2xl font-bold text-yellow-500 mb-4">Current Order</h2>
+      {/* Scrollable order items section - constrained height */}
+      <div className="flex-1 p-4 overflow-y-auto flex flex-col">
+        <h2 className="text-2xl font-bold text-yellow-500 mb-4 flex-shrink-0">Current Order</h2>
         
-        {/* Your existing order items rendering code */}
-        {orderItems.length === 0 ? (
-          <div className="text-center text-gray-500 mt-20">
-            Select products to add them here.
-          </div>
-        ) : (
-          // Your existing order items map
-          <div>
-            {renderOrderItems(orderItems, onUpdateQuantity)}
-          </div>
-        )}
+        {/* Scrollable order items container */}
+        <div className="overflow-y-auto flex-grow">
+          {orderItems.length === 0 ? (
+            <div className="text-center text-gray-500 mt-20">
+              Select products to add them here.
+            </div>
+          ) : (
+            <div>
+              {renderOrderItems(orderItems, onUpdateQuantity)}
+            </div>
+          )}
+        </div>
 
         {/* Edit Mode Overlay - covers this section when in edit mode */}
         {layoutContext && <EditModeOverlay />}
@@ -205,13 +205,13 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
 
       {/* Edit Layout Button Section - above bottom actions */}
       {layoutContext && user?.role === 'Admin' && (
-        <div className="p-4 border-t border-slate-700">
+        <div className="p-4 border-t border-slate-700 flex-shrink-0">
           <EditLayoutButton userRole="admin" />
         </div>
       )}
 
-      {/* Your existing bottom buttons (subtotal, payment, etc.) */}
-      <div className="p-4 border-t border-slate-700">
+      {/* Fixed bottom section with payment controls */}
+      <div className="p-4 border-t border-slate-700 flex-shrink-0 bg-slate-800">
         {orderItems.length > 0 && (
           <div className="flex justify-between text-xl mb-4">
             <span>Subtotal</span>
