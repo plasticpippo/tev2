@@ -70,7 +70,7 @@ const HelpGuide: React.FC<HelpGuideProps> = ({
       delay={delay}
     >
       <span 
-        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500 text-white text-xs font-bold cursor-help"
+        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-primary text-white text-xs font-bold cursor-help"
         onClick={() => setShowGuide(!showGuide)}
         aria-label={`Help for ${feature}`}
         role="button"

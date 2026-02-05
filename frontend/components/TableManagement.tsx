@@ -71,7 +71,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 mb-4">{room ? 'Edit' : 'Add'} Room</h3>
         
         {/* Display general errors at the top */}
@@ -138,7 +138,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50"
+            className="btn btn-secondary disabled:opacity-50"
             title="Cancel changes"
           >
             Cancel
@@ -146,7 +146,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 flex items-center gap-2"
+            className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
             title="Save room details"
           >
             {isSubmitting ? (
@@ -241,7 +241,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700 max-h-[90vh] overflow-y-auto">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700 max-h-[90vh] overflow-y-auto">
         <h3 className="text-xl font-bold text-amber-400 mb-4">{table ? 'Edit' : 'Add'} Table</h3>
         
         {/* Display general errors at the top */}
@@ -430,7 +430,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
             type="button"
             onClick={onClose}
             disabled={isSubmitting}
-            className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50"
+            className="btn btn-secondary disabled:opacity-50"
             title="Cancel changes"
           >
             Cancel
@@ -438,7 +438,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           <button
             type="submit"
             disabled={isSubmitting}
-            className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50 flex items-center gap-2"
+            className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
             title="Save table details"
           >
             {isSubmitting ? (
@@ -621,7 +621,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
       <div className="flex-shrink-0 mb-4">
         <div className="flex border-b border-slate-700">
           <button
-            className={`px-4 py-2 font-medium text-sm flex items-center gap-1 ${activeTab === 'layout' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-400 hover:text-slate-300'}`}
+            className={`btn ${activeTab === 'layout' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('layout')}
             title="Manage table layouts visually"
           >
@@ -629,7 +629,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
             <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">L</span>
           </button>
           <button
-            className={`px-4 py-2 font-medium text-sm flex items-center gap-1 ${activeTab === 'rooms' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-400 hover:text-slate-300'}`}
+            className={`btn ${activeTab === 'rooms' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('rooms')}
             title="Manage room organization"
           >
@@ -637,7 +637,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
             <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">M</span>
           </button>
           <button
-            className={`px-4 py-2 font-medium text-sm flex items-center gap-1 ${activeTab === 'tables' ? 'text-amber-400 border-b-2 border-amber-400' : 'text-slate-400 hover:text-slate-300'}`}
+            className={`btn ${activeTab === 'tables' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('tables')}
             title="Manage individual tables"
           >
@@ -715,7 +715,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
               </h3>
               <button
                 onClick={() => { setEditingRoom(undefined); setIsRoomModalOpen(true); }}
-                className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md text-sm flex items-center gap-1"
+                className="btn btn-primary text-sm flex items-center gap-1"
                 title="Add a new room"
               >
                 Add Room
@@ -741,7 +741,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => { setEditingRoom(room); setIsRoomModalOpen(true); }}
-                        className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md flex items-center gap-1"
+                        className="btn btn-info text-sm flex items-center gap-1"
                         title="Edit room details"
                       >
                         Edit
@@ -749,7 +749,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       </button>
                       <button
                         onClick={() => setDeletingRoom(room)}
-                        className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md flex items-center gap-1"
+                        className="btn btn-danger text-sm flex items-center gap-1"
                         title="Delete this room"
                       >
                         Delete
@@ -767,10 +767,10 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       </svg>
                     </div>
                     <h3 className="text-lg font-bold text-slate-400 mb-2">No rooms added yet</h3>
-                    <p className="text-slate-500 mb-4 max-w-md mx-auto">Create your first room to organize tables by physical areas in your venue</p>
+                    <p className="text-slate-500 mb-4 max-w-xs sm:max-w-md mx-auto">Create your first room to organize tables by physical areas in your venue</p>
                     <button
                       onClick={() => { setEditingRoom(undefined); setIsRoomModalOpen(true); }}
-                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-md inline-flex items-center gap-2 transition-colors"
+                      className="btn btn-primary inline-flex items-center gap-2"
                       title="Add your first room"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -778,7 +778,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       </svg>
                       Add Your First Room
                     </button>
-                    <div className="mt-6 text-left max-w-md mx-auto">
+                    <div className="mt-6 text-left max-w-xs sm:max-w-md mx-auto">
                       <h4 className="text-sm font-bold text-slate-400 mb-2">Room Examples:</h4>
                       <ul className="text-xs text-slate-500 space-y-1">
                         <li className="flex items-start">
@@ -815,7 +815,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
               </h3>
               <button
                 onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
-                className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md text-sm flex items-center gap-1"
+                className="btn btn-primary text-sm flex items-center gap-1"
                 title="Add a new table"
               >
                 Add Table
@@ -846,7 +846,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setEditingTable(table); setIsTableModalOpen(true); }}
-                          className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md flex items-center gap-1"
+                          className="btn btn-info text-sm flex items-center gap-1"
                           title="Edit table details"
                         >
                           Edit
@@ -854,7 +854,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                         </button>
                         <button
                           onClick={() => setDeletingTable(table)}
-                          className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md flex items-center gap-1"
+                          className="btn btn-danger text-sm flex items-center gap-1"
                           title="Delete this table"
                         >
                           Delete
@@ -875,14 +875,14 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                     <h3 className="text-lg font-bold text-slate-400 mb-2">
                       {selectedRoomId ? 'No tables in this room' : 'No tables added yet'}
                     </h3>
-                    <p className="text-slate-500 mb-4 max-w-md mx-auto">
+                    <p className="text-slate-500 mb-4 max-w-xs sm:max-w-md mx-auto">
                       {selectedRoomId
                         ? 'Add your first table to this room to get started.'
                         : 'Add your first table to organize seating arrangements.'}
                     </p>
                     <button
                       onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
-                      className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded-md inline-flex items-center gap-2 transition-colors"
+                      className="btn btn-primary inline-flex items-center gap-2"
                       title="Add your first table"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
@@ -890,7 +890,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       </svg>
                       {selectedRoomId ? 'Add Table to Room' : 'Add Your First Table'}
                     </button>
-                    <div className="mt-6 text-left max-w-md mx-auto">
+                    <div className="mt-6 text-left max-w-xs sm:max-w-md mx-auto">
                       <h4 className="text-sm font-bold text-slate-400 mb-2">Pro Tips:</h4>
                       <ul className="text-xs text-slate-500 space-y-1">
                         <li className="flex items-start">

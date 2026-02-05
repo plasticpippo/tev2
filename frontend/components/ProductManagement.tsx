@@ -43,7 +43,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
         <div className="bg-slate-700 p-4 rounded-md space-y-4 border border-slate-600">
             <div className="flex justify-between items-center">
                 <h4 className="font-semibold text-slate-200">Selling Variant</h4>
-                <button type="button" onClick={onRemove} className="text-red-400 hover:text-red-300 text-sm font-semibold">Remove Variant</button>
+                <button type="button" onClick={onRemove} className="btn btn-danger btn-sm">Remove Variant</button>
             </div>
              <div className="grid grid-cols-2 gap-4">
                  <div>
@@ -91,11 +91,11 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                             </select>
                             <VKeyboardInput k-type="numeric" type="number" value={sc.quantity} onChange={e => handleUpdateConsumption(index, 'quantity', parseFloat(e.target.value) || 0)} placeholder="Qty" className="w-24 p-2 bg-slate-600 border border-slate-500 rounded-md text-sm" />
                             <span className="text-slate-400 text-sm w-12 text-center">{getBaseUnitForStockItem(sc.stockItemId)}</span>
-                            <button type="button" onClick={() => handleRemoveConsumption(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
+                            <button type="button" onClick={() => handleRemoveConsumption(index)} className="btn btn-danger btn-sm">&times;</button>
                         </div>
                     ))}
                 </div>
-                <button type="button" onClick={handleAddConsumption} className="mt-3 w-full bg-sky-800 hover:bg-sky-700 text-white font-bold py-2 rounded-md text-sm">+ Add Stock Item to Recipe</button>
+                <button type="button" onClick={handleAddConsumption} className="btn btn-primary w-full">+ Add Stock Item to Recipe</button>
             </div>
         </div>
     )
@@ -228,7 +228,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 border-b border-slate-700">
             <h3 className="text-xl font-bold text-amber-400">{product ? 'Edit' : 'Add'} Product</h3>
             <p className="text-sm text-slate-400">Define the product's base details and its selling variants.</p>
@@ -291,11 +291,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                     />
                 ))}
             </div>
-            <button type="button" onClick={handleAddVariant} className="w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md">+ Add Selling Variant</button>
+            <button type="button" onClick={handleAddVariant} className="btn btn-primary w-full">+ Add Selling Variant</button>
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="bg-slate-60 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-          <button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
+          <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="btn btn-secondary">Cancel</button>
+          <button type="submit" disabled={isSaving} className={`btn btn-primary ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
             {isSaving ? (
               <span className="flex items-center">
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -367,7 +367,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
         <h3 className="text-xl font-bold text-slate-300">Product Management</h3>
         <button
           onClick={() => { setEditingProduct(undefined); setIsModalOpen(true); }}
-          className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+          className="btn btn-primary"
         >
           Add Product
         </button>
@@ -381,15 +381,11 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
                     <p className="text-sm text-slate-400">{getCategoryName(product.categoryId)}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md">Edit</button>
+                    <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="btn btn-secondary btn-sm">Edit</button>
                     <button
                       onClick={() => setDeletingProduct(product)}
                       disabled={isDeleting}
-                      className={`font-bold py-1 px-3 text-sm rounded-md ${
-                        isDeleting
-                          ? 'bg-gray-500 cursor-not-allowed'
-                          : 'bg-red-700 hover:bg-red-600 text-white'
-                      }`}
+                      className={`btn btn-danger btn-sm ${isDeleting ? 'opacity-75 cursor-not-allowed' : ''}`}
                     >
                       {isDeleting ? (
                         <span className="flex items-center">

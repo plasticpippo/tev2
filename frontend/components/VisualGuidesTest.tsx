@@ -7,7 +7,7 @@ const VisualGuidesTest: React.FC = () => {
   const [showHelpTour, setShowHelpTour] = React.useState(false);
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-slate-900 text-white">
+    <div className="p-6 max-w-xs sm:max-w-4xl mx-auto bg-slate-900 text-white">
       <h1 className="text-2xl font-bold mb-6 text-amber-300">Visual Guides and Tooltips Test</h1>
       
       <div className="mb-8 p-4 bg-slate-800 rounded-lg">

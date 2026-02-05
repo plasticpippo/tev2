@@ -117,7 +117,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-5xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-5xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">Assign to Table</h2>

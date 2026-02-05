@@ -114,11 +114,11 @@ export const MainPOSInterface: React.FC = () => {
           </button>
         )}
         
-        <main className="flex-grow flex gap-4 overflow-hidden">
+        <main className="flex-grow flex flex-col lg:flex-row gap-4 overflow-hidden min-h-0">
           {assignedTillId ? (
             <LayoutProvider tillId={assignedTillId} initialCategoryId={'favourites'}>
               <>
-                <div className="w-2/3 h-full flex flex-col">
+                <div className="w-full lg:w-[calc(100%-384px)] h-full flex flex-col min-w-0">
                   {/* Product Grid with Layout System */}
                   <div className="flex-1 overflow-y-auto bg-slate-900">
                     <ProductGridLayout
@@ -131,7 +131,7 @@ export const MainPOSInterface: React.FC = () => {
                   </div>
                 </div>
                 
-                <div className="w-1/3 h-full">
+                <div className="w-full lg:w-96 h-full flex-shrink-0">
                   <OrderPanel
                     orderItems={orderItems}
                     user={currentUser}

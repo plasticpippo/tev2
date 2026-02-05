@@ -98,7 +98,7 @@ const HelpSystem: React.FC<HelpSystemProps> = ({ isActive = false, onComplete })
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 z-[1000] flex items-center justify-center pointer-events-none">
-      <div className="bg-slate-800 rounded-lg p-6 max-w-md mx-4 pointer-events-auto relative">
+      <div className="bg-slate-800 rounded-lg p-6 max-w-xs sm:max-w-md mx-4 pointer-events-auto relative">
         <div className="absolute top-2 right-2">
           <button 
             onClick={handleClose}

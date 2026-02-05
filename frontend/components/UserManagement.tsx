@@ -38,7 +38,7 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 mb-4">{user ? 'Edit' : 'Add'} User</h3>
         <div className="space-y-4">
           <VKeyboardInput k-type="full" type="text" placeholder="Full Name" value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md" required autoFocus />
@@ -50,8 +50,8 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
           </select>
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-          <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save</button>
+          <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
+          <button type="submit" className="btn btn-primary">Save</button>
         </div>
       </form>
     </div>
@@ -93,7 +93,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
         <h3 className="text-xl font-bold text-slate-300">User Management</h3>
         <button
           onClick={() => { setEditingUser(undefined); setIsModalOpen(true); }}
-          className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+          className="btn btn-primary"
         >
           Add User
         </button>
@@ -108,19 +108,19 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
             <div className="flex items-center gap-2">
                 <button
                     onClick={() => setReportingUser(user)}
-                    className="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 text-sm rounded-md"
+                    className="btn btn-success btn-sm"
                 >
                     Report
                 </button>
                 <button
                     onClick={() => { setEditingUser(user); setIsModalOpen(true); }}
-                    className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md"
+                    className="btn btn-secondary btn-sm"
                 >
                     Edit
                 </button>
                  <button
                     onClick={() => setDeletingUser(user)}
-                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md"
+                    className="btn btn-danger btn-sm"
                 >
                     Delete
                 </button>

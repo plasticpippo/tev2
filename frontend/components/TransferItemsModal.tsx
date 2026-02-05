@@ -110,7 +110,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 flex-shrink-0">
             <div className="flex justify-between items-center mb-4">
                 <div>

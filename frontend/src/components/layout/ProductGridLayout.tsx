@@ -256,7 +256,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                       {/* Warning only for 'all' in edit mode */}
                       {isEditMode && currentCategoryId === 'all' && (
                         <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-900/80">
-                          <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-md text-center">
+                          <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-xs sm:max-w-md text-center">
                             <p className="font-bold text-lg mb-2">⚠️ Edit Mode Disabled</p>
                             <p className="text-sm">
                               Layout customization is not available for "All" filter.

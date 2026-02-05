@@ -9,7 +9,7 @@ interface TillSetupScreenProps {
 export const TillSetupScreen: React.FC<TillSetupScreenProps> = ({ tills, onTillSelect }) => {
   return (
     <div className="fixed inset-0 bg-slate-900 flex items-center justify-center z-50 p-4">
-      <div className="w-full max-w-2xl p-8 bg-slate-800 rounded-lg shadow-xl border border-slate-700">
+      <div className="w-full max-w-xs sm:max-w-2xl p-8 bg-slate-800 rounded-lg shadow-xl border border-slate-700">
         <h1 className="text-center text-3xl font-bold text-amber-400 mb-2">Terminal Setup</h1>
         <p className="text-center text-slate-400 mb-8">Select which Till this device will operate as.</p>
         

@@ -40,7 +40,7 @@ const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 mb-4">{till ? 'Edit' : 'Add'} Till</h3>
         <div className="space-y-4">
           <div>
@@ -64,8 +64,8 @@ const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
           </div>
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-          <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save</button>
+          <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
+          <button type="submit" className="btn btn-primary">Save</button>
         </div>
       </form>
     </div>
@@ -119,7 +119,7 @@ export const TillManagement: React.FC<TillManagementProps> = ({ tills, onDataUpd
         <h3 className="text-xl font-bold text-slate-300">Manage All Tills</h3>
         <button
           onClick={() => { setEditingTill(undefined); setIsModalOpen(true); }}
-          className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+          className="btn btn-primary"
         >
           Add Till
         </button>
@@ -136,20 +136,20 @@ export const TillManagement: React.FC<TillManagementProps> = ({ tills, onDataUpd
                 ) : (
                     <button
                         onClick={() => setAssigningTill(till)}
-                        className="bg-green-600 hover:bg-green-500 text-white font-bold py-1 px-3 text-sm rounded-md"
+                        className="btn btn-success btn-sm"
                     >
                         Assign This Device
                     </button>
                 )}
                 <button
                     onClick={() => { setEditingTill(till); setIsModalOpen(true); }}
-                    className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md"
+                    className="btn btn-secondary btn-sm"
                 >
                     Edit
                 </button>
                  <button
                     onClick={() => setDeletingTill(till)}
-                    className="bg-red-700 hover:bg-red-600 text-white font-bold py-1 px-3 text-sm rounded-md"
+                    className="btn btn-danger btn-sm"
                 >
                     Delete
                 </button>

@@ -9,7 +9,7 @@ interface ErrorPageProps {
 const ErrorPage: React.FC<ErrorPageProps> = ({ error, onGoBack }) => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-900 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
         <div className="text-center">
           <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100">
             <svg className="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">

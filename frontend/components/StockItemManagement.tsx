@@ -104,7 +104,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-lg max-h-[90vh] flex flex-col border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-lg max-h-[90vh] flex flex-col border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 p-6 pb-0">{item ? 'Edit' : 'Add'} Stock Item</h3>
         <div className="p-6 space-y-4 overflow-y-auto">
           <div>

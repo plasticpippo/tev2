@@ -15,15 +15,15 @@ const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
   const getToastStyle = () => {
     switch (toast.type) {
       case 'success':
-        return 'bg-green-500 border-green-600';
+        return 'bg-accent-success border-green-600';
       case 'error':
-        return 'bg-red-500 border-red-600';
+        return 'bg-accent-danger border-red-600';
       case 'warning':
-        return 'bg-yellow-500 border-yellow-600';
+        return 'bg-amber-500 border-amber-600';
       case 'info':
         return 'bg-blue-500 border-blue-600';
       default:
-        return 'bg-gray-800 border-gray-700';
+        return 'bg-slate-800 border-slate-700';
     }
   };
 
@@ -36,7 +36,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
   }, [onClose, toast.duration]);
 
   return (
-    <div className={`flex items-center justify-between p-4 mb-2 rounded-lg border shadow-lg text-white ${getToastStyle()} max-w-sm w-full animate-fadeIn`}>
+    <div className={`flex items-center justify-between p-4 mb-spacing-xs rounded-lg border shadow-lg text-white ${getToastStyle()} max-w-sm w-full animate-fadeIn`}>
       <span>{toast.message}</span>
       <button 
         onClick={onClose}

@@ -30,7 +30,7 @@ const renderHeader = (user: User, activeTab: Tab | null, assignedTable: Table | 
         <p className="text-sm text-slate-400">Logged in as:</p>
         <p className="font-bold">{user.name} <span className="text-xs text-amber-400">({user.role})</span></p>
       </div>
-      <button onClick={onLogout} className="text-sm bg-red-700 hover:bg-red-600 font-bold py-2 px-3 rounded-md transition">
+      <button onClick={onLogout} className="btn btn-danger btn-sm">
         Logout
       </button>
     </div>
@@ -47,7 +47,7 @@ const renderHeader = (user: User, activeTab: Tab | null, assignedTable: Table | 
         </div>
         <button
           onClick={onOpenTableAssignment}
-          className="text-xs bg-amber-600 hover:bg-amber-500 font-bold py-1 px-2 rounded-md"
+          className="btn btn-primary btn-sm"
         >
           Change Table
         </button>
@@ -93,13 +93,13 @@ const renderActiveTabButtons = (onSaveTab: () => void, onPayment: () => void, or
   <>
     <button
       onClick={onSaveTab}
-      className="w-full bg-sky-600 hover:bg-sky-500 font-bold py-3 rounded-md transition"
+      className="btn btn-primary w-full"
     >
       Save Tab & Start New Order
     </button>
     
     {orderItems.length > 0 && (
-      <button onClick={onPayment} className="w-full bg-green-600 hover:bg-green-500 font-bold py-3 rounded-md transition">
+      <button onClick={onPayment} className="btn btn-success w-full">
         Payment
       </button>
     )}
@@ -114,12 +114,12 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
     <div className="grid grid-cols-2 gap-2">
       <button
         onClick={onOpenTabs}
-        className={`w-full bg-sky-700 hover:bg-sky-600 font-bold py-3 rounded-md transition ${orderItems.length === 0 ? 'col-span-2' : ''}`}
+        className={`btn btn-info w-full ${orderItems.length === 0 ? 'col-span-2' : ''}`}
       >
         {orderItems.length > 0 ? 'Tabs' : 'View Open Tabs'}
       </button>
       {orderItems.length > 0 && (
-        <button onClick={onClearOrder} className="w-full bg-red-700 hover:bg-red-600 font-bold py-3 rounded-md transition">
+        <button onClick={onClearOrder} className="btn btn-danger w-full">
           Clear
         </button>
       )}
@@ -130,10 +130,10 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
       {orderItems.length > 0 && (
         <button
           onClick={onOpenTableAssignment}
-          className={`w-full py-3 rounded-md font-bold transition ${
+          className={`btn w-full ${
             assignedTable
-              ? 'bg-blue-600 hover:bg-blue-500 text-white'
-              : 'bg-purple-600 hover:bg-purple-500 text-white'
+              ? 'btn-primary'
+              : 'btn-secondary'
           }`}
         >
           {assignedTable ? `TABLE: ${assignedTable.name}` : 'ASSIGN TABLE'}
@@ -143,7 +143,7 @@ const renderNoTabButtons = (onOpenTabs: () => void, onClearOrder: () => void, on
       {orderItems.length > 0 && (
         <button
           onClick={onPayment}
-          className="w-full bg-green-600 hover:bg-green-500 font-bold py-3 rounded-md transition"
+          className="btn btn-success w-full"
         >
           Payment
         </button>
@@ -165,7 +165,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
   const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   return (
-    <div className="w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full">
+    <div className="w-full md:w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full min-w-[300px]">
       {/* Header section - stays at top */}
       <div className="p-4 border-b border-slate-700 flex-shrink-0 flex justify-between items-start">
         <div>
@@ -177,7 +177,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             </span>
           </p>
         </div>
-        <button onClick={onLogout} className="text-sm bg-red-700 hover:bg-red-600 font-bold py-2 px-3 rounded-md transition">
+        <button onClick={onLogout} className="btn btn-danger btn-sm">
           Logout
         </button>
       </div>

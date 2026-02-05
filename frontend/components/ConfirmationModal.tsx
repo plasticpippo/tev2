@@ -30,17 +30,17 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
       case 'primary':
         return 'bg-blue-600 hover:bg-blue-700';
       case 'secondary':
-        return 'bg-slate-60 hover:bg-slate-700';
+        return 'bg-bg-tertiary hover:bg-slate-700';
       case 'danger':
       default:
-        return 'bg-red-600 hover:bg-red-700';
+        return 'bg-accent-danger hover:bg-red-700';
     }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-slate-800 rounded-lg p-6 w-1/3">
-        <h3 className="text-xl font-bold mb-4 text-amber-400">{title}</h3>
+      <div className="bg-bg-primary rounded-lg p-spacing-xl w-1/3">
+        <h3 className="text-xl font-bold mb-4 text-accent-primary">{title}</h3>
         <p className="mb-4">{message}</p>
         <div className="flex justify-end gap-2">
           <button

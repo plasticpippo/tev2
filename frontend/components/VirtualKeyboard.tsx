@@ -101,7 +101,7 @@ export const VirtualKeyboard: React.FC = () => {
 
     return (
         <div className="fixed bottom-0 left-0 right-0 z-[100] bg-slate-800 border-t-2 border-slate-700 shadow-2xl animate-slide-up" onMouseDown={(e) => e.preventDefault()}>
-            <div className="max-w-4xl mx-auto">
+            <div className="max-w-xs sm:max-w-4xl mx-auto">
                 {keyboardType === 'numeric' && <NumpadLayout />}
                 {keyboardType === 'full' && <FullKeyboardLayout />}
             </div>

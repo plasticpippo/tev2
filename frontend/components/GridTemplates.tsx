@@ -186,7 +186,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="templates-title">
-      <div className="bg-slate-800 rounded-lg p-6 w-11/12 h-5/6 max-w-4xl overflow-auto">
+      <div className="bg-slate-800 rounded-lg p-6 w-11/12 h-5/6 max-w-xs sm:max-w-4xl overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 id="templates-title" className="text-2xl font-bold text-amber-300">Grid Templates</h2>
           <button

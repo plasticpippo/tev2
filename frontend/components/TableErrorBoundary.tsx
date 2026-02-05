@@ -27,7 +27,7 @@ export class TableErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex items-center justify-center h-full p-8">
-          <div className="bg-red-900 border border-red-700 rounded-lg p-6 max-w-md">
+          <div className="bg-red-900 border border-red-700 rounded-lg p-6 max-w-xs sm:max-w-md">
             <h2 className="text-xl font-bold text-red-100 mb-2">
               Tables System Error
             </h2>

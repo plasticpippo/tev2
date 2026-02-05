@@ -23,7 +23,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
 }) => {
   const getBgColor = () => {
     switch (type) {
-      case 'warning': return 'bg-yellow-900 bg-opacity-50';
+      case 'warning': return 'bg-amber-900 bg-opacity-50';
       case 'info': return 'bg-blue-900 bg-opacity-50';
       default: return 'bg-red-900 bg-opacity-50';
     }
@@ -46,7 +46,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   };
 
   return (
-    <div className={`rounded-md p-4 mb-4 border-l-4 ${getBgColor()} ${getBorderColor()}`}>
+    <div className={`rounded-md p-4 mb-spacing-lg border-l-4 ${getBgColor()} ${getBorderColor()}`}>
       <div className="flex items-start">
         <div className="flex-1">
           <p className={`text-sm ${getTextColor()}`}>
@@ -58,7 +58,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
             <button
               type="button"
               onClick={onRetry}
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-amber-700 hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
+              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-accent-primary-hover hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
             >
               Retry
             </button>
@@ -76,7 +76,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
             <button
               type="button"
               onClick={onGoBack}
-              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
+              className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-bg-tertiary hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
             >
               Go Back
             </button>

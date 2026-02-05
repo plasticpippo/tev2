@@ -53,7 +53,7 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-          <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+          <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
             <h3 className="text-xl font-bold text-amber-400 mb-4">New Stock Adjustment</h3>
             <div className="space-y-4">
               <div>
@@ -81,8 +81,8 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-              <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
-              <button type="submit" className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md">Save Adjustment</button>
+              <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
+              <button type="submit" className="btn btn-primary">Save Adjustment</button>
             </div>
           </form>
         </div>
@@ -159,10 +159,10 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
         <div className="h-full flex flex-col">
             <div className="flex-shrink-0 space-y-4">
                 <div className="flex gap-2">
-                    <button onClick={() => setActiveTab('ingredients')} className={`px-4 py-2 text-sm font-semibold rounded-md transition ${activeTab === 'ingredients' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
+                    <button onClick={() => setActiveTab('ingredients')} className={`btn ${activeTab === 'ingredients' ? 'btn-primary' : 'btn-secondary'}`}>
                         Ingredients
                     </button>
-                    <button onClick={() => setActiveTab('goods')} className={`px-4 py-2 text-sm font-semibold rounded-md transition ${activeTab === 'goods' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
+                    <button onClick={() => setActiveTab('goods')} className={`btn ${activeTab === 'goods' ? 'btn-primary' : 'btn-secondary'}`}>
                         Sellable Goods
                     </button>
                 </div>
@@ -172,9 +172,9 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
                         <option value="all">All Categories</option>
                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    <button onClick={() => setStockLevelFilter('all')} className={`px-3 py-2 text-xs rounded ${stockLevelFilter === 'all' ? 'bg-sky-600' : 'bg-slate-700'}`}>All</button>
-                    <button onClick={() => setStockLevelFilter('low')} className={`px-3 py-2 text-xs rounded ${stockLevelFilter === 'low' ? 'bg-yellow-600' : 'bg-slate-700'}`}>Low</button>
-                    <button onClick={() => setStockLevelFilter('out')} className={`px-3 py-2 text-xs rounded ${stockLevelFilter === 'out' ? 'bg-red-600' : 'bg-slate-700'}`}>Out</button>
+                    <button onClick={() => setStockLevelFilter('all')} className={`btn ${stockLevelFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm`}>All</button>
+                    <button onClick={() => setStockLevelFilter('low')} className={`btn ${stockLevelFilter === 'low' ? 'btn-warning' : 'btn-secondary'} btn-sm`}>Low</button>
+                    <button onClick={() => setStockLevelFilter('out')} className={`btn ${stockLevelFilter === 'out' ? 'btn-danger' : 'btn-secondary'} btn-sm`}>Out</button>
                 </div>
             </div>
             
@@ -189,7 +189,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
                             <span className={`text-xl font-bold ${item.quantity <= 0 ? 'text-red-400' : item.quantity <= 10 ? 'text-yellow-400' : 'text-green-400'}`}>
                                 {item.quantity} in stock
                             </span>
-                             <button onClick={() => handleOpenAdjustModal(item.id)} className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md text-sm">
+                             <button onClick={() => handleOpenAdjustModal(item.id)} className="btn btn-success btn-sm">
                                 Adjust
                             </button>
                         </div>
