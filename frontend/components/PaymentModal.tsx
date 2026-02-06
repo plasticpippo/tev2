@@ -1,7 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import type { OrderItem, TaxSettings } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
-import { PAYMENT_METHODS } from '@shared/constants';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -13,7 +12,6 @@ interface PaymentModalProps {
 }
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, orderItems, taxSettings, onConfirmPayment, assignedTable }) => {
-  const [selectedMethod, setSelectedMethod] = useState(PAYMENT_METHODS[0]);
   const [tip, setTip] = useState(0);
   
   const { subtotal, tax } = useMemo(() => {
@@ -91,30 +89,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
             <div className="flex justify-between text-slate-300"><span>Tip</span><span>{formatCurrency(tip)}</span></div>
             <div className="flex justify-between text-2xl font-bold mt-2 text-green-400"><span>Total</span><span>{formatCurrency(finalTotal)}</span></div>
         </div>
-        
-        <div className="my-6">
-          <h3 className="text-lg font-semibold mb-2 text-slate-300">Payment Method</h3>
-          <div className="flex flex-wrap gap-2">
-            {PAYMENT_METHODS.map((method: string) => (
-              <button
-                key={method}
-                onClick={() => setSelectedMethod(method)}
-                className={`px-4 py-3 rounded-md transition ${selectedMethod === method ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-300'}`}
-              >
-                {method}
-              </button>
-            ))}
-          </div>
-        </div>
         </div>
 
         <div className="pt-4 border-t border-slate-700 flex-shrink-0">
-          <button
-            onClick={() => onConfirmPayment(selectedMethod, tip)}
-            className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-3 text-lg rounded-md transition"
-          >
-            Confirm Payment for {formatCurrency(finalTotal)}
-          </button>
+          <div className="flex gap-3">
+            <button
+              onClick={() => onConfirmPayment('CASH', tip)}
+              className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-4 text-lg rounded-md transition"
+            >
+              Pay with CASH
+            </button>
+            <button
+              onClick={() => onConfirmPayment('CARD', tip)}
+              className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 text-lg rounded-md transition"
+            >
+              Pay with CARD
+            </button>
+          </div>
         </div>
       </div>
     </div>
