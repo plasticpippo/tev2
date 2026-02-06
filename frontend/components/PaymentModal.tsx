@@ -66,15 +66,23 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         )}
         <div className="mb-4">
             <label className="block text-slate-300 mb-1">Tip Amount</label>
-            <input
-                type="number"
-                value={tip === 0 ? '' : tip}
-                onChange={(e) => setTip(parseFloat(e.target.value) || 0)}
-                className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md text-white"
-                placeholder="0.0"
-                min="0"
-                step="0.01"
-            />
+            <div className="flex items-center gap-3">
+                <button 
+                    onClick={() => setTip(Math.max(0, tip - 1))} 
+                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center hover:bg-slate-600 transition"
+                    aria-label="Decrease tip"
+                >
+                    -
+                </button>
+                <span className="w-20 text-center font-bold text-lg text-white">{formatCurrency(tip)}</span>
+                <button 
+                    onClick={() => setTip(tip + 1)} 
+                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center hover:bg-slate-600 transition"
+                    aria-label="Increase tip"
+                >
+                    +
+                </button>
+            </div>
         </div>
 
         <div className="border-t border-slate-700 pt-4">
