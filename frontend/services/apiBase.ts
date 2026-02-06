@@ -248,6 +248,10 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
 
         throw new Error(errorMessage);
       }
+      // Handle 204 No Content responses - they have no body to parse
+      if (response.status === 204) {
+        return null;
+      }
       return await response.json();
     })
     .catch(error => {
