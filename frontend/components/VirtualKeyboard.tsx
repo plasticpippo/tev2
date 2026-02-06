@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 
 const Key: React.FC<{
@@ -94,14 +94,135 @@ const FullKeyboardLayout: React.FC = () => {
 
 export const VirtualKeyboard: React.FC = () => {
     const { isOpen, keyboardType } = useVirtualKeyboard();
+    const [keyboardPosition, setKeyboardPosition] = useState<{
+        top: number;
+        left: number;
+        positionAbove: boolean;
+    } | null>(null);
+    const keyboardRef = useRef<HTMLDivElement>(null);
+    const focusedInputRef = useRef<HTMLInputElement | null>(null);
+
+    // Track the currently focused input element
+    useEffect(() => {
+        const handleFocus = (e: FocusEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                focusedInputRef.current = target as HTMLInputElement;
+                updateKeyboardPosition();
+            }
+        };
+
+        const handleBlur = (e: FocusEvent) => {
+            const target = e.target as HTMLElement;
+            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+                focusedInputRef.current = null;
+            }
+        };
+
+        document.addEventListener('focusin', handleFocus);
+        document.addEventListener('focusout', handleBlur);
+
+        return () => {
+            document.removeEventListener('focusin', handleFocus);
+            document.removeEventListener('focusout', handleBlur);
+        };
+    }, []);
+
+    // Update keyboard position when it opens or when window resizes
+    useEffect(() => {
+        if (isOpen) {
+            updateKeyboardPosition();
+        }
+    }, [isOpen]);
+
+    // Recalculate position on window resize
+    useEffect(() => {
+        const handleResize = () => {
+            if (isOpen) {
+                updateKeyboardPosition();
+            }
+        };
+
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, [isOpen]);
+
+    const updateKeyboardPosition = () => {
+        const input = focusedInputRef.current;
+        if (!input || !keyboardRef.current) return;
+
+        const inputRect = input.getBoundingClientRect();
+        const keyboardRect = keyboardRef.current.getBoundingClientRect();
+        const viewportHeight = window.innerHeight;
+        const viewportWidth = window.innerWidth;
+
+        const padding = 8; // Space between input and keyboard
+        const keyboardHeight = keyboardRect.height || 300; // Default height if not measured
+        const keyboardWidth = keyboardRect.width || 400; // Default width if not measured
+
+        // Calculate vertical position
+        let top: number;
+        let positionAbove = false;
+
+        // Try to position below the input first
+        const spaceBelow = viewportHeight - inputRect.bottom - padding;
+        const spaceAbove = inputRect.top - padding;
+
+        if (spaceBelow >= keyboardHeight) {
+            // Enough space below, position keyboard below input
+            top = inputRect.bottom + padding;
+            positionAbove = false;
+        } else if (spaceAbove >= keyboardHeight) {
+            // Not enough space below, but enough above, position keyboard above input
+            top = inputRect.top - keyboardHeight - padding;
+            positionAbove = true;
+        } else {
+            // Not enough space in either direction, position where there's more space
+            if (spaceBelow > spaceAbove) {
+                top = inputRect.bottom + padding;
+                positionAbove = false;
+            } else {
+                top = inputRect.top - keyboardHeight - padding;
+                positionAbove = true;
+            }
+        }
+
+        // Calculate horizontal position - center the keyboard under the input
+        let left = inputRect.left + (inputRect.width / 2) - (keyboardWidth / 2);
+
+        // Ensure keyboard stays within viewport bounds horizontally
+        if (left < padding) {
+            left = padding;
+        } else if (left + keyboardWidth > viewportWidth - padding) {
+            left = viewportWidth - keyboardWidth - padding;
+        }
+
+        setKeyboardPosition({ top, left, positionAbove });
+    };
 
     if (!isOpen) {
         return null;
     }
 
+    const positionStyle = keyboardPosition
+        ? {
+            top: `${keyboardPosition.top}px`,
+            left: `${keyboardPosition.left}px`,
+            transform: 'none',
+        }
+        : {};
+
     return (
-        <div className="fixed bottom-0 left-0 right-0 z-[100] bg-slate-800 border-t-2 border-slate-700 shadow-2xl animate-slide-up" onMouseDown={(e) => e.preventDefault()}>
-            <div className="max-w-xs sm:max-w-4xl mx-auto">
+        <div
+            ref={keyboardRef}
+            className="fixed z-[100] bg-slate-800 border-2 border-slate-700 shadow-2xl animate-slide-up rounded-lg"
+            style={{
+                ...positionStyle,
+                transition: 'top 0.2s ease-out, left 0.2s ease-out',
+            }}
+            onMouseDown={(e) => e.preventDefault()}
+        >
+            <div className="max-w-xs sm:max-w-4xl">
                 {keyboardType === 'numeric' && <NumpadLayout />}
                 {keyboardType === 'full' && <FullKeyboardLayout />}
             </div>

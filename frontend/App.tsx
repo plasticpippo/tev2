@@ -7,6 +7,8 @@ import { useAppContext } from './contexts/AppContext';
 import { ToastProvider } from './contexts/ToastContext';
 import ToastContainer from './components/ToastContainer';
 import ErrorBoundary from './components/ErrorBoundary';
+import VirtualKeyboardToggle from './components/VirtualKeyboardToggle';
+import { VirtualKeyboard } from './components/VirtualKeyboard';
 import './src/index.css';
 
 const AppContent: React.FC = () => {
@@ -28,6 +30,8 @@ function App() {
             <AppContent />
             <ToastContainer />
           </AppProvider>
+          <VirtualKeyboardToggle />
+          <VirtualKeyboard />
         </VirtualKeyboardProvider>
       </ToastProvider>
     </ErrorBoundary>

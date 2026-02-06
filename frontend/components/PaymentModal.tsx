@@ -2,7 +2,6 @@ import React, { useState, useMemo } from 'react';
 import type { OrderItem, TaxSettings } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 import { PAYMENT_METHODS } from '@shared/constants';
-import { VKeyboardInput } from './VKeyboardInput';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -67,13 +66,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         )}
         <div className="mb-4">
             <label className="block text-slate-300 mb-1">Tip Amount</label>
-            <VKeyboardInput
-                k-type="numeric"
+            <input
                 type="number"
                 value={tip === 0 ? '' : tip}
                 onChange={(e) => setTip(parseFloat(e.target.value) || 0)}
-                className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md"
+                className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md text-white"
                 placeholder="0.0"
+                min="0"
+                step="0.01"
             />
         </div>
 
@@ -87,7 +87,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         <div className="my-6">
           <h3 className="text-lg font-semibold mb-2 text-slate-300">Payment Method</h3>
           <div className="flex flex-wrap gap-2">
-            {PAYMENT_METHODS.map(method => (
+            {PAYMENT_METHODS.map((method: string) => (
               <button
                 key={method}
                 onClick={() => setSelectedMethod(method)}

@@ -1,14 +1,18 @@
 import React, { createContext, useState, useContext, useRef, useCallback } from 'react';
+import useDeviceDetection from '../hooks/useDeviceDetection';
 
 type KeyboardType = 'numeric' | 'full' | null;
 
 interface VirtualKeyboardContextType {
   isOpen: boolean;
   keyboardType: KeyboardType;
+  isKeyboardEnabled: boolean;
   openKeyboard: (target: HTMLInputElement, type: KeyboardType) => void;
   closeKeyboard: () => void;
   handleKeyPress: (key: string) => void;
   handleBackspace: () => void;
+  toggleKeyboard: () => void;
+  setKeyboardEnabled: (enabled: boolean) => void;
 }
 
 const VirtualKeyboardContext = createContext<VirtualKeyboardContextType | undefined>(undefined);
@@ -17,18 +21,34 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
   const [isOpen, setIsOpen] = useState(false);
   const [keyboardType, setKeyboardType] = useState<KeyboardType>(null);
   const activeInputRef = useRef<HTMLInputElement | null>(null);
+  const { isDesktop } = useDeviceDetection();
+  
+  // Default to true on desktop, false on mobile/tablet
+  const [isKeyboardEnabled, setIsKeyboardEnabled] = useState(isDesktop);
 
   const openKeyboard = useCallback((target: HTMLInputElement, type: KeyboardType) => {
+    // Only open keyboard if enabled
+    if (!isKeyboardEnabled) {
+      return;
+    }
     activeInputRef.current = target;
     setKeyboardType(type);
     setIsOpen(true);
-  }, []);
+  }, [isKeyboardEnabled]);
 
   const closeKeyboard = useCallback(() => {
     activeInputRef.current?.blur();
     activeInputRef.current = null;
     setIsOpen(false);
     setKeyboardType(null);
+  }, []);
+
+  const toggleKeyboard = useCallback(() => {
+    setIsKeyboardEnabled(prev => !prev);
+  }, []);
+
+  const setKeyboardEnabled = useCallback((enabled: boolean) => {
+    setIsKeyboardEnabled(enabled);
   }, []);
 
   const dispatchInputChange = (target: HTMLInputElement, newValue: string) => {
@@ -81,7 +101,7 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
   }, []);
 
   return (
-    <VirtualKeyboardContext.Provider value={{ isOpen, keyboardType, openKeyboard, closeKeyboard, handleKeyPress, handleBackspace }}>
+    <VirtualKeyboardContext.Provider value={{ isOpen, keyboardType, isKeyboardEnabled, openKeyboard, closeKeyboard, handleKeyPress, handleBackspace, toggleKeyboard, setKeyboardEnabled }}>
       {children}
     </VirtualKeyboardContext.Provider>
   );
