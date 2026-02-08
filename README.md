@@ -1,3 +1,6 @@
+# This app is 100% vibe coded and has many vulnerabilities. USE AT YOUR OWN RISK
+
+
 # Bar POS System - Docker Deployment
 
 This project uses Docker Compose to deploy the Bar POS system with three containers:

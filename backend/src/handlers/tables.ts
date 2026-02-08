@@ -4,14 +4,14 @@ import { authenticateToken } from '../middleware/auth';
 import { verifyTableOwnership } from '../middleware/authorization';
 import { validateTableData } from '../utils/tableValidation';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
+import { logInfo, logError, redactSensitiveData } from '../utils/logger';
 
 const router = Router();
 
-// Middleware to log all table requests
+// Middleware to log all table requests with minimal information
 router.use((req, res, next) => {
-  console.log(`[Tables API] ${req.method} ${req.path}`, {
-    body: req.body,
-    params: req.params,
+  logInfo(`[Tables API] ${req.method} ${req.path}`, {
+    correlationId: (req as any).correlationId,
   });
   next();
 });
@@ -30,7 +30,9 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 
     res.json(tables);
   } catch (error) {
-    console.error('Error fetching tables:', error);
+    logError(error instanceof Error ? error : 'Error fetching tables', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch tables' });
   }
 });
@@ -52,7 +54,9 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 
     res.json(table);
   } catch (error) {
-    console.error('Error fetching table:', error);
+    logError(error instanceof Error ? error : 'Error fetching table', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch table' });
   }
 });
@@ -117,7 +121,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     res.status(201).json(newTable);
   } catch (error) {
-    console.error('Error creating table:', error);
+    logError(error instanceof Error ? error : 'Error creating table', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create table' });
   }
 });
@@ -190,7 +196,9 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
 
     res.json(updatedTable);
   } catch (error) {
-    console.error('Error updating table:', error);
+    logError(error instanceof Error ? error : 'Error updating table', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update table' });
   }
 });
@@ -228,7 +236,9 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
 
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting table:', error);
+    logError(error instanceof Error ? error : 'Error deleting table', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete table' });
   }
 });
@@ -264,7 +274,9 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
 
     res.json(updatedTable);
   } catch (error) {
-    console.error('Error updating table position:', error);
+    logError(error instanceof Error ? error : 'Error updating table position', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update table position' });
   }
 });

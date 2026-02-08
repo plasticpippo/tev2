@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Tab } from '../types';
+import { logInfo, logError } from '../utils/logger';
 
 export const tabsRouter = express.Router();
 
@@ -20,7 +21,9 @@ tabsRouter.get('/', async (req: Request, res: Response) => {
     }));
     res.json(tabsWithParsedItems);
   } catch (error) {
-    console.error('Error fetching tabs:', error);
+    logError(error instanceof Error ? error : 'Error fetching tabs', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch tabs' });
   }
 });
@@ -49,7 +52,9 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(tabWithParsedItems);
   } catch (error) {
-    console.error('Error fetching tab:', error);
+    logError(error instanceof Error ? error : 'Error fetching tab', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch tab' });
   }
 });
@@ -57,12 +62,16 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', async (req: Request, res: Response) => {
  try {
-    console.log('Backend: POST /api/tabs called with body:', req.body);
+    logInfo('POST /api/tabs called', {
+      correlationId: (req as any).correlationId,
+    });
     const { name, items, tillId, tillName, tableId } = req.body;
     
     // Validate required fields
     if (!name || typeof name !== 'string' || name.trim() === '') {
-      console.log('Backend: Tab name validation failed:', { name, type: typeof name, trimmed: name?.trim() });
+      logInfo('Tab name validation failed', {
+        correlationId: (req as any).correlationId,
+      });
       return res.status(400).json({ error: 'Tab name is required and must be a non-empty string' });
     }
     
@@ -70,11 +79,15 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          console.error('Invalid item without name:', item);
+          logError('Invalid item without name', {
+            correlationId: (req as any).correlationId,
+          });
           return res.status(400).json({ error: 'All items must have a valid name' });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          console.error('Invalid item properties:', item);
+          logError('Invalid item properties', {
+            correlationId: (req as any).correlationId,
+          });
           return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
         }
       }
@@ -86,7 +99,9 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
     });
     
     if (existingTab) {
-      console.log('Backend: Duplicate tab name detected:', name.trim());
+      logInfo('Duplicate tab name detected', {
+        correlationId: (req as any).correlationId,
+      });
       return res.status(409).json({ error: 'A tab with this name already exists' });
     }
     
@@ -101,7 +116,9 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
       }
     }
     
-    console.log('Backend: Creating new tab with data:', { name: name.trim(), items, tillId, tillName, tableId });
+    logInfo('Creating new tab', {
+      correlationId: (req as any).correlationId,
+    });
     const tab = await prisma.tab.create({
       data: {
         name: name.trim(), // Trim whitespace
@@ -113,10 +130,14 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
       }
     });
     
-    console.log('Backend: Tab created successfully:', tab);
+    logInfo('Tab created successfully', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(201).json(tab);
  } catch (error) {
-    console.error('Error creating tab:', error);
+    logError(error instanceof Error ? error : 'Error creating tab', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create tab' });
   }
 });
@@ -150,11 +171,15 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
     if (items !== undefined && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          console.error('Invalid item without name:', item);
+          logError('Invalid item without name', {
+            correlationId: (req as any).correlationId,
+          });
           return res.status(400).json({ error: 'All items must have a valid name' });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          console.error('Invalid item properties:', item);
+          logError('Invalid item properties', {
+            correlationId: (req as any).correlationId,
+          });
           return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
         }
       }
@@ -184,7 +209,9 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
     
     res.json(tab);
   } catch (error) {
-    console.error('Error updating tab:', error);
+    logError(error instanceof Error ? error : 'Error updating tab', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update tab' });
   }
 });
@@ -200,7 +227,9 @@ tabsRouter.delete('/:id', async (req: Request, res: Response) => {
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting tab:', error);
+    logError(error instanceof Error ? error : 'Error deleting tab', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete tab' });
   }
 });

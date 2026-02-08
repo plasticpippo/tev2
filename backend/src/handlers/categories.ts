@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Category } from '../types';
 import { validateCategory, validateCategoryName } from '../utils/validation';
+import { logError } from '../utils/logger';
 
 export const categoriesRouter = express.Router();
 
@@ -17,7 +18,9 @@ categoriesRouter.get('/', async (req: Request, res: Response) => {
     });
     res.json(categories);
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    logError(error instanceof Error ? error : 'Error fetching categories', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch categories. Please try again later.' });
   }
 });
@@ -41,9 +44,11 @@ categoriesRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(category);
   } catch (error) {
-    console.error('Error fetching category:', error);
+    logError(error instanceof Error ? error : 'Error fetching category', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch category. Please try again later.' });
- }
+  }
 });
 
 // POST /api/categories - Create a new category
@@ -71,9 +76,11 @@ categoriesRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(category);
   } catch (error) {
-    console.error('Error creating category:', error);
+    logError(error instanceof Error ? error : 'Error creating category', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create category. Please check your data and try again.' });
- }
+  }
 });
 
 // PUT /api/categories/:id - Update a category
@@ -105,7 +112,9 @@ categoriesRouter.put('/:id', async (req: Request, res: Response) => {
     
     res.json(category);
   } catch (error) {
-    console.error('Error updating category:', error);
+    logError(error instanceof Error ? error : 'Error updating category', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update category. Please check your data and try again.' });
   }
 });
@@ -132,7 +141,9 @@ categoriesRouter.delete('/:id', async (req: Request, res: Response) => {
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting category:', error);
+    logError(error instanceof Error ? error : 'Error deleting category', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete category. The category may have associated products or be in use elsewhere.' });
   }
 });

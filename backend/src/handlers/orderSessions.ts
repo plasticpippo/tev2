@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { OrderSession } from '../types';
+import { logError } from '../utils/logger';
 
 // Define custom type for Request to include user information
 interface AuthenticatedRequest extends Request {
@@ -55,7 +56,9 @@ orderSessionsRouter.get('/current', authenticateUser, async (req: AuthenticatedR
     
     res.json(orderSessionWithParsedItems);
   } catch (error) {
-    console.error('Error fetching order session:', error);
+    logError(error instanceof Error ? error : 'Error fetching order session', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch order session' });
   }
 });
@@ -104,7 +107,9 @@ orderSessionsRouter.post('/current', authenticateUser, async (req: Authenticated
 
     res.status(201).json(orderSession);
   } catch (error) {
-    console.error('Error creating/updating order session:', error);
+    logError(error instanceof Error ? error : 'Error creating/updating order session', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create/update order session' });
   }
 });
@@ -143,7 +148,9 @@ orderSessionsRouter.put('/current', authenticateUser, async (req: AuthenticatedR
 
     res.json(updatedOrderSession);
   } catch (error) {
-    console.error('Error updating order session:', error);
+    logError(error instanceof Error ? error : 'Error updating order session', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update order session' });
   }
 });
@@ -181,9 +188,11 @@ orderSessionsRouter.put('/current/logout', authenticateUser, async (req: Authent
 
     res.json(updatedOrderSession);
   } catch (error) {
-    console.error('Error marking order session for logout:', error);
+    logError(error instanceof Error ? error : 'Error marking order session for logout', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to mark order session for logout' });
- }
+  }
 });
 
 // PUT /api/order-sessions/current/complete - Mark the session as completed when payment is made
@@ -218,7 +227,9 @@ orderSessionsRouter.put('/current/complete', authenticateUser, async (req: Authe
 
     res.json(updatedOrderSession);
   } catch (error) {
-    console.error('Error completing order session:', error);
+    logError(error instanceof Error ? error : 'Error completing order session', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to complete order session' });
   }
 });
@@ -255,9 +266,11 @@ orderSessionsRouter.put('/current/assign-tab', authenticateUser, async (req: Aut
 
     res.json(updatedOrderSession);
   } catch (error) {
-    console.error('Error assigning order session to tab:', error);
+    logError(error instanceof Error ? error : 'Error assigning order session to tab', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to assign order session to tab' });
- }
+  }
 });
 
 export default orderSessionsRouter;

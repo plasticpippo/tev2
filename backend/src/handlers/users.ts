@@ -1,9 +1,18 @@
 import express, { Request, Response } from 'express';
-import { SignJWT } from 'jose';
+import { SignJWT, jwtVerify } from 'jose';
 import { prisma } from '../prisma';
 import type { User } from '../types';
+import { hashPassword, comparePassword } from '../utils/password';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
+import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistService';
+import { validateJwtSecret } from '../utils/jwtSecretValidation';
+import { logError, logAuthEvent, logDataAccess } from '../utils/logger';
 
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key-for-development-only';
+// Validate JWT_SECRET at module load time - fail fast if invalid
+validateJwtSecret();
+
+const JWT_SECRET = process.env.JWT_SECRET!;
 
 export const usersRouter = express.Router();
 
@@ -11,9 +20,13 @@ export const usersRouter = express.Router();
 usersRouter.get('/', async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
-    res.json(users);
+    // Exclude password field from response
+    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
+    res.json(usersWithoutPasswords);
   } catch (error) {
-    console.error('Error fetching users:', error);
+    logError(error instanceof Error ? error : 'Error fetching users', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch users' });
   }
 });
@@ -30,9 +43,13 @@ usersRouter.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    res.json(user);
+    // Exclude password field from response
+    const { password, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    logError(error instanceof Error ? error : 'Error fetching user', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch user' });
   }
 });
@@ -40,7 +57,11 @@ usersRouter.get('/:id', async (req: Request, res: Response) => {
 // POST /api/users - Create a new user
 usersRouter.post('/', async (req: Request, res: Response) => {
   try {
-    const { name, username, password_HACK, role } = req.body as Omit<User, 'id'>;
+    const { name, username, password, role } = req.body as Omit<User, 'id'> & { password: string };
+    
+    if (!password) {
+      return res.status(400).json({ error: 'Password is required' });
+    }
     
     // Check if username already exists
     const existingUser = await prisma.user.findUnique({
@@ -51,18 +72,32 @@ usersRouter.post('/', async (req: Request, res: Response) => {
       return res.status(409).json({ error: 'Username already exists' });
     }
     
+    // Hash the password before storing
+    const hashedPassword = await hashPassword(password);
+    
     const user = await prisma.user.create({
       data: {
         name,
         username,
-        password_HACK,
+        password: hashedPassword,
         role
       }
     });
     
-    res.status(201).json(user);
+    // Log user creation event
+    logAuthEvent('LOGIN', user.id, user.username, true, {
+      correlationId: (req as any).correlationId,
+      action: 'USER_CREATED',
+      role: user.role
+    });
+    
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.status(201).json(userWithoutPassword);
   } catch (error) {
-    console.error('Error creating user:', error);
+    logError(error instanceof Error ? error : 'Error creating user', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create user' });
   }
 });
@@ -71,21 +106,38 @@ usersRouter.post('/', async (req: Request, res: Response) => {
 usersRouter.put('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
-    const { name, username, password_HACK, role } = req.body as Omit<User, 'id'>;
+    const { name, username, password, role } = req.body as Omit<User, 'id'> & { password?: string };
+    
+    const updateData: any = {
+      name,
+      username,
+      role
+    };
+    
+    // Only hash and update password if provided
+    if (password) {
+      updateData.password = await hashPassword(password);
+    }
     
     const user = await prisma.user.update({
       where: { id: Number(id) },
-      data: {
-        name,
-        username,
-        password_HACK,
-        role
-      }
+      data: updateData
     });
     
-    res.json(user);
+    // Log password change event if password was updated
+    if (password) {
+      logAuthEvent('PASSWORD_CHANGE', user.id, user.username, true, {
+        correlationId: (req as any).correlationId
+      });
+    }
+    
+    // Return user without password
+    const { password: _, ...userWithoutPassword } = user;
+    res.json(userWithoutPassword);
   } catch (error) {
-    console.error('Error updating user:', error);
+    logError(error instanceof Error ? error : 'Error updating user', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update user' });
   }
 });
@@ -95,13 +147,25 @@ usersRouter.delete('/:id', async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
+    // Get user info before deletion for logging
+    const user = await prisma.user.findUnique({
+      where: { id: Number(id) }
+    });
+    
+    if (user) {
+      // Log user deletion event
+      logDataAccess('user', user.id, 'DELETE', req.user?.id, req.user?.username);
+    }
+    
     await prisma.user.delete({
       where: { id: Number(id) }
     });
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting user:', error);
+    logError(error instanceof Error ? error : 'Error deleting user', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete user' });
   }
 });
@@ -115,14 +179,31 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'Username and password are required' });
     }
     
+    // Find user by username only
     const user = await prisma.user.findUnique({
       where: {
-        username,
-        password_HACK: password
+        username
       }
     });
     
     if (!user) {
+      // Log failed login attempt - user not found
+      logAuthEvent('FAILED_LOGIN', undefined, username, false, {
+        correlationId: (req as any).correlationId,
+        reason: 'User not found'
+      });
+      return res.status(401).json({ error: 'Invalid credentials' });
+    }
+    
+    // Compare password using bcrypt
+    const isPasswordValid = await comparePassword(password, user.password);
+    
+    if (!isPasswordValid) {
+      // Log failed login attempt - invalid password
+      logAuthEvent('FAILED_LOGIN', user.id, username, false, {
+        correlationId: (req as any).correlationId,
+        reason: 'Invalid password'
+      });
       return res.status(401).json({ error: 'Invalid credentials' });
     }
     
@@ -138,14 +219,88 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
       .setExpirationTime('24h')
       .sign(secret);
     
-    // Return user data with token
+    // Log successful login
+    logAuthEvent('LOGIN', user.id, user.username, true, {
+      correlationId: (req as any).correlationId
+    });
+    
+    // Return user data with token (without password)
+    const { password: _, ...userWithoutPassword } = user;
     res.json({
-      ...user,
+      ...userWithoutPassword,
       token
     });
   } catch (error) {
-    console.error('Error during login:', error);
+    logError(error instanceof Error ? error : 'Error during login', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Login failed due to server error. Please try again later.' });
+  }
+});
+
+// POST /api/auth/logout - Logout endpoint
+usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    // Extract token from Authorization header
+    const authHeader = req.headers.authorization;
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return res.status(401).json({ error: 'Access denied. No token provided.' });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+
+    // Get user ID from request (attached by auth middleware)
+    const userId = req.user?.id;
+    
+    if (!userId) {
+      return res.status(401).json({ error: 'User not authenticated.' });
+    }
+
+    // Decode the JWT to get the expiration time
+    const secret = new TextEncoder().encode(JWT_SECRET);
+    const { payload } = await jwtVerify(token, secret);
+    
+    // Extract expiration time from the JWT payload
+    const expiresAt = payload.exp ? new Date(payload.exp * 1000) : new Date(Date.now() + 24 * 60 * 60 * 1000);
+
+    // Revoke the token using the token blacklist service
+    await revokeToken(token, userId.toString(), expiresAt);
+    
+    // Log logout event
+    logAuthEvent('LOGOUT', userId, req.user?.username, true, {
+      correlationId: (req as any).correlationId
+    });
+
+    // Return success response
+    res.status(200).json({ message: 'Successfully logged out.' });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error during logout', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Logout failed due to server error. Please try again later.' });
+  }
+});
+
+// POST /api/auth/revoke-all - Revoke all tokens for a user (admin only)
+usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.body;
+    
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' });
+    }
+    
+    // Revoke all tokens for the target user
+    await revokeAllUserTokens(userId.toString());
+    
+    // Return success response
+    res.status(200).json({ message: 'All tokens for the user have been revoked successfully.' });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error revoking all tokens', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to revoke all tokens. Please try again later.' });
   }
 });
 

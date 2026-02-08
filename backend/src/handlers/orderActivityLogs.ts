@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { OrderActivityLog } from '../types';
+import { logWarn, logError } from '../utils/logger';
 
 export const orderActivityLogsRouter = express.Router();
 
@@ -25,7 +26,9 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
             parsedDetails = JSON.parse(log.details);
           } catch (e) {
             // If it looks like JSON but parsing fails, return as string
-            console.warn('Failed to parse details as JSON, returning as string:', log.details);
+            logWarn('Failed to parse details as JSON, returning as string', {
+              correlationId: (req as any).correlationId,
+            });
             parsedDetails = log.details;
           }
         } else {
@@ -40,8 +43,10 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
       };
     });
     res.json(logsWithParsedDetails);
- } catch (error) {
-    console.error('Error fetching order activity logs:', error);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching order activity logs', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch order activity logs' });
   }
 });

@@ -4,6 +4,8 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import { router } from './router';
 import { initPrisma } from './prisma';
+import { validateJwtSecret } from './utils/jwtSecretValidation';
+import { correlationIdMiddleware, requestLoggerMiddleware, logError, logInfo } from './utils/logger';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -46,6 +48,9 @@ const authRateLimit = rateLimit({
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
 
+// Add correlation ID middleware - MUST be first to track all requests
+app.use(correlationIdMiddleware);
+
 // Enable CORS with configured options - MUST be before rate limiting
 // to ensure CORS headers are present even on rate-limited responses
 app.use(cors(corsOptions));
@@ -55,6 +60,9 @@ app.use(helmet());
 
 // Apply general rate limiting
 app.use(generalRateLimit);
+
+// Add request logger middleware
+app.use(requestLoggerMiddleware);
 
 // Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
@@ -69,7 +77,11 @@ app.get('/health', (req: Request, res: Response) => {
 
 // Error handling middleware
 app.use((err: Error, req: Request, res: Response, next: Function) => {
-  console.error(err.stack);
+  logError(err, {
+    correlationId: (req as any).correlationId,
+    path: req.path,
+    method: req.method,
+  });
   res.status(500).json({ error: 'Something went wrong!' });
 });
 
@@ -80,6 +92,9 @@ app.use('*', (req: Request, res: Response) => {
 
 const startServer = async () => {
   try {
+    // Validate JWT_SECRET before starting the server
+    validateJwtSecret();
+    
     // Initialize Prisma client
     await initPrisma();
     
@@ -89,9 +104,10 @@ const startServer = async () => {
       console.log(`Server is running on ${HOST}:${PORT}`);
       console.log(`Health check: http://${HOST}:${PORT}/health`);
       console.log(`API base: http://${HOST}:${PORT}/api`);
+      logInfo(`Server started successfully on ${HOST}:${PORT}`);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    logError(error instanceof Error ? error : 'Failed to start server');
     process.exit(1);
   }
 };

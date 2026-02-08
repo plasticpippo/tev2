@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Till } from '../types';
 import { validateTill, validateTillName } from '../utils/validation';
+import { logError } from '../utils/logger';
 
 export const tillsRouter = express.Router();
 
@@ -11,7 +12,9 @@ tillsRouter.get('/', async (req: Request, res: Response) => {
     const tills = await prisma.till.findMany();
     res.json(tills);
   } catch (error) {
-    console.error('Error fetching tills:', error);
+    logError(error instanceof Error ? error : 'Error fetching tills', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch tills' });
  }
 });
@@ -30,7 +33,9 @@ tillsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(till);
   } catch (error) {
-    console.error('Error fetching till:', error);
+    logError(error instanceof Error ? error : 'Error fetching till', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch till' });
   }
 });
@@ -54,7 +59,9 @@ tillsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(till);
   } catch (error) {
-    console.error('Error creating till:', error);
+    logError(error instanceof Error ? error : 'Error creating till', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create till' });
   }
 });
@@ -82,7 +89,9 @@ tillsRouter.put('/:id', async (req: Request, res: Response) => {
     
     res.json(till);
   } catch (error) {
-    console.error('Error updating till:', error);
+    logError(error instanceof Error ? error : 'Error updating till', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update till' });
   }
 });
@@ -136,7 +145,9 @@ tillsRouter.delete('/:id', async (req: Request, res: Response) => {
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting till:', error);
+    logError(error instanceof Error ? error : 'Error deleting till', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete till' });
   }
 });

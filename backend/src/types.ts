@@ -57,8 +57,8 @@ export interface Category {
 export interface User {
   id: number;
   name: string;
- username: string;
- password_HACK: string;
+  username: string;
+  password: string;
   role: 'Admin' | 'Cashier';
 }
 

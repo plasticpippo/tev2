@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockAdjustment } from '../types';
+import { logError } from '../utils/logger';
 
 export const stockAdjustmentsRouter = express.Router();
 
@@ -12,9 +13,11 @@ stockAdjustmentsRouter.get('/', async (req: Request, res: Response) => {
     });
     res.json(stockAdjustments);
   } catch (error) {
-    console.error('Error fetching stock adjustments:', error);
+    logError(error instanceof Error ? error : 'Error fetching stock adjustments', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch stock adjustments' });
- }
+  }
 });
 
 // GET /api/stock-adjustments/:id - Get a specific stock adjustment
@@ -33,7 +36,9 @@ stockAdjustmentsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(stockAdjustment);
   } catch (error) {
-    console.error('Error fetching stock adjustment:', error);
+    logError(error instanceof Error ? error : 'Error fetching stock adjustment', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch stock adjustment' });
   }
 });
@@ -83,7 +88,9 @@ stockAdjustmentsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(stockAdjustment);
   } catch (error) {
-    console.error('Error creating stock adjustment:', error);
+    logError(error instanceof Error ? error : 'Error creating stock adjustment', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create stock adjustment' });
   }
 });
@@ -122,9 +129,11 @@ stockAdjustmentsRouter.get('/orphaned-references', async (req: Request, res: Res
     
     res.json(orphanedAdjustments);
   } catch (error) {
-    console.error('Error fetching orphaned stock adjustment references:', error);
+    logError(error instanceof Error ? error : 'Error fetching orphaned stock adjustment references', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch orphaned stock adjustment references' });
- }
+  }
 });
 
 // DELETE /api/stock-adjustments/cleanup-orphaned - Remove invalid stock adjustment references
@@ -182,9 +191,11 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', async (req: Request, res: Res
       removedRecords: orphanedAdjustments
     });
   } catch (error) {
-    console.error('Error cleaning up orphaned stock adjustment references:', error);
+    logError(error instanceof Error ? error : 'Error cleaning up orphaned stock adjustment references', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to clean up orphaned stock adjustment references' });
- }
+  }
 });
 
 // GET /api/stock-adjustments/validate-integrity - Validate data integrity for stock adjustments
@@ -234,7 +245,9 @@ stockAdjustmentsRouter.get('/validate-integrity', async (req: Request, res: Resp
       report: integrityReport
     });
   } catch (error) {
-    console.error('Error validating data integrity:', error);
+    logError(error instanceof Error ? error : 'Error validating data integrity', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to validate data integrity' });
   }
 });

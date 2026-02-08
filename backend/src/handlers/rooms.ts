@@ -3,13 +3,15 @@ import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
 import { validateRoomName } from '../utils/validation';
 import { sanitizeName, sanitizeDescription, SanitizationError } from '../utils/sanitization';
+import { logInfo, logError, redactSensitiveData } from '../utils/logger';
 
 const router = Router();
 
 // Middleware to log all room requests
 router.use((req, res, next) => {
-  console.log(`[Rooms API] ${req.method} ${req.path}`, {
-    body: req.body,
+  logInfo(`[Rooms API] ${req.method} ${req.path}`, {
+    correlationId: (req as any).correlationId,
+    body: redactSensitiveData(req.body),
     params: req.params,
   });
   next();
@@ -29,7 +31,9 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 
     res.json(rooms);
   } catch (error) {
-    console.error('Error fetching rooms:', error);
+    logError(error instanceof Error ? error : 'Error fetching rooms', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch rooms', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
@@ -50,8 +54,10 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     }
 
     res.json(room);
- } catch (error) {
-    console.error('Error fetching room:', error);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching room', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
@@ -119,7 +125,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     res.status(201).json(newRoom);
   } catch (error) {
-    console.error('Error creating room:', error);
+    logError(error instanceof Error ? error : 'Error creating room', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
@@ -202,7 +210,9 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 
     res.json(updatedRoom);
   } catch (error) {
-    console.error('Error updating room:', error);
+    logError(error instanceof Error ? error : 'Error updating room', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });
@@ -240,7 +250,9 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting room:', error);
+    logError(error instanceof Error ? error : 'Error deleting room', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete room', details: error instanceof Error ? error.message : 'Unknown error' });
   }
 });

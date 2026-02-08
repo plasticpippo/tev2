@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Product, ProductVariant } from '../types';
 import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
+import { logError } from '../utils/logger';
 
 export const productsRouter = express.Router();
 
@@ -19,7 +20,9 @@ productsRouter.get('/', async (req: Request, res: Response) => {
     });
     res.json(products);
   } catch (error) {
-    console.error('Error fetching products:', error);
+    logError(error instanceof Error ? error : 'Error fetching products', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch products. Please try again later.' });
   }
 });
@@ -45,7 +48,9 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(product);
   } catch (error) {
-    console.error('Error fetching product:', error);
+    logError(error instanceof Error ? error : 'Error fetching product', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch product. Please try again later.' });
   }
 });
@@ -132,10 +137,12 @@ productsRouter.post('/', async (req: Request, res: Response) => {
     });
     
     res.status(201).json(product);
- } catch (error) {
-   console.error('Error creating product:', error);
+  } catch (error) {
+   logError(error instanceof Error ? error : 'Error creating product', {
+     correlationId: (req as any).correlationId,
+   });
    res.status(500).json({ error: 'Failed to create product. Please check your data and try again.' });
- }
+  }
 });
 
 // PUT /api/products/:id - Update a product
@@ -294,7 +301,9 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
     
     res.json(product);
   } catch (error) {
-    console.error('Error updating product:', error);
+    logError(error instanceof Error ? error : 'Error updating product', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update product. Please check your data and try again.' });
   }
 });
@@ -328,7 +337,9 @@ productsRouter.delete('/:id', async (req: Request, res: Response) => {
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting product:', error);
+    logError(error instanceof Error ? error : 'Error deleting product', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete product. The product may be in use or referenced elsewhere.' });
   }
 });

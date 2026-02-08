@@ -4,6 +4,7 @@ import { authenticateToken } from '../middleware/auth';
 import { verifyLayoutOwnership } from '../middleware/authorization';
 import { writeLimiter } from '../middleware/rateLimiter';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
+import { logInfo, logError } from '../utils/logger';
 
 export const layoutsRouter = express.Router();
 
@@ -17,7 +18,9 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async
   try {
     const { tillId, categoryId } = req.params;
     
-    console.log(`Fetching layout for tillId: ${tillId}, categoryId: ${categoryId}`);
+    logInfo(`Fetching layout for tillId: ${tillId}, categoryId: ${categoryId}`, {
+      correlationId: (req as any).correlationId,
+    });
     
     // Parse categoryId to ensure it's a number
     const parsedCategoryId = Number(categoryId);
@@ -35,7 +38,9 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async
     
     res.json(layouts);
   } catch (error) {
-    console.error('Error fetching till layout:', error);
+    logError(error instanceof Error ? error : 'Error fetching till layout', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch layout. Please try again later.' });
   }
 });
@@ -49,7 +54,9 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
       positions: Array<{ variantId: number; gridColumn: number; gridRow: number }>
     };
     
-    console.log(`Saving layout for tillId: ${tillId}, categoryId: ${categoryId}`);
+    logInfo(`Saving layout for tillId: ${tillId}, categoryId: ${categoryId}`, {
+      correlationId: (req as any).correlationId,
+    });
     
     // Validate input
     if (!Array.isArray(positions)) {
@@ -146,7 +153,9 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
     const userId = req.user?.id;
     const userRole = req.user?.role;
     
-    console.log(`Deleting layout for tillId: ${tillId}, categoryId: ${categoryId}`);
+    logInfo(`Deleting layout for tillId: ${tillId}, categoryId: ${categoryId}`, {
+      correlationId: (req as any).correlationId,
+    });
     
     // Parse categoryId to ensure it's a number
     const parsedCategoryId = Number(categoryId);
@@ -180,7 +189,9 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting till layout:', error);
+    logError(error instanceof Error ? error : 'Error deleting till layout', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete layout. Please try again later.' });
   }
 });
@@ -219,7 +230,9 @@ layoutsRouter.get('/shared', authenticateToken, async (req: Request, res: Respon
     
     res.json(sharedLayouts);
   } catch (error) {
-    console.error('Error fetching shared layouts:', error);
+    logError(error instanceof Error ? error : 'Error fetching shared layouts', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch shared layouts. Please try again later.' });
   }
 });
@@ -249,7 +262,9 @@ layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Re
     
     res.json(sharedLayout);
   } catch (error) {
-    console.error('Error fetching shared layout:', error);
+    logError(error instanceof Error ? error : 'Error fetching shared layout', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch shared layout. Please try again later.' });
   }
 });

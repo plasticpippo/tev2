@@ -1,11 +1,12 @@
 import { PrismaClient } from '@prisma/client';
 import { User } from '../src/types';
+import { hashPassword } from '../src/utils/password';
 
 const prisma = new PrismaClient();
 
-const INITIAL_USERS: User[] = [
-  { id: 1, name: 'Admin User', username: 'admin', password_HACK: 'admin123', role: 'Admin' },
-  { id: 2, name: 'Cashier User', username: 'cashier', password_HACK: 'cashier123', role: 'Cashier' },
+const INITIAL_USERS: Array<Omit<User, 'id'> & { password: string }> = [
+  { name: 'Admin User', username: 'admin', password: 'admin123', role: 'Admin' },
+  { name: 'Cashier User', username: 'cashier', password: 'cashier123', role: 'Cashier' },
 ];
 
 async function seedDatabase() {
@@ -23,18 +24,19 @@ async function seedDatabase() {
     if (userCount === 0) {
       console.log('Seeding users...');
       
-      // Create users
+      // Create users with hashed passwords
       const users = await Promise.all(
-        INITIAL_USERS.map((user) =>
-          prisma.user.create({
+        INITIAL_USERS.map(async (user) => {
+          const hashedPassword = await hashPassword(user.password);
+          return prisma.user.create({
             data: {
               name: user.name,
               username: user.username,
-              password_HACK: user.password_HACK,
+              password: hashedPassword,
               role: user.role,
             },
-          })
-        )
+          });
+        })
       );
       console.log('Created users:', users.length);
     } else {

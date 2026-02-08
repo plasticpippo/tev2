@@ -1,5 +1,6 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
+import { logError } from '../utils/logger';
 
 export const consumptionReportsRouter = express.Router();
 
@@ -171,7 +172,9 @@ consumptionReportsRouter.get('/itemised', async (req: Request, res: Response) =>
       totals: aggregatedTotalsArray
     });
   } catch (error) {
-    console.error('Error fetching itemised consumption report:', error);
+    logError(error instanceof Error ? error : 'Error fetching itemised consumption report', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch itemised consumption report. Please try again later.' });
   }
 });

@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { DailyClosing } from '../types';
 import { calculateDailyClosingSummary, createDailyClosing } from '../services/dailyClosingService';
+import { logError } from '../utils/logger';
 
 export const dailyClosingsRouter = express.Router();
 
@@ -50,10 +51,12 @@ dailyClosingsRouter.get('/', async (req: Request, res: Response) => {
     }));
 
     res.json(result);
- } catch (error) {
-    console.error('Error fetching daily closings:', error);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching daily closings', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch daily closings' });
- }
+  }
 });
 
 // GET /api/daily-closings/:id - Get a specific daily closing
@@ -88,9 +91,11 @@ dailyClosingsRouter.get('/:id', async (req: Request, res: Response) => {
 
     res.json(result);
   } catch (error) {
-    console.error('Error fetching daily closing:', error);
+    logError(error instanceof Error ? error : 'Error fetching daily closing', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to fetch daily closing' });
- }
+  }
 });
 
 // POST /api/daily-closings - Create a new daily closing
@@ -176,7 +181,9 @@ dailyClosingsRouter.post('/', async (req: Request, res: Response) => {
 
     res.status(201).json(result);
   } catch (error) {
-    console.error('Error creating daily closing:', error);
+    logError(error instanceof Error ? error : 'Error creating daily closing', {
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create daily closing' });
   }
 });

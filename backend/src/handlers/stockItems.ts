@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockItem } from '../types';
 import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
+import { logError, logWarn } from '../utils/logger';
 
 export const stockItemsRouter = express.Router();
 
