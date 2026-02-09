@@ -2,6 +2,9 @@
 set -e
 
 # Check if we're in a production environment
+# NODE_ENV is passed via docker-compose.yml environment variables
+# - development: Seeds database with default data for testing
+# - production: Only runs migrations, no seeding (preserves existing data)
 if [ "$NODE_ENV" = "production" ]; then
     echo "Running in production mode"
     

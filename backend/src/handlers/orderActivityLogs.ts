@@ -72,12 +72,14 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
           (trimmedDetails.startsWith('[') && trimmedDetails.endsWith(']')) ||
           (trimmedDetails.startsWith('"') && trimmedDetails.endsWith('"'))) {
         try {
-          parsedDetails = JSON.parse(orderActivityLog.details);
-        } catch (e) {
-          // If it looks like JSON but parsing fails, return as string
-          console.warn('Failed to parse details as JSON, returning as string:', orderActivityLog.details);
-          parsedDetails = orderActivityLog.details;
-        }
+            parsedDetails = JSON.parse(orderActivityLog.details);
+          } catch (e) {
+            // If it looks like JSON but parsing fails, return as string
+            logWarn('Failed to parse details as JSON, returning as string', {
+              correlationId: (req as any).correlationId,
+            });
+            parsedDetails = orderActivityLog.details;
+          }
       } else {
         // If it doesn't look like JSON, return as string
         parsedDetails = orderActivityLog.details;

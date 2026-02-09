@@ -140,7 +140,10 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
     
     res.status(201).json(result);
   } catch (error) {
-    console.error('Error saving till layout:', error);
+    logError('Error saving till layout', {
+      error,
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to save layout. Please check your data and try again.' });
   }
 });
@@ -279,7 +282,10 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
       positions: Array<{ variantId: number; gridColumn: number; gridRow: number }>;
     };
     
-    console.log(`Creating shared layout for category: ${categoryId}`);
+    logInfo('Creating shared layout for category', {
+      categoryId,
+      correlationId: (req as any).correlationId,
+    });
     
     // Validate input
     if (!name || !name.trim()) {
@@ -361,7 +367,10 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
     
     res.status(201).json(sharedLayout);
   } catch (error) {
-    console.error('Error creating shared layout:', error);
+    logError('Error creating shared layout', {
+      error,
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to create shared layout. Please check your data and try again.' });
   }
 });
@@ -480,7 +489,10 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
     
     res.json(updated);
   } catch (error) {
-    console.error('Error updating shared layout:', error);
+    logError('Error updating shared layout', {
+      error,
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to update shared layout. Please check your data and try again.' });
   }
 });
@@ -507,7 +519,10 @@ layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, wr
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting shared layout:', error);
+    logError('Error deleting shared layout', {
+      error,
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to delete shared layout. Please try again later.' });
   }
 });
@@ -570,7 +585,10 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
       layouts: result
     });
   } catch (error) {
-    console.error('Error loading shared layout to till:', error);
+    logError('Error loading shared layout to till', {
+      error,
+      correlationId: (req as any).correlationId,
+    });
     res.status(500).json({ error: 'Failed to load shared layout. Please try again later.' });
   }
 });

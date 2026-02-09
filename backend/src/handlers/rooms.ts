@@ -34,7 +34,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching rooms', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch rooms', details: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({ error: 'Failed to fetch rooms' });
   }
 });
 
@@ -58,7 +58,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch room', details: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({ error: 'Failed to fetch room' });
   }
 });
 
@@ -128,7 +128,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error creating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create room', details: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({ error: 'Failed to create room' });
   }
 });
 
@@ -213,7 +213,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error updating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update room', details: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({ error: 'Failed to update room' });
   }
 });
 
@@ -253,7 +253,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     logError(error instanceof Error ? error : 'Error deleting room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete room', details: error instanceof Error ? error.message : 'Unknown error' });
+    res.status(500).json({ error: 'Failed to delete room' });
   }
 });
 

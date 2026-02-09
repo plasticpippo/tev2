@@ -5,7 +5,8 @@ import { rateLimit } from 'express-rate-limit';
 import { router } from './router';
 import { initPrisma } from './prisma';
 import { validateJwtSecret } from './utils/jwtSecretValidation';
-import { correlationIdMiddleware, requestLoggerMiddleware, logError, logInfo } from './utils/logger';
+import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
+import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -23,6 +24,7 @@ const corsOptions: cors.CorsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['X-Correlation-ID'],  // Expose correlation ID header to clients
   optionsSuccessStatus: 204,
   preflightContinue: false,
 };
@@ -75,20 +77,11 @@ app.get('/health', (req: Request, res: Response) => {
   res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
 });
 
-// Error handling middleware
-app.use((err: Error, req: Request, res: Response, next: Function) => {
-  logError(err, {
-    correlationId: (req as any).correlationId,
-    path: req.path,
-    method: req.method,
-  });
-  res.status(500).json({ error: 'Something went wrong!' });
-});
+// 404 handler - MUST be before error handler
+app.use('*', notFoundHandler);
 
-// 404 handler
-app.use('*', (req: Request, res: Response) => {
-  res.status(404).json({ error: 'Route not found' });
-});
+// Error handling middleware - MUST be LAST in the middleware chain
+app.use(errorHandler);
 
 const startServer = async () => {
   try {

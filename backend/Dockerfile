@@ -4,6 +4,11 @@ FROM node:20-alpine
 # Set working directory
 WORKDIR /app
 
+# Note: NODE_ENV is passed via docker-compose.yml environment variables
+# - development: Detailed error messages, stack traces, debug logging
+# - production: Generic error messages, no stack traces, secure logging
+# Default: development (if not set in docker-compose.yml)
+
 # Copy package files
 COPY package*.json ./
 

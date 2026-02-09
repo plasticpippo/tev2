@@ -1,6 +1,16 @@
 # Use Node.js 20 Alpine as base image for building
 FROM node:20-alpine AS builder
 
+# Accept build arguments for Vite environment variables
+ARG VITE_API_URL
+ARG VITE_HOST
+ARG VITE_PORT
+
+# Set environment variables for Vite build
+ENV VITE_API_URL=${VITE_API_URL}
+ENV VITE_HOST=${VITE_HOST}
+ENV VITE_PORT=${VITE_PORT}
+
 # Set working directory
 WORKDIR /app
 

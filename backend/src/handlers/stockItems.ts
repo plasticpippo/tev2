@@ -17,7 +17,7 @@ stockItemsRouter.get('/', async (req: Request, res: Response) => {
     }));
     res.json(stockItemsWithParsedUnits);
   } catch (error) {
-    console.error('Error fetching stock items:', error);
+    logError('Error fetching stock items:', { error });
     res.status(500).json({ error: 'Failed to fetch stock items. Please try again later.' });
   }
 });
@@ -49,7 +49,7 @@ stockItemsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(stockItemWithParsedUnits);
   } catch (error) {
-    console.error('Error fetching stock item:', error);
+    logError('Error fetching stock item:', { error });
     res.status(500).json({ error: 'Failed to fetch stock item. Please try again later.' });
   }
 });
@@ -77,7 +77,7 @@ stockItemsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(stockItem);
   } catch (error) {
-    console.error('Error creating stock item:', error);
+    logError('Error creating stock item:', { error });
     res.status(500).json({ error: 'Failed to create stock item. Please check your data and try again.' });
  }
 });
@@ -124,7 +124,7 @@ stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
       });
       
       // Log the invalid references for debugging
-      console.warn(`Invalid stock item references found: ${invalidStockItemIds.join(', ')}`);
+      logWarn(`Invalid stock item references found: ${invalidStockItemIds.join(', ')}`);
       
       // Filter out invalid consumptions and continue with valid ones
       const validConsumptionsForExistingStock = validConsumptions.filter(c => existingStockMap.has(c.stockItemId));
@@ -153,7 +153,7 @@ stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
           });
           const stockItemName = stockItem?.name || `ID ${stockItemId}`;
           
-          console.warn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
+          logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
           return res.status(400).json({
             error: `Insufficient stock for item "${stockItemName}" (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`
           });
@@ -192,7 +192,7 @@ stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
         });
         const stockItemName = stockItem?.name || `ID ${stockItemId}`;
         
-        console.warn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
+        logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
         return res.status(400).json({
           error: `Insufficient stock for item "${stockItemName}" (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`
         });
@@ -201,7 +201,7 @@ stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
     
     res.status(200).json({ message: 'Stock levels updated successfully' });
  } catch (error) {
-     console.error('Error updating stock levels:', error);
+     logError('Error updating stock levels:', { error });
      res.status(500).json({ error: 'Failed to update stock levels. Please check your data and try again.' });
  }
 });
@@ -291,7 +291,7 @@ stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
     
     res.json(stockItem);
   } catch (error) {
-    console.error('Error updating stock item:', error);
+    logError('Error updating stock item:', { error });
     res.status(500).json({ error: 'Failed to update stock item. Please check your data and try again.' });
   }
 });
@@ -324,7 +324,7 @@ stockItemsRouter.delete('/:id', async (req: Request, res: Response) => {
     
     res.status(204).send();
   } catch (error) {
-    console.error('Error deleting stock item:', error);
+    logError('Error deleting stock item:', { error });
     res.status(500).json({ error: 'Failed to delete stock item. The item may be in use in product recipes.' });
   }
 });
@@ -372,7 +372,7 @@ stockItemsRouter.get('/orphaned-references', async (req: Request, res: Response)
     
     res.json(formattedOrphanedConsumptions);
   } catch (error) {
-    console.error('Error fetching orphaned stock consumption references:', error);
+    logError('Error fetching orphaned stock consumption references:', { error });
     res.status(500).json({ error: 'Failed to fetch orphaned stock consumption references. Please try again later.' });
   }
 });
@@ -441,7 +441,7 @@ stockItemsRouter.delete('/cleanup-orphaned', async (req: Request, res: Response)
       removedRecords: formattedOrphanedConsumptions
     });
   } catch (error) {
-      console.error('Error cleaning up orphaned stock consumption references:', error);
+      logError('Error cleaning up orphaned stock consumption references:', { error });
       res.status(500).json({ error: 'Failed to clean up orphaned stock consumption references. Please try again later.' });
   }
 });
@@ -532,7 +532,7 @@ stockItemsRouter.get('/validate-integrity', async (req: Request, res: Response) 
       report: integrityReport
     });
   } catch (error) {
-    console.error('Error validating data integrity:', error);
+    logError('Error validating data integrity:', { error });
     res.status(500).json({ error: 'Failed to validate data integrity. Please try again later.' });
   }
 });
