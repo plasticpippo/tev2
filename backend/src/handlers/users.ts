@@ -8,6 +8,7 @@ import { requireAdmin } from '../middleware/authorization';
 import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistService';
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
 import { logError, logAuthEvent, logDataAccess } from '../utils/logger';
+import { toUserDTO, toUserDTOArray, UserResponseDTO } from '../types/dto';
 
 // Validate JWT_SECRET at module load time - fail fast if invalid
 validateJwtSecret();
@@ -20,9 +21,9 @@ export const usersRouter = express.Router();
 usersRouter.get('/', async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
-    // Exclude password field from response
-    const usersWithoutPasswords = users.map(({ password, ...user }) => user);
-    res.json(usersWithoutPasswords);
+    // Transform users to DTOs to exclude sensitive fields
+    const userDTOs = toUserDTOArray(users);
+    res.json(userDTOs);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching users', {
       correlationId: (req as any).correlationId,
@@ -43,9 +44,9 @@ usersRouter.get('/:id', async (req: Request, res: Response) => {
       return res.status(404).json({ error: 'User not found' });
     }
     
-    // Exclude password field from response
-    const { password, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    // Transform user to DTO to exclude sensitive fields
+    const userDTO = toUserDTO(user);
+    res.json(userDTO);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching user', {
       correlationId: (req as any).correlationId,
@@ -91,9 +92,9 @@ usersRouter.post('/', async (req: Request, res: Response) => {
       role: user.role
     });
     
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
-    res.status(201).json(userWithoutPassword);
+    // Transform user to DTO to exclude sensitive fields
+    const userDTO = toUserDTO(user);
+    res.status(201).json(userDTO);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error creating user', {
       correlationId: (req as any).correlationId,
@@ -131,9 +132,9 @@ usersRouter.put('/:id', async (req: Request, res: Response) => {
       });
     }
     
-    // Return user without password
-    const { password: _, ...userWithoutPassword } = user;
-    res.json(userWithoutPassword);
+    // Transform user to DTO to exclude sensitive fields
+    const userDTO = toUserDTO(user);
+    res.json(userDTO);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating user', {
       correlationId: (req as any).correlationId,
@@ -224,10 +225,10 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
       correlationId: (req as any).correlationId
     });
     
-    // Return user data with token (without password)
-    const { password: _, ...userWithoutPassword } = user;
+    // Transform user to DTO to exclude sensitive fields
+    const userDTO = toUserDTO(user);
     res.json({
-      ...userWithoutPassword,
+      ...userDTO,
       token
     });
   } catch (error) {

@@ -5,6 +5,7 @@ import { verifyLayoutOwnership } from '../middleware/authorization';
 import { writeLimiter } from '../middleware/rateLimiter';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError } from '../utils/logger';
+import { toUserReferenceDTO } from '../types/dto';
 
 export const layoutsRouter = express.Router();
 

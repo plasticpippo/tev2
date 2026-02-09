@@ -4,6 +4,8 @@ services:
   db:
     image: postgres:15
     container_name: bar_pos_backend_db
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
@@ -13,6 +15,7 @@ services:
     restart: unless-stopped
     networks:
       - internal-network
+      - external-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-totalevo_user} -d ${POSTGRES_DB:-bar_pos}"]
       interval: 10s

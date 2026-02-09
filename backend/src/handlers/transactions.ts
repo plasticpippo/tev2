@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Transaction } from '../types';
 import { logPaymentEvent, logError } from '../utils/logger';
+import { toUserReferenceDTO } from '../types/dto';
 
 export const transactionsRouter = express.Router();
 

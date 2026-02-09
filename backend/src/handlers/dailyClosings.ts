@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import type { DailyClosing } from '../types';
 import { calculateDailyClosingSummary, createDailyClosing } from '../services/dailyClosingService';
 import { logError } from '../utils/logger';
+import { toUserReferenceDTO } from '../types/dto';
 
 export const dailyClosingsRouter = express.Router();
 
@@ -26,28 +27,34 @@ dailyClosingsRouter.get('/', async (req: Request, res: Response) => {
       }
     }
 
+    // Get daily closings without including user data to avoid potential sensitive data exposure
     const dailyClosings = await prisma.dailyClosing.findMany({
       where: filter,
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      },
+      // Remove user inclusion to prevent potential sensitive data exposure
       orderBy: {
         closedAt: 'desc'
       }
     });
 
-    // Transform to match the expected interface
-    const result: DailyClosing[] = dailyClosings.map((closing: any) => ({
-      id: closing.id,
-      createdAt: closing.createdAt.toISOString(),
-      closedAt: closing.closedAt.toISOString(),
-      summary: closing.summary as any,
-      userId: closing.userId,
-      userName: closing.user.name
+    // For each daily closing, fetch only the necessary user data safely
+    const result: DailyClosing[] = await Promise.all(dailyClosings.map(async (closing: any) => {
+      // Fetch only the safe user data we need
+      const user = await prisma.user.findUnique({
+        where: { id: closing.userId },
+        select: {
+          id: true,
+          name: true
+        }
+      });
+
+      return {
+        id: closing.id,
+        createdAt: closing.createdAt.toISOString(),
+        closedAt: closing.closedAt.toISOString(),
+        summary: closing.summary as any,
+        userId: closing.userId,
+        userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
+      };
     }));
 
     res.json(result);
@@ -65,14 +72,7 @@ dailyClosingsRouter.get('/:id', async (req: Request, res: Response) => {
     const { id } = req.params;
 
     const dailyClosing = await prisma.dailyClosing.findUnique({
-      where: { id: Number(id) },
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
-      }
+      where: { id: Number(id) }
     });
 
     if (!dailyClosing) {
@@ -80,13 +80,22 @@ dailyClosingsRouter.get('/:id', async (req: Request, res: Response) => {
       return;
     }
 
+    // Fetch only the safe user data we need
+    const user = await prisma.user.findUnique({
+      where: { id: dailyClosing.userId },
+      select: {
+        id: true,
+        name: true
+      }
+    });
+
     const result: DailyClosing = {
       id: dailyClosing.id,
       createdAt: dailyClosing.createdAt.toISOString(),
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: dailyClosing.user.name
+      userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
     };
 
     res.json(result);
@@ -160,13 +169,15 @@ dailyClosingsRouter.post('/', async (req: Request, res: Response) => {
         closedAt: new Date(closedAt),
         summary: summary as any, // Type assertion to handle JSON serialization
         userId: userId
-      },
-      include: {
-        user: {
-          select: {
-            name: true
-          }
-        }
+      }
+    });
+
+    // Fetch only the safe user data we need
+    const user = await prisma.user.findUnique({
+      where: { id: dailyClosing.userId },
+      select: {
+        id: true,
+        name: true
       }
     });
 
@@ -176,7 +187,7 @@ dailyClosingsRouter.post('/', async (req: Request, res: Response) => {
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: dailyClosing.user.name
+      userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
     };
 
     res.status(201).json(result);
