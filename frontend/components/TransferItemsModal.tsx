@@ -71,19 +71,12 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
 
    console.log('TransferItemsModal: itemsToMove', itemsToMove);
 
-   if (!destination) {
-     console.log('TransferItemsModal: Early return - no destination');
-     return;
-   }
+    if (!destination) {
+      console.log('TransferItemsModal: Early return - no destination');
+      return;
+    }
 
-   // Only validate items exist if we're actually trying to move items
-   // If the user just wants to close the modal, they can click Cancel
-   if (itemsToMove.length === 0) {
-     console.log('TransferItemsModal: Early return - no items to move');
-     return;
-   }
-
-   if (destination.type === 'new') {
+    if (destination.type === 'new') {
      console.log('TransferItemsModal: Creating new tab with name:', newTabName.trim());
      if (!newTabName.trim()) {
        console.log('TransferItemsModal: New tab name is empty, returning');
@@ -108,13 +101,13 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
    ? destinationTabs.find(tab => tab.id === destination.id)?.name
    : null;
 
-   return (
-     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-6">
+    return (
+      <div className="fixed inset-0 bg-slate-900 bg-opacity-70 flex items-center justify-center z-50 p-6">
        <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-3xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 flex-shrink-0">
             <div className="flex justify-between items-center mb-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-amber-400">Transfer Items</h2>
+                    <h2 className="text-2xl font-bold text-amber-500">Transfer Items</h2>
                     <p className="text-base text-slate-300">From tab: <span className="font-semibold text-white">{sourceTab.name}</span></p>
                 </div>
                 <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200" aria-label="Close">&times;</button>
@@ -126,7 +119,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                 <h3 className="text-lg font-semibold mb-3 text-slate-300">1. Select Item Quantities to Move</h3>
                 <div className="bg-slate-900 rounded-md max-h-72 overflow-y-auto p-3 space-y-3">
                     {sourceTab.items.length === 0 ? (
-                        <p className="text-slate-500 text-center p-4">This tab has no items.</p>
+                        <p className="text-slate-400 text-center p-4">This tab has no items.</p>
                     ) : (
                         sourceTab.items.map(item => (
                             <div key={item.id} className="flex justify-between items-center bg-slate-800 p-3 rounded-md">
@@ -166,7 +159,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                         <button
                             key={tab.id}
                             onClick={() => setDestination({ type: 'existing', id: tab.id })}
-                            className={`p-3 rounded-md font-semibold text-base truncate transition duration-200 ${destination?.type === 'existing' && destination.id === tab.id ? 'bg-amber-500 text-amber-900 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
+                            className={`p-3 rounded-md font-semibold text-base truncate transition duration-200 text-white ${destination?.type === 'existing' && destination.id === tab.id ? 'bg-amber-500 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
                             aria-label={`Select destination tab: ${tab.name}`}
                         >
                             {tab.name}
@@ -174,7 +167,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                     ))}
                     <button
                         onClick={() => setDestination({ type: 'new' })}
-                        className={`p-3 rounded-md font-semibold text-base transition duration-200 ${destination?.type === 'new' ? 'bg-amber-500 text-amber-900 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
+                        className={`p-3 rounded-md font-semibold text-base transition duration-200 text-white ${destination?.type === 'new' ? 'bg-amber-500 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
                         aria-label="Create new tab"
                     >
                         + New Tab
@@ -188,7 +181,8 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                             value={newTabName}
                             onChange={(e) => setNewTabName(e.target.value)}
                             placeholder="Enter new tab name..."
-                            className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md"
+                            className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md text-white placeholder-slate-400"
+                            style={{ color: '#ffffff', backgroundColor: '#0f172a' }}
                             autoFocus
                             onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => {
                                 // If Enter key is pressed, confirm the transfer
@@ -202,7 +196,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                 <button
                                     onClick={handleConfirm}
                                     disabled={destination?.type === 'new' && !newTabName.trim()}
-                                    className="bg-amber-700 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
+                                    className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                 >
                                     Confirm Tab Name
                                 </button>
@@ -212,18 +206,18 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                 )}
                 {destination?.type === 'existing' && selectedTabName && (
                   <p className="mt-3 text-slate-300 text-sm">
-                    Selected: <span className="text-amber-400 font-semibold">{selectedTabName}</span>
+                    Selected: <span className="text-amber-500 font-semibold">{selectedTabName}</span>
                   </p>
                 )}
             </div>
           </div>
         
         <div className="flex justify-end gap-4 p-6 border-t border-slate-700 flex-shrink-0">
-          <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-3 px-6 rounded-md text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200">Cancel</button>
+          <button onClick={onClose} className="bg-slate-700 hover:bg-slate-600 text-white font-semibold py-3 px-6 rounded-md text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200">Cancel</button>
           <button
               onClick={handleConfirm}
               disabled={isMoveDisabled}
-              className="bg-green-700 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
+              className="bg-green-500 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
             >
               Move Items ({totalItemsToMove})
             </button>

@@ -125,7 +125,8 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     itemsToMove: OrderItem[]
   ) => {
     // Use the transferSourceTab from the component's scope
-    if (!transferSourceTab || itemsToMove.length === 0 || !assignedTillId || !currentUser) return;
+    // Note: Allow creating new tabs even when no items are selected
+    if (!transferSourceTab || !assignedTillId || !currentUser) return;
 
     // Fix items without names before moving
     const correctedItemsToMove = itemsToMove.map(item => ({
