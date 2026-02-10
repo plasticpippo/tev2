@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useRef, useCallback } from 'react';
+import React, { createContext, useState, useContext, useRef, useCallback, useEffect } from 'react';
 import useDeviceDetection from '../hooks/useDeviceDetection';
 
 type KeyboardType = 'numeric' | 'full' | null;
@@ -23,8 +23,18 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
   const activeInputRef = useRef<HTMLInputElement | null>(null);
   const { isDesktop } = useDeviceDetection();
   
-  // Default to true on desktop, false on mobile/tablet
-  const [isKeyboardEnabled, setIsKeyboardEnabled] = useState(isDesktop);
+  // Default to false on all devices
+  const [isKeyboardEnabled, setIsKeyboardEnabled] = useState(false);
+
+  // Close keyboard when it becomes disabled
+  useEffect(() => {
+    if (!isKeyboardEnabled && isOpen) {
+      setIsOpen(false);
+      setKeyboardType(null);
+      activeInputRef.current?.blur();
+      activeInputRef.current = null;
+    }
+  }, [isKeyboardEnabled, isOpen]);
 
   const openKeyboard = useCallback((target: HTMLInputElement, type: KeyboardType) => {
     // Only open keyboard if enabled

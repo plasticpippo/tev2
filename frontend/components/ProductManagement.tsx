@@ -50,10 +50,10 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                     <label className="block text-sm font-medium text-slate-400 mb-1">Variant Name</label>
                     <VKeyboardInput k-type="full" type="text" placeholder="e.g., Bottle" value={variant.name || ''} onChange={e => onUpdate({ ...variant, name: e.target.value })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
                  </div>
-                 <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1">Price</label>
-                    <VKeyboardInput k-type="numeric" type="number" placeholder="e.g., 25.00" value={variant.price || ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
-                 </div>
+                  <div>
+                     <label className="block text-sm font-medium text-slate-400 mb-1">Price</label>
+                     <VKeyboardInput k-type="numeric" type="number" placeholder="e.g., 25.00" value={variant.price ?? ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
+                  </div>
              </div>
              <div>
                 <label className="flex items-center gap-2 cursor-pointer">
