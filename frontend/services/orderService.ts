@@ -5,16 +5,10 @@ import type { OrderSession } from './apiBase';
 // Order Sessions
 export const getOrderSession = async (): Promise<OrderSession | null> => {
   try {
-    // Get userId from localStorage or wherever it's stored after login
-    const storedUser = localStorage.getItem('currentUser');
-    const userId = storedUser ? JSON.parse(storedUser).id : null;
+    const response = await fetch(apiUrl('/api/order-sessions/current'), {
+      headers: getAuthHeaders()
+    });
     
-    if (!userId) {
-      console.warn('No user authenticated for order session, returning null');
-      return null;
-    }
-    
-    const response = await fetch(apiUrl(`/api/order-sessions/current?userId=${userId}`));
     if (!response.ok) {
       if (response.status === 404) {
         // Return null or empty session if no active session exists
@@ -27,7 +21,7 @@ export const getOrderSession = async (): Promise<OrderSession | null> => {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     return await response.json();
- } catch (error) {
+  } catch (error) {
     console.error('Error fetching order session:', error);
     // Return null instead of throwing to prevent errors during initialization
     return null;
@@ -36,19 +30,10 @@ export const getOrderSession = async (): Promise<OrderSession | null> => {
 
 export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSession | null> => {
   try {
-    // Get userId from localStorage or wherever it's stored after login
-    const storedUser = localStorage.getItem('currentUser');
-    const userId = storedUser ? JSON.parse(storedUser).id : null;
-    
-    if (!userId) {
-      console.warn('No user authenticated for order session save, returning null');
-      return null;
-    }
-    
     const response = await fetch(apiUrl('/api/order-sessions/current'), {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ items: orderItems, userId })
+      body: JSON.stringify({ items: orderItems })
     });
     
     if (!response.ok) {
@@ -71,15 +56,6 @@ export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSe
 
 export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | 'assign-tab'): Promise<OrderSession | null> => {
   try {
-    // Get userId from localStorage or wherever it's stored after login
-    const storedUser = localStorage.getItem('currentUser');
-    const userId = storedUser ? JSON.parse(storedUser).id : null;
-    
-    if (!userId) {
-      console.warn(`No user authenticated for order session status update (${status}), returning null`);
-      return null;
-    }
-    
     let endpoint = '';
     switch (status) {
       case 'logout':
@@ -98,7 +74,7 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
     const response = await fetch(apiUrl(endpoint), {
       method: 'PUT',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ userId })
+      body: JSON.stringify({})
     });
     
     if (!response.ok) {

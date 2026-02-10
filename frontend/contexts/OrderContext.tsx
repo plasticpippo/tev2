@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import type { OrderItem, Product, ProductVariant } from '../../shared/types';
 import * as api from '../services/apiService';
@@ -27,6 +27,11 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoadingOrderSession, setIsLoadingOrderSession] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(null); // Using any temporarily
+  
+  // Use ref to track if we're in the initial load phase
+  // This prevents saves during the initial load without relying on timeouts
+  const isInitialLoadRef = useRef(false);
+  const lastLoadedSessionIdRef = useRef<string | null>(null);
 
   const { currentUser } = useSessionContext();
   const { appData } = useGlobalDataContext();
@@ -36,25 +41,36 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
     const loadOrderSession = async () => {
       if (currentUser) {
         setIsLoadingOrderSession(true);
+        isInitialLoadRef.current = true;
+        
         try {
           const session = await api.getOrderSession();
           if (session && session.items) {
+            // Store the session ID to track which session we loaded
+            lastLoadedSessionIdRef.current = session.id || null;
             setOrderItems(session.items);
           } else {
-            // If no active session exists, start with empty order
+            // No session found, clear the ref
+            lastLoadedSessionIdRef.current = null;
             setOrderItems([]);
           }
         } catch (error) {
           console.error('Failed to load order session:', error);
-          // Start with empty order if session loading fails
+          lastLoadedSessionIdRef.current = null;
           setOrderItems([]);
         } finally {
           setIsLoadingOrderSession(false);
+          // Use a small timeout to ensure the state update has been processed
+          // before allowing saves to proceed
+          setTimeout(() => {
+            isInitialLoadRef.current = false;
+          }, 50);
         }
       } else {
         // If no user is logged in, ensure order items are cleared
         setOrderItems([]);
         setIsLoadingOrderSession(false);
+        lastLoadedSessionIdRef.current = null;
       }
     };
 
@@ -63,15 +79,19 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
 
   // Save order session whenever orderItems change (with debounce)
   useEffect(() => {
-    if (!currentUser || isLoadingOrderSession) {
-      return; // Don't save if no user or still loading
+    // Skip save if no user, still loading, or during initial load phase
+    if (!currentUser || isLoadingOrderSession || isInitialLoadRef.current) {
+      return;
     }
 
     // Only save if we have actual order items
     if (orderItems && orderItems.length > 0) {
       const saveSession = async () => {
         const result = await api.saveOrderSession(orderItems);
-        if (!result) {
+        if (result && result.id) {
+          // Update the last loaded session ID to match the saved session
+          lastLoadedSessionIdRef.current = result.id;
+        } else {
           console.warn('Order session save failed or user not authenticated');
         }
       };
@@ -83,14 +103,16 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
       // If we have no order items but a user is logged in, clear any existing session
       // This prevents creating empty sessions on initialization
       api.saveOrderSession(orderItems).then(result => {
-        if (!result) {
+        if (result && result.id) {
+          lastLoadedSessionIdRef.current = result.id;
+        } else {
           console.warn('Empty order session save failed or user not authenticated');
         }
       }).catch(error => {
         console.error('Failed to save empty order session:', error);
       });
     }
- }, [orderItems, currentUser, isLoadingOrderSession]);
+  }, [orderItems, currentUser, isLoadingOrderSession]);
 
   const handleAddToCart = (variant: ProductVariant, product: Product) => {
     const existingItem = orderItems.find(item => item.variantId === variant.id);

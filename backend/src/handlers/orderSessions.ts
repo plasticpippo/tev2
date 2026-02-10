@@ -2,46 +2,70 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { OrderSession } from '../types';
 import { logError } from '../utils/logger';
-
-// Define custom type for Request to include user information
-interface AuthenticatedRequest extends Request {
-  userId?: number;
-}
+import { authenticateToken } from '../middleware/auth';
 
 export const orderSessionsRouter = express.Router();
 
-// Middleware to extract user ID from request (to be implemented with proper auth)
-const authenticateUser = (req: AuthenticatedRequest, res: Response, next: any) => {
-  // For now, extract userId from request body or query params for testing
-  // In a real implementation, this would come from session, JWT token, etc.
- const userId = req.body.userId || req.query.userId || (req as any).session?.userId;
-  
-  if (!userId) {
-    return res.status(401).json({ error: 'User not authenticated' });
- }
-  
-  req.userId = Number(userId);
-  next();
-};
-
 // GET /api/order-sessions/current - Get the current user's active order session
-orderSessionsRouter.get('/current', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Find the user's active order session
-    const orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
+    console.log(`[GET /api/order-sessions/current] Fetching session for userId: ${userId}`);
+
+    // Use a transaction to ensure atomic session restoration
+    const orderSession = await prisma.$transaction(async (tx) => {
+      // First try to find an active session
+      let session = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
+      
+      if (session) {
+        const itemsCount = typeof session.items === 'string' ? JSON.parse(session.items).length : 0;
+        console.log(`[GET /api/order-sessions/current] Found active session: ${session.id} with ${itemsCount} items`);
+      } else {
+        console.log(`[GET /api/order-sessions/current] No active session found, checking for pending_logout session`);
       }
+      
+      // If no active session, try to find and restore a pending_logout session
+      if (!session) {
+        session = await tx.orderSession.findFirst({
+          where: {
+            userId,
+            status: 'pending_logout'
+          }
+        });
+        
+        if (session) {
+          const itemsCount = typeof session.items === 'string' ? JSON.parse(session.items).length : 0;
+          console.log(`[GET /api/order-sessions/current] Found pending_logout session: ${session.id} with ${itemsCount} items, restoring to active`);
+          // Restore the session to active within the same transaction
+          session = await tx.orderSession.update({
+            where: { id: session.id },
+            data: {
+              status: 'active',
+              logoutTime: null,
+              updatedAt: new Date()
+            }
+          });
+          console.log(`[GET /api/order-sessions/current] Successfully restored session to active: ${session.id}`);
+        } else {
+          console.log(`[GET /api/order-sessions/current] No pending_logout session found`);
+        }
+      }
+      
+      return session;
     });
     
     if (!orderSession) {
+      console.log(`[GET /api/order-sessions/current] No session found for userId: ${userId}`);
       return res.status(404).json({ error: 'No active order session found' });
     }
     
@@ -54,6 +78,7 @@ orderSessionsRouter.get('/current', authenticateUser, async (req: AuthenticatedR
       logoutTime: orderSession.logoutTime ? orderSession.logoutTime.toISOString() : null
     };
     
+    console.log(`[GET /api/order-sessions/current] Returning session: ${orderSession.id} with ${orderSessionWithParsedItems.items?.length || 0} items`);
     res.json(orderSessionWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching order session', {
@@ -64,9 +89,9 @@ orderSessionsRouter.get('/current', authenticateUser, async (req: AuthenticatedR
 });
 
 // POST /api/order-sessions/current - Create or update the user's order session
-orderSessionsRouter.post('/current', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -74,38 +99,95 @@ orderSessionsRouter.post('/current', authenticateUser, async (req: Authenticated
 
     const { items } = req.body as { items: OrderSession['items'] };
 
-    // Check if the user already has an active order session
-    let orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
+    console.log(`[POST /api/order-sessions/current] Request for userId: ${userId} with ${items?.length || 0} items`);
+
+    // Use a transaction to ensure atomic session operations
+    const result = await prisma.$transaction(async (tx) => {
+      // Check if the user already has an active order session
+      let orderSession = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
+
+      let wasCreated = false;
+
+      if (orderSession) {
+        console.log(`[POST /api/order-sessions/current] Found active session: ${orderSession.id}, updating with ${items?.length || 0} items`);
+        // Update existing active session
+        orderSession = await tx.orderSession.update({
+          where: { id: orderSession.id },
+          data: {
+            items: JSON.stringify(items),
+            status: 'active',
+            updatedAt: new Date()
+          }
+        });
+      } else {
+        console.log(`[POST /api/order-sessions/current] No active session found, checking for pending_logout session`);
+        // Check for pending_logout session to restore
+        const pendingLogoutSession = await tx.orderSession.findFirst({
+          where: {
+            userId,
+            status: 'pending_logout'
+          }
+        });
+
+        if (pendingLogoutSession) {
+          const existingItemsCount = typeof pendingLogoutSession.items === 'string' ? JSON.parse(pendingLogoutSession.items).length : 0;
+          console.log(`[POST /api/order-sessions/current] Found pending_logout session: ${pendingLogoutSession.id} with ${existingItemsCount} items`);
+          console.log(`[POST /api/order-sessions/current] Existing items: ${pendingLogoutSession.items}`);
+          console.log(`[POST /api/order-sessions/current] Request items: ${JSON.stringify(items)}`);
+
+          // Restore pending_logout session (treat as update)
+          // Preserve existing items when restoring, only update if new items are provided
+          const updateData: any = {
+            status: 'active',
+            logoutTime: null,
+            updatedAt: new Date()
+          };
+
+          // Only update items if the request contains non-empty items
+          // This prevents overwriting the session items when frontend sends empty array after re-login
+          if (items && items.length > 0) {
+            console.log(`[POST /api/order-sessions/current] Updating items with ${items.length} new items`);
+            updateData.items = JSON.stringify(items);
+          } else {
+            console.log(`[POST /api/order-sessions/current] Preserving existing ${existingItemsCount} items (request has empty items)`);
+          }
+
+          orderSession = await tx.orderSession.update({
+            where: { id: pendingLogoutSession.id },
+            data: updateData
+          });
+          console.log(`[POST /api/order-sessions/current] Successfully restored session to active: ${orderSession.id}`);
+          const finalItemsCount = typeof orderSession.items === 'string' ? JSON.parse(orderSession.items).length : 0;
+          console.log(`[POST /api/order-sessions/current] Final items count: ${finalItemsCount}`);
+        } else {
+          console.log(`[POST /api/order-sessions/current] No pending_logout session found, creating new session with ${items?.length || 0} items`);
+          // Create a new order session
+          orderSession = await tx.orderSession.create({
+            data: {
+              userId,
+              items: JSON.stringify(items),
+              status: 'active',
+              createdAt: new Date(),
+              updatedAt: new Date()
+            }
+          });
+          wasCreated = true;
+          console.log(`[POST /api/order-sessions/current] Created new session: ${orderSession.id}`);
+        }
       }
+
+      return { orderSession, wasCreated };
     });
 
-    if (orderSession) {
-      // Update existing active session
-      orderSession = await prisma.orderSession.update({
-        where: { id: orderSession.id },
-        data: {
-          items: JSON.stringify(items),
-          status: 'active',
-          updatedAt: new Date()
-        }
-      });
-    } else {
-      // Create a new order session
-      orderSession = await prisma.orderSession.create({
-        data: {
-          userId,
-          items: JSON.stringify(items),
-          status: 'active',
-          createdAt: new Date(),
-          updatedAt: new Date()
-        }
-      });
-    }
-
-    res.status(201).json(orderSession);
+    // Return 201 for new sessions, 200 for updates
+    const statusCode = result.wasCreated ? 201 : 200;
+    console.log(`[POST /api/order-sessions/current] Returning ${statusCode} for session: ${result.orderSession.id}`);
+    res.status(statusCode).json(result.orderSession);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error creating/updating order session', {
       correlationId: (req as any).correlationId,
@@ -115,9 +197,9 @@ orderSessionsRouter.post('/current', authenticateUser, async (req: Authenticated
 });
 
 // PUT /api/order-sessions/current - Update the user's order session
-orderSessionsRouter.put('/current', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -156,13 +238,15 @@ orderSessionsRouter.put('/current', authenticateUser, async (req: AuthenticatedR
 });
 
 // PUT /api/order-sessions/current/logout - Mark the session as pending logout when user logs out
-orderSessionsRouter.put('/current/logout', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
-    
+    const userId = req.user?.id;
+
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
+
+    console.log(`[PUT /api/order-sessions/current/logout] Logout request for userId: ${userId}`);
 
     // Find the user's active order session
     const orderSession = await prisma.orderSession.findFirst({
@@ -173,10 +257,15 @@ orderSessionsRouter.put('/current/logout', authenticateUser, async (req: Authent
     });
 
     if (!orderSession) {
+      console.log(`[PUT /api/order-sessions/current/logout] No active session found for userId: ${userId}`);
       return res.status(404).json({ error: 'No active order session found' });
     }
 
-    // Update the session to pending logout status
+    const itemsCount = typeof orderSession.items === 'string' ? JSON.parse(orderSession.items).length : 0;
+    console.log(`[PUT /api/order-sessions/current/logout] Found active session: ${orderSession.id} with ${itemsCount} items, marking as pending_logout`);
+    console.log(`[PUT /api/order-sessions/current/logout] Items before logout: ${orderSession.items}`);
+
+    // Update the session to pending logout status - PRESERVE ITEMS
     const updatedOrderSession = await prisma.orderSession.update({
       where: { id: orderSession.id },
       data: {
@@ -185,6 +274,11 @@ orderSessionsRouter.put('/current/logout', authenticateUser, async (req: Authent
         updatedAt: new Date()
       }
     });
+
+    const updatedItemsCount = typeof updatedOrderSession.items === 'string' ? JSON.parse(updatedOrderSession.items).length : 0;
+    console.log(`[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout: ${updatedOrderSession.id}`);
+    console.log(`[PUT /api/order-sessions/current/logout] Items after logout: ${updatedOrderSession.items} (count: ${updatedItemsCount})`);
+    console.log(`[PUT /api/order-sessions/current/logout] Status: ${updatedOrderSession.status}, logoutTime: ${updatedOrderSession.logoutTime}`);
 
     res.json(updatedOrderSession);
   } catch (error) {
@@ -196,9 +290,9 @@ orderSessionsRouter.put('/current/logout', authenticateUser, async (req: Authent
 });
 
 // PUT /api/order-sessions/current/complete - Mark the session as completed when payment is made
-orderSessionsRouter.put('/current/complete', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });
@@ -235,9 +329,9 @@ orderSessionsRouter.put('/current/complete', authenticateUser, async (req: Authe
 });
 
 // PUT /api/order-sessions/current/assign-tab - Mark the session as assigned to a tab
-orderSessionsRouter.put('/current/assign-tab', authenticateUser, async (req: AuthenticatedRequest, res: Response) => {
+orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const userId = req.userId;
+    const userId = req.user?.id;
     
     if (!userId) {
       return res.status(401).json({ error: 'User not authenticated' });

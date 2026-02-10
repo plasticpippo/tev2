@@ -108,46 +108,46 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
    ? destinationTabs.find(tab => tab.id === destination.id)?.name
    : null;
 
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
-        <div className="p-6 pb-4 flex-shrink-0">
-            <div className="flex justify-between items-center mb-4">
+   return (
+     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-6">
+       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-3xl max-h-[90vh] flex flex-col border border-slate-700">
+        <div className="p-6 flex-shrink-0">
+            <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-amber-400">Transfer Items</h2>
-                    <p className="text-slate-300">From tab: <span className="font-semibold text-white">{sourceTab.name}</span></p>
+                    <p className="text-base text-slate-300">From tab: <span className="font-semibold text-white">{sourceTab.name}</span></p>
                 </div>
-                <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close">&times;</button>
+                <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200" aria-label="Close">&times;</button>
             </div>
         </div>
 
-        <div className="px-6 space-y-4 flex-grow overflow-y-auto">
+        <div className="p-6 space-y-4 flex-grow overflow-y-auto">
             <div>
-                <h3 className="text-lg font-semibold mb-2 text-slate-300">1. Select Item Quantities to Move</h3>
-                <div className="bg-slate-900 rounded-md max-h-60 overflow-y-auto p-2 space-y-2">
+                <h3 className="text-lg font-semibold mb-3 text-slate-300">1. Select Item Quantities to Move</h3>
+                <div className="bg-slate-900 rounded-md max-h-72 overflow-y-auto p-3 space-y-3">
                     {sourceTab.items.length === 0 ? (
                         <p className="text-slate-500 text-center p-4">This tab has no items.</p>
                     ) : (
                         sourceTab.items.map(item => (
-                            <div key={item.id} className="flex justify-between items-center bg-slate-800 p-2 rounded">
+                            <div key={item.id} className="flex justify-between items-center bg-slate-800 p-3 rounded-md">
                                 <div>
-                                    <span className="font-semibold">{item.name || `Item ${item.variantId}`}</span>
+                                    <span className="font-semibold text-base text-white">{item.name || `Item ${item.variantId}`}</span>
                                     <span className="text-sm text-slate-400 ml-2">(out of {item.quantity})</span>
                                 </div>
                                 <div className="flex items-center gap-3">
                                   <button
                                     onClick={() => handleQuantityChange(item.id, -1)}
                                     disabled={(transferQuantities[item.id] || 0) === 0}
-                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
+                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                     aria-label={`Decrease quantity of ${item.name || `Item ${item.variantId}`}`}
                                   >
                                     -
                                   </button>
-                                  <span className="w-8 text-center font-bold text-lg">{transferQuantities[item.id] || 0}</span>
+                                  <span className="w-8 text-center font-bold text-xl text-white">{transferQuantities[item.id] || 0}</span>
                                   <button
                                     onClick={() => handleQuantityChange(item.id, 1)}
                                     disabled={(transferQuantities[item.id] || 0) >= item.quantity}
-                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50"
+                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                     aria-label={`Increase quantity of ${item.name || `Item ${item.variantId}`}`}
                                   >
                                     +
@@ -160,13 +160,13 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
             </div>
 
             <div>
-                <h3 className="text-lg font-semibold mb-2 text-slate-300">2. Choose Destination</h3>
-                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+                <h3 className="text-lg font-semibold mb-3 text-slate-300">2. Choose Destination</h3>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                     {destinationTabs.map(tab => (
                         <button
                             key={tab.id}
                             onClick={() => setDestination({ type: 'existing', id: tab.id })}
-                            className={`p-3 rounded-md transition font-semibold truncate ${destination?.type === 'existing' && destination.id === tab.id ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-slate-700 hover:bg-slate-600'}`}
+                            className={`p-3 rounded-md font-semibold text-base truncate transition duration-200 ${destination?.type === 'existing' && destination.id === tab.id ? 'bg-amber-500 text-amber-900 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
                             aria-label={`Select destination tab: ${tab.name}`}
                         >
                             {tab.name}
@@ -174,14 +174,14 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                     ))}
                     <button
                         onClick={() => setDestination({ type: 'new' })}
-                        className={`p-3 rounded-md transition font-semibold ${destination?.type === 'new' ? 'bg-amber-500 text-white ring-2 ring-amber-300' : 'bg-slate-700 hover:bg-slate-500'}`}
+                        className={`p-3 rounded-md font-semibold text-base transition duration-200 ${destination?.type === 'new' ? 'bg-amber-500 text-amber-900 ring-2 ring-amber-400 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800' : 'bg-slate-700 hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800'}`}
                         aria-label="Create new tab"
                     >
                         + New Tab
                     </button>
                 </div>
                 {destination?.type === 'new' && (
-                    <div className="mt-4">
+                    <div className="mt-6">
                         <VKeyboardInput
                             k-type="full"
                             type="text"
@@ -198,11 +198,11 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                             }}
                         />
                         {newTabName && (
-                            <div className="mt-2 flex justify-end">
+                            <div className="mt-3 flex justify-end">
                                 <button
                                     onClick={handleConfirm}
                                     disabled={destination?.type === 'new' && !newTabName.trim()}
-                                    className="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed text-sm"
+                                    className="bg-amber-700 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                 >
                                     Confirm Tab Name
                                 </button>
@@ -211,19 +211,19 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                     </div>
                 )}
                 {destination?.type === 'existing' && selectedTabName && (
-                  <p className="mt-2 text-slate-300 text-sm">
+                  <p className="mt-3 text-slate-300 text-sm">
                     Selected: <span className="text-amber-400 font-semibold">{selectedTabName}</span>
                   </p>
                 )}
             </div>
           </div>
         
-        <div className="flex justify-end gap-2 p-6 pt-4 border-t border-slate-700 flex-shrink-0">
-          <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-3 px-6 rounded-md">Cancel</button>
+        <div className="flex justify-end gap-4 p-6 border-t border-slate-700 flex-shrink-0">
+          <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-3 px-6 rounded-md text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200">Cancel</button>
           <button
               onClick={handleConfirm}
               disabled={isMoveDisabled}
-              className="bg-green-600 hover:bg-green-500 text-white font-bold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:cursor-not-allowed"
+              className="bg-green-700 hover:bg-green-600 text-white font-semibold py-3 px-6 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
             >
               Move Items ({totalItemsToMove})
             </button>

@@ -49,8 +49,11 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
     const secret = new TextEncoder().encode(JWT_SECRET);
     const { payload } = await jwtVerify(token, secret);
 
+    // Extract issued-at time from payload
+    const tokenIssuedAt = payload.iat ? new Date(payload.iat * 1000) : undefined;
+
     // Check if the token has been revoked
-    const revoked = await isTokenRevoked(token);
+    const revoked = await isTokenRevoked(token, payload.id as number, tokenIssuedAt);
     if (revoked) {
       // Log authentication failure - revoked token
       logSecurityAlert(
@@ -85,7 +88,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       method: req.method,
       error: error instanceof Error ? error.message : 'Unknown error'
     });
-    // Return 403 if token is invalid
-    return res.status(403).json({ error: 'Invalid or expired token.' });
+    // Return 401 for authentication failures
+    return res.status(401).json({ error: 'Invalid or expired token.' });
   }
 };

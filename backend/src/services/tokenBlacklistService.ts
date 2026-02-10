@@ -31,18 +31,41 @@ export async function revokeToken(token: string, userId: string, expiresAt: Date
 /**
  * Check if a token has been revoked
  * @param token - The JWT token to check
+ * @param userId - Optional user ID to check tokensRevokedAt field
+ * @param tokenIssuedAt - Optional token issued-at timestamp to compare with tokensRevokedAt
  * @returns True if the token is revoked, false otherwise
  */
-export async function isTokenRevoked(token: string): Promise<boolean> {
+export async function isTokenRevoked(
+  token: string,
+  userId?: number,
+  tokenIssuedAt?: Date
+): Promise<boolean> {
   const tokenDigest = hashToken(token);
   
+  // Check individual token revocation
   const revokedToken = await prisma.revokedToken.findUnique({
     where: {
       tokenDigest,
     },
   });
   
-  return revokedToken !== null;
+  if (revokedToken !== null) {
+    return true;
+  }
+  
+  // Check bulk token revocation via tokensRevokedAt
+  if (userId && tokenIssuedAt) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { tokensRevokedAt: true }
+    });
+    
+    if (user?.tokensRevokedAt && tokenIssuedAt < user.tokensRevokedAt) {
+      return true;
+    }
+  }
+  
+  return false;
 }
 
 /**
