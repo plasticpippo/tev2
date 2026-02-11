@@ -24,11 +24,11 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
     e.preventDefault();
     if (!name.trim() || !username.trim() || (!user && !password.trim())) return;
     
-    const userData: Omit<User, 'id'> & { id?: number } = {
+    const userData = {
         id: user?.id,
         name,
         username,
-        password_HACK: password || user?.password_HACK || '',
+        password: password || undefined,
         role
     };
 

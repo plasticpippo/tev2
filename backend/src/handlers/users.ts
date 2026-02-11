@@ -18,7 +18,7 @@ const JWT_SECRET = process.env.JWT_SECRET!;
 export const usersRouter = express.Router();
 
 // GET /api/users - Get all users
-usersRouter.get('/', async (req: Request, res: Response) => {
+usersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const users = await prisma.user.findMany();
     // Transform users to DTOs to exclude sensitive fields
@@ -33,7 +33,7 @@ usersRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/users/:id - Get a specific user
-usersRouter.get('/:id', async (req: Request, res: Response) => {
+usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
@@ -56,7 +56,7 @@ usersRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/users - Create a new user
-usersRouter.post('/', async (req: Request, res: Response) => {
+usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password: string };
     
@@ -104,7 +104,7 @@ usersRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/users/:id - Update a user
-usersRouter.put('/:id', async (req: Request, res: Response) => {
+usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password?: string };
@@ -144,7 +144,7 @@ usersRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/users/:id - Delete a user
-usersRouter.delete('/:id', async (req: Request, res: Response) => {
+usersRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     

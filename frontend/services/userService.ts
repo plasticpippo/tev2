@@ -5,7 +5,7 @@ import type { User } from '../../shared/types';
 export const getUsers = async (): Promise<User[]> => {
   const cacheKey = 'getUsers';
   try {
-    const result = await makeApiRequest(apiUrl('/api/users'), undefined, cacheKey);
+    const result = await makeApiRequest(apiUrl('/api/users'), { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
     console.error('Error fetching users:', error);
