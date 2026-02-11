@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 #===============================================================================
 # TEV2 Installation Script
@@ -16,7 +16,11 @@
 #   --skip-docker       Skip Docker installation
 #===============================================================================
 
-set -e
+# Strict mode for better error handling
+set -euo pipefail
+
+# Enable error tracing (defined after print_error function)
+# trap will be set up after function definitions
 
 #===============================================================================
 # COLOR DEFINITIONS
@@ -36,49 +40,49 @@ readonly BOLD='\033[1m'
 #===============================================================================
 
 print_info() {
-    echo -e "${BLUE}[INFO]${NC} $1"
+    printf '%b\n' "${BLUE}[INFO]${NC} $1"
 }
 
 print_success() {
-    echo -e "${GREEN}[SUCCESS]${NC} $1"
+    printf '%b\n' "${GREEN}[SUCCESS]${NC} $1"
 }
 
 print_error() {
-    echo -e "${RED}[ERROR]${NC} $1"
+    printf '%b\n' "${RED}[ERROR]${NC} $1" >&2
 }
 
 print_warning() {
-    echo -e "${YELLOW}[WARNING]${NC} $1"
+    printf '%b\n' "${YELLOW}[WARNING]${NC} $1"
 }
 
 print_header() {
-    echo ""
-    echo -e "${CYAN}${BOLD}========================================${NC}"
-    echo -e "${CYAN}${BOLD} $1 ${NC}"
-    echo -e "${CYAN}${BOLD}========================================${NC}"
-    echo ""
+    printf '\n'
+    printf '%b\n' "${CYAN}${BOLD}========================================${NC}"
+    printf '%b\n' "${CYAN}${BOLD} $1 ${NC}"
+    printf '%b\n' "${CYAN}${BOLD}========================================${NC}"
+    printf '\n'
 }
 
 print_step() {
-    echo -e "${MAGENTA}[STEP]${NC} ${BOLD}$1${NC}"
+    printf '%b\n' "${MAGENTA}[STEP]${NC} ${BOLD}$1${NC}"
 }
 
 print_progress() {
     local current=$1
     local total=$2
     local message=$3
-    echo -e "${BLUE}[$current/$total]${NC} $message"
+    printf '%b\n' "${BLUE}[$current/$total]${NC} $message"
 }
 
 print_config_summary() {
-    echo ""
-    echo -e "${WHITE}${BOLD}Configuration Summary:${NC}"
-    echo -e "${WHITE}----------------------------------------${NC}"
+    printf '\n'
+    printf '%b\n' "${WHITE}${BOLD}Configuration Summary:${NC}"
+    printf '%b\n' "${WHITE}----------------------------------------${NC}"
     while IFS='=' read -r key value; do
         printf "  ${CYAN}%-25s${NC} %s\n" "$key" "$value"
-    done < <(echo "$1" | grep -v '^$')
-    echo -e "${WHITE}----------------------------------------${NC}"
-    echo ""
+    done < <(printf '%s\n' "$1" | grep -v '^$')
+    printf '%b\n' "${WHITE}----------------------------------------${NC}"
+    printf '\n'
 }
 
 show_spinner() {
@@ -87,12 +91,12 @@ show_spinner() {
     local spin='-\|/'
     local i=0
     
-    while kill -0 $pid 2>/dev/null; do
+    while kill -0 "$pid" 2>/dev/null; do
         i=$(( (i+1) % 4 ))
-        printf "\r${BLUE}[%c]${NC} %s" "${spin:$i:1}" "$message"
+        printf '\r%b [%c] %s' "${BLUE}" "${spin:$i:1}" "$message"
         sleep 0.1
     done
-    printf "\r"
+    printf '\r'
 }
 
 confirm() {
@@ -166,13 +170,16 @@ generate_jwt_secret() {
     openssl rand -hex 64
 }
 
+# Set up error trap after functions are defined
+trap 'print_error "Error on line $LINENO. Command: $BASH_COMMAND"' ERR
+
 #===============================================================================
 # HELP FUNCTION
 #===============================================================================
 
 show_help() {
-    cat << EOF
-${BOLD}TEV2 Installation Script${NC}
+    cat << 'EOF'
+TEV2 Installation Script
 
 Usage: ./install.sh [OPTIONS]
 
@@ -279,8 +286,10 @@ detect_distro() {
     
     # Check /etc/os-release first
     if [[ -f /etc/os-release ]]; then
+        # shellcheck source=/dev/null
         source /etc/os-release
         DISTRO="${ID}"
+        # shellcheck disable=SC2034 # DISTRO_VERSION is used for display/logging
         DISTRO_VERSION="${VERSION_ID:-unknown}"
         
         # Determine distro family
@@ -355,24 +364,29 @@ detect_distro() {
 
 check_docker_installed() {
     if command -v docker &> /dev/null && docker --version &> /dev/null; then
+        # shellcheck disable=SC2034 # DOCKER_INSTALLED is used for external state tracking
         DOCKER_INSTALLED=true
         print_success "Docker is already installed: $(docker --version)"
         return 0
     fi
+    # shellcheck disable=SC2034 # DOCKER_INSTALLED is used for external state tracking
     DOCKER_INSTALLED=false
     return 1
 }
 
 check_docker_compose_installed() {
     if docker compose version &> /dev/null 2>&1; then
+        # shellcheck disable=SC2034 # DOCKER_COMPOSE_INSTALLED is used for external state tracking
         DOCKER_COMPOSE_INSTALLED=true
         print_success "Docker Compose is already installed: $(docker compose version)"
         return 0
     elif command -v docker-compose &> /dev/null; then
+        # shellcheck disable=SC2034 # DOCKER_COMPOSE_INSTALLED is used for external state tracking
         DOCKER_COMPOSE_INSTALLED=true
         print_success "Docker Compose is already installed: $(docker-compose --version)"
         return 0
     fi
+    # shellcheck disable=SC2034 # DOCKER_COMPOSE_INSTALLED is used for external state tracking
     DOCKER_COMPOSE_INSTALLED=false
     return 1
 }
@@ -396,11 +410,13 @@ install_docker_debian() {
     # Add Docker's official GPG key
     local keyring_dir="/usr/share/keyrings"
     $SUDO mkdir -p "$keyring_dir"
-    curl -fsSL https://download.docker.com/linux/$DISTRO/gpg | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>/dev/null
+    curl -fsSL "https://download.docker.com/linux/${DISTRO}/gpg" | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>/dev/null
     
     # Set up repository
-    local arch=$(dpkg --print-architecture)
-    local codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
+    local arch
+    local codename
+    arch=$(dpkg --print-architecture)
+    codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
     
     # Handle Ubuntu derivatives that might not have a Docker repo
     if [[ -z "$codename" ]] || ! curl -fsSL "https://download.docker.com/linux/$DISTRO/dists/$codename/" &>/dev/null; then
@@ -471,7 +487,9 @@ install_docker_alpine() {
     
     # Enable community repository if not enabled
     if ! grep -q "community" /etc/apk/repositories; then
-        echo "http://dl-cdn.alpinelinux.org/alpine/$(cat /etc/alpine-release | cut -d'.' -f1-2)/community" | \
+        local alpine_version
+        alpine_version=$(cut -d'.' -f1-2 < /etc/alpine-release)
+        echo "http://dl-cdn.alpinelinux.org/alpine/${alpine_version}/community" | \
             $SUDO tee -a /etc/apk/repositories
         $SUDO apk update
     fi
@@ -584,7 +602,7 @@ configure_environment() {
     fi
     
     print_info "Let's configure your application. Press Enter to accept defaults."
-    echo ""
+    printf '\n'
     
     #===========================================================================
     # Root .env Configuration
@@ -592,12 +610,12 @@ configure_environment() {
     print_step "Configuring root environment variables..."
     
     # URL Configuration
-    echo ""
+    printf '\n'
     print_info "Application URL Configuration:"
-    echo "  1) localhost - Use http://localhost (for local development)"
-    echo "  2) LAN IP    - Use your local network IP (for LAN access)"
-    echo "  3) Custom    - Enter a custom URL"
-    echo ""
+    printf '  1) localhost - Use http://localhost (for local development)\n'
+    printf '  2) LAN IP    - Use your local network IP (for LAN access)\n'
+    printf '  3) Custom    - Enter a custom URL\n'
+    printf '\n'
     
     local url_choice
     if [[ "$NON_INTERACTIVE" == "true" ]]; then
@@ -612,8 +630,9 @@ configure_environment() {
             URL="${CLI_URL:-http://localhost}"
             ;;
         2)
-            local lan_ip=$(hostname -I | awk '{print $1}')
-            URL="${CLI_URL:-http://$lan_ip}"
+            local lan_ip
+            lan_ip=$(hostname -I | awk '{print $1}')
+            URL="${CLI_URL:-http://${lan_ip}}"
             ;;
         3)
             URL=$(prompt_input "Enter custom URL" "${CLI_URL:-http://localhost}")
@@ -630,7 +649,7 @@ configure_environment() {
     done
     
     # Nginx Port
-    echo ""
+    printf '\n'
     print_info "Nginx Port: The port where the application will be accessible."
     NGINX_PORT=$(prompt_input "Nginx port" "${CLI_NGINX_PORT:-80}")
     while ! validate_port "$NGINX_PORT"; do
@@ -639,7 +658,7 @@ configure_environment() {
     done
     
     # Expose DB Port
-    echo ""
+    printf '\n'
     print_info "Expose Database Port: If true, the PostgreSQL port (5432) will be accessible"
     print_info "from the host machine. This is useful for development but should be"
     print_info "disabled in production for security."
@@ -650,7 +669,7 @@ configure_environment() {
     fi
     
     # Expose Frontend Port
-    echo ""
+    printf '\n'
     print_info "Expose Frontend Port: If true, the frontend development server port (3000)"
     print_info "will be accessible from the host. Useful for development with hot-reload."
     if confirm "Expose frontend port?" "${CLI_EXPOSE_FRONTEND:-true}"; then
@@ -664,7 +683,7 @@ configure_environment() {
     
     POSTGRES_USER=$(prompt_input "Database username" "${CLI_DB_USER:-totalevo_user}")
     
-    echo ""
+    printf '\n'
     print_info "Database Password: A secure password is recommended for production."
     if confirm "Generate a secure password automatically?" "y"; then
         POSTGRES_PASSWORD=$(generate_secure_password)
@@ -676,18 +695,18 @@ configure_environment() {
     POSTGRES_DB=$(prompt_input "Database name" "${CLI_DB_NAME:-bar_pos}")
     
     # JWT Secret
-    echo ""
+    printf '\n'
     print_info "JWT Secret: A secret key used to sign authentication tokens."
     print_info "This should be a long, random string (64+ characters)."
     JWT_SECRET=$(generate_jwt_secret)
     print_success "Generated secure JWT secret (128 characters)"
     
     # Node Environment
-    echo ""
+    printf '\n'
     print_info "Environment Mode:"
-    echo "  - development: Enables debug features, detailed error messages"
-    echo "  - production:  Optimized for production, minimal error exposure"
-    echo ""
+    printf '  - development: Enables debug features, detailed error messages\n'
+    printf '  - production:  Optimized for production, minimal error exposure\n'
+    printf '\n'
     if confirm "Run in production mode?" "n"; then
         NODE_ENV="production"
     else
@@ -707,13 +726,13 @@ configure_environment() {
     done
     
     # Log Level
-    echo ""
+    printf '\n'
     print_info "Log Level: Controls the verbosity of application logs."
-    echo "  - error: Only errors"
-    echo "  - warn:  Warnings and errors"
-    echo "  - info:  General information, warnings, and errors (recommended)"
-    echo "  - debug: Detailed debugging information"
-    echo ""
+    printf '  - error: Only errors\n'
+    printf '  - warn:  Warnings and errors\n'
+    printf '  - info:  General information, warnings, and errors (recommended)\n'
+    printf '  - debug: Detailed debugging information\n'
+    printf '\n'
     LOG_LEVEL=$(prompt_input "Log level" "info")
     
     # Debug Logging
@@ -858,15 +877,35 @@ wait_for_healthy_services() {
     
     while [[ $elapsed -lt $max_wait ]]; do
         # Check if all services are running
-        local unhealthy=$(docker compose ps --format json 2>/dev/null | \
-            grep -c '"Health":"unhealthy"' || echo "0")
-        local starting=$(docker compose ps --format json 2>/dev/null | \
-            grep -c '"Health":"starting"' || echo "0")
+        # Note: grep -c returns exit code 1 when no matches, but still outputs "0"
+        # Use || true to prevent set -e from exiting, then sanitize output
+        local unhealthy
+        local starting
+        unhealthy=$(docker compose ps --format json 2>/dev/null | \
+            grep -c '"Health":"unhealthy"' 2>/dev/null) || unhealthy=0
+        starting=$(docker compose ps --format json 2>/dev/null | \
+            grep -c '"Health":"starting"' 2>/dev/null) || starting=0
+        
+        # Sanitize variables to ensure they contain only digits
+        unhealthy=$(printf '%s' "$unhealthy" | tr -cd '0-9')
+        starting=$(printf '%s' "$starting" | tr -cd '0-9')
+        
+        # Default to 0 if empty
+        unhealthy=${unhealthy:-0}
+        starting=${starting:-0}
         
         if [[ "$unhealthy" -eq 0 ]] && [[ "$starting" -eq 0 ]]; then
             # Check if all services are running
-            local running=$(docker compose ps -q | wc -l)
-            local expected=$(grep -c "^\s*[a-z]" docker-compose.yml || echo "3")
+            local running
+            local expected
+            running=$(docker compose ps -q 2>/dev/null | wc -l)
+            # Sanitize: remove whitespace
+            running=$(printf '%s' "$running" | tr -cd '0-9')
+            running=${running:-0}
+            
+            expected=$(grep -c '^\s*[a-z]' docker-compose.yml 2>/dev/null) || expected=3
+            expected=$(printf '%s' "$expected" | tr -cd '0-9')
+            expected=${expected:-3}
             
             if [[ "$running" -ge "$expected" ]]; then
                 print_success "All services are healthy"
@@ -874,8 +913,8 @@ wait_for_healthy_services() {
             fi
         fi
         
-        printf "\r${BLUE}[WAITING]${NC} Elapsed: ${elapsed}s / ${max_wait}s   "
-        sleep $interval
+        printf "\r${BLUE}[WAITING]${NC} Elapsed: %ds / %ds   " "$elapsed" "$max_wait"
+        sleep "$interval"
         elapsed=$((elapsed + interval))
     done
     
@@ -885,28 +924,28 @@ wait_for_healthy_services() {
 display_success_message() {
     local app_url="${URL}:${NGINX_PORT}"
     
-    echo ""
-    echo -e "${GREEN}${BOLD}========================================${NC}"
-    echo -e "${GREEN}${BOLD}       INSTALLATION COMPLETE!          ${NC}"
-    echo -e "${GREEN}${BOLD}========================================${NC}"
-    echo ""
-    echo -e "  ${CYAN}Application URL:${NC}  ${BOLD}${app_url}${NC}"
-    echo -e "  ${CYAN}API URL:${NC}          ${BOLD}${app_url}/api${NC}"
-    echo ""
-    echo -e "  ${WHITE}Default Credentials:${NC}"
-    echo -e "    Username: ${BOLD}admin${NC}"
-    echo -e "    Password: ${BOLD}admin123${NC}"
-    echo ""
-    echo -e "  ${YELLOW}Important:${NC}"
-    echo -e "    - Change the default password after first login"
-    echo -e "    - Your JWT secret and database password are stored in .env files"
-    echo -e "    - Keep these files secure and do not commit them to version control"
-    echo ""
-    echo -e "  ${WHITE}Useful Commands:${NC}"
-    echo -e "    View logs:     ${BOLD}docker compose logs -f${NC}"
-    echo -e "    Stop services: ${BOLD}docker compose down${NC}"
-    echo -e "    Restart:       ${BOLD}docker compose restart${NC}"
-    echo ""
+    printf '\n'
+    printf '%b\n' "${GREEN}${BOLD}========================================${NC}"
+    printf '%b\n' "${GREEN}${BOLD}       INSTALLATION COMPLETE!          ${NC}"
+    printf '%b\n' "${GREEN}${BOLD}========================================${NC}"
+    printf '\n'
+    printf '  %b  %b%s%b\n' "${CYAN}Application URL:${NC}" "${BOLD}" "${app_url}" "${NC}"
+    printf '  %b  %b%s%b\n' "${CYAN}API URL:${NC}" "${BOLD}" "${app_url}/api" "${NC}"
+    printf '\n'
+    printf '  %b\n' "${WHITE}Default Credentials:${NC}"
+    printf '    Username: %badmin%b\n' "${BOLD}" "${NC}"
+    printf '    Password: %badmin123%b\n' "${BOLD}" "${NC}"
+    printf '\n'
+    printf '  %b\n' "${YELLOW}Important:${NC}"
+    printf '    - Change the default password after first login\n'
+    printf '    - Your JWT secret and database password are stored in .env files\n'
+    printf '    - Keep these files secure and do not commit them to version control\n'
+    printf '\n'
+    printf '  %b\n' "${WHITE}Useful Commands:${NC}"
+    printf '    View logs:     %bdocker compose logs -f%b\n' "${BOLD}" "${NC}"
+    printf '    Stop services: %bdocker compose down%b\n' "${BOLD}" "${NC}"
+    printf '    Restart:       %bdocker compose restart%b\n' "${BOLD}" "${NC}"
+    printf '\n'
 }
 
 #===============================================================================
@@ -952,24 +991,25 @@ main() {
                 shift 2
                 ;;
             --env)
+                # shellcheck disable=SC2034 # CLI_ENV is reserved for future use
                 CLI_ENV="$2"
                 shift 2
                 ;;
             *)
                 print_error "Unknown option: $1"
-                echo "Use --help for usage information"
+                printf 'Use --help for usage information\n'
                 exit 1
                 ;;
         esac
     done
     
     # Print banner
-    echo ""
-    echo -e "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-    echo -e "${CYAN}${BOLD}║                    TEV2 INSTALLER                          ║${NC}"
-    echo -e "${CYAN}${BOLD}║              Total Evolution POS System                    ║${NC}"
-    echo -e "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
-    echo ""
+    printf '\n'
+    printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
+    printf '%b\n' "${CYAN}${BOLD}║                    TEV2 INSTALLER                          ║${NC}"
+    printf '%b\n' "${CYAN}${BOLD}║              Total Evolution POS System                    ║${NC}"
+    printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
+    printf '\n'
     
     if [[ "$NON_INTERACTIVE" == "true" ]]; then
         print_info "Running in non-interactive mode"
