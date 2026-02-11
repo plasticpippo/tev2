@@ -1,11 +1,10 @@
 # yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
 services:
   # Database service - internal only, not exposed to external network
+  # Port exposure is controlled by docker-compose.override.yml for development
   db:
     image: postgres:15
     container_name: bar_pos_backend_db
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
@@ -49,7 +48,8 @@ services:
       timeout: 5s
       retries: 5
 
-  # Frontend service - exposed to external network for LAN access
+  # Frontend service - internal only, accessed via nginx reverse proxy
+  # Port exposure is controlled by docker-compose.override.yml for development
   frontend:
     build:
       context: .
@@ -66,8 +66,6 @@ services:
     depends_on:
       backend:
         condition: service_healthy
-    ports:
-      - "3000:3000"
     restart: unless-stopped
     networks:
       - internal-network

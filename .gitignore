@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Docker Compose override (local development settings)
+docker-compose.override.yml
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

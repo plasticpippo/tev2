@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/compose-spec/compose-spec/master/schema/compose-spec.json
+# ============================================
+# Docker Compose Override for Development
+# ============================================
+# Copy this file to docker-compose.override.yml for local development:
+#   cp docker-compose.override.yml.example docker-compose.override.yml
+#
+# This file is automatically merged with docker-compose.yml by Docker Compose.
+# It exposes additional ports for development and debugging purposes.
+#
+# IMPORTANT: This file should NOT be used in production!
+# For production, either:
+#   1. Don't create docker-compose.override.yml, OR
+#   2. Run: docker compose -f docker-compose.yml up -d
+#
+# Port Exposure in this override:
+#   - Database (5432): Exposed for tools like pgAdmin, DBeaver, etc.
+#   - Frontend (3000): Exposed for direct access (bypasses nginx)
+#
+# Security Note: These ports should NOT be exposed in production!
+
+services:
+  # Database service - expose port for development tools
+  db:
+    ports:
+      - "${DB_PORT:-5432}:5432"
+
+  # Frontend service - expose port for direct development access
+  frontend:
+    ports:
+      - "${FRONTEND_PORT:-3000}:3000"
