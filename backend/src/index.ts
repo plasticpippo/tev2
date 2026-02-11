@@ -15,11 +15,7 @@ dotenv.config();
 // CORS options based on environment variables
 const corsOptions: cors.CorsOptions = {
   origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : [
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    'http://192.168.1.241:3000',  // LAN IP for frontend access
-    'http://localhost:5173',
-    'http://127.0.0.1:5173'
+    'http://localhost:80'
   ],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
