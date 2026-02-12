@@ -7,7 +7,7 @@ import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistService';
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
-import { logError, logAuthEvent, logDataAccess } from '../utils/logger';
+import { logError, logAuthEvent, logDataAccess, logAuditEvent } from '../utils/logger';
 import { toUserDTO, toUserDTOArray, UserResponseDTO } from '../types/dto';
 
 // Validate JWT_SECRET at module load time - fail fast if invalid
@@ -86,11 +86,10 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     });
     
     // Log user creation event
-    logAuthEvent('LOGIN', user.id, user.username, true, {
+    logAuditEvent('USER_CREATED', 'User created via admin', {
+      role: user.role,
       correlationId: (req as any).correlationId,
-      action: 'USER_CREATED',
-      role: user.role
-    });
+    }, 'medium', { userId: user.id, username: user.username });
     
     // Transform user to DTO to exclude sensitive fields
     const userDTO = toUserDTO(user);

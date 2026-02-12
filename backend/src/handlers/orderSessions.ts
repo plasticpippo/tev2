@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { OrderSession } from '../types';
-import { logError } from '../utils/logger';
+import { logError, logDebug } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
 
@@ -16,7 +16,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    console.log(`[GET /api/order-sessions/current] Fetching session for userId: ${userId}`);
+    logDebug('[GET /api/order-sessions/current] Fetching session', { userId, correlationId: (req as any).correlationId });
 
     // Use a transaction to ensure atomic session restoration
     const orderSession = await prisma.$transaction(async (tx) => {
@@ -30,9 +30,9 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
       
       if (session) {
         const itemsCount = safeJsonParse(session.items, []).length;
-        console.log(`[GET /api/order-sessions/current] Found active session: ${session.id} with ${itemsCount} items`);
+        logDebug('[GET /api/order-sessions/current] Found active session', { sessionId: session.id, itemsCount, correlationId: (req as any).correlationId });
       } else {
-        console.log(`[GET /api/order-sessions/current] No active session found, checking for pending_logout session`);
+        logDebug('[GET /api/order-sessions/current] No active session found, checking for pending_logout session', { correlationId: (req as any).correlationId });
       }
       
       // If no active session, try to find and restore a pending_logout session
@@ -46,7 +46,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
         
         if (session) {
           const itemsCount = safeJsonParse(session.items, []).length;
-          console.log(`[GET /api/order-sessions/current] Found pending_logout session: ${session.id} with ${itemsCount} items, restoring to active`);
+          logDebug('[GET /api/order-sessions/current] Found pending_logout session, restoring to active', { sessionId: session.id, itemsCount, correlationId: (req as any).correlationId });
           // Restore the session to active within the same transaction
           session = await tx.orderSession.update({
             where: { id: session.id },
@@ -56,9 +56,9 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
               updatedAt: new Date()
             }
           });
-          console.log(`[GET /api/order-sessions/current] Successfully restored session to active: ${session.id}`);
+          logDebug('[GET /api/order-sessions/current] Successfully restored session to active', { sessionId: session.id, correlationId: (req as any).correlationId });
         } else {
-          console.log(`[GET /api/order-sessions/current] No pending_logout session found`);
+          logDebug('[GET /api/order-sessions/current] No pending_logout session found', { correlationId: (req as any).correlationId });
         }
       }
       
@@ -66,7 +66,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
     });
     
     if (!orderSession) {
-      console.log(`[GET /api/order-sessions/current] No session found for userId: ${userId}`);
+      logDebug('[GET /api/order-sessions/current] No session found for user', { userId, correlationId: (req as any).correlationId });
       return res.status(404).json({ error: 'No active order session found' });
     }
     
@@ -79,7 +79,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
       logoutTime: orderSession.logoutTime ? orderSession.logoutTime.toISOString() : null
     };
     
-    console.log(`[GET /api/order-sessions/current] Returning session: ${orderSession.id} with ${orderSessionWithParsedItems.items?.length || 0} items`);
+    logDebug('[GET /api/order-sessions/current] Returning session', { sessionId: orderSession.id, itemsCount: orderSessionWithParsedItems.items?.length || 0, correlationId: (req as any).correlationId });
     res.json(orderSessionWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching order session', {
@@ -100,7 +100,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
 
     const { items } = req.body as { items: OrderSession['items'] };
 
-    console.log(`[POST /api/order-sessions/current] Request for userId: ${userId} with ${items?.length || 0} items`);
+    logDebug('[POST /api/order-sessions/current] Request received', { userId, itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
 
     // Use a transaction to ensure atomic session operations
     const result = await prisma.$transaction(async (tx) => {
@@ -115,7 +115,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
       let wasCreated = false;
 
       if (orderSession) {
-        console.log(`[POST /api/order-sessions/current] Found active session: ${orderSession.id}, updating with ${items?.length || 0} items`);
+        logDebug('[POST /api/order-sessions/current] Found active session, updating', { sessionId: orderSession.id, itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
         // Update existing active session
         orderSession = await tx.orderSession.update({
           where: { id: orderSession.id },
@@ -126,7 +126,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
           }
         });
       } else {
-        console.log(`[POST /api/order-sessions/current] No active session found, checking for pending_logout session`);
+        logDebug('[POST /api/order-sessions/current] No active session found, checking for pending_logout session', { correlationId: (req as any).correlationId });
         // Check for pending_logout session to restore
         const pendingLogoutSession = await tx.orderSession.findFirst({
           where: {
@@ -137,9 +137,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
 
         if (pendingLogoutSession) {
           const existingItemsCount = safeJsonParse(pendingLogoutSession.items, []).length;
-          console.log(`[POST /api/order-sessions/current] Found pending_logout session: ${pendingLogoutSession.id} with ${existingItemsCount} items`);
-          console.log(`[POST /api/order-sessions/current] Existing items: ${pendingLogoutSession.items}`);
-          console.log(`[POST /api/order-sessions/current] Request items: ${JSON.stringify(items)}`);
+          logDebug('[POST /api/order-sessions/current] Found pending_logout session', { sessionId: pendingLogoutSession.id, existingItemsCount, correlationId: (req as any).correlationId });
 
           // Restore pending_logout session (treat as update)
           // Preserve existing items when restoring, only update if new items are provided
@@ -152,21 +150,21 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
           // Only update items if the request contains non-empty items
           // This prevents overwriting the session items when frontend sends empty array after re-login
           if (items && items.length > 0) {
-            console.log(`[POST /api/order-sessions/current] Updating items with ${items.length} new items`);
+            logDebug('[POST /api/order-sessions/current] Updating items', { newItemsCount: items.length, correlationId: (req as any).correlationId });
             updateData.items = JSON.stringify(items);
           } else {
-            console.log(`[POST /api/order-sessions/current] Preserving existing ${existingItemsCount} items (request has empty items)`);
+            logDebug('[POST /api/order-sessions/current] Preserving existing items (request has empty items)', { existingItemsCount, correlationId: (req as any).correlationId });
           }
 
           orderSession = await tx.orderSession.update({
             where: { id: pendingLogoutSession.id },
             data: updateData
           });
-          console.log(`[POST /api/order-sessions/current] Successfully restored session to active: ${orderSession.id}`);
+          logDebug('[POST /api/order-sessions/current] Successfully restored session to active', { sessionId: orderSession.id, correlationId: (req as any).correlationId });
           const finalItemsCount = safeJsonParse(orderSession.items, []).length;
-          console.log(`[POST /api/order-sessions/current] Final items count: ${finalItemsCount}`);
+          logDebug('[POST /api/order-sessions/current] Final items count', { finalItemsCount, correlationId: (req as any).correlationId });
         } else {
-          console.log(`[POST /api/order-sessions/current] No pending_logout session found, creating new session with ${items?.length || 0} items`);
+          logDebug('[POST /api/order-sessions/current] No pending_logout session found, creating new session', { itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
           // Create a new order session
           orderSession = await tx.orderSession.create({
             data: {
@@ -178,7 +176,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
             }
           });
           wasCreated = true;
-          console.log(`[POST /api/order-sessions/current] Created new session: ${orderSession.id}`);
+          logDebug('[POST /api/order-sessions/current] Created new session', { sessionId: orderSession.id, correlationId: (req as any).correlationId });
         }
       }
 
@@ -187,7 +185,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
 
     // Return 201 for new sessions, 200 for updates
     const statusCode = result.wasCreated ? 201 : 200;
-    console.log(`[POST /api/order-sessions/current] Returning ${statusCode} for session: ${result.orderSession.id}`);
+    logDebug('[POST /api/order-sessions/current] Returning response', { statusCode, sessionId: result.orderSession.id, correlationId: (req as any).correlationId });
     res.status(statusCode).json(result.orderSession);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error creating/updating order session', {
@@ -253,7 +251,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    console.log(`[PUT /api/order-sessions/current/logout] Logout request for userId: ${userId}`);
+    logDebug('[PUT /api/order-sessions/current/logout] Logout request received', { userId, correlationId: (req as any).correlationId });
 
     // Use transaction to prevent race conditions
     const updatedOrderSession = await prisma.$transaction(async (tx) => {
@@ -266,13 +264,12 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
       });
 
       if (!orderSession) {
-        console.log(`[PUT /api/order-sessions/current/logout] No active session found for userId: ${userId}`);
+        logDebug('[PUT /api/order-sessions/current/logout] No active session found for user', { userId, correlationId: (req as any).correlationId });
         throw new Error('NOT_FOUND');
       }
 
       const itemsCount = safeJsonParse(orderSession.items, []).length;
-      console.log(`[PUT /api/order-sessions/current/logout] Found active session: ${orderSession.id} with ${itemsCount} items, marking as pending_logout`);
-      console.log(`[PUT /api/order-sessions/current/logout] Items before logout: ${orderSession.items}`);
+      logDebug('[PUT /api/order-sessions/current/logout] Found active session, marking as pending_logout', { sessionId: orderSession.id, itemsCount, correlationId: (req as any).correlationId });
 
       // Update the session to pending logout status - PRESERVE ITEMS
       const updated = await tx.orderSession.update({
@@ -285,9 +282,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
       });
 
       const updatedItemsCount = safeJsonParse(updated.items, []).length;
-      console.log(`[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout: ${updated.id}`);
-      console.log(`[PUT /api/order-sessions/current/logout] Items after logout: ${updated.items} (count: ${updatedItemsCount})`);
-      console.log(`[PUT /api/order-sessions/current/logout] Status: ${updated.status}, logoutTime: ${updated.logoutTime}`);
+      logDebug('[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout', { sessionId: updated.id, itemsCount: updatedItemsCount, status: updated.status, correlationId: (req as any).correlationId });
 
       return updated;
     });
