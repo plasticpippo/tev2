@@ -4,6 +4,7 @@ import type { Tab } from '../types';
 import { logInfo, logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import { safeJsonParse } from '../utils/jsonParser';
 
 export const tabsRouter = express.Router();
 
@@ -18,7 +19,7 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     // Parse the items JSON string back to array
     const tabsWithParsedItems = tabs.map(tab => ({
       ...tab,
-      items: typeof tab.items === 'string' ? JSON.parse(tab.items) : tab.items,
+      items: safeJsonParse(tab.items, [], { id: String(tab.id), field: 'items' }),
       createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
     }));
     res.json(tabsWithParsedItems);
@@ -48,7 +49,7 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     // Parse the items JSON string back to array
     const tabWithParsedItems = {
       ...tab,
-      items: typeof tab.items === 'string' ? JSON.parse(tab.items) : tab.items,
+      items: safeJsonParse(tab.items, [], { id: String(tab.id), field: 'items' }),
       createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
     };
     

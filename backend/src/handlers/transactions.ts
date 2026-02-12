@@ -4,6 +4,7 @@ import type { Transaction } from '../types';
 import { logPaymentEvent, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
+import { safeJsonParse } from '../utils/jsonParser';
 
 export const transactionsRouter = express.Router();
 
@@ -16,7 +17,7 @@ transactionsRouter.get('/', authenticateToken, async (req: Request, res: Respons
     // Parse the items JSON string back to array
     const transactionsWithParsedItems = transactions.map(transaction => ({
       ...transaction,
-      items: typeof transaction.items === 'string' ? JSON.parse(transaction.items) : transaction.items,
+      items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
       createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
     }));
     res.json(transactionsWithParsedItems);
@@ -43,7 +44,7 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     // Parse the items JSON string back to array
     const transactionWithParsedItems = {
       ...transaction,
-      items: typeof transaction.items === 'string' ? JSON.parse(transaction.items) : transaction.items,
+      items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
       createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
     };
     

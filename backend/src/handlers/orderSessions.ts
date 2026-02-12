@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import type { OrderSession } from '../types';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
+import { safeJsonParse } from '../utils/jsonParser';
 
 export const orderSessionsRouter = express.Router();
 
@@ -28,7 +29,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
       });
       
       if (session) {
-        const itemsCount = typeof session.items === 'string' ? JSON.parse(session.items).length : 0;
+        const itemsCount = safeJsonParse(session.items, []).length;
         console.log(`[GET /api/order-sessions/current] Found active session: ${session.id} with ${itemsCount} items`);
       } else {
         console.log(`[GET /api/order-sessions/current] No active session found, checking for pending_logout session`);
@@ -44,7 +45,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
         });
         
         if (session) {
-          const itemsCount = typeof session.items === 'string' ? JSON.parse(session.items).length : 0;
+          const itemsCount = safeJsonParse(session.items, []).length;
           console.log(`[GET /api/order-sessions/current] Found pending_logout session: ${session.id} with ${itemsCount} items, restoring to active`);
           // Restore the session to active within the same transaction
           session = await tx.orderSession.update({
@@ -72,7 +73,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
     // Parse the items JSON string back to array
     const orderSessionWithParsedItems = {
       ...orderSession,
-      items: typeof orderSession.items === 'string' ? JSON.parse(orderSession.items) : orderSession.items,
+      items: safeJsonParse(orderSession.items, [], { id: orderSession.id, field: 'items' }),
       createdAt: orderSession.createdAt.toISOString(),
       updatedAt: orderSession.updatedAt.toISOString(),
       logoutTime: orderSession.logoutTime ? orderSession.logoutTime.toISOString() : null
@@ -135,7 +136,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
         });
 
         if (pendingLogoutSession) {
-          const existingItemsCount = typeof pendingLogoutSession.items === 'string' ? JSON.parse(pendingLogoutSession.items).length : 0;
+          const existingItemsCount = safeJsonParse(pendingLogoutSession.items, []).length;
           console.log(`[POST /api/order-sessions/current] Found pending_logout session: ${pendingLogoutSession.id} with ${existingItemsCount} items`);
           console.log(`[POST /api/order-sessions/current] Existing items: ${pendingLogoutSession.items}`);
           console.log(`[POST /api/order-sessions/current] Request items: ${JSON.stringify(items)}`);
@@ -162,7 +163,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
             data: updateData
           });
           console.log(`[POST /api/order-sessions/current] Successfully restored session to active: ${orderSession.id}`);
-          const finalItemsCount = typeof orderSession.items === 'string' ? JSON.parse(orderSession.items).length : 0;
+          const finalItemsCount = safeJsonParse(orderSession.items, []).length;
           console.log(`[POST /api/order-sessions/current] Final items count: ${finalItemsCount}`);
         } else {
           console.log(`[POST /api/order-sessions/current] No pending_logout session found, creating new session with ${items?.length || 0} items`);
@@ -207,29 +208,35 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
 
     const { items } = req.body as { items: OrderSession['items'] };
 
-    // Find the user's active order session
-    const orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
-      }
-    });
+    // Use transaction to prevent race conditions
+    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+      // Find the user's active order session
+      const orderSession = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
 
-    if (!orderSession) {
-      return res.status(404).json({ error: 'No active order session found' });
-    }
-
-    // Update the existing session
-    const updatedOrderSession = await prisma.orderSession.update({
-      where: { id: orderSession.id },
-      data: {
-        items: JSON.stringify(items),
-        updatedAt: new Date()
+      if (!orderSession) {
+        throw new Error('NOT_FOUND');
       }
+
+      // Update the existing session
+      return await tx.orderSession.update({
+        where: { id: orderSession.id },
+        data: {
+          items: JSON.stringify(items),
+          updatedAt: new Date()
+        }
+      });
     });
 
     res.json(updatedOrderSession);
   } catch (error) {
+    if (error instanceof Error && error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'No active order session found' });
+    }
     logError(error instanceof Error ? error : 'Error updating order session', {
       correlationId: (req as any).correlationId,
     });
@@ -248,40 +255,48 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
 
     console.log(`[PUT /api/order-sessions/current/logout] Logout request for userId: ${userId}`);
 
-    // Find the user's active order session
-    const orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
+    // Use transaction to prevent race conditions
+    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+      // Find the user's active order session
+      const orderSession = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
+
+      if (!orderSession) {
+        console.log(`[PUT /api/order-sessions/current/logout] No active session found for userId: ${userId}`);
+        throw new Error('NOT_FOUND');
       }
+
+      const itemsCount = safeJsonParse(orderSession.items, []).length;
+      console.log(`[PUT /api/order-sessions/current/logout] Found active session: ${orderSession.id} with ${itemsCount} items, marking as pending_logout`);
+      console.log(`[PUT /api/order-sessions/current/logout] Items before logout: ${orderSession.items}`);
+
+      // Update the session to pending logout status - PRESERVE ITEMS
+      const updated = await tx.orderSession.update({
+        where: { id: orderSession.id },
+        data: {
+          status: 'pending_logout',
+          logoutTime: new Date(),
+          updatedAt: new Date()
+        }
+      });
+
+      const updatedItemsCount = safeJsonParse(updated.items, []).length;
+      console.log(`[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout: ${updated.id}`);
+      console.log(`[PUT /api/order-sessions/current/logout] Items after logout: ${updated.items} (count: ${updatedItemsCount})`);
+      console.log(`[PUT /api/order-sessions/current/logout] Status: ${updated.status}, logoutTime: ${updated.logoutTime}`);
+
+      return updated;
     });
-
-    if (!orderSession) {
-      console.log(`[PUT /api/order-sessions/current/logout] No active session found for userId: ${userId}`);
-      return res.status(404).json({ error: 'No active order session found' });
-    }
-
-    const itemsCount = typeof orderSession.items === 'string' ? JSON.parse(orderSession.items).length : 0;
-    console.log(`[PUT /api/order-sessions/current/logout] Found active session: ${orderSession.id} with ${itemsCount} items, marking as pending_logout`);
-    console.log(`[PUT /api/order-sessions/current/logout] Items before logout: ${orderSession.items}`);
-
-    // Update the session to pending logout status - PRESERVE ITEMS
-    const updatedOrderSession = await prisma.orderSession.update({
-      where: { id: orderSession.id },
-      data: {
-        status: 'pending_logout',
-        logoutTime: new Date(),
-        updatedAt: new Date()
-      }
-    });
-
-    const updatedItemsCount = typeof updatedOrderSession.items === 'string' ? JSON.parse(updatedOrderSession.items).length : 0;
-    console.log(`[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout: ${updatedOrderSession.id}`);
-    console.log(`[PUT /api/order-sessions/current/logout] Items after logout: ${updatedOrderSession.items} (count: ${updatedItemsCount})`);
-    console.log(`[PUT /api/order-sessions/current/logout] Status: ${updatedOrderSession.status}, logoutTime: ${updatedOrderSession.logoutTime}`);
 
     res.json(updatedOrderSession);
   } catch (error) {
+    if (error instanceof Error && error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'No active order session found' });
+    }
     logError(error instanceof Error ? error : 'Error marking order session for logout', {
       correlationId: (req as any).correlationId,
     });
@@ -298,29 +313,35 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Find the user's active order session
-    const orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
-      }
-    });
+    // Use transaction to prevent race conditions
+    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+      // Find the user's active order session
+      const orderSession = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
 
-    if (!orderSession) {
-      return res.status(404).json({ error: 'No active order session found' });
-    }
-
-    // Update the session to completed status
-    const updatedOrderSession = await prisma.orderSession.update({
-      where: { id: orderSession.id },
-      data: {
-        status: 'completed',
-        updatedAt: new Date()
+      if (!orderSession) {
+        throw new Error('NOT_FOUND');
       }
+
+      // Update the session to completed status
+      return await tx.orderSession.update({
+        where: { id: orderSession.id },
+        data: {
+          status: 'completed',
+          updatedAt: new Date()
+        }
+      });
     });
 
     res.json(updatedOrderSession);
   } catch (error) {
+    if (error instanceof Error && error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'No active order session found' });
+    }
     logError(error instanceof Error ? error : 'Error completing order session', {
       correlationId: (req as any).correlationId,
     });
@@ -337,29 +358,35 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
       return res.status(401).json({ error: 'User not authenticated' });
     }
 
-    // Find the user's active order session
-    const orderSession = await prisma.orderSession.findFirst({
-      where: {
-        userId,
-        status: 'active'
-      }
-    });
+    // Use transaction to prevent race conditions
+    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+      // Find the user's active order session
+      const orderSession = await tx.orderSession.findFirst({
+        where: {
+          userId,
+          status: 'active'
+        }
+      });
 
-    if (!orderSession) {
-      return res.status(404).json({ error: 'No active order session found' });
-    }
-
-    // Update the session to completed status (since it's now assigned to a tab)
-    const updatedOrderSession = await prisma.orderSession.update({
-      where: { id: orderSession.id },
-      data: {
-        status: 'completed',
-        updatedAt: new Date()
+      if (!orderSession) {
+        throw new Error('NOT_FOUND');
       }
+
+      // Update the session to completed status (since it's now assigned to a tab)
+      return await tx.orderSession.update({
+        where: { id: orderSession.id },
+        data: {
+          status: 'completed',
+          updatedAt: new Date()
+        }
+      });
     });
 
     res.json(updatedOrderSession);
   } catch (error) {
+    if (error instanceof Error && error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'No active order session found' });
+    }
     logError(error instanceof Error ? error : 'Error assigning order session to tab', {
       correlationId: (req as any).correlationId,
     });

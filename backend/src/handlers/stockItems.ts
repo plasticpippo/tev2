@@ -5,6 +5,7 @@ import { validateStockItem, validateStockItemName, validateStockItemQuantity, va
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import { safeJsonParse } from '../utils/jsonParser';
 
 export const stockItemsRouter = express.Router();
 
@@ -15,7 +16,7 @@ stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response)
     // Parse the purchasingUnits JSON string back to array
     const stockItemsWithParsedUnits = stockItems.map(item => ({
       ...item,
-      purchasingUnits: typeof item.purchasingUnits === 'string' ? JSON.parse(item.purchasingUnits) : item.purchasingUnits
+      purchasingUnits: safeJsonParse(item.purchasingUnits, [], { id: item.id, field: 'purchasingUnits' })
     }));
     res.json(stockItemsWithParsedUnits);
   } catch (error) {
@@ -46,7 +47,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     // Parse the purchasingUnits JSON string back to array
     const stockItemWithParsedUnits = {
       ...stockItem,
-      purchasingUnits: typeof stockItem.purchasingUnits === 'string' ? JSON.parse(stockItem.purchasingUnits) : stockItem.purchasingUnits
+      purchasingUnits: safeJsonParse(stockItem.purchasingUnits, [], { id: stockItem.id, field: 'purchasingUnits' })
     };
     
     res.json(stockItemWithParsedUnits);
