@@ -4,11 +4,13 @@ import type { DailyClosing } from '../types';
 import { calculateDailyClosingSummary, createDailyClosing } from '../services/dailyClosingService';
 import { logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const dailyClosingsRouter = express.Router();
 
 // GET /api/daily-closings - Get all daily closings (with optional filters)
-dailyClosingsRouter.get('/', async (req: Request, res: Response) => {
+dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { userId, dateFrom, dateTo } = req.query;
 
@@ -67,7 +69,7 @@ dailyClosingsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/daily-closings/:id - Get a specific daily closing
-dailyClosingsRouter.get('/:id', async (req: Request, res: Response) => {
+dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
 
@@ -108,7 +110,7 @@ dailyClosingsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/daily-closings - Create a new daily closing
-dailyClosingsRouter.post('/', async (req: Request, res: Response) => {
+dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { closedAt, userId } = req.body;
 

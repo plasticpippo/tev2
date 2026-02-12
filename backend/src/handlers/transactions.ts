@@ -3,11 +3,12 @@ import { prisma } from '../prisma';
 import type { Transaction } from '../types';
 import { logPaymentEvent, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
+import { authenticateToken } from '../middleware/auth';
 
 export const transactionsRouter = express.Router();
 
 // GET /api/transactions - Get all transactions
-transactionsRouter.get('/', async (req: Request, res: Response) => {
+transactionsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const transactions = await prisma.transaction.findMany({
       orderBy: { createdAt: 'desc' }
@@ -28,7 +29,7 @@ transactionsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/transactions/:id - Get a specific transaction
-transactionsRouter.get('/:id', async (req: Request, res: Response) => {
+transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const transaction = await prisma.transaction.findUnique({
@@ -56,7 +57,7 @@ transactionsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/transactions - Create a new transaction
-transactionsRouter.post('/', async (req: Request, res: Response) => {
+transactionsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const {
       items, subtotal, tax, tip, total, paymentMethod,

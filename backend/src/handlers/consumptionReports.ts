@@ -1,11 +1,12 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { logError } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
 
 export const consumptionReportsRouter = express.Router();
 
 // GET /api/consumption-reports/itemised - Get itemised consumption report with detailed filtering
-consumptionReportsRouter.get('/itemised', async (req: Request, res: Response) => {
+consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request, res: Response) => {
   try {
     const {
       startDate,

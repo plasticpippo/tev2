@@ -3,11 +3,13 @@ import { prisma } from '../prisma';
 import type { Category } from '../types';
 import { validateCategory, validateCategoryName } from '../utils/validation';
 import { logError } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const categoriesRouter = express.Router();
 
 // GET /api/categories - Get all categories
-categoriesRouter.get('/', async (req: Request, res: Response) => {
+categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const categories = await prisma.category.findMany({
       select: {
@@ -26,7 +28,7 @@ categoriesRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/categories/:id - Get a specific category
-categoriesRouter.get('/:id', async (req: Request, res: Response) => {
+categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const category = await prisma.category.findUnique({
@@ -52,7 +54,7 @@ categoriesRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/categories - Create a new category
-categoriesRouter.post('/', async (req: Request, res: Response) => {
+categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
     
@@ -84,7 +86,7 @@ categoriesRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/categories/:id - Update a category
-categoriesRouter.put('/:id', async (req: Request, res: Response) => {
+categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
@@ -120,7 +122,7 @@ categoriesRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/categories/:id - Delete a category
-categoriesRouter.delete('/:id', async (req: Request, res: Response) => {
+categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     

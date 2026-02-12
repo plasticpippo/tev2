@@ -2,11 +2,13 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Tab } from '../types';
 import { logInfo, logError } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const tabsRouter = express.Router();
 
 // GET /api/tabs - Get all tabs
-tabsRouter.get('/', async (req: Request, res: Response) => {
+tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const tabs = await prisma.tab.findMany({
       include: {
@@ -29,7 +31,7 @@ tabsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/tabs/:id - Get a specific tab
-tabsRouter.get('/:id', async (req: Request, res: Response) => {
+tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const tab = await prisma.tab.findUnique({
@@ -60,7 +62,7 @@ tabsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/tabs - Create a new tab
-tabsRouter.post('/', async (req: Request, res: Response) => {
+tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
  try {
     logInfo('POST /api/tabs called', {
       correlationId: (req as any).correlationId,
@@ -143,7 +145,7 @@ tabsRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/tabs/:id - Update a tab
-tabsRouter.put('/:id', async (req: Request, res: Response) => {
+tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, items, tillId, tillName, tableId } = req.body;
@@ -217,7 +219,7 @@ tabsRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/tabs/:id - Delete a tab
-tabsRouter.delete('/:id', async (req: Request, res: Response) => {
+tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     

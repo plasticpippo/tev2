@@ -3,11 +3,13 @@ import { prisma } from '../prisma';
 import type { Product, ProductVariant } from '../types';
 import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
 import { logError } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const productsRouter = express.Router();
 
 // GET /api/products - Get all products
-productsRouter.get('/', async (req: Request, res: Response) => {
+productsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const products = await prisma.product.findMany({
       include: {
@@ -28,7 +30,7 @@ productsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/products/:id - Get a specific product
-productsRouter.get('/:id', async (req: Request, res: Response) => {
+productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const product = await prisma.product.findUnique({
@@ -56,7 +58,7 @@ productsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/products - Create a new product
-productsRouter.post('/', async (req: Request, res: Response) => {
+productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
     
@@ -146,7 +148,7 @@ productsRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/products/:id - Update a product
-productsRouter.put('/:id', async (req: Request, res: Response) => {
+productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
@@ -309,7 +311,7 @@ productsRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/products/:id - Delete a product
-productsRouter.delete('/:id', async (req: Request, res: Response) => {
+productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     

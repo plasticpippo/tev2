@@ -3,11 +3,13 @@ import { prisma } from '../prisma';
 import type { Till } from '../types';
 import { validateTill, validateTillName } from '../utils/validation';
 import { logError } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const tillsRouter = express.Router();
 
 // GET /api/tills - Get all tills
-tillsRouter.get('/', async (req: Request, res: Response) => {
+tillsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const tills = await prisma.till.findMany();
     res.json(tills);
@@ -20,7 +22,7 @@ tillsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/tills/:id - Get a specific till
-tillsRouter.get('/:id', async (req: Request, res: Response) => {
+tillsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const till = await prisma.till.findUnique({
@@ -41,7 +43,7 @@ tillsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/tills - Create a new till
-tillsRouter.post('/', async (req: Request, res: Response) => {
+tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { name } = req.body as Omit<Till, 'id'>;
     
@@ -67,7 +69,7 @@ tillsRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/tills/:id - Update a till
-tillsRouter.put('/:id', async (req: Request, res: Response) => {
+tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name } = req.body as Omit<Till, 'id'>;
@@ -97,7 +99,7 @@ tillsRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/tills/:id - Delete a till
-tillsRouter.delete('/:id', async (req: Request, res: Response) => {
+tillsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     

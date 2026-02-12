@@ -3,11 +3,13 @@ import { prisma } from '../prisma';
 import type { StockItem } from '../types';
 import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const stockItemsRouter = express.Router();
 
 // GET /api/stock-items - Get all stock items
-stockItemsRouter.get('/', async (req: Request, res: Response) => {
+stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const stockItems = await prisma.stockItem.findMany();
     // Parse the purchasingUnits JSON string back to array
@@ -23,7 +25,7 @@ stockItemsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/stock-items/:id - Get a specific stock item
-stockItemsRouter.get('/:id', async (req: Request, res: Response) => {
+stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -55,7 +57,7 @@ stockItemsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/stock-items - Create a new stock item
-stockItemsRouter.post('/', async (req: Request, res: Response) => {
+stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
     
@@ -83,7 +85,7 @@ stockItemsRouter.post('/', async (req: Request, res: Response) => {
 });
 
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
-stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
+stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { consumptions } = req.body as { consumptions: { stockItemId: string, quantity: number }[] };
     
@@ -207,7 +209,7 @@ stockItemsRouter.put('/update-levels', async (req: Request, res: Response) => {
 });
 
 // PUT /api/stock-items/:id - Update a stock item
-stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
+stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -297,7 +299,7 @@ stockItemsRouter.put('/:id', async (req: Request, res: Response) => {
 });
 
 // DELETE /api/stock-items/:id - Delete a stock item
-stockItemsRouter.delete('/:id', async (req: Request, res: Response) => {
+stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     
@@ -330,7 +332,7 @@ stockItemsRouter.delete('/:id', async (req: Request, res: Response) => {
 });
 
 // GET /api/stock-items/orphaned-references - Get stock consumption records that reference non-existent stock items
-stockItemsRouter.get('/orphaned-references', async (req: Request, res: Response) => {
+stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Request, res: Response) => {
   try {
     // Find stock consumption records that reference stock items that don't exist
     // First get all stock consumption records
@@ -378,7 +380,7 @@ stockItemsRouter.get('/orphaned-references', async (req: Request, res: Response)
 });
 
 // DELETE /api/stock-items/cleanup-orphaned - Remove invalid stock consumption references
-stockItemsRouter.delete('/cleanup-orphaned', async (req: Request, res: Response) => {
+stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     // Find orphaned stock consumption records
     // Get all stock consumption records with related data
@@ -447,7 +449,7 @@ stockItemsRouter.delete('/cleanup-orphaned', async (req: Request, res: Response)
 });
 
 // GET /api/stock-items/validate-integrity - Validate data integrity between products and stock items
-stockItemsRouter.get('/validate-integrity', async (req: Request, res: Response) => {
+stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
   try {
     // Check for orphaned stock consumption references
     // Get all stock consumption records with related data

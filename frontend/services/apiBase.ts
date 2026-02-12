@@ -203,6 +203,10 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
   // Merge the abort signal with any existing options
   const fetchOptions: RequestInit = {
     ...options,
+    headers: {
+      ...getAuthHeaders(),
+      ...options?.headers,
+    },
     signal: controller.signal,
   };
 
