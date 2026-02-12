@@ -1,64 +1,92 @@
 import type { Product, ProductVariant } from '../types';
+import type { Request } from 'express';
+
+/**
+ * Translation helper type for i18n
+ */
+type TranslateFunction = (key: string, options?: any) => string;
+
+/**
+ * Get translation function from request or return a fallback
+ */
+const getTranslator = (req?: Request): TranslateFunction => {
+  if (req && typeof (req as any).t === 'function') {
+    return (key: string, options?: any) => (req as any).t(key, options) || key;
+  }
+  // Fallback: return the key's last segment as a simple message
+  return (key: string, options?: any) => {
+    const parts = key.split('.');
+    return parts[parts.length - 1] || key;
+  };
+};
 
 // Product validation functions
-export const validateProductName = (name: string): string | null => {
+export const validateProductName = (name: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!name || typeof name !== 'string') {
-    return 'Product name is required';
+    return translate('errors:validation.required');
   }
   
   if (name.trim().length === 0) {
-    return 'Product name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (name.length > 255) {
-    return 'Product name must be 255 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   return null;
 };
 
-export const validateCategoryId = (categoryId: number): string | null => {
+export const validateCategoryId = (categoryId: number, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (typeof categoryId !== 'number') {
-    return 'Category ID must be a number';
+    return translate('errors:validation.invalidValue');
   }
   
   if (categoryId <= 0) {
-    return 'Category ID must be greater than 0';
+    return translate('errors:validation.invalidValue');
   }
   
   return null;
 };
 
-export const validateProductPrice = (price: number): string | null => {
+export const validateProductPrice = (price: number, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (typeof price !== 'number') {
-    return 'Price must be a number';
+    return translate('errors:products.invalidPrice');
   }
   
   if (price < 0) {
-    return 'Price must be 0 or greater';
+    return translate('errors:products.invalidPrice');
   }
   
   if (price > 999999) {
-    return 'Price must be 999999 or less';
+    return translate('errors:products.invalidPrice');
   }
   
   return null;
 };
 
-export const validateProductVariant = (variant: ProductVariant): string | null => {
+export const validateProductVariant = (variant: ProductVariant, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!variant.name || typeof variant.name !== 'string') {
-    return 'Variant name is required';
+    return translate('errors:validation.required');
   }
   
   if (variant.name.trim().length === 0) {
-    return 'Variant name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (variant.name.length > 255) {
-    return 'Variant name must be 255 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
-  const priceError = validateProductPrice(variant.price);
+  const priceError = validateProductPrice(variant.price, t);
   if (priceError) {
     return priceError;
   }
@@ -66,15 +94,15 @@ export const validateProductVariant = (variant: ProductVariant): string | null =
   return null;
 };
 
-export const validateProduct = (product: any): { isValid: boolean; errors: string[] } => {
+export const validateProduct = (product: any, t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
-  const nameError = validateProductName(product.name);
+  const nameError = validateProductName(product.name, t);
   if (nameError) {
     errors.push(nameError);
   }
   
-  const categoryIdError = validateCategoryId(product.categoryId);
+  const categoryIdError = validateCategoryId(product.categoryId, t);
   if (categoryIdError) {
     errors.push(categoryIdError);
   }
@@ -82,7 +110,7 @@ export const validateProduct = (product: any): { isValid: boolean; errors: strin
   if (product.variants && Array.isArray(product.variants)) {
     for (let i = 0; i < product.variants.length; i++) {
       const variant = product.variants[i];
-      const variantError = validateProductVariant(variant);
+      const variantError = validateProductVariant(variant, t);
       if (variantError) {
         errors.push(`Variant ${i + 1}: ${variantError}`);
       }
@@ -96,26 +124,28 @@ export const validateProduct = (product: any): { isValid: boolean; errors: strin
 };
 
 // Till validation functions
-export const validateTillName = (name: string): string | null => {
+export const validateTillName = (name: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!name || typeof name !== 'string') {
-    return 'Till name is required';
+    return translate('errors:validation.required');
   }
   
   if (name.trim().length === 0) {
-    return 'Till name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (name.length > 100) {
-    return 'Till name must be 100 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   return null;
 };
 
-export const validateTill = (till: any): { isValid: boolean; errors: string[] } => {
+export const validateTill = (till: any, t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
-  const nameError = validateTillName(till.name);
+  const nameError = validateTillName(till.name, t);
   if (nameError) {
     errors.push(nameError);
   }
@@ -127,26 +157,28 @@ export const validateTill = (till: any): { isValid: boolean; errors: string[] } 
 };
 
 // Category validation functions
-export const validateCategoryName = (name: string): string | null => {
+export const validateCategoryName = (name: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!name || typeof name !== 'string') {
-    return 'Category name is required';
+    return translate('errors:validation.required');
   }
   
   if (name.trim().length === 0) {
-    return 'Category name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (name.length > 255) {
-    return 'Category name must be 255 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   return null;
 };
 
-export const validateCategory = (category: any): { isValid: boolean; errors: string[] } => {
+export const validateCategory = (category: any, t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
-  const nameError = validateCategoryName(category.name);
+  const nameError = validateCategoryName(category.name, t);
   if (nameError) {
     errors.push(nameError);
   }
@@ -158,84 +190,92 @@ export const validateCategory = (category: any): { isValid: boolean; errors: str
 };
 
 // Stock Item validation functions
-export const validateStockItemName = (name: string): string | null => {
+export const validateStockItemName = (name: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!name || typeof name !== 'string') {
-    return 'Stock item name is required';
+    return translate('errors:validation.required');
   }
   
   if (name.trim().length === 0) {
-    return 'Stock item name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (name.length > 255) {
-    return 'Stock item name must be 255 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   return null;
 };
 
-export const validateStockItemQuantity = (quantity: number): string | null => {
+export const validateStockItemQuantity = (quantity: number, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (typeof quantity !== 'number') {
-    return 'Quantity must be a number';
+    return translate('errors:stockItems.invalidQuantity');
   }
   
   if (quantity < 0) {
-    return 'Quantity must be 0 or greater';
+    return translate('errors:stockItems.invalidQuantity');
   }
   
   return null;
 };
 
-export const validateStockItemBaseUnit = (baseUnit: string): string | null => {
+export const validateStockItemBaseUnit = (baseUnit: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!baseUnit || typeof baseUnit !== 'string') {
-    return 'Base unit is required';
+    return translate('errors:validation.required');
   }
   
   if (baseUnit.trim().length === 0) {
-    return 'Base unit cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (baseUnit.length > 50) {
-    return 'Base unit must be 50 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   return null;
 };
 
-export const validatePurchasingUnit = (unit: any): string | null => {
+export const validatePurchasingUnit = (unit: any, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!unit.name || typeof unit.name !== 'string') {
-    return 'Purchasing unit name is required';
+    return translate('errors:validation.required');
   }
   
   if (unit.name.trim().length === 0) {
-    return 'Purchasing unit name cannot be empty';
+    return translate('errors:validation.required');
   }
   
   if (unit.name.length > 50) {
-    return 'Purchasing unit name must be 50 characters or less';
+    return translate('errors:validation.outOfRange');
   }
   
   if (typeof unit.multiplier !== 'number' || unit.multiplier <= 0) {
-    return 'Multiplier must be a number greater than 0';
+    return translate('errors:validation.invalidValue');
   }
   
   return null;
 };
 
-export const validateStockItem = (stockItem: any): { isValid: boolean; errors: string[] } => {
+export const validateStockItem = (stockItem: any, t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   
-  const nameError = validateStockItemName(stockItem.name);
+  const nameError = validateStockItemName(stockItem.name, t);
   if (nameError) {
     errors.push(nameError);
   }
   
-  const quantityError = validateStockItemQuantity(stockItem.quantity);
+  const quantityError = validateStockItemQuantity(stockItem.quantity, t);
   if (quantityError) {
     errors.push(quantityError);
   }
   
-  const baseUnitError = validateStockItemBaseUnit(stockItem.baseUnit);
+  const baseUnitError = validateStockItemBaseUnit(stockItem.baseUnit, t);
   if (baseUnitError) {
     errors.push(baseUnitError);
   }
@@ -243,7 +283,7 @@ export const validateStockItem = (stockItem: any): { isValid: boolean; errors: s
   if (stockItem.purchasingUnits && Array.isArray(stockItem.purchasingUnits)) {
     for (let i = 0; i < stockItem.purchasingUnits.length; i++) {
       const unit = stockItem.purchasingUnits[i];
-      const unitError = validatePurchasingUnit(unit);
+      const unitError = validatePurchasingUnit(unit, t);
       if (unitError) {
         errors.push(`Purchasing Unit ${i + 1}: ${unitError}`);
       }
@@ -270,48 +310,52 @@ export interface AnalyticsParams {
 }
 
 // Room validation functions
-export const validateRoomName = (name: string, existingNames: string[] = []): string | null => {
+export const validateRoomName = (name: string, existingNames: string[] = [], t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (!name || typeof name !== 'string') {
-    return 'Room name is required';
+    return translate('errors:validation.required');
   }
 
   if (name.trim().length === 0) {
-    return 'Room name cannot be empty';
+    return translate('errors:validation.required');
   }
 
   if (name.length > 100) {
-    return 'Room name must be 100 characters or less';
+    return translate('errors:validation.outOfRange');
   }
 
   if (existingNames.some(n => n.toLowerCase() === name.trim().toLowerCase() && n !== name)) {
-    return 'A room with this name already exists';
+    return translate('errors:validation.duplicate');
   }
 
   // Check for special characters that might cause issues
   if (!/^[a-zA-Z0-9\s\-_(),.'&]+$/.test(name)) {
-    return 'Room name contains invalid characters';
+    return translate('errors:validation.invalidFormat');
   }
 
   return null;
 };
 
-export const validateRoomDescription = (description: string): string | null => {
+export const validateRoomDescription = (description: string, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
   if (description && description.length > 500) {
-    return 'Description must be 500 characters or less';
+    return translate('errors:validation.outOfRange');
   }
 
   return null;
 };
 
-export const validateRoom = (room: any, allRooms: any[] = []): { isValid: boolean; errors: string[] } => {
+export const validateRoom = (room: any, allRooms: any[] = [], t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
 
-  const nameError = validateRoomName(room.name, allRooms.filter(r => r.id !== room.id).map(r => r.name));
+  const nameError = validateRoomName(room.name, allRooms.filter(r => r.id !== room.id).map(r => r.name), t);
   if (nameError) {
     errors.push(nameError);
   }
 
-  const descriptionError = validateRoomDescription(room.description || '');
+  const descriptionError = validateRoomDescription(room.description || '', t);
   if (descriptionError) {
     errors.push(descriptionError);
   }

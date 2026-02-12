@@ -1,0 +1,125 @@
+{
+  "auth": {
+    "invalidCredentials": "Nome utente o password non validi",
+    "missingCredentials": "Nome utente e password sono obbligatori",
+    "tokenExpired": "Il token e scaduto",
+    "tokenInvalid": "Token non valido",
+    "tokenMissing": "Il token di autorizzazione e obbligatorio",
+    "unauthorized": "Accesso non autorizzato",
+    "forbidden": "Accesso vietato",
+    "sessionExpired": "La sessione e scaduta",
+    "userNotFound": "Utente non trovato",
+    "userInactive": "L'account utente e inattivo",
+    "passwordMismatch": "La password attuale non e corretta",
+    "passwordTooWeak": "La nuova password non soddisfa i requisiti di sicurezza"
+  },
+  "validation": {
+    "required": "Questo campo e obbligatorio",
+    "invalidFormat": "Formato non valido",
+    "invalidValue": "Valore non valido",
+    "outOfRange": "Il valore e fuori dall'intervallo consentito",
+    "duplicate": "Questo valore esiste gia",
+    "notFound": "Risorsa non trovata",
+    "conflict": "Conflitto di risorse"
+  },
+  "database": {
+    "connectionError": "Errore di connessione al database",
+    "queryError": "Errore nella query del database",
+    "transactionError": "Errore nella transazione del database",
+    "recordNotFound": "Record non trovato",
+    "recordExists": "Il record esiste gia",
+    "constraintViolation": "Violazione del vincolo del database",
+    "foreignKeyViolation": "Violazione del vincolo di chiave esterna",
+    "uniqueViolation": "Violazione del vincolo univoco"
+  },
+  "api": {
+    "badRequest": "Richiesta non valida",
+    "unauthorized": "Non autorizzato",
+    "forbidden": "Vietato",
+    "notFound": "Non trovato",
+    "methodNotAllowed": "Metodo non consentito",
+    "conflict": "Conflitto",
+    "unprocessableEntity": "Entita non elaborabile",
+    "tooManyRequests": "Troppe richieste",
+    "internalError": "Errore interno del server",
+    "serviceUnavailable": "Servizio non disponibile"
+  },
+  "products": {
+    "notFound": "Prodotto non trovato",
+    "invalidData": "Dati prodotto non validi",
+    "duplicateName": "Esiste gia un prodotto con questo nome",
+    "deleteFailed": "Eliminazione prodotto non riuscita",
+    "variantNotFound": "Variante prodotto non trovata",
+    "invalidPrice": "Valore prezzo non valido"
+  },
+  "categories": {
+    "notFound": "Categoria non trovata",
+    "invalidData": "Dati categoria non validi",
+    "duplicateName": "Esiste gia una categoria con questo nome",
+    "deleteFailed": "Eliminazione categoria non riuscita",
+    "hasProducts": "Impossibile eliminare una categoria con prodotti assegnati"
+  },
+  "stockItems": {
+    "notFound": "Articolo magazzino non trovato",
+    "invalidData": "Dati articolo magazzino non validi",
+    "duplicateName": "Esiste gia un articolo magazzino con questo nome",
+    "deleteFailed": "Eliminazione articolo magazzino non riuscita",
+    "insufficientStock": "Scorta insufficiente per {{name}}",
+    "invalidQuantity": "Valore quantita non valido"
+  },
+  "users": {
+    "notFound": "Utente non trovato",
+    "invalidData": "Dati utente non validi",
+    "duplicateUsername": "Nome utente gia esistente",
+    "deleteFailed": "Eliminazione utente non riuscita",
+    "cannotDeleteSelf": "Impossibile eliminare il proprio account",
+    "invalidRole": "Ruolo utente non valido"
+  },
+  "tills": {
+    "notFound": "Cassa non trovata",
+    "invalidData": "Dati cassa non validi",
+    "alreadyAssigned": "Dispositivo gia assegnato a un'altra cassa",
+    "assignmentFailed": "Assegnazione dispositivo non riuscita"
+  },
+  "tables": {
+    "notFound": "Tavolo non trovato",
+    "roomNotFound": "Sala non trovata",
+    "invalidData": "Dati tavolo non validi",
+    "deleteFailed": "Eliminazione tavolo non riuscita",
+    "roomDeleteFailed": "Eliminazione sala non riuscita"
+  },
+  "tabs": {
+    "notFound": "Conto non trovato",
+    "invalidData": "Dati conto non validi",
+    "alreadyClosed": "Il conto e gia chiuso",
+    "closeFailed": "Chiusura conto non riuscita"
+  },
+  "transactions": {
+    "notFound": "Transazione non trovata",
+    "invalidData": "Dati transazione non validi",
+    "paymentFailed": "Elaborazione pagamento non riuscita",
+    "refundFailed": "Elaborazione rimborso non riuscita"
+  },
+  "orderSessions": {
+    "notFound": "Sessione ordine non trovata",
+    "invalidData": "Dati sessione ordine non validi",
+    "alreadyCompleted": "Sessione ordine gia completata",
+    "accessDenied": "Accesso alla sessione ordine negato"
+  },
+  "layouts": {
+    "notFound": "Layout non trovato",
+    "invalidData": "Dati layout non validi",
+    "duplicateName": "Esiste gia un layout con questo nome",
+    "deleteFailed": "Eliminazione layout non riuscita"
+  },
+  "settings": {
+    "notFound": "Impostazioni non trovate",
+    "invalidData": "Dati impostazioni non validi",
+    "updateFailed": "Aggiornamento impostazioni non riuscito"
+  },
+  "dailyClosings": {
+    "notFound": "Chiusura giornaliera non trovata",
+    "alreadyExists": "Esiste gia una chiusura giornaliera per questa data",
+    "invalidData": "Dati chiusura giornaliera non validi"
+  }
+}

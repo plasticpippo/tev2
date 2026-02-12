@@ -1,11 +1,13 @@
 
 
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction, User, Till, Settings } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 import { getBusinessDayStart, isWithinBusinessDay } from '../../utils/time';
 
 export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], users: User[], settings: Settings }> = ({ tills, transactions, users, settings }) => {
+    const { t } = useTranslation('admin');
 
     const tillData = useMemo(() => {
         const businessDayStart = getBusinessDayStart(settings);
@@ -33,37 +35,37 @@ export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], 
                 totalSales,
                 totalCash,
                 totalCard,
-                currentUser: currentUser?.name || 'No Activity',
-                status: lastTransaction ? 'Active' : 'Idle'
+                currentUser: currentUser?.name || t('dashboard.noActivity'),
+                status: lastTransaction ? t('dashboard.active') : t('dashboard.idle')
             };
         });
-    }, [tills, transactions, users, settings]);
+    }, [tills, transactions, users, settings, t]);
 
     return (
         <div className="bg-slate-900 p-4 rounded-lg">
-            <h2 className="text-xl font-bold text-slate-300 mb-3">Till Status</h2>
+            <h2 className="text-xl font-bold text-slate-300 mb-3">{t('dashboard.tillStatus')}</h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {tillData.map(till => (
                     <div key={till.id} className="bg-slate-800 p-4 rounded-lg flex flex-col justify-between">
                         <div>
                             <div className="flex justify-between items-center">
                                 <h3 className="font-bold text-lg">{till.name}</h3>
-                                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${till.status === 'Active' ? 'bg-green-500 text-green-900' : 'bg-slate-600 text-slate-300'}`}>
+                                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${till.status === t('dashboard.active') ? 'bg-green-500 text-green-900' : 'bg-slate-600 text-slate-300'}`}>
                                     {till.status}
                                 </span>
                             </div>
-                            <p className="text-sm text-slate-400">User: {till.currentUser}</p>
+                            <p className="text-sm text-slate-400">{t('dashboard.user')}: {till.currentUser}</p>
                         </div>
                         <div className="mt-4 pt-2 border-t border-slate-700">
-                             <p className="text-sm text-slate-400">Current Day Sales</p>
+                             <p className="text-sm text-slate-400">{t('dashboard.currentDaySales')}</p>
                             <p className="font-bold text-2xl text-green-400">{formatCurrency(till.totalSales)}</p>
                             <div className="text-sm text-slate-300 mt-2 space-y-1">
                                 <div className="flex justify-between">
-                                    <span>Cash:</span>
+                                    <span>{t('dashboard.cash')}:</span>
                                     <span className="font-semibold">{formatCurrency(till.totalCash)}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Card:</span>
+                                    <span>{t('dashboard.card')}:</span>
                                     <span className="font-semibold">{formatCurrency(till.totalCard)}</span>
                                 </div>
                             </div>

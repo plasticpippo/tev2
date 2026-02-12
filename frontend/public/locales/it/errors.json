@@ -1,0 +1,113 @@
+{
+  "http": {
+    "400": "Richiesta Non Valida: La richiesta non e valida o non puo essere elaborata.",
+    "401": "Non Autorizzato: Accedi per accedere a questa risorsa.",
+    "403": "Vietato: Non hai i permessi per accedere a questa risorsa.",
+    "404": "Non Trovato: La risorsa richiesta non e stata trovata.",
+    "405": "Metodo Non Consentito: Il metodo HTTP non e consentito per questo endpoint.",
+    "408": "Timeout Richiesta: La richiesta ha impiegato troppo tempo.",
+    "409": "Conflitto: La richiesta e in conflitto con lo stato attuale del server.",
+    "422": "Entita Non Elaborabile: La richiesta era ben formata ma contiene errori semantici.",
+    "429": "Troppe Richieste: Hai inviato troppe richieste di recente.",
+    "500": "Errore Interno del Server: Si e verificato un errore imprevisto sul server.",
+    "502": "Gateway Non Valido: Il server ha ricevuto una risposta non valida dal server upstream.",
+    "503": "Servizio Non Disponibile: Il server e temporaneamente non disponibile.",
+    "504": "Timeout Gateway: Il server non ha ricevuto una risposta tempestiva dal server upstream."
+  },
+  "network": {
+    "offline": "Sei attualmente offline. Verifica la tua connessione internet.",
+    "connectionLost": "La connessione al server e stata persa. Riprova.",
+    "timeout": "La richiesta e scaduta. Riprova.",
+    "dnsError": "Impossibile connettersi al server. Verifica l'URL.",
+    "sslError": "Connessione sicura non riuscita. Verifica le impostazioni di rete.",
+    "unknown": "Si e verificato un errore di rete. Riprova."
+  },
+  "api": {
+    "products": {
+      "invalidData": "Dati prodotto non validi. Verifica tutti i campi obbligatori.",
+      "duplicateName": "Esiste gia un prodotto con questo nome. Scegli un nome diverso.",
+      "notFound": "Prodotto non trovato.",
+      "deleteFailed": "Eliminazione prodotto non riuscita. Il prodotto potrebbe essere in uso."
+    },
+    "categories": {
+      "invalidData": "Dati categoria non validi. Verifica tutti i campi obbligatori.",
+      "duplicateName": "Esiste gia una categoria con questo nome. Scegli un nome diverso.",
+      "notFound": "Categoria non trovata.",
+      "deleteFailed": "Eliminazione categoria non riuscita. La categoria potrebbe avere prodotti assegnati."
+    },
+    "stockItems": {
+      "invalidData": "Dati articolo magazzino non validi. Verifica tutti i campi obbligatori.",
+      "duplicateName": "Esiste gia un articolo magazzino con questo nome. Scegli un nome diverso.",
+      "notFound": "Articolo magazzino non trovato.",
+      "deleteFailed": "Eliminazione articolo magazzino non riuscita. L'articolo potrebbe essere in uso.",
+      "insufficientStock": "Scorta insufficiente per {{name}}. Disponibile: {{available}}, Richiesto: {{required}}."
+    },
+    "layouts": {
+      "invalidData": "Dati layout non validi. Verifica tutti i campi obbligatori.",
+      "duplicateName": "Esiste gia un layout con questo nome. Scegli un nome diverso.",
+      "notFound": "Layout non trovato.",
+      "deleteFailed": "Eliminazione layout non riuscita."
+    },
+    "auth": {
+      "invalidCredentials": "Credenziali non valide. Verifica nome utente e password.",
+      "authenticationFailed": "Autenticazione non riuscita. Verifica nome utente e password.",
+      "sessionExpired": "La sessione e scaduta. Accedi nuovamente.",
+      "tokenInvalid": "Token di autenticazione non valido.",
+      "tokenExpired": "Il token di autenticazione e scaduto."
+    },
+    "users": {
+      "notFound": "Utente non trovato.",
+      "duplicateUsername": "Esiste gia un utente con questo nome utente.",
+      "invalidRole": "Ruolo utente non valido specificato.",
+      "cannotDeleteSelf": "Non puoi eliminare il tuo account.",
+      "cannotDeactivateSelf": "Non puoi disattivare il tuo account."
+    },
+    "tills": {
+      "notFound": "Cassa non trovata.",
+      "alreadyAssigned": "Questo dispositivo e gia assegnato a un'altra cassa.",
+      "assignmentFailed": "Assegnazione dispositivo alla cassa non riuscita."
+    },
+    "tables": {
+      "notFound": "Tavolo non trovato.",
+      "roomNotFound": "Sala non trovata.",
+      "invalidStatus": "Stato tavolo non valido.",
+      "deleteFailed": "Eliminazione tavolo non riuscita."
+    },
+    "tabs": {
+      "notFound": "Conto non trovato.",
+      "alreadyClosed": "Questo conto e gia stato chiuso.",
+      "emptyTab": "Impossibile chiudere un conto vuoto con articoli.",
+      "loadFailed": "Caricamento conto non riuscito."
+    },
+    "transactions": {
+      "notFound": "Transazione non trovata.",
+      "refundFailed": "Elaborazione rimborso non riuscita.",
+      "invalidPaymentMethod": "Metodo di pagamento non valido."
+    },
+    "orderSessions": {
+      "notFound": "Sessione ordine non trovata.",
+      "alreadyCompleted": "Questa sessione ordine e gia stata completata.",
+      "accessDenied": "Non hai accesso a questa sessione ordine."
+    }
+  },
+  "boundary": {
+    "title": "Qualcosa e andato storto",
+    "message": "Si e verificato un errore imprevisto. Riprova.",
+    "retry": "Riprova"
+  },
+  "general": {
+    "unknown": "Si e verificato un errore imprevisto. Riprova.",
+    "saveFailed": "Salvataggio modifiche non riuscito. Riprova.",
+    "loadFailed": "Caricamento dati non riuscito. Riprova.",
+    "deleteFailed": "Eliminazione elemento non riuscita. Riprova.",
+    "updateFailed": "Aggiornamento elemento non riuscito. Riprova.",
+    "createFailed": "Creazione elemento non riuscita. Riprova.",
+    "operationFailed": "Operazione non riuscita. Riprova.",
+    "forbidden": "Non hai i permessi per eseguire questa azione.",
+    "unauthorized": "Devi essere connesso per eseguire questa azione.",
+    "notFound": "La risorsa richiesta non e stata trovata.",
+    "validationFailed": "Correggi gli errori e riprova.",
+    "rateLimited": "Troppe richieste. Attendi un momento e riprova.",
+    "maintenance": "Il sistema e attualmente in manutenzione. Riprova piu tardi."
+  }
+}

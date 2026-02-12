@@ -1,0 +1,125 @@
+{
+  "auth": {
+    "invalidCredentials": "Invalid username or password",
+    "missingCredentials": "Username and password are required",
+    "tokenExpired": "Token has expired",
+    "tokenInvalid": "Invalid token",
+    "tokenMissing": "Authorization token is required",
+    "unauthorized": "Unauthorized access",
+    "forbidden": "Access forbidden",
+    "sessionExpired": "Session has expired",
+    "userNotFound": "User not found",
+    "userInactive": "User account is inactive",
+    "passwordMismatch": "Current password is incorrect",
+    "passwordTooWeak": "New password does not meet security requirements"
+  },
+  "validation": {
+    "required": "This field is required",
+    "invalidFormat": "Invalid format",
+    "invalidValue": "Invalid value",
+    "outOfRange": "Value is out of allowed range",
+    "duplicate": "This value already exists",
+    "notFound": "Resource not found",
+    "conflict": "Resource conflict"
+  },
+  "database": {
+    "connectionError": "Database connection error",
+    "queryError": "Database query error",
+    "transactionError": "Database transaction error",
+    "recordNotFound": "Record not found",
+    "recordExists": "Record already exists",
+    "constraintViolation": "Database constraint violation",
+    "foreignKeyViolation": "Foreign key constraint violation",
+    "uniqueViolation": "Unique constraint violation"
+  },
+  "api": {
+    "badRequest": "Bad request",
+    "unauthorized": "Unauthorized",
+    "forbidden": "Forbidden",
+    "notFound": "Not found",
+    "methodNotAllowed": "Method not allowed",
+    "conflict": "Conflict",
+    "unprocessableEntity": "Unprocessable entity",
+    "tooManyRequests": "Too many requests",
+    "internalError": "Internal server error",
+    "serviceUnavailable": "Service unavailable"
+  },
+  "products": {
+    "notFound": "Product not found",
+    "invalidData": "Invalid product data",
+    "duplicateName": "Product with this name already exists",
+    "deleteFailed": "Failed to delete product",
+    "variantNotFound": "Product variant not found",
+    "invalidPrice": "Invalid price value"
+  },
+  "categories": {
+    "notFound": "Category not found",
+    "invalidData": "Invalid category data",
+    "duplicateName": "Category with this name already exists",
+    "deleteFailed": "Failed to delete category",
+    "hasProducts": "Cannot delete category with assigned products"
+  },
+  "stockItems": {
+    "notFound": "Stock item not found",
+    "invalidData": "Invalid stock item data",
+    "duplicateName": "Stock item with this name already exists",
+    "deleteFailed": "Failed to delete stock item",
+    "insufficientStock": "Insufficient stock for {{name}}",
+    "invalidQuantity": "Invalid quantity value"
+  },
+  "users": {
+    "notFound": "User not found",
+    "invalidData": "Invalid user data",
+    "duplicateUsername": "Username already exists",
+    "deleteFailed": "Failed to delete user",
+    "cannotDeleteSelf": "Cannot delete your own account",
+    "invalidRole": "Invalid user role"
+  },
+  "tills": {
+    "notFound": "Till not found",
+    "invalidData": "Invalid till data",
+    "alreadyAssigned": "Device already assigned to another till",
+    "assignmentFailed": "Failed to assign device"
+  },
+  "tables": {
+    "notFound": "Table not found",
+    "roomNotFound": "Room not found",
+    "invalidData": "Invalid table data",
+    "deleteFailed": "Failed to delete table",
+    "roomDeleteFailed": "Failed to delete room"
+  },
+  "tabs": {
+    "notFound": "Tab not found",
+    "invalidData": "Invalid tab data",
+    "alreadyClosed": "Tab is already closed",
+    "closeFailed": "Failed to close tab"
+  },
+  "transactions": {
+    "notFound": "Transaction not found",
+    "invalidData": "Invalid transaction data",
+    "paymentFailed": "Payment processing failed",
+    "refundFailed": "Refund processing failed"
+  },
+  "orderSessions": {
+    "notFound": "Order session not found",
+    "invalidData": "Invalid order session data",
+    "alreadyCompleted": "Order session already completed",
+    "accessDenied": "Access denied to order session"
+  },
+  "layouts": {
+    "notFound": "Layout not found",
+    "invalidData": "Invalid layout data",
+    "duplicateName": "Layout with this name already exists",
+    "deleteFailed": "Failed to delete layout"
+  },
+  "settings": {
+    "notFound": "Settings not found",
+    "invalidData": "Invalid settings data",
+    "updateFailed": "Failed to update settings"
+  },
+  "dailyClosings": {
+    "notFound": "Daily closing not found",
+    "alreadyExists": "Daily closing already exists for this date",
+    "invalidData": "Invalid daily closing data"
+  }
+}

@@ -2,11 +2,13 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
+import i18nextMiddleware from 'i18next-http-middleware';
 import { router } from './router';
 import { initPrisma } from './prisma';
 import { validateJwtSecret } from './utils/jwtSecretValidation';
 import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import i18n, { initI18n } from './i18n';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -65,6 +67,9 @@ app.use(requestLoggerMiddleware);
 // Parse JSON bodies
 app.use(express.json({ limit: '10mb' }));
 
+// i18n middleware - adds req.t function for translations
+app.use(i18nextMiddleware.handle(i18n));
+
 // API routes
 app.use('/api', router);
 
@@ -83,6 +88,9 @@ const startServer = async () => {
   try {
     // Validate JWT_SECRET before starting the server
     validateJwtSecret();
+    
+    // Initialize i18n for internationalization
+    await initI18n();
     
     // Initialize Prisma client
     await initPrisma();

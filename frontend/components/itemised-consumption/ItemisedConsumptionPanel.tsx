@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Category, StockItem, ConsumptionReportResponse, ConsumptionReportItem, ConsumptionReportTotal } from '../../../shared/types';
 import { getConsumptionReport } from '../../services/consumptionService';
 import { ItemisedConsumptionFilter } from './ItemisedConsumptionFilter';
@@ -13,6 +14,7 @@ export const ItemisedConsumptionPanel: React.FC<ItemisedConsumptionPanelProps> =
   categories, 
   stockItems 
 }) => {
+  const { t } = useTranslation('admin');
   const [consumptionData, setConsumptionData] = useState<ConsumptionReportItem[]>([]);
   const [consumptionTotals, setConsumptionTotals] = useState<ConsumptionReportTotal[]>([]);
   const [filters, setFilters] = useState<{
@@ -54,7 +56,7 @@ export const ItemisedConsumptionPanel: React.FC<ItemisedConsumptionPanelProps> =
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-        <h2 className="text-2xl font-bold text-slate-300 self-start sm:self-center">Itemised Consumption Report</h2>
+        <h2 className="text-2xl font-bold text-slate-300 self-start sm:self-center">{t('itemisedConsumption.title')}</h2>
       </div>
 
       <ItemisedConsumptionFilter
@@ -66,14 +68,14 @@ export const ItemisedConsumptionPanel: React.FC<ItemisedConsumptionPanelProps> =
       {/* Totals Section */}
       {!isLoading && consumptionTotals.length > 0 && (
         <div className="bg-slate-800 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-slate-300 mb-3">Consumption Totals</h3>
+          <h3 className="text-lg font-semibold text-slate-300 mb-3">{t('itemisedConsumption.consumptionTotals')}</h3>
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-slate-700">
               <thead className="bg-slate-750">
                 <tr>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Stock Item</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Type</th>
-                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Total Quantity</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.stockItem')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.type')}</th>
+                  <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.totalQuantity')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-700">

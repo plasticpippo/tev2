@@ -365,29 +365,38 @@ function getErrorSeverity(error: Error): ErrorSeverity {
 
 /**
  * Get user-friendly error message based on environment
+ * Uses i18n for localized messages when available
  */
-function getUserMessage(error: Error, statusCode: number): string {
-  // In production, return generic messages
+function getUserMessage(error: Error, statusCode: number, req?: Request): string {
+  // Helper to get translation or fallback
+  const t = (key: string, fallback: string): string => {
+    if (req && typeof (req as any).t === 'function') {
+      return (req as any).t(`errors:api.${key}`) || fallback;
+    }
+    return fallback;
+  };
+  
+  // In production, return generic messages (localized if possible)
   if (isProduction()) {
     switch (statusCode) {
       case 400:
-        return 'Invalid request. Please check your input and try again.';
+        return t('badRequest', 'Invalid request. Please check your input and try again.');
       case 401:
-        return 'Authentication required. Please log in and try again.';
+        return t('unauthorized', 'Authentication required. Please log in and try again.');
       case 403:
-        return 'Access denied. You do not have permission to perform this action.';
+        return t('forbidden', 'Access denied. You do not have permission to perform this action.');
       case 404:
-        return 'The requested resource was not found.';
+        return t('notFound', 'The requested resource was not found.');
       case 409:
-        return 'The request could not be completed due to a conflict.';
+        return t('conflict', 'The request could not be completed due to a conflict.');
       case 429:
-        return 'Too many requests. Please wait and try again later.';
+        return t('tooManyRequests', 'Too many requests. Please wait and try again later.');
       case 500:
       case 502:
       case 503:
-        return 'An unexpected error occurred. Please try again later.';
+        return t('internalError', 'An unexpected error occurred. Please try again later.');
       default:
-        return 'An error occurred. Please try again.';
+        return t('internalError', 'An error occurred. Please try again.');
     }
   }
   
@@ -443,13 +452,14 @@ function sanitizeErrorDetails(details?: Record<string, any>): Record<string, any
 function buildErrorResponse(
   error: Error,
   statusCode: number,
-  correlationId: string
+  correlationId: string,
+  req?: Request
 ): Record<string, any> {
   const isProd = isProduction();
   const isDev = isDevelopment();
   
   const response: Record<string, any> = {
-    error: getUserMessage(error, statusCode),
+    error: getUserMessage(error, statusCode, req),
     correlationId,
   };
   
@@ -544,7 +554,7 @@ export function errorHandler(
   }
   
   // Build and send error response
-  const errorResponse = buildErrorResponse(err, statusCode, correlationId);
+  const errorResponse = buildErrorResponse(err, statusCode, correlationId, req);
   
   res.status(statusCode).json(errorResponse);
 }
@@ -579,10 +589,18 @@ export function notFoundHandler(req: Request, res: Response): void {
     isOperational: true,
   });
   
+  // Get localized message or fallback
+  const getNotFoundMessage = (): string => {
+    if (typeof (req as any).t === 'function') {
+      return (req as any).t('errors:api.notFound') || 'The requested resource was not found.';
+    }
+    return 'The requested resource was not found.';
+  };
+  
   // Build error response
   const isProd = isProduction();
   const response: Record<string, any> = {
-    error: isProd ? 'The requested resource was not found.' : `Route ${req.method} ${req.path} not found`,
+    error: isProd ? getNotFoundMessage() : `Route ${req.method} ${req.path} not found`,
     correlationId,
     statusCode: 404,
   };

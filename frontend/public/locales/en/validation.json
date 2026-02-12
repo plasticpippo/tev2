@@ -1,0 +1,113 @@
+{
+  "required": "This field is required",
+  "invalidFormat": "Invalid format",
+  "invalidValue": "Invalid value",
+  "mustBeNumber": "Must be a valid number",
+  "mustBeInteger": "Must be a whole number",
+  "mustBePositive": "Must be a positive number",
+  "mustBeNonNegative": "Must be 0 or greater",
+  "mustBeEmail": "Please enter a valid email address",
+  "mustBeUrl": "Please enter a valid URL",
+  "mustBeDate": "Please enter a valid date",
+  "mustBeTime": "Please enter a valid time",
+  "mustBePhone": "Please enter a valid phone number",
+  "name": {
+    "required": "Name is required",
+    "minLength": "Must be at least {{min}} character",
+    "minLength_other": "Must be at least {{min}} characters",
+    "maxLength": "Must be {{max}} character or less",
+    "maxLength_other": "Must be {{max}} characters or less",
+    "pattern": "Contains invalid characters",
+    "duplicate": "This name is already in use"
+  },
+  "email": {
+    "required": "Email is required",
+    "format": "Please enter a valid email address",
+    "duplicate": "This email is already registered"
+  },
+  "password": {
+    "required": "Password is required",
+    "minLength": "Password must be at least {{min}} characters",
+    "maxLength": "Password must be {{max}} characters or less",
+    "pattern": "Password must contain at least one uppercase letter, one lowercase letter, and one number",
+    "mismatch": "Passwords do not match",
+    "tooWeak": "Password is too weak"
+  },
+  "username": {
+    "required": "Username is required",
+    "minLength": "Username must be at least {{min}} characters",
+    "maxLength": "Username must be {{max}} characters or less",
+    "pattern": "Username can only contain letters, numbers, and underscores",
+    "duplicate": "This username is already taken"
+  },
+  "price": {
+    "required": "Price is required",
+    "min": "Price must be {{min}} or greater",
+    "max": "Price must be {{max}} or less",
+    "format": "Please enter a valid price",
+    "invalid": "Price must be a non-negative number"
+  },
+  "quantity": {
+    "required": "Quantity is required",
+    "min": "Quantity must be {{min}} or greater",
+    "max": "Quantity must be {{max}} or less",
+    "format": "Please enter a valid quantity",
+    "invalid": "Quantity must be a non-negative number"
+  },
+  "category": {
+    "required": "Category selection is required",
+    "invalid": "Invalid category selected"
+  },
+  "room": {
+    "required": "Room selection is required",
+    "nameRequired": "Room name is required",
+    "nameDuplicate": "A room with this name already exists"
+  },
+  "table": {
+    "nameRequired": "Table name is required",
+    "roomRequired": "Room selection is required",
+    "invalidPosition": "Invalid position values",
+    "invalidSize": "Invalid size values",
+    "positionOutOfRange": "Position is outside the layout bounds"
+  },
+  "stockItem": {
+    "nameRequired": "Stock item name is required",
+    "unitRequired": "Base unit is required",
+    "quantityInvalid": "Quantity must be a valid number"
+  },
+  "variant": {
+    "nameRequired": "Variant name is required",
+    "priceRequired": "Price is required",
+    "priceInvalid": "Price must be a non-negative number"
+  },
+  "till": {
+    "nameRequired": "Till name is required"
+  },
+  "user": {
+    "nameRequired": "User name is required",
+    "usernameRequired": "Username is required",
+    "passwordRequired": "Password is required",
+    "roleRequired": "Role selection is required"
+  },
+  "tab": {
+    "nameRequired": "Tab name is required",
+    "nameMinLength": "Tab name must be at least {{min}} characters"
+  },
+  "dateRange": {
+    "startRequired": "Start date is required",
+    "endRequired": "End date is required",
+    "invalidRange": "End date must be after start date",
+    "rangeTooLarge": "Date range is too large. Maximum is {{max}} days."
+  },
+  "file": {
+    "required": "Please select a file",
+    "tooLarge": "File is too large. Maximum size is {{max}}.",
+    "invalidType": "Invalid file type. Allowed types: {{types}}.",
+    "uploadFailed": "File upload failed. Please try again."
+  },
+  "form": {
+    "invalidFields": "Please correct the highlighted fields",
+    "submitFailed": "Form submission failed. Please check for errors and try again.",
+    "unsavedChanges": "You have unsaved changes. Are you sure you want to leave?"
+  }
+}

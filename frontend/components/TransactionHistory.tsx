@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction, User, Till, Settings } from '@shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
@@ -13,6 +14,7 @@ interface TransactionHistoryProps {
 type DateRangePreset = 'today' | 'yesterday' | '7days' | '30days' | 'custom';
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, users, tills, settings }) => {
+    const { t } = useTranslation('admin');
     const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
     const [dateRange, setDateRange] = useState<DateRangePreset>('30days');
     const [customStart, setCustomStart] = useState('');
@@ -97,22 +99,22 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
     
     return (
         <div className="h-full flex flex-col">
-            <h2 className="text-2xl font-bold text-slate-300 mb-4 flex-shrink-0">Transaction History</h2>
+            <h2 className="text-2xl font-bold text-slate-300 mb-4 flex-shrink-0">{t('transactions.title')}</h2>
             
             <div className="bg-slate-800 p-4 rounded-lg mb-4 flex-shrink-0 space-y-4">
                 {/* Row 1: Date Presets */}
                 <div className="flex flex-wrap gap-2">
-                    <DateRangeButton preset="today" label="Today"/>
-                    <DateRangeButton preset="yesterday" label="Yesterday"/>
-                    <DateRangeButton preset="7days" label="Last 7 Days"/>
-                    <DateRangeButton preset="30days" label="Last 30 Days"/>
+                    <DateRangeButton preset="today" label={t('transactions.dateRange.today')}/>
+                    <DateRangeButton preset="yesterday" label={t('transactions.dateRange.yesterday')}/>
+                    <DateRangeButton preset="7days" label={t('transactions.dateRange.last7Days')}/>
+                    <DateRangeButton preset="30days" label={t('transactions.dateRange.last30Days')}/>
                     <button
                         onClick={() => setDateRange('custom')}
                         className={`px-3 py-2 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
                         aria-label="Filter by custom date range"
                         aria-pressed={dateRange === 'custom'}
                     >
-                        Custom
+                        {t('transactions.dateRange.custom')}
                     </button>
                 </div>
 
@@ -123,23 +125,23 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                             {/* Row 2 (Custom): Till & User */}
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="till-select" className="block text-sm font-medium text-slate-400 mb-1">Till</label>
+                                    <label htmlFor="till-select" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.till')}</label>
                                     <select id="till-select" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" data-testid="till-select" role="combobox">
-                                        <option value="all">All Tills</option>
+                                        <option value="all">{t('transactions.allTills')}</option>
                                         {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="user-select" className="block text-sm font-medium text-slate-400 mb-1">User</label>
+                                    <label htmlFor="user-select" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.user')}</label>
                                     <select id="user-select" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user" data-testid="user-select" role="combobox">
-                                        <option value="all">All Users</option>
+                                        <option value="all">{t('transactions.allUsers')}</option>
                                         {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                     </select>
                                 </div>
                             </div>
                             {/* Row 3 (Custom): Date/Time Pickers */}
                             <div className="flex items-center gap-2 flex-wrap bg-slate-900 p-2 rounded-md border border-slate-700">
-                                <label htmlFor="custom-start-date" className="text-sm text-slate-400">From:</label>
+                                <label htmlFor="custom-start-date" className="text-sm text-slate-400">{t('transactions.filters.from')}</label>
                                 <input
                                     id="custom-start-date"
                                     type="date"
@@ -155,7 +157,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                     className="bg-slate-700 p-2 rounded-md text-sm"
                                     aria-label="Start time"
                                 />
-                                <label htmlFor="custom-end-date" className="text-sm text-slate-400">To:</label>
+                                <label htmlFor="custom-end-date" className="text-sm text-slate-400">{t('transactions.filters.to')}</label>
                                 <input
                                     id="custom-end-date"
                                     type="date"
@@ -178,16 +180,16 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                         /* Row 2 (Preset): Till & User */
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label htmlFor="till-select-preset" className="block text-sm font-medium text-slate-400 mb-1">Till</label>
+                                <label htmlFor="till-select-preset" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.till')}</label>
                                 <select id="till-select-preset" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" role="combobox" data-testid="till-select">
-                                    <option value="all">All Tills</option>
+                                    <option value="all">{t('transactions.allTills')}</option>
                                     {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="user-select-preset" className="block text-sm font-medium text-slate-400 mb-1">User</label>
+                                <label htmlFor="user-select-preset" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.user')}</label>
                                 <select id="user-select-preset" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user">
-                                    <option value="all">All Users</option>
+                                    <option value="all">{t('transactions.allUsers')}</option>
                                     {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                 </select>
                             </div>
@@ -198,13 +200,13 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
 
 
             <div className="mb-2 text-slate-400 text-sm" aria-live="polite">
-                Found <strong>{filteredTransactions.length}</strong> transactions totaling <strong>{formatCurrency(totalFilteredSales)}</strong>
+                {t('transactions.found', { count: filteredTransactions.length, total: formatCurrency(totalFilteredSales) })}
             </div>
 
             <div className="flex-grow grid grid-cols-1 md:grid-cols-2 gap-6 overflow-hidden">
                 <div className="overflow-y-auto pr-2 space-y-2">
                     {filteredTransactions.length === 0 ? (
-                        <p className="text-slate-500 text-center pt-8">No transactions found for the selected filters.</p>
+                        <p className="text-slate-500 text-center pt-8">{t('transactions.noTransactions')}</p>
                     ) : (
                         filteredTransactions.map(t => (
                             <div key={t.id} className="flex flex-col">
@@ -223,7 +225,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                 </div>
                                 {t.tableName && (
                                     <div className="flex justify-between items-center text-xs mt-1">
-                                        <span className="text-green-400">Table: {t.tableName}</span>
+                                        <span className="text-green-400">{t('transactions.details.table', { name: t.tableName })}</span>
                                     </div>
                                 )}
                             </button>
@@ -234,7 +236,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                 <div className="bg-slate-900 rounded-lg p-4 overflow-y-auto">
                     {selectedTransaction ? (
                         <div>
-                            <h4 className="font-bold text-lg text-amber-400 mb-2">Receipt #{selectedTransaction.id}</h4>
+                            <h4 className="font-bold text-lg text-amber-400 mb-2">{t('transactions.receipt', { id: selectedTransaction.id })}</h4>
                             <p className="text-sm text-slate-400 mb-4">{formatDate(selectedTransaction.createdAt)}</p>
                             <div className="space-y-2 mb-4">
                                 {selectedTransaction.items.map((item, index) => (
@@ -245,14 +247,14 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                 ))}
                             </div>
                             <div className="border-t border-slate-700 pt-2 space-y-1 text-sm">
-                                <div className="flex justify-between"><span>Subtotal</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
-                                <div className="flex justify-between"><span>Tax</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>
-                                <div className="flex justify-between"><span>Tip</span><span>{formatCurrency(selectedTransaction.tip)}</span></div>
-                                <div className="flex justify-between font-bold text-base mt-2"><span>Total</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
+                                <div className="flex justify-between"><span>{t('transactions.details.subtotal')}</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
+                                <div className="flex justify-between"><span>{t('transactions.details.tax')}</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>
+                                <div className="flex justify-between"><span>{t('transactions.details.tip')}</span><span>{formatCurrency(selectedTransaction.tip)}</span></div>
+                                <div className="flex justify-between font-bold text-base mt-2"><span>{t('transactions.details.total')}</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
                             </div>
                         </div>
                     ) : (
-                        <p className="text-slate-500 text-center pt-16">Select a transaction to view details.</p>
+                        <p className="text-slate-500 text-center pt-16">{t('transactions.selectTransaction')}</p>
                     )}
                 </div>
             </div>

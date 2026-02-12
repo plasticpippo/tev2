@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { LayoutProvider, useLayout } from '../src/contexts/LayoutContext';
 import { ProductGridLayout } from '../src/components/layout/ProductGridLayout';
@@ -14,6 +15,7 @@ import { VirtualKeyboard } from './VirtualKeyboard';
 import { TableAssignmentModal } from './TableAssignmentModal';
 
 export const MainPOSInterface: React.FC = () => {
+  const { t } = useTranslation(['pos', 'common']);
   const {
     isLoading,
     currentUser,
@@ -58,7 +60,7 @@ export const MainPOSInterface: React.FC = () => {
   // --- RENDER LOGIC ---
   // Check if essential data is loaded (settings is required)
   if (isLoading || !appData.settings) {
-    return <div className="bg-slate-900 text-white w-screen h-screen flex items-center justify-center">Loading POS...</div>;
+    return <div className="bg-slate-900 text-white w-screen h-screen flex items-center justify-center">{t('common:app.loading')}</div>;
   }
   
   if (!assignedTillId && currentUser?.role === 'Admin') {
@@ -110,7 +112,7 @@ export const MainPOSInterface: React.FC = () => {
             onClick={() => setIsAdminPanelOpen(true)}
             className="absolute top-2 right-2 bg-purple-700 hover:bg-purple-60 text-white font-bold py-2 px-4 rounded-md z-30"
           >
-            Admin Panel
+            {t('pos:admin.panel')}
           </button>
         )}
         
@@ -151,7 +153,7 @@ export const MainPOSInterface: React.FC = () => {
             </LayoutProvider>
           ) : (
             <div className="flex items-center justify-center h-full text-gray-500 w-full">
-              Please assign a till to continue
+              {t('pos:till.pleaseAssignTill')}
             </div>
           )}
         </main>
@@ -202,6 +204,7 @@ export const MainPOSInterface: React.FC = () => {
 
 // Component to show loading states for layout operations
 const LayoutLoadingOverlay: React.FC = () => {
+  const { t } = useTranslation('pos');
   const { isLoading, isSaving } = useLayout();
   
   if (isLoading || isSaving) {
@@ -210,7 +213,7 @@ const LayoutLoadingOverlay: React.FC = () => {
         <div className="bg-slate-800 p-6 rounded-lg">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-amber-500 mx-auto"></div>
           <p className="text-white mt-4">
-            {isSaving ? 'Saving layout...' : 'Loading layout...'}
+            {isSaving ? t('layout.saving') : t('layout.loading')}
           </p>
         </div>
       </div>

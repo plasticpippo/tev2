@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Settings, DailyClosing } from '@shared/types';
 import ConfirmationModal from './ConfirmationModal';
 import { createDailyClosing } from '../services/dailyClosingService';
@@ -12,6 +13,7 @@ interface DailyClosingButtonProps {
 }
 
 export const DailyClosingButton: React.FC<DailyClosingButtonProps> = ({ settings, userId, userName, disabled = false }) => {
+  const { t } = useTranslation('admin');
   const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -23,10 +25,10 @@ export const DailyClosingButton: React.FC<DailyClosingButtonProps> = ({ settings
       // Call the new API endpoint to create a daily closing
       const result = await createDailyClosing(new Date().toISOString(), userId);
       setIsConfirmModalOpen(false);
-      setSuccessMessage(`Daily closing created successfully at ${format(new Date(result.closedAt), 'MMM dd, yyyy HH:mm')}`);
+      setSuccessMessage(t('dailyClosing.successMessage', { date: format(new Date(result.closedAt), 'MMM dd, yyyy HH:mm') }));
     } catch (error) {
       console.error('Error creating daily closing:', error);
-      alert('Failed to create daily closing. Please try again.');
+      alert(t('dailyClosing.errorMessage'));
     } finally {
       setIsProcessing(false);
     }
@@ -42,7 +44,7 @@ export const DailyClosingButton: React.FC<DailyClosingButtonProps> = ({ settings
             disabled || isProcessing ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >
-          {isProcessing ? 'Processing...' : 'Close Current Business Day'}
+          {isProcessing ? t('dailyClosing.processing') : t('dailyClosing.closeCurrentBusinessDay')}
         </button>
         
         {successMessage && (
@@ -54,9 +56,9 @@ export const DailyClosingButton: React.FC<DailyClosingButtonProps> = ({ settings
 
       <ConfirmationModal
         show={isConfirmModalOpen}
-        title="Confirm Daily Closing"
-        message="Are you sure? This will end the current business day for reporting. All new sales will be part of the next day. This action cannot be undone."
-        confirmText="Yes, End Business Day"
+        title={t('dailyClosing.confirmTitle')}
+        message={t('dailyClosing.confirmMessage')}
+        confirmText={t('dailyClosing.confirmButton')}
         onConfirm={handleManualClose}
         onCancel={() => setIsConfirmModalOpen(false)}
       />

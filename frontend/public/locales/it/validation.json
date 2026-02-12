@@ -1,0 +1,113 @@
+{
+  "required": "Questo campo e obbligatorio",
+  "invalidFormat": "Formato non valido",
+  "invalidValue": "Valore non valido",
+  "mustBeNumber": "Deve essere un numero valido",
+  "mustBeInteger": "Deve essere un numero intero",
+  "mustBePositive": "Deve essere un numero positivo",
+  "mustBeNonNegative": "Deve essere 0 o maggiore",
+  "mustBeEmail": "Inserisci un indirizzo email valido",
+  "mustBeUrl": "Inserisci un URL valido",
+  "mustBeDate": "Inserisci una data valida",
+  "mustBeTime": "Inserisci un orario valido",
+  "mustBePhone": "Inserisci un numero di telefono valido",
+  "name": {
+    "required": "Il nome e obbligatorio",
+    "minLength": "Deve essere almeno {{min}} carattere",
+    "minLength_other": "Deve essere almeno {{min}} caratteri",
+    "maxLength": "Deve essere {{max}} carattere o meno",
+    "maxLength_other": "Deve essere {{max}} caratteri o meno",
+    "pattern": "Contiene caratteri non validi",
+    "duplicate": "Questo nome e gia in uso"
+  },
+  "email": {
+    "required": "L'email e obbligatoria",
+    "format": "Inserisci un indirizzo email valido",
+    "duplicate": "Questa email e gia registrata"
+  },
+  "password": {
+    "required": "La password e obbligatoria",
+    "minLength": "La password deve essere di almeno {{min}} caratteri",
+    "maxLength": "La password deve essere di {{max}} caratteri o meno",
+    "pattern": "La password deve contenere almeno una lettera maiuscola, una minuscola e un numero",
+    "mismatch": "Le password non coincidono",
+    "tooWeak": "La password e troppo debole"
+  },
+  "username": {
+    "required": "Il nome utente e obbligatorio",
+    "minLength": "Il nome utente deve essere di almeno {{min}} caratteri",
+    "maxLength": "Il nome utente deve essere di {{max}} caratteri o meno",
+    "pattern": "Il nome utente puo contenere solo lettere, numeri e underscore",
+    "duplicate": "Questo nome utente e gia in uso"
+  },
+  "price": {
+    "required": "Il prezzo e obbligatorio",
+    "min": "Il prezzo deve essere {{min}} o maggiore",
+    "max": "Il prezzo deve essere {{max}} o minore",
+    "format": "Inserisci un prezzo valido",
+    "invalid": "Il prezzo deve essere un numero non negativo"
+  },
+  "quantity": {
+    "required": "La quantita e obbligatoria",
+    "min": "La quantita deve essere {{min}} o maggiore",
+    "max": "La quantita deve essere {{max}} o minore",
+    "format": "Inserisci una quantita valida",
+    "invalid": "La quantita deve essere un numero non negativo"
+  },
+  "category": {
+    "required": "La selezione della categoria e obbligatoria",
+    "invalid": "Categoria selezionata non valida"
+  },
+  "room": {
+    "required": "La selezione della sala e obbligatoria",
+    "nameRequired": "Il nome della sala e obbligatorio",
+    "nameDuplicate": "Esiste gia una sala con questo nome"
+  },
+  "table": {
+    "nameRequired": "Il nome del tavolo e obbligatorio",
+    "roomRequired": "La selezione della sala e obbligatoria",
+    "invalidPosition": "Valori di posizione non validi",
+    "invalidSize": "Valori di dimensione non validi",
+    "positionOutOfRange": "La posizione e fuori dai limiti del layout"
+  },
+  "stockItem": {
+    "nameRequired": "Il nome dell'articolo magazzino e obbligatorio",
+    "unitRequired": "L'unita base e obbligatoria",
+    "quantityInvalid": "La quantita deve essere un numero valido"
+  },
+  "variant": {
+    "nameRequired": "Il nome della variante e obbligatorio",
+    "priceRequired": "Il prezzo e obbligatorio",
+    "priceInvalid": "Il prezzo deve essere un numero non negativo"
+  },
+  "till": {
+    "nameRequired": "Il nome della cassa e obbligatorio"
+  },
+  "user": {
+    "nameRequired": "Il nome utente e obbligatorio",
+    "usernameRequired": "Il nome utente e obbligatorio",
+    "passwordRequired": "La password e obbligatoria",
+    "roleRequired": "La selezione del ruolo e obbligatoria"
+  },
+  "tab": {
+    "nameRequired": "Il nome del conto e obbligatorio",
+    "nameMinLength": "Il nome del conto deve essere di almeno {{min}} caratteri"
+  },
+  "dateRange": {
+    "startRequired": "La data di inizio e obbligatoria",
+    "endRequired": "La data di fine e obbligatoria",
+    "invalidRange": "La data di fine deve essere successiva alla data di inizio",
+    "rangeTooLarge": "L'intervallo di date e troppo ampio. Il massimo e {{max}} giorni."
+  },
+  "file": {
+    "required": "Seleziona un file",
+    "tooLarge": "Il file e troppo grande. La dimensione massima e {{max}}.",
+    "invalidType": "Tipo di file non valido. Tipi consentiti: {{types}}.",
+    "uploadFailed": "Caricamento file non riuscito. Riprova."
+  },
+  "form": {
+    "invalidFields": "Correggi i campi evidenziati",
+    "submitFailed": "Invio modulo non riuscito. Verifica gli errori e riprova.",
+    "unsavedChanges": "Hai modifiche non salvate. Sei sicuro di voler uscire?"
+  }
+}

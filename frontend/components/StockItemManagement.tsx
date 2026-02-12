@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
 import type { StockItem, PurchasingUnit, Product } from '../shared/types';
 import * as inventoryApi from '../services/inventoryService';
@@ -15,6 +16,7 @@ interface StockItemModalProps {
 }
 
 const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, products }) => {
+  const { t } = useTranslation('admin');
   const [name, setName] = useState(item?.name || '');
   const [type, setType] = useState<'Ingredient' | 'Sellable Good'>(item?.type || 'Sellable Good');
   const [baseUnit, setBaseUnit] = useState(item?.baseUnit || 'pcs');
@@ -45,29 +47,29 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
     const newErrors: Record<string, string> = {};
     
     if (!name.trim()) {
-      newErrors.name = 'Stock item name is required';
+      newErrors.name = t('stockItems.validation.nameRequired');
     } else if (name.length > 255) {
-      newErrors.name = 'Stock item name must be 255 characters or less';
+      newErrors.name = t('stockItems.validation.nameMaxLength');
     }
     
     if (!baseUnit.trim()) {
-      newErrors.baseUnit = 'Base unit is required';
+      newErrors.baseUnit = t('stockItems.validation.baseUnitRequired');
     } else if (baseUnit.length > 50) {
-      newErrors.baseUnit = 'Base unit must be 50 characters or less';
+      newErrors.baseUnit = t('stockItems.validation.baseUnitMaxLength');
     }
     
     if (quantity < 0) {
-      newErrors.quantity = 'Quantity must be 0 or greater';
+      newErrors.quantity = t('stockItems.validation.quantityMin');
     }
     
     // Validate purchasing units
     for (let i = 0; i < purchasingUnits.length; i++) {
       const unit = purchasingUnits[i];
       if (unit.name && unit.name.length > 50) {
-        newErrors[`purchasingUnit-${i}-name`] = 'Unit name must be 50 characters or less';
+        newErrors[`purchasingUnit-${i}-name`] = t('stockItems.validation.unitNameMaxLength');
       }
       if (unit.name && unit.multiplier <= 0) {
-        newErrors[`purchasingUnit-${i}-multiplier`] = 'Multiplier must be greater than 0';
+        newErrors[`purchasingUnit-${i}-multiplier`] = t('stockItems.validation.multiplierMin');
       }
     }
     
@@ -105,10 +107,10 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-lg max-h-[90vh] flex flex-col border border-slate-700">
-        <h3 className="text-xl font-bold text-amber-400 p-6 pb-0">{item ? 'Edit' : 'Add'} Stock Item</h3>
+        <h3 className="text-xl font-bold text-amber-400 p-6 pb-0">{item ? t('stockItems.editStockItem') : t('stockItems.addStockItem')}</h3>
         <div className="p-6 space-y-4 overflow-y-auto">
           <div>
-            <label className="block text-sm text-slate-400">Item Name</label>
+            <label className="block text-sm text-slate-400">{t('stockItems.itemName')}</label>
             <VKeyboardInput
               k-type="full"
               type="text"
@@ -128,14 +130,14 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           </div>
           <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm text-slate-400">Type</label>
+                <label className="block text-sm text-slate-400">{t('stockItems.type')}</label>
                 <select value={type} onChange={e => setType(e.target.value as any)} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md">
-                    <option value="Sellable Good">Sellable Good</option>
-                    <option value="Ingredient">Ingredient</option>
+                    <option value="Sellable Good">{t('stockItems.types.sellableGood')}</option>
+                    <option value="Ingredient">{t('stockItems.types.ingredient')}</option>
                 </select>
               </div>
                <div>
-                <label className="block text-sm text-slate-400">Base Tracking Unit</label>
+                <label className="block text-sm text-slate-400">{t('stockItems.baseTrackingUnit')}</label>
                 <VKeyboardInput
                   k-type="full"
                   type="text"
@@ -147,7 +149,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                       return rest;
                     });
                   }}
-                  placeholder="e.g., pcs, ml, g"
+                  placeholder={t('stockItems.unitPlaceholder')}
                   className={`w-full mt-1 p-3 bg-slate-800 border rounded-md ${errors.baseUnit ? 'border-red-500' : 'border-slate-700'}`}
                   required
                 />
@@ -156,7 +158,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           </div>
           {!item && (
               <div>
-                <label className="block text-sm text-slate-400">Initial Quantity (in Base Unit)</label>
+                <label className="block text-sm text-slate-400">{t('stockItems.initialQuantity')}</label>
                 <VKeyboardInput
                   k-type="numeric"
                   type="number"
@@ -177,8 +179,8 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           )}
           
           <div className="border-t border-slate-700 pt-4">
-              <h4 className="text-lg font-semibold text-slate-300 mb-2">Purchasing Units</h4>
-              <p className="text-xs text-slate-500 mb-3">Define how you buy this item for easy stock intake (e.g., a "Bottle" is 750 base units of "ml").</p>
+              <h4 className="text-lg font-semibold text-slate-300 mb-2">{t('stockItems.purchasingUnits')}</h4>
+              <p className="text-xs text-slate-500 mb-3">{t('stockItems.purchasingUnitsDescription')}</p>
               <div className="space-y-2">
                   {purchasingUnits.map((unit, index) => (
                        <div key={unit.id} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
@@ -195,7 +197,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                                });
                              }}
                              maxLength={50}
-                             placeholder="Unit Name (e.g., Bottle)"
+                             placeholder={t('stockItems.unitNamePlaceholder')}
                              className={`flex-grow p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
                            />
                            <span className="text-slate-400">=</span>
@@ -212,7 +214,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                                  return rest;
                                });
                              }}
-                             placeholder="Multiplier"
+                             placeholder={t('stockItems.multiplierPlaceholder')}
                              className={`w-24 p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
                            />
                            <span className="text-slate-400 text-sm">{baseUnit}</span>
@@ -221,12 +223,12 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                        </div>
                    ))}
               </div>
-              <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">+ Add Purchasing Unit</button>
+              <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">{t('stockItems.addPurchasingUnit')}</button>
           </div>
 
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">Cancel</button>
+          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">{t('stockItems.cancel')}</button>
           <button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
             {isSaving ? (
               <span className="flex items-center">
@@ -234,9 +236,9 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Saving...
+                {t('stockItems.saving')}
               </span>
-            ) : 'Save'}
+            ) : t('stockItems.save')}
           </button>
         </div>
       </form>
@@ -252,6 +254,7 @@ interface StockItemManagementProps {
 }
 
 export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockItems, products, onDataUpdate }) => {
+    const { t } = useTranslation('admin');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<StockItem | undefined>(undefined);
     const [deletingItem, setDeletingItem] = useState<StockItem | null>(null);
@@ -289,12 +292,12 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
     return (
         <div className="h-full flex flex-col">
             <div className="flex-shrink-0 flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-slate-300">Stock Items</h3>
+                <h3 className="text-xl font-bold text-slate-300">{t('stockItems.stockItems')}</h3>
                 <button
                     onClick={() => { setEditingItem(undefined); setIsModalOpen(true); }}
                     className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
                 >
-                    Add Stock Item
+                    {t('stockItems.addStockItem')}
                 </button>
             </div>
             <div className="flex-grow space-y-2 overflow-y-auto pr-2">
@@ -302,15 +305,15 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                     <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
                         <div>
                             <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-slate-400">{item.type} (Tracked in {item.baseUnit})</p>
+                            <p className="text-sm text-slate-400">{item.type} ({t('stockItems.trackedIn', { unit: item.baseUnit })})</p>
                         </div>
                         <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-amber-400">{item.quantity} {item.baseUnit} in stock</span>
+                            <span className="text-lg font-bold text-amber-400">{t('stockItems.inStockValue', { quantity: item.quantity, unit: item.baseUnit })}</span>
                             <button
                                 onClick={() => { setEditingItem(item); setIsModalOpen(true); }}
                                 className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md"
                             >
-                                Edit
+                                {t('stockItems.edit')}
                             </button>
                             <button
                                 onClick={() => handleDeleteClick(item)}
@@ -327,9 +330,9 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                   </svg>
-                                  Deleting...
+                                  {t('stockItems.deleting')}
                                 </span>
-                              ) : 'Delete'}
+                              ) : t('stockItems.delete')}
                             </button>
                         </div>
                     </div>
@@ -345,11 +348,11 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
             )}
             <ConfirmationModal
                 show={!!deletingItem}
-                title="Confirm Delete"
-                message={deleteError || `Are you sure you want to delete "${deletingItem?.name}"? This action cannot be undone.`}
+                title={t('stockItems.confirmDeleteTitle')}
+                message={deleteError || t('stockItems.confirmDeleteMessage', { name: deletingItem?.name })}
                 onConfirm={deleteError ? () => { setDeletingItem(null); setDeleteError(''); } : confirmDelete}
                 onCancel={() => { setDeletingItem(null); setDeleteError(''); }}
-                confirmText={isDeleting ? 'Deleting...' : (deleteError ? 'OK' : 'Confirm')}
+                confirmText={isDeleting ? t('stockItems.deleting') : (deleteError ? 'OK' : 'Confirm')}
                 disabled={isDeleting}
             />
         </div>

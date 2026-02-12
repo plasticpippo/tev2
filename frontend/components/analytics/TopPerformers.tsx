@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction, Product, Category, OrderItem } from '../../shared/types';
 import { formatCurrency } from '../../utils/formatting';
 import { AdvancedFilter } from './AdvancedFilter';
@@ -19,6 +20,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
     categories,
     includeAllProducts = false
 }) => {
+    const { t } = useTranslation('admin');
     const [performanceData, setPerformanceData] = useState<ProductPerformanceResult | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [error, setError] = useState<string | null>(null);
@@ -96,7 +98,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
         return (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="bg-slate-800 p-6 rounded-lg">
-                    <h3 className="text-xl font-bold text-slate-300 mb-4">Top Selling Products</h3>
+                    <h3 className="text-xl font-bold text-slate-300 mb-4">{t('analytics.topSellingProducts')}</h3>
                     {performanceData ? (
                         <ul className="space-y-3">
                             {performanceData.products.map((product) => (
@@ -109,11 +111,11 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
                             ))}
                         </ul>
                     ) : (
-                        <p>Loading...</p>
+                        <p>{t('analytics.loading')}</p>
                     )}
                 </div>
                 <div className="bg-slate-800 p-6 rounded-lg">
-                    <h3 className="text-xl font-bold text-slate-300 mb-4">Top Selling Categories</h3>
+                    <h3 className="text-xl font-bold text-slate-300 mb-4">{t('analytics.topSellingCategories')}</h3>
                     {performanceData ? (
                         <ul className="space-y-3">
                             {categoryPerformance.map(([name, stats]) => (
@@ -126,7 +128,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
                             ))}
                         </ul>
                     ) : (
-                        <p>Loading...</p>
+                        <p>{t('analytics.loading')}</p>
                     )}
                 </div>
             </div>
@@ -144,7 +146,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
             
             {error && (
                 <div className="bg-red-800 text-red-100 p-4 rounded-lg">
-                    Error: {error}
+                    {t('analytics.error')}: {error}
                 </div>
             )}
             
@@ -165,19 +167,19 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
             {performanceData?.summary && (
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                     <div className="bg-slate-800 p-4 rounded-lg">
-                        <h4 className="text-sm font-medium text-slate-400">Total Revenue</h4>
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.totalRevenue')}</h4>
                         <p className="text-xl font-bold text-slate-300">{formatCurrency(performanceData.summary.totalRevenue)}</p>
                     </div>
                     <div className="bg-slate-800 p-4 rounded-lg">
-                        <h4 className="text-sm font-medium text-slate-400">Total Units Sold</h4>
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.totalUnitsSold')}</h4>
                         <p className="text-xl font-bold text-slate-300">{performanceData.summary.totalUnitsSold}</p>
                     </div>
                     <div className="bg-slate-800 p-4 rounded-lg">
-                        <h4 className="text-sm font-medium text-slate-400">Top Product</h4>
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.topProduct')}</h4>
                         <p className="text-xl font-bold text-slate-300">
                             {performanceData.summary.topProduct
                                 ? performanceData.summary.topProduct.name
-                                : 'N/A'}
+                                : t('analytics.notApplicable')}
                         </p>
                     </div>
                 </div>

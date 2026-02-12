@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLayout } from '../../contexts/LayoutContext';
 import { DraggableProductButton } from './DraggableProductButton';
 import { CategoryTabs } from '../CategoryTabs';
@@ -23,6 +24,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   makableVariantIds,
   assignedTillId
 }) => {
+  const { t } = useTranslation('pos');
   const {
     currentCategoryId,
     getCurrentCategoryLayout,
@@ -198,7 +200,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
     <div className="flex flex-col h-full bg-slate-900 rounded-lg">
       {/* Header with category tabs */}
       <div className="flex-shrink-0 p-4 border-b border-slate-700">
-        <h2 className="text-2xl font-bold text-amber-400 mb-3">Products</h2>
+        <h2 className="text-2xl font-bold text-amber-400 mb-3">{t('productGrid.title')}</h2>
         
         {/* Category filter tabs */}
         <CategoryTabs
@@ -242,9 +244,9 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                           }}
                         >
                           <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
-                            4-COLUMN GRID • {
+                            {t('productGrid.columnGrid')} • {
                               currentCategoryId === 'favourites'
-                                ? 'Favourites'
+                                ? t('productGrid.favourites')
                                 : typeof currentCategoryId === 'number'
                                   ? categories.find(c => c.id === currentCategoryId)?.name
                                   : currentCategoryId
@@ -257,10 +259,9 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                       {isEditMode && currentCategoryId === 'all' && (
                         <div className="absolute inset-0 flex items-center justify-center z-10 bg-slate-900/80">
                           <div className="bg-amber-500 text-black px-6 py-4 rounded-lg max-w-xs sm:max-w-md text-center">
-                            <p className="font-bold text-lg mb-2">⚠️ Edit Mode Disabled</p>
+                            <p className="font-bold text-lg mb-2">⚠️ {t('productGrid.editModeDisabled')}</p>
                             <p className="text-sm">
-                              Layout customization is not available for "All" filter.
-                              Please select a specific category or Favourites to customize its layout.
+                              {t('productGrid.editModeDisabledMessage')}
                             </p>
                           </div>
                         </div>
@@ -308,7 +309,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                               
                               return unpositionedItems.length > 0 ? (
                                 <div className="mt-6 pt-6 border-t border-slate-600 col-span-full">
-                                  <h3 className="text-lg font-semibold mb-3 text-amber-400">Unplaced Products - Drag to Grid</h3>
+                                  <h3 className="text-lg font-semibold mb-3 text-amber-400">{t('productGrid.unplacedProducts')}</h3>
                                   <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
                                     {unpositionedItems.map(({ product, variant }) => (
                                       <DraggableProductButton
@@ -330,7 +331,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                       {/* Empty state */}
                       {itemsToRender.length === 0 && (
                         <div className="flex items-center justify-center h-64 text-gray-500">
-                          No products in this category
+                          {t('productGrid.noProductsInCategory')}
                         </div>
                       )}
                     </div>

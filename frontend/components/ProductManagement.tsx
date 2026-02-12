@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product, ProductVariant, Category, StockItem } from '../../shared/types';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -18,6 +19,7 @@ interface VariantFormProps {
 }
 
 const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, stockItems }) => {
+    const { t } = useTranslation('admin');
     
     const handleAddConsumption = () => {
         const firstStockItem = stockItems[0];
@@ -42,17 +44,17 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
     return (
         <div className="bg-slate-700 p-4 rounded-md space-y-4 border border-slate-600">
             <div className="flex justify-between items-center">
-                <h4 className="font-semibold text-slate-200">Selling Variant</h4>
-                <button type="button" onClick={onRemove} className="btn btn-danger btn-sm">Remove Variant</button>
+                <h4 className="font-semibold text-slate-200">{t('products.variants')}</h4>
+                <button type="button" onClick={onRemove} className="btn btn-danger btn-sm">{t('products.removeVariant')}</button>
             </div>
              <div className="grid grid-cols-2 gap-4">
                  <div>
-                    <label className="block text-sm font-medium text-slate-400 mb-1">Variant Name</label>
-                    <VKeyboardInput k-type="full" type="text" placeholder="e.g., Bottle" value={variant.name || ''} onChange={e => onUpdate({ ...variant, name: e.target.value })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
+                    <label className="block text-sm font-medium text-slate-400 mb-1">{t('products.variantName')}</label>
+                    <VKeyboardInput k-type="full" type="text" placeholder={t('products.variantNamePlaceholder')} value={variant.name || ''} onChange={e => onUpdate({ ...variant, name: e.target.value })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
                  </div>
                   <div>
-                     <label className="block text-sm font-medium text-slate-400 mb-1">Price</label>
-                     <VKeyboardInput k-type="numeric" type="number" placeholder="e.g., 25.00" value={variant.price ?? ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
+                     <label className="block text-sm font-medium text-slate-400 mb-1">{t('products.price')}</label>
+                     <VKeyboardInput k-type="numeric" type="number" placeholder={t('products.pricePlaceholder')} value={variant.price ?? ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
                   </div>
              </div>
              <div>
@@ -63,11 +65,11 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                         onChange={(e) => onUpdate({ ...variant, isFavourite: e.target.checked })}
                         className="h-4 w-4 rounded text-amber-500 bg-slate-800 border-slate-600 focus:ring-amber-500"
                     />
-                    <span className="text-sm font-medium text-slate-400">Mark as Favourite</span>
+                    <span className="text-sm font-medium text-slate-400">{t('products.markAsFavourite')}</span>
                 </label>
             </div>
              <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">Button Color</label>
+                <label className="block text-sm font-medium text-slate-400 mb-2">{t('products.buttonColor')}</label>
                  <div className="flex items-center gap-4">
                     <div className="flex flex-wrap gap-2 flex-grow max-h-40 overflow-y-auto p-2 border border-slate-600 rounded-md bg-slate-900 bg-opacity-50">
                         {availableColors.map(color => (
@@ -75,14 +77,14 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                         ))}
                     </div>
                     <div className={`${variant.backgroundColor || 'bg-slate-600'} ${variant.textColor || 'text-white'} rounded-md p-3 text-center w-32 h-20 flex flex-col justify-center`}>
-                        <p className="font-bold text-sm">Preview</p>
+                        <p className="font-bold text-sm">{t('products.preview')}</p>
                         <p className="text-xs">{variant.name}</p>
                     </div>
                  </div>
             </div>
             <div className="border-t border-slate-600 pt-4">
-                <h5 className="text-sm font-medium text-slate-400 mb-2">Stock Consumption (Recipe)</h5>
-                <p className="text-xs text-slate-500 mb-3">Define which stock items are used when this variant is sold.</p>
+                <h5 className="text-sm font-medium text-slate-400 mb-2">{t('products.stockConsumption')}</h5>
+                <p className="text-xs text-slate-500 mb-3">{t('products.stockConsumptionDescription')}</p>
                 <div className="space-y-2">
                     {(variant.stockConsumption || []).map((sc: any, index: number) => (
                         <div key={index} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
@@ -95,7 +97,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                         </div>
                     ))}
                 </div>
-                <button type="button" onClick={handleAddConsumption} className="btn btn-primary w-full">+ Add Stock Item to Recipe</button>
+                <button type="button" onClick={handleAddConsumption} className="btn btn-primary w-full">+ {t('products.addStockItem')}</button>
             </div>
         </div>
     )
@@ -112,6 +114,7 @@ interface ProductModalProps {
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockItems, onClose, onSave }) => {
+  const { t } = useTranslation('admin');
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
   const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
@@ -230,8 +233,8 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 border-b border-slate-700">
-            <h3 className="text-xl font-bold text-amber-400">{product ? 'Edit' : 'Add'} Product</h3>
-            <p className="text-sm text-slate-400">Define the product's base details and its selling variants.</p>
+            <h3 className="text-xl font-bold text-amber-400">{product ? t('products.editProduct') : t('products.addProduct')}</h3>
+            <p className="text-sm text-slate-400">{t('products.productDescription')}</p>
         </div>
         <div className="p-6 space-y-4 overflow-y-auto">
             {apiError && (
@@ -246,11 +249,11 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
             )}
             <div className="grid grid-cols-2 gap-4">
                 <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Product Name</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">{t('products.productName')}</label>
                     <VKeyboardInput
                       k-type="full"
                       type="text"
-                      placeholder="e.g., Merlot"
+                      placeholder={t('products.productNamePlaceholder')}
                       value={name}
                       onChange={(e) => {
                         setName(e.target.value);
@@ -261,10 +264,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                       autoFocus
                     />
                     {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
-                    <p className="text-xs text-slate-500 mt-1">This is the base name for all variants (e.g., "Vodka & Tonic").</p>
+                    <p className="text-xs text-slate-500 mt-1">{t('products.productNameHint')}</p>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-slate-300 mb-1">Category</label>
+                    <label className="block text-sm font-medium text-slate-300 mb-1">{t('products.category')}</label>
                     <select
                       value={categoryId}
                       onChange={e => {
@@ -274,7 +277,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                       className={`w-full p-3 bg-slate-900 border rounded-md ${errors.category ? 'border-red-500' : 'border-slate-700'}`}
                       required
                     >
-                        <option value="">Select a category...</option>
+                        <option value="">{t('products.selectCategory')}</option>
                         {categories.map(cat => <option key={cat.id} value={cat.id}>{cat.name}</option>)}
                     </select>
                     {errors.category && <p className="text-red-500 text-xs mt-1">{errors.category}</p>}
@@ -291,10 +294,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                     />
                 ))}
             </div>
-            <button type="button" onClick={handleAddVariant} className="btn btn-primary w-full">+ Add Selling Variant</button>
+            <button type="button" onClick={handleAddVariant} className="btn btn-primary w-full">+ {t('products.addVariant')}</button>
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="btn btn-secondary">Cancel</button>
+          <button type="button" onClick={() => { closeKeyboard(); onClose(); }} className="btn btn-secondary">{t('buttons.cancel', { ns: 'common' })}</button>
           <button type="submit" disabled={isSaving} className={`btn btn-primary ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
             {isSaving ? (
               <span className="flex items-center">
@@ -302,9 +305,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                Saving...
+                {t('buttons.saving', { ns: 'common' })}
               </span>
-            ) : 'Save Product'}
+            ) : t('products.saveProduct')}
           </button>
         </div>
       </form>
@@ -320,6 +323,7 @@ interface ProductManagementProps {
 }
 
 export const ProductManagement: React.FC<ProductManagementProps> = ({ products, categories, stockItems, onDataUpdate }) => {
+  const { t } = useTranslation('admin');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
@@ -355,21 +359,21 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
     await confirmDelete();
   };
 
-  const getCategoryName = (id: number) => categories.find(c => c.id === id)?.name || 'Uncategorized';
+  const getCategoryName = (id: number) => categories.find(c => c.id === id)?.name || t('products.uncategorized');
   
   if (!categories || categories.length === 0) {
-      return <div>Loading categories...</div>
+      return <div>{t('products.loadingCategories')}</div>
   }
 
   return (
     <div className="h-full flex flex-col">
       <div className="flex-shrink-0 flex justify-between items-center mb-4">
-        <h3 className="text-xl font-bold text-slate-300">Product Management</h3>
+        <h3 className="text-xl font-bold text-slate-300">{t('products.title')}</h3>
         <button
           onClick={() => { setEditingProduct(undefined); setIsModalOpen(true); }}
           className="btn btn-primary"
         >
-          Add Product
+          {t('products.addProduct')}
         </button>
       </div>
       <div className="flex-grow space-y-2 overflow-y-auto pr-2">
@@ -381,7 +385,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
                     <p className="text-sm text-slate-400">{getCategoryName(product.categoryId)}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                    <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="btn btn-secondary btn-sm">Edit</button>
+                    <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="btn btn-secondary btn-sm">{t('buttons.edit', { ns: 'common' })}</button>
                     <button
                       onClick={() => setDeletingProduct(product)}
                       disabled={isDeleting}
@@ -393,17 +397,17 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                             <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                           </svg>
-                          Deleting...
+                          {t('buttons.deleting', { ns: 'common' })}
                         </span>
-                      ) : 'Delete'}
+                      ) : t('buttons.delete', { ns: 'common' })}
                     </button>
                 </div>
             </div>
              <div className="mt-2 pt-2 border-t border-slate-700 text-sm space-y-1">
-                <p className="font-semibold text-slate-400 text-xs">Variants:</p>
+                <p className="font-semibold text-slate-400 text-xs">{t('products.variants')}:</p>
                 {product.variants.map((v: any) => (
                     <div key={v.id} className="flex justify-between">
-                        <span>{v.name} {v.isFavourite && <span className="text-amber-400">FAV</span>}</span>
+                        <span>{v.name} {v.isFavourite && <span className="text-amber-400">{t('products.favourite')}</span>}</span>
                         <span>{formatCurrency(v.price)}</span>
                     </div>
                 ))}
@@ -422,11 +426,11 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
       )}
        <ConfirmationModal
          show={!!deletingProduct}
-         title="Confirm Delete"
-         message={`Are you sure you want to delete "${deletingProduct?.name}"? This will delete all its variants.`}
+         title={t('confirmation.confirmDelete', { ns: 'common' })}
+         message={t('products.confirmDelete', { name: deletingProduct?.name })}
          onConfirm={confirmDelete}
          onCancel={() => setDeletingProduct(null)}
-         confirmText={isDeleting ? 'Deleting...' : 'Delete'}
+         confirmText={isDeleting ? t('buttons.deleting', { ns: 'common' }) : t('buttons.delete', { ns: 'common' })}
          confirmButtonType="danger"
          disabled={isDeleting}
        />

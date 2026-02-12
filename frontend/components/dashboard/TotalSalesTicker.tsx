@@ -1,6 +1,7 @@
 
 
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction, Settings } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 import { getBusinessDayStart, isWithinBusinessDay } from '../../utils/time';
@@ -13,6 +14,8 @@ const StatCard: React.FC<{ title: string; value: string; color: string }> = ({ t
 );
 
 export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings: Settings }> = ({ transactions, settings }) => {
+    const { t } = useTranslation('admin');
+    
     const dailyStats = useMemo(() => {
         const businessDayStart = getBusinessDayStart(settings);
         const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart));
@@ -36,14 +39,14 @@ export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings:
 
     return (
         <div className="flex-shrink-0 bg-slate-900 p-4 rounded-lg">
-             <h2 className="text-xl font-bold text-slate-300 mb-3 text-center">Current Business Day Sales (All Tills)</h2>
+             <h2 className="text-xl font-bold text-slate-300 mb-3 text-center">{t('dashboard.currentBusinessDaySales')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <StatCard title="Total Revenue" value={formatCurrency(dailyStats.totalRevenue)} color="text-green-400" />
-                <StatCard title="Total Cash" value={formatCurrency(dailyStats.totalCash)} color="text-green-400" />
-                <StatCard title="Total Card" value={formatCurrency(dailyStats.totalCard)} color="text-green-400" />
-                <StatCard title="Net Sales" value={formatCurrency(dailyStats.totalSubtotal)} color="text-sky-400" />
-                <StatCard title="Total Tax" value={formatCurrency(dailyStats.totalTax)} color="text-slate-300" />
-                <StatCard title="Total Tips" value={formatCurrency(dailyStats.totalTips)} color="text-amber-400" />
+                <StatCard title={t('dashboard.totalRevenue')} value={formatCurrency(dailyStats.totalRevenue)} color="text-green-400" />
+                <StatCard title={t('dashboard.totalCash')} value={formatCurrency(dailyStats.totalCash)} color="text-green-400" />
+                <StatCard title={t('dashboard.totalCard')} value={formatCurrency(dailyStats.totalCard)} color="text-green-400" />
+                <StatCard title={t('dashboard.netSales')} value={formatCurrency(dailyStats.totalSubtotal)} color="text-sky-400" />
+                <StatCard title={t('dashboard.totalTax')} value={formatCurrency(dailyStats.totalTax)} color="text-slate-300" />
+                <StatCard title={t('dashboard.totalTips')} value={formatCurrency(dailyStats.totalTips)} color="text-amber-400" />
             </div>
         </div>
     );

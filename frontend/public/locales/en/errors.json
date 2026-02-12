@@ -1,0 +1,113 @@
+{
+  "http": {
+    "400": "Bad Request: The request was invalid or cannot be served.",
+    "401": "Unauthorized: Please log in to access this resource.",
+    "403": "Forbidden: You do not have permission to access this resource.",
+    "404": "Not Found: The requested resource could not be found.",
+    "405": "Method Not Allowed: The HTTP method is not allowed for this endpoint.",
+    "408": "Request Timeout: The request took too long to complete.",
+    "409": "Conflict: The request conflicts with the current state of the server.",
+    "422": "Unprocessable Entity: The request was well-formed but contains semantic errors.",
+    "429": "Too Many Requests: You have sent too many requests recently.",
+    "500": "Internal Server Error: An unexpected error occurred on the server.",
+    "502": "Bad Gateway: The server received an invalid response from the upstream server.",
+    "503": "Service Unavailable: The server is temporarily unavailable.",
+    "504": "Gateway Timeout: The server did not receive a timely response from the upstream server."
+  },
+  "network": {
+    "offline": "You are currently offline. Please check your internet connection.",
+    "connectionLost": "Connection to the server was lost. Please try again.",
+    "timeout": "The request timed out. Please try again.",
+    "dnsError": "Could not connect to the server. Please check the URL.",
+    "sslError": "Secure connection failed. Please check your network settings.",
+    "unknown": "A network error occurred. Please try again."
+  },
+  "api": {
+    "products": {
+      "invalidData": "Invalid product data provided. Please check all required fields.",
+      "duplicateName": "A product with this name already exists. Please choose a different name.",
+      "notFound": "Product not found.",
+      "deleteFailed": "Failed to delete product. The product may be in use."
+    },
+    "categories": {
+      "invalidData": "Invalid category data provided. Please check all required fields.",
+      "duplicateName": "A category with this name already exists. Please choose a different name.",
+      "notFound": "Category not found.",
+      "deleteFailed": "Failed to delete category. The category may have products assigned."
+    },
+    "stockItems": {
+      "invalidData": "Invalid stock item data provided. Please check all required fields.",
+      "duplicateName": "A stock item with this name already exists. Please choose a different name.",
+      "notFound": "Stock item not found.",
+      "deleteFailed": "Failed to delete stock item. The item may be in use.",
+      "insufficientStock": "Insufficient stock for {{name}}. Available: {{available}}, Required: {{required}}."
+    },
+    "layouts": {
+      "invalidData": "Invalid layout data provided. Please check all required fields.",
+      "duplicateName": "A layout with this name already exists. Please choose a different name.",
+      "notFound": "Layout not found.",
+      "deleteFailed": "Failed to delete layout."
+    },
+    "auth": {
+      "invalidCredentials": "Invalid credentials provided. Please check your username and password.",
+      "authenticationFailed": "Authentication failed. Please check your username and password.",
+      "sessionExpired": "Your session has expired. Please log in again.",
+      "tokenInvalid": "Invalid authentication token.",
+      "tokenExpired": "Authentication token has expired."
+    },
+    "users": {
+      "notFound": "User not found.",
+      "duplicateUsername": "A user with this username already exists.",
+      "invalidRole": "Invalid user role specified.",
+      "cannotDeleteSelf": "You cannot delete your own account.",
+      "cannotDeactivateSelf": "You cannot deactivate your own account."
+    },
+    "tills": {
+      "notFound": "Till not found.",
+      "alreadyAssigned": "This device is already assigned to another till.",
+      "assignmentFailed": "Failed to assign device to till."
+    },
+    "tables": {
+      "notFound": "Table not found.",
+      "roomNotFound": "Room not found.",
+      "invalidStatus": "Invalid table status.",
+      "deleteFailed": "Failed to delete table."
+    },
+    "tabs": {
+      "notFound": "Tab not found.",
+      "alreadyClosed": "This tab has already been closed.",
+      "emptyTab": "Cannot close an empty tab with items.",
+      "loadFailed": "Failed to load tab."
+    },
+    "transactions": {
+      "notFound": "Transaction not found.",
+      "refundFailed": "Failed to process refund.",
+      "invalidPaymentMethod": "Invalid payment method."
+    },
+    "orderSessions": {
+      "notFound": "Order session not found.",
+      "alreadyCompleted": "This order session has already been completed.",
+      "accessDenied": "You do not have access to this order session."
+    }
+  },
+  "boundary": {
+    "title": "Something went wrong",
+    "message": "An unexpected error occurred. Please try again.",
+    "retry": "Try Again"
+  },
+  "general": {
+    "unknown": "An unexpected error occurred. Please try again.",
+    "saveFailed": "Failed to save changes. Please try again.",
+    "loadFailed": "Failed to load data. Please try again.",
+    "deleteFailed": "Failed to delete item. Please try again.",
+    "updateFailed": "Failed to update item. Please try again.",
+    "createFailed": "Failed to create item. Please try again.",
+    "operationFailed": "Operation failed. Please try again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "unauthorized": "You must be logged in to perform this action.",
+    "notFound": "The requested resource was not found.",
+    "validationFailed": "Please correct the errors and try again.",
+    "rateLimited": "Too many requests. Please wait a moment and try again.",
+    "maintenance": "The system is currently under maintenance. Please try again later."
+  }
+}

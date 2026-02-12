@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { DailyClosing } from '@shared/types';
 import { getDailyClosings } from '../services/dailyClosingService';
 import { format } from 'date-fns';
@@ -8,9 +9,10 @@ interface DailyClosingSummaryViewProps {
 }
 
 export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = ({ currentUserRole }) => {
+  const { t } = useTranslation('admin');
   const [dailyClosings, setDailyClosings] = useState<DailyClosing[]>([]);
   const [loading, setLoading] = useState(true);
- const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [selectedClosing, setSelectedClosing] = useState<DailyClosing | null>(null);
   const [dateFilter, setDateFilter] = useState<string>('');
   const [dateToFilter, setDateToFilter] = useState<string>('');
@@ -90,7 +92,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
   };
 
   // Calculate combined tills across all closings
- const calculateCombinedTills = () => {
+  const calculateCombinedTills = () => {
     const combined: Record<string, { transactions: number; total: number }> = {};
     
     dailyClosings.forEach(closing => {
@@ -106,7 +108,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
     return combined;
   };
 
- // Get totals
+  // Get totals
   const totals = calculateTotals();
   const combinedPaymentMethods = calculateCombinedPaymentMethods();
   const combinedTills = calculateCombinedTills();
@@ -114,8 +116,8 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
   if (currentUserRole !== 'Admin') {
     return (
       <div className="p-6 text-center">
-        <h2 className="text-xl font-bold text-red-600 mb-4">Access Denied</h2>
-        <p className="text-slate-400">Daily closing summaries are only available to administrators.</p>
+        <h2 className="text-xl font-bold text-red-600 mb-4">{t('dailyClosing.accessDenied')}</h2>
+        <p className="text-slate-400">{t('dailyClosing.accessDeniedMessage')}</p>
       </div>
     );
   }
@@ -124,7 +126,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
     return (
       <div className="p-6 text-center">
         <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
-        <p className="mt-4 text-slate-400">Loading daily closing data...</p>
+        <p className="mt-4 text-slate-400">{t('dailyClosing.loading')}</p>
       </div>
     );
   }
@@ -132,13 +134,13 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
   if (error) {
     return (
       <div className="p-6 text-center">
-        <h2 className="text-xl font-bold text-red-600 mb-4">Error</h2>
+        <h2 className="text-xl font-bold text-red-600 mb-4">{t('dailyClosing.error')}</h2>
         <p className="text-slate-400">{error}</p>
         <button 
           onClick={() => window.location.reload()} 
           className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
         >
-          Retry
+          {t('dailyClosing.retry')}
         </button>
       </div>
     );
@@ -147,15 +149,15 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
   return (
     <div className="p-6 h-full flex flex-col bg-slate-900">
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-slate-300 mb-2">Daily Closing Summaries</h1>
-        <p className="text-slate-400">View detailed breakdowns of daily business closings</p>
+        <h1 className="text-2xl font-bold text-slate-300 mb-2">{t('dailyClosing.pageTitle')}</h1>
+        <p className="text-slate-400">{t('dailyClosing.pageDescription')}</p>
       </div>
 
       {/* Date Filter Controls */}
       <div className="bg-slate-800 p-4 rounded-lg mb-6 flex-shrink-0">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">From Date</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('dailyClosing.filters.fromDate')}</label>
             <input
               type="date"
               value={dateFilter}
@@ -164,7 +166,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-slate-400 mb-1">To Date</label>
+            <label className="block text-sm font-medium text-slate-400 mb-1">{t('dailyClosing.filters.toDate')}</label>
             <input
               type="date"
               value={dateToFilter}
@@ -180,7 +182,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
               }}
               className="w-full py-2 px-4 bg-slate-700 text-white rounded-md hover:bg-slate-600 transition"
             >
-              Clear Filters
+              {t('dailyClosing.filters.clearFilters')}
             </button>
           </div>
         </div>
@@ -190,19 +192,19 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
       {totals && (
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
           <div className="bg-slate-800 p-4 rounded-lg border-slate-700">
-            <h3 className="text-sm font-medium text-slate-400">Total Transactions</h3>
+            <h3 className="text-sm font-medium text-slate-400">{t('dailyClosing.totalTransactions')}</h3>
             <p className="text-2xl font-bold text-slate-200">{totals.transactions}</p>
           </div>
           <div className="bg-slate-800 p-4 rounded-lg border-slate-700">
-            <h3 className="text-sm font-medium text-slate-400">Total Sales</h3>
+            <h3 className="text-sm font-medium text-slate-400">{t('dailyClosing.totalSales')}</h3>
             <p className="text-2xl font-bold text-green-40">{formatCurrency(totals.totalSales)}</p>
           </div>
           <div className="bg-slate-800 p-4 rounded-lg border-slate-700">
-            <h3 className="text-sm font-medium text-slate-400">Total Tax</h3>
+            <h3 className="text-sm font-medium text-slate-400">{t('dailyClosing.totalTax')}</h3>
             <p className="text-2xl font-bold text-amber-400">{formatCurrency(totals.totalTax)}</p>
           </div>
           <div className="bg-slate-800 p-4 rounded-lg border-slate-700">
-            <h3 className="text-sm font-medium text-slate-400">Total Tips</h3>
+            <h3 className="text-sm font-medium text-slate-400">{t('dailyClosing.totalTips')}</h3>
             <p className="text-2xl font-bold text-blue-40">{formatCurrency(totals.totalTips)}</p>
           </div>
         </div>
@@ -214,18 +216,18 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
           <table className="min-w-full divide-y divide-slate-700">
             <thead className="bg-slate-700">
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Date/Time</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">User</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Transactions</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Total Sales</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">Actions</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">{t('dailyClosing.table.dateTime')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">{t('dailyClosing.table.user')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">{t('dailyClosing.table.transactions')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">{t('dailyClosing.table.totalSales')}</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-slate-300 uppercase tracking-wider">{t('dailyClosing.table.actions')}</th>
               </tr>
             </thead>
             <tbody className="bg-slate-800 divide-y divide-slate-700">
               {dailyClosings.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-6 py-4 text-center text-slate-400">
-                    No daily closing records found for the selected date range
+                    {t('dailyClosing.noRecordsFound')}
                   </td>
                 </tr>
               ) : (
@@ -255,7 +257,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                             setSelectedClosing(selectedClosing?.id === closing.id ? null : closing);
                           }}
                         >
-                          {selectedClosing?.id === closing.id ? 'Hide Details' : 'View Details'}
+                          {selectedClosing?.id === closing.id ? t('dailyClosing.table.hideDetails') : t('dailyClosing.table.viewDetails')}
                         </button>
                       </td>
                     </tr>
@@ -265,22 +267,22 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             {/* Transaction Details */}
                             <div className="space-y-3">
-                              <h3 className="font-medium text-slate-200">Transaction Summary</h3>
+                              <h3 className="font-medium text-slate-200">{t('dailyClosing.details.transactionSummary')}</h3>
                               <div className="grid grid-cols-2 gap-2 text-sm">
                                 <div className="bg-slate-900 p-2 rounded">
-                                  <p className="text-slate-400">Transactions</p>
+                                  <p className="text-slate-400">{t('dailyClosing.table.transactions')}</p>
                                   <p className="font-medium">{closing.summary.transactions}</p>
                                 </div>
                                 <div className="bg-slate-900 p-2 rounded">
-                                  <p className="text-slate-400">Total Sales</p>
+                                  <p className="text-slate-400">{t('dailyClosing.totalSales')}</p>
                                   <p className="font-medium">{formatCurrency(closing.summary.totalSales)}</p>
                                 </div>
                                 <div className="bg-slate-900 p-2 rounded">
-                                  <p className="text-slate-400">Tax</p>
+                                  <p className="text-slate-400">{t('dailyClosing.totalTax')}</p>
                                   <p className="font-medium">{formatCurrency(closing.summary.totalTax)}</p>
                                 </div>
                                 <div className="bg-slate-900 p-2 rounded">
-                                  <p className="text-slate-400">Tips</p>
+                                  <p className="text-slate-400">{t('dailyClosing.totalTips')}</p>
                                   <p className="font-medium">{formatCurrency(closing.summary.totalTips)}</p>
                                 </div>
                               </div>
@@ -288,13 +290,13 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
 
                             {/* Payment Methods */}
                             <div className="space-y-3">
-                              <h3 className="font-medium text-slate-200">Payment Methods</h3>
+                              <h3 className="font-medium text-slate-200">{t('dailyClosing.details.paymentMethods')}</h3>
                               <div className="space-y-2">
                                 {Object.entries(closing.summary.paymentMethods).map(([method, data]) => (
                                   <div key={method} className="flex justify-between text-sm bg-slate-900 p-2 rounded">
                                     <span className="text-slate-300">{method}</span>
                                     <span className="font-medium">
-                                      {data.count} transactions, {formatCurrency(data.total)}
+                                      {t('dailyClosing.details.transactionsCount', { count: data.count })}, {formatCurrency(data.total)}
                                     </span>
                                   </div>
                                 ))}
@@ -303,7 +305,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
 
                             {/* Till Summary */}
                             <div className="space-y-3">
-                              <h3 className="font-medium text-slate-200">Till Summary</h3>
+                              <h3 className="font-medium text-slate-200">{t('dailyClosing.details.tillSummary')}</h3>
                               <div className="space-y-2">
                                 {Object.entries(closing.summary.tills).map(([tillKey, data]) => {
                                   const [tillId, tillName] = tillKey.split('-');
@@ -311,7 +313,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                                     <div key={tillKey} className="flex justify-between text-sm bg-slate-900 p-2 rounded">
                                       <span className="text-slate-300">{tillName || `Till ${tillId}`}</span>
                                       <span className="font-medium">
-                                        {data.transactions} transactions, {formatCurrency(data.total)}
+                                        {t('dailyClosing.details.transactionsCount', { count: data.transactions })}, {formatCurrency(data.total)}
                                       </span>
                                     </div>
                                   );
@@ -321,18 +323,18 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
 
                             {/* Additional Details */}
                             <div className="space-y-3">
-                              <h3 className="font-medium text-slate-200">Additional Details</h3>
+                              <h3 className="font-medium text-slate-200">{t('dailyClosing.details.additionalDetails')}</h3>
                               <div className="text-sm space-y-1">
                                 <div className="flex justify-between">
-                                  <span className="text-slate-400">Closing ID</span>
+                                  <span className="text-slate-400">{t('dailyClosing.details.closingId')}</span>
                                   <span className="font-medium">#{closing.id}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-slate-400">Closed By</span>
+                                  <span className="text-slate-400">{t('dailyClosing.details.closedBy')}</span>
                                   <span className="font-medium">{closing.userName}</span>
                                 </div>
                                 <div className="flex justify-between">
-                                  <span className="text-slate-400">Closed At</span>
+                                  <span className="text-slate-400">{t('dailyClosing.details.closedAt')}</span>
                                   <span className="font-medium">{formatDate(closing.closedAt)}</span>
                                 </div>
                               </div>
@@ -354,13 +356,13 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
           {/* Combined Payment Methods */}
           <div className="bg-slate-800 p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-slate-300 mb-4">Combined Payment Methods</h3>
+            <h3 className="text-lg font-medium text-slate-300 mb-4">{t('dailyClosing.combined.paymentMethods')}</h3>
             <div className="space-y-2">
               {Object.entries(combinedPaymentMethods).map(([method, data]) => (
                 <div key={method} className="flex justify-between bg-slate-700 p-2 rounded">
                   <span className="text-slate-300">{method}</span>
                   <span className="font-medium">
-                    {data.count} transactions, {formatCurrency(data.total)}
+                    {t('dailyClosing.details.transactionsCount', { count: data.count })}, {formatCurrency(data.total)}
                   </span>
                 </div>
               ))}
@@ -369,7 +371,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
 
           {/* Combined Tills Summary */}
           <div className="bg-slate-800 p-4 rounded-lg">
-            <h3 className="text-lg font-medium text-slate-300 mb-4">Combined Till Summary</h3>
+            <h3 className="text-lg font-medium text-slate-300 mb-4">{t('dailyClosing.combined.tillSummary')}</h3>
             <div className="space-y-2">
               {Object.entries(combinedTills).map(([tillKey, data]) => {
                 const [tillId, tillName] = tillKey.split('-');
@@ -377,7 +379,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                   <div key={tillKey} className="flex justify-between bg-slate-700 p-2 rounded">
                     <span className="text-slate-300">{tillName || `Till ${tillId}`}</span>
                     <span className="font-medium">
-                      {data.transactions} transactions, {formatCurrency(data.total)}
+                      {t('dailyClosing.details.transactionsCount', { count: data.transactions })}, {formatCurrency(data.total)}
                     </span>
                   </div>
                 );

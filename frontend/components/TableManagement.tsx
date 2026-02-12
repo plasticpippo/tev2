@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTableContext, type LayoutMode } from './TableContext';
 import { TableLayoutEditor } from './TableLayoutEditor';
 import { Room, Table } from '../../shared/types';
@@ -16,6 +17,7 @@ interface RoomModalProps {
 }
 
 const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
+  const { t } = useTranslation('admin');
   const [name, setName] = useState(room?.name || '');
   const [description, setDescription] = useState(room?.description || '');
   const [errors, setErrors] = useState<ValidationError[]>([]);
@@ -72,7 +74,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
-        <h3 className="text-xl font-bold text-amber-400 mb-4">{room ? 'Edit' : 'Add'} Room</h3>
+        <h3 className="text-xl font-bold text-amber-400 mb-4">{room ? t('tables.editRoom') : t('tables.addRoom')}</h3>
         
         {/* Display general errors at the top */}
         {errors.some(error => error.field === 'general') && (
@@ -83,7 +85,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400">Room Name</label>
+            <label className="block text-sm text-slate-400">{t('tables.roomName')}</label>
             <div className="relative">
               <VKeyboardInput
                 k-type="full"
@@ -112,7 +114,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
           </div>
           
           <div>
-            <label className="block text-sm text-slate-400">Description</label>
+            <label className="block text-sm text-slate-400">{t('tables.roomDescription')}</label>
             <VKeyboardInput
               k-type="full"
               type="text"
@@ -141,7 +143,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
             className="btn btn-secondary disabled:opacity-50"
             title="Cancel changes"
           >
-            Cancel
+            {t('buttons.cancel', { ns: 'common' })}
           </button>
           <button
             type="submit"
@@ -151,10 +153,10 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
           >
             {isSubmitting ? (
               <>
-                <span className="animate-spin">🌀</span> Saving...
+                <span className="animate-spin">🌀</span> {t('buttons.saving', { ns: 'common' })}
               </>
             ) : (
-              'Save'
+              t('buttons.save', { ns: 'common' })
             )}
           </button>
         </div>
@@ -171,6 +173,7 @@ interface TableModalProps {
 }
 
 const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }) => {
+  const { t } = useTranslation('admin');
   const [name, setName] = useState(table?.name || '');
   const [roomId, setRoomId] = useState(table?.roomId || '');
   const [x, setX] = useState(table?.x.toString() || '50');
@@ -242,7 +245,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-bold text-amber-400 mb-4">{table ? 'Edit' : 'Add'} Table</h3>
+        <h3 className="text-xl font-bold text-amber-400 mb-4">{table ? t('tables.editTable') : t('tables.addTable')}</h3>
         
         {/* Display general errors at the top */}
         {errors.some(error => error.field === 'general') && (
@@ -253,7 +256,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
         
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-slate-400">Table Name</label>
+            <label className="block text-sm text-slate-400">{t('tables.tableName')}</label>
             <div className="relative">
               <VKeyboardInput
                 k-type="full"
@@ -282,7 +285,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           </div>
           
           <div>
-            <label className="block text-sm text-slate-400">Room</label>
+            <label className="block text-sm text-slate-400">{t('tables.rooms')}</label>
             <div className="relative">
               <select
                 value={roomId}
@@ -298,7 +301,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
                 } rounded-md`}
                 required
               >
-                <option value="">Select a room</option>
+                <option value="">{t('tables.selectRoom')}</option>
                 {rooms.map(room => (
                   <option key={room.id} value={room.id}>{room.name}</option>
                 ))}
@@ -314,7 +317,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-slate-400">X Position</label>
+              <label className="block text-sm text-slate-400">{t('tables.xPosition')}</label>
               <VKeyboardInput
                 k-type="numeric"
                 type="number"
@@ -336,7 +339,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
               )}
             </div>
             <div>
-              <label className="block text-sm text-slate-400">Y Position</label>
+              <label className="block text-sm text-slate-400">{t('tables.yPosition')}</label>
               <VKeyboardInput
                 k-type="numeric"
                 type="number"
@@ -358,7 +361,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm text-slate-400">Width</label>
+              <label className="block text-sm text-slate-400">{t('tables.width')}</label>
               <VKeyboardInput
                 k-type="numeric"
                 type="number"
@@ -380,7 +383,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
               )}
             </div>
             <div>
-              <label className="block text-sm text-slate-400">Height</label>
+              <label className="block text-sm text-slate-400">{t('tables.height')}</label>
               <VKeyboardInput
                 k-type="numeric"
                 type="number"
@@ -401,7 +404,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           </div>
           
           <div>
-            <label className="block text-sm text-slate-400">Status</label>
+            <label className="block text-sm text-slate-400">{t('tables.status')}</label>
             <select
               value={status}
               onChange={(e) => {
@@ -415,10 +418,10 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
                 getFieldError('status') ? 'border-red-500' : 'border-slate-700'
               } rounded-md`}
             >
-              <option value="available">Available</option>
-              <option value="occupied">Occupied</option>
-              <option value="reserved">Reserved</option>
-              <option value="unavailable">Unavailable</option>
+              <option value="available">{t('tables.statusAvailable')}</option>
+              <option value="occupied">{t('tables.statusOccupied')}</option>
+              <option value="reserved">{t('tables.statusReserved')}</option>
+              <option value="unavailable">{t('tables.statusUnavailable')}</option>
             </select>
             {getFieldError('status') && (
               <p className="mt-1 text-sm text-red-400">{getFieldError('status')}</p>
@@ -433,7 +436,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
             className="btn btn-secondary disabled:opacity-50"
             title="Cancel changes"
           >
-            Cancel
+            {t('buttons.cancel', { ns: 'common' })}
           </button>
           <button
             type="submit"
@@ -443,10 +446,10 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
           >
             {isSubmitting ? (
               <>
-                <span className="animate-spin">🌀</span> Saving...
+                <span className="animate-spin">🌀</span> {t('buttons.saving', { ns: 'common' })}
               </>
             ) : (
-              'Save'
+              t('buttons.save', { ns: 'common' })
             )}
           </button>
         </div>
@@ -490,6 +493,7 @@ const getQuickTips = (tab: 'layout' | 'rooms' | 'tables') => {
 };
 
 export const TableManagement: React.FC<TableManagementProps> = () => {
+  const { t } = useTranslation('admin');
   const {
     rooms,
     tables,
@@ -502,7 +506,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
     deleteRoom,
     deleteTable,
     refreshData
- } = useTableContext();
+  } = useTableContext();
   
   const [activeTab, setActiveTab] = useState<'rooms' | 'tables' | 'layout'>('layout');
   const [isRoomModalOpen, setIsRoomModalOpen] = useState(false);
@@ -939,22 +943,22 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
       
       <ConfirmationModal
         show={!!deletingRoom}
-        title="Confirm Delete"
-        message={`Are you sure you want to delete the room "${deletingRoom?.name}"? All tables in this room will also be deleted.`}
+        title={t('confirmation.confirmDelete', { ns: 'common' })}
+        message={t('tables.confirmDeleteRoom', { name: deletingRoom?.name })}
         onConfirm={confirmDeleteRoom}
         onCancel={() => setDeletingRoom(null)}
       />
       
       <ConfirmationModal
         show={!!deletingTable}
-        title="Confirm Delete"
-        message={`Are you sure you want to delete the table "${deletingTable?.name}"?`}
+        title={t('confirmation.confirmDelete', { ns: 'common' })}
+        message={t('tables.confirmDeleteTable', { name: deletingTable?.name })}
         onConfirm={confirmDeleteTable}
         onCancel={() => setDeletingTable(null)}
       />
       
       {/* Loading overlay */}
-      {loading && <LoadingOverlay message="Loading tables and rooms..." />}
+      {loading && <LoadingOverlay message={t('tables.loadingTablesRooms')} />}
     </div>
  );
 };

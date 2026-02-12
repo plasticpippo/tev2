@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Settings } from '@shared/types';
 
 interface TaxSettingsProps {
@@ -7,15 +8,17 @@ interface TaxSettingsProps {
 }
 
 export const TaxSettings: React.FC<TaxSettingsProps> = ({ settings, onUpdate }) => {
+  const { t } = useTranslation('admin');
+  
   const handleModeChange = (mode: Settings['tax']['mode']) => {
     onUpdate({ ...settings, mode });
   };
 
   return (
     <div>
-        <h3 className="text-xl font-bold text-slate-300 mb-4">Tax Settings</h3>
+        <h3 className="text-xl font-bold text-slate-300 mb-4">{t('settings.tax')}</h3>
         <div>
-            <p className="text-slate-400 mb-3">How should taxes be handled?</p>
+            <p className="text-slate-400 mb-3">{t('settings.howToHandleTaxes')}</p>
             <div className="space-y-3">
                 <label className="flex items-center gap-3 p-4 bg-slate-800 rounded-md cursor-pointer hover:bg-slate-700">
                     <input
@@ -27,8 +30,8 @@ export const TaxSettings: React.FC<TaxSettingsProps> = ({ settings, onUpdate }) 
                         className="h-5 w-5 rounded-full text-amber-500 bg-slate-700 border-slate-600 focus:ring-amber-500"
                     />
                     <div>
-                        <span className="font-semibold">Exclusive</span>
-                        <p className="text-xs text-slate-400">Tax is added on top of the product price. (e.g., $10.00 + 7% = $10.70)</p>
+                        <span className="font-semibold">{t('settings.taxModes.exclusive')}</span>
+                        <p className="text-xs text-slate-400">{t('settings.taxModeDescriptions.exclusive')}</p>
                     </div>
                 </label>
                  <label className="flex items-center gap-3 p-4 bg-slate-800 rounded-md cursor-pointer hover:bg-slate-700">
@@ -41,8 +44,8 @@ export const TaxSettings: React.FC<TaxSettingsProps> = ({ settings, onUpdate }) 
                         className="h-5 w-5 rounded-full text-amber-500 bg-slate-700 border-slate-600 focus:ring-amber-500"
                     />
                     <div>
-                        <span className="font-semibold">Inclusive</span>
-                        <p className="text-xs text-slate-400">Product price already includes tax. (e.g., $10.00 is $9.35 + $0.65 tax)</p>
+                        <span className="font-semibold">{t('settings.taxModes.inclusive')}</span>
+                        <p className="text-xs text-slate-400">{t('settings.taxModeDescriptions.inclusive')}</p>
                     </div>
                 </label>
                  <label className="flex items-center gap-3 p-4 bg-slate-800 rounded-md cursor-pointer hover:bg-slate-700">
@@ -55,8 +58,8 @@ export const TaxSettings: React.FC<TaxSettingsProps> = ({ settings, onUpdate }) 
                         className="h-5 w-5 rounded-full text-amber-500 bg-slate-700 border-slate-600 focus:ring-amber-500"
                     />
                      <div>
-                        <span className="font-semibold">No Tax</span>
-                        <p className="text-xs text-slate-400">No taxes are calculated or applied.</p>
+                        <span className="font-semibold">{t('settings.taxModes.none')}</span>
+                        <p className="text-xs text-slate-400">{t('settings.taxModeDescriptions.none')}</p>
                     </div>
                 </label>
             </div>

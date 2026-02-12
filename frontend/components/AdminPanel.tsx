@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '../../shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
@@ -55,8 +56,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     onDataUpdate, products, categories, users, tills, settings,
     transactions, tabs, stockItems, stockAdjustments, orderActivityLogs,
     rooms, tables
- } = props;
+  } = props;
   
+  const { t } = useTranslation('admin');
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
 
   const handleSettingsUpdate = async (newSettings: Settings) => {
@@ -127,38 +129,38 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     <div className="w-screen h-screen bg-slate-800 text-white flex flex-col">
        <header className="flex-shrink-0 bg-slate-900 p-4 flex justify-between items-center border-b border-slate-700">
             <div>
-                <h1 className="text-2xl font-bold text-amber-400">Admin Panel</h1>
-                <p className="text-sm text-slate-400">Logged in as {currentUser.name}</p>
+                <h1 className="text-2xl font-bold text-amber-400">{t('title')}</h1>
+                <p className="text-sm text-slate-400">{t('header.loggedInAs', { name: currentUser.name })}</p>
             </div>
             <div className="flex items-center gap-4">
               <button onClick={onSwitchToPos} className="bg-sky-600 hover:bg-sky-500 font-bold py-2 px-4 rounded-md transition">
-                  Switch to POS
+                  {t('header.switchToPos')}
               </button>
               <button onClick={onLogout} className="bg-red-700 hover:bg-red-600 font-bold py-2 px-4 rounded-md transition">
-                  Logout
+                  {t('header.logout')}
               </button>
             </div>
         </header>
         <div className="flex-grow flex overflow-hidden">
             <nav className="w-64 bg-slate-900 p-4 space-y-1 overflow-y-auto flex-shrink-0">
-                <NavButton view="dashboard" label="Dashboard" isFirst/>
-                <NavButton view="analytics" label="Analytics"/>
+                <NavButton view="dashboard" label={t('navigation.dashboard')} isFirst/>
+                <NavButton view="analytics" label={t('navigation.analytics')}/>
                 <div className="pt-2"></div>
-                <NavButton view="transactions" label="Transactions" />
-                <NavButton view="activity" label="Activity Log" />
-                <NavButton view="dailyClosingSummary" label="Daily Closing Summary" />
+                <NavButton view="transactions" label={t('navigation.transactions')} />
+                <NavButton view="activity" label={t('navigation.activity')} />
+                <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} />
                 <div className="pt-2"></div>
-                <NavButton view="products" label="Products" isFirst/>
-                <NavButton view="categories" label="Categories" />
-                <NavButton view="stockItems" label="Stock Items" />
-                <NavButton view="inventory" label="Inventory" />
+                <NavButton view="products" label={t('navigation.products')} isFirst/>
+                <NavButton view="categories" label={t('navigation.categories')} />
+                <NavButton view="stockItems" label={t('navigation.stockItems')} />
+                <NavButton view="inventory" label={t('navigation.inventory')} />
                 <div className="pt-2"></div>
-                <NavButton view="users" label="Users" isFirst/>
-                <NavButton view="tills" label="Tills" />
-                <NavButton view="tables" label="Tables & Layout" />
-                <NavButton view="itemisedConsumption" label="Itemised Consumption" />
+                <NavButton view="users" label={t('navigation.users')} isFirst/>
+                <NavButton view="tills" label={t('navigation.tills')} />
+                <NavButton view="tables" label={t('navigation.tables')} />
+                <NavButton view="itemisedConsumption" label={t('navigation.itemisedConsumption')} />
                 <div className="pt-2"></div>
-                <NavButton view="settings" label="Settings" isFirst/>
+                <NavButton view="settings" label={t('navigation.settings')} isFirst/>
             </nav>
             <main className="flex-grow p-6 overflow-y-auto bg-slate-900">
                 {renderView()}
