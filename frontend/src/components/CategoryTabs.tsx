@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLayout } from '../contexts/LayoutContext';
 import type { Category } from '@shared/types';
 
@@ -11,6 +12,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   categories,
   assignedTillId 
 }) => {
+  const { t } = useTranslation();
   const { currentCategoryId, setCurrentCategory } = useLayout();
 
   // Filter categories visible for this till
@@ -41,7 +43,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           }
         `}
       >
-        ⭐ Favourites
+        {t('categoryTabs.favourites')}
       </button>
 
       {/* Category buttons */}
@@ -72,7 +74,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
           }
         `}
       >
-        All
+        {t('categoryTabs.all')}
       </button>
     </div>
   );

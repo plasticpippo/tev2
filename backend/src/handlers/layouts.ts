@@ -6,6 +6,7 @@ import { writeLimiter } from '../middleware/rateLimiter';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
+import i18n from '../i18n';
 
 export const layoutsRouter = express.Router();
 
@@ -42,7 +43,7 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async
     logError(error instanceof Error ? error : 'Error fetching till layout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch layout. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.fetchFailed') });
   }
 });
 
@@ -61,26 +62,26 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
     
     // Validate input
     if (!Array.isArray(positions)) {
-      return res.status(400).json({ error: 'Positions must be an array' });
+      return res.status(400).json({ error: i18n.t('errors:layouts.positionsMustBeArray') });
     }
     
     // Validate each position
     for (const pos of positions) {
       if (!pos.variantId || !pos.gridColumn || !pos.gridRow) {
         return res.status(400).json({
-          error: 'Each position must have variantId, gridColumn, and gridRow'
+          error: i18n.t('errors:layouts.positionMissingFields')
         });
       }
       
       if (pos.gridColumn < 1 || pos.gridColumn > 4) {
         return res.status(400).json({
-          error: 'gridColumn must be between 1 and 4'
+          error: i18n.t('errors:layouts.gridColumnRange')
         });
       }
       
       if (pos.gridRow < 1) {
         return res.status(400).json({
-          error: 'gridRow must be at least 1'
+          error: i18n.t('errors:layouts.gridRowMin')
         });
       }
     }
@@ -91,7 +92,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
     });
     
     if (!till) {
-      return res.status(404).json({ error: 'Till not found' });
+      return res.status(404).json({ error: i18n.t('errors:tills.notFound') });
     }
     
     // Parse categoryId to ensure it's a number
@@ -105,7 +106,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
       });
       
       if (!category) {
-        return res.status(404).json({ error: 'Category not found' });
+        return res.status(404).json({ error: i18n.t('errors:categories.notFound') });
       }
     }
     // If categoryId is -1, it's the Favourites pseudo-category - allow it
@@ -145,7 +146,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
       error,
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to save layout. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.saveFailed') });
   }
 });
 
@@ -179,7 +180,7 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
       const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
       
       if (!isOwner && !isAdmin && existingLayout.ownerId !== null) {
-        return res.status(403).json({ error: 'Access denied. You do not own this layout.' });
+        return res.status(403).json({ error: i18n.t('errors:layouts.accessDenied') });
       }
     }
     
@@ -196,7 +197,7 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
     logError(error instanceof Error ? error : 'Error deleting till layout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete layout. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.deleteFailed') });
   }
 });
 
@@ -237,7 +238,7 @@ layoutsRouter.get('/shared', authenticateToken, async (req: Request, res: Respon
     logError(error instanceof Error ? error : 'Error fetching shared layouts', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch shared layouts. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.fetchSharedFailed') });
   }
 });
 
@@ -261,7 +262,7 @@ layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Re
     });
     
     if (!sharedLayout) {
-      return res.status(404).json({ error: 'Shared layout not found' });
+      return res.status(404).json({ error: i18n.t('errors:layouts.sharedNotFound') });
     }
     
     res.json(sharedLayout);
@@ -269,7 +270,7 @@ layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Re
     logError(error instanceof Error ? error : 'Error fetching shared layout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch shared layout. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.fetchOneSharedFailed') });
   }
 });
 
@@ -290,7 +291,7 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
     
     // Validate input
     if (!name || !name.trim()) {
-      return res.status(400).json({ error: 'Layout name is required' });
+      return res.status(400).json({ error: i18n.t('errors:layouts.nameRequired') });
     }
 
     // Sanitize name
@@ -306,30 +307,30 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
     }
 
     if (categoryId === undefined || categoryId === null) {
-      return res.status(400).json({ error: 'Category ID is required' });
+      return res.status(400).json({ error: i18n.t('errors:layouts.categoryIdRequired') });
     }
     
     if (!Array.isArray(positions) || positions.length === 0) {
-      return res.status(400).json({ error: 'Positions array is required and must not be empty' });
+      return res.status(400).json({ error: i18n.t('errors:layouts.positionsRequired') });
     }
     
     // Validate each position
     for (const pos of positions) {
       if (!pos.variantId || !pos.gridColumn || !pos.gridRow) {
         return res.status(400).json({
-          error: 'Each position must have variantId, gridColumn, and gridRow'
+          error: i18n.t('errors:layouts.positionMissingFields')
         });
       }
       
       if (pos.gridColumn < 1 || pos.gridColumn > 4) {
         return res.status(400).json({
-          error: 'gridColumn must be between 1 and 4'
+          error: i18n.t('errors:layouts.gridColumnRange')
         });
       }
       
       if (pos.gridRow < 1) {
         return res.status(400).json({
-          error: 'gridRow must be at least 1'
+          error: i18n.t('errors:layouts.gridRowMin')
         });
       }
     }
@@ -342,7 +343,7 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
       });
       
       if (!category) {
-        return res.status(404).json({ error: 'Category not found' });
+        return res.status(404).json({ error: i18n.t('errors:categories.notFound') });
       }
     }
     
@@ -372,7 +373,7 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
       error,
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create shared layout. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.createSharedFailed') });
   }
 });
 
@@ -392,12 +393,12 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
     });
     
     if (!existing) {
-      return res.status(404).json({ error: 'Shared layout not found' });
+      return res.status(404).json({ error: i18n.t('errors:layouts.sharedNotFound') });
     }
     
     // Validate name if provided
     if (name !== undefined && !name.trim()) {
-      return res.status(400).json({ error: 'Layout name cannot be empty' });
+      return res.status(400).json({ error: i18n.t('errors:layouts.nameCannotBeEmpty') });
     }
 
     // Sanitize name if provided
@@ -417,25 +418,25 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
     // Validate positions if provided
     if (positions !== undefined) {
       if (!Array.isArray(positions) || positions.length === 0) {
-        return res.status(400).json({ error: 'Positions must be a non-empty array' });
+        return res.status(400).json({ error: i18n.t('errors:layouts.positionsNonEmptyArray') });
       }
       
       for (const pos of positions) {
         if (!pos.variantId || !pos.gridColumn || !pos.gridRow) {
           return res.status(400).json({
-            error: 'Each position must have variantId, gridColumn, and gridRow'
+            error: i18n.t('errors:layouts.positionMissingFields')
           });
         }
         
         if (pos.gridColumn < 1 || pos.gridColumn > 4) {
           return res.status(400).json({
-            error: 'gridColumn must be between 1 and 4'
+            error: i18n.t('errors:layouts.gridColumnRange')
           });
         }
         
         if (pos.gridRow < 1) {
           return res.status(400).json({
-            error: 'gridRow must be at least 1'
+            error: i18n.t('errors:layouts.gridRowMin')
           });
         }
       }
@@ -494,7 +495,7 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
       error,
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update shared layout. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.updateSharedFailed') });
   }
 });
 
@@ -510,7 +511,7 @@ layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, wr
     });
     
     if (!existing) {
-      return res.status(404).json({ error: 'Shared layout not found' });
+      return res.status(404).json({ error: i18n.t('errors:layouts.sharedNotFound') });
     }
     
     // Delete (positions will cascade delete)
@@ -524,7 +525,7 @@ layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, wr
       error,
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete shared layout. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.deleteSharedFailed') });
   }
 });
 
@@ -541,7 +542,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
     });
     
     if (!sharedLayout) {
-      return res.status(404).json({ error: 'Shared layout not found' });
+      return res.status(404).json({ error: i18n.t('errors:layouts.sharedNotFound') });
     }
     
     // Verify till exists
@@ -550,7 +551,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
     });
     
     if (!till) {
-      return res.status(404).json({ error: 'Till not found' });
+      return res.status(404).json({ error: i18n.t('errors:tills.notFound') });
     }
     
     // Copy shared layout positions to till-specific layout
@@ -582,7 +583,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
     });
     
     res.status(201).json({
-      message: 'Shared layout loaded successfully',
+      message: i18n.t('api:success.layoutLoaded'),
       layouts: result
     });
   } catch (error) {
@@ -590,7 +591,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
       error,
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to load shared layout. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:layouts.loadSharedFailed') });
   }
 });
 

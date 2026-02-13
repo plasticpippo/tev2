@@ -98,7 +98,17 @@
     "duplicateUsername": "Username already exists",
     "deleteFailed": "Failed to delete user",
     "cannotDeleteSelf": "Cannot delete your own account",
-    "invalidRole": "Invalid user role"
+    "invalidRole": "Invalid user role",
+    "fetchFailed": "Failed to fetch users",
+    "fetchOneFailed": "Failed to fetch user",
+    "passwordRequired": "Password is required",
+    "createFailed": "Failed to create user",
+    "updateFailed": "Failed to update user",
+    "loginFailed": "Login failed due to server error. Please try again later.",
+    "logoutFailed": "Logout failed due to server error. Please try again later.",
+    "userIdRequired": "User ID is required",
+    "tokensRevoked": "All tokens for the user have been revoked successfully.",
+    "revokeFailed": "Failed to revoke all tokens. Please try again later."
   },
   "tills": {
     "notFound": "Till not found",
@@ -111,7 +121,16 @@
     "roomNotFound": "Room not found",
     "invalidData": "Invalid table data",
     "deleteFailed": "Failed to delete table",
-    "roomDeleteFailed": "Failed to delete room"
+    "roomDeleteFailed": "Failed to delete room",
+    "fetchFailed": "Failed to fetch tables",
+    "fetchOneFailed": "Failed to fetch table",
+    "nameAndRoomRequired": "Name and roomId are required",
+    "validationFailed": "Validation failed",
+    "createFailed": "Failed to create table",
+    "updateFailed": "Failed to update table",
+    "cannotDeleteWithTabs": "Cannot delete table with open tabs. Please close or reassign tabs first.",
+    "coordinatesRequired": "x and y coordinates are required",
+    "positionUpdateFailed": "Failed to update table position"
   },
   "tabs": {
     "notFound": "Tab not found",
@@ -143,16 +162,68 @@
     "notFound": "Layout not found",
     "invalidData": "Invalid layout data",
     "duplicateName": "Layout with this name already exists",
-    "deleteFailed": "Failed to delete layout"
+    "deleteFailed": "Failed to delete layout",
+    "fetchFailed": "Failed to fetch layout. Please try again later.",
+    "positionsMustBeArray": "Positions must be an array",
+    "positionMissingFields": "Each position must have variantId, gridColumn, and gridRow",
+    "gridColumnRange": "gridColumn must be between 1 and 4",
+    "gridRowMin": "gridRow must be at least 1",
+    "saveFailed": "Failed to save layout. Please check your data and try again.",
+    "accessDenied": "Access denied. You do not own this layout.",
+    "fetchSharedFailed": "Failed to fetch shared layouts. Please try again later.",
+    "sharedNotFound": "Shared layout not found",
+    "fetchOneSharedFailed": "Failed to fetch shared layout. Please try again later.",
+    "nameRequired": "Layout name is required",
+    "categoryIdRequired": "Category ID is required",
+    "positionsRequired": "Positions array is required and must not be empty",
+    "createSharedFailed": "Failed to create shared layout. Please check your data and try again.",
+    "nameCannotBeEmpty": "Layout name cannot be empty",
+    "positionsNonEmptyArray": "Positions must be a non-empty array",
+    "updateSharedFailed": "Failed to update shared layout. Please check your data and try again.",
+    "deleteSharedFailed": "Failed to delete shared layout. Please try again later.",
+    "loadSharedFailed": "Failed to load shared layout. Please try again later."
   },
   "settings": {
     "notFound": "Settings not found",
     "invalidData": "Invalid settings data",
-    "updateFailed": "Failed to update settings"
+    "updateFailed": "Failed to update settings",
+    "fetchFailed": "Failed to fetch settings"
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",
     "alreadyExists": "Daily closing already exists for this date",
-    "invalidData": "Invalid daily closing data"
+    "invalidData": "Invalid daily closing data",
+    "fetchFailed": "Failed to fetch daily closings",
+    "fetchOneFailed": "Failed to fetch daily closing",
+    "createFailed": "Failed to create daily closing",
+    "missingRequiredFields": "Missing required fields: closedAt or userId"
+  },
+  "rooms": {
+    "notFound": "Room not found",
+    "invalidData": "Invalid room data",
+    "duplicateName": "A room with this name already exists",
+    "nameRequired": "Name is required",
+    "descriptionTooLong": "Description must be 500 characters or less",
+    "fetchFailed": "Failed to fetch rooms",
+    "fetchOneFailed": "Failed to fetch room",
+    "createFailed": "Failed to create room",
+    "updateFailed": "Failed to update room",
+    "deleteFailed": "Failed to delete room",
+    "cannotDeleteWithTables": "Cannot delete room with {{count}} assigned table(s). Please delete or reassign tables first."
+  },
+  "stockAdjustments": {
+    "notFound": "Stock adjustment not found",
+    "fetchFailed": "Failed to fetch stock adjustments",
+    "fetchOneFailed": "Failed to fetch stock adjustment",
+    "createFailed": "Failed to create stock adjustment",
+    "invalidStockItemIdFormat": "Invalid stock item ID format",
+    "invalidStockItemId": "Invalid stock item ID: {{stockItemId}}",
+    "fetchOrphanedFailed": "Failed to fetch orphaned stock adjustment references",
+    "cleanupOrphanedFailed": "Failed to clean up orphaned stock adjustment references",
+    "validateIntegrityFailed": "Failed to validate data integrity",
+    "noOrphanedReferences": "No orphaned references found",
+    "orphanedReferencesRemoved": "Successfully removed {{count}} orphaned stock adjustment references",
+    "dataIntegrityIssues": "Data integrity issues found",
+    "dataIntegrityPassed": "Data integrity validation passed"
   }
 }

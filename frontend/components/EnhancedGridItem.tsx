@@ -1,4 +1,5 @@
 import React, { memo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../utils/formatting';
 import type { ProductVariant } from '../../shared/types';
 
@@ -67,6 +68,7 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
   style = {},
   className = '',
 }) => {
+  const { t } = useTranslation();
   // Combine multiple transforms into a single string
   const getTransform = (): string | undefined => {
     const transforms: string[] = [];
@@ -111,7 +113,7 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       role="gridcell"
-      aria-label={`Product ${name}, price ${formatCurrency(price)}`}
+      aria-label={t('enhancedGridItem.ariaLabel', { name, price: formatCurrency(price) })}
       tabIndex={0}
     >
       <p className={`font-bold ${textColor}`}>
@@ -124,7 +126,7 @@ const EnhancedGridItem: React.FC<EnhancedGridItemProps> = ({
       {/* Visual indicator for locked items */}
       {locked && (
         <div className="absolute top-1 right-1 w-3 h-3 bg-gray-800 bg-opacity-50 rounded-full flex items-center justify-center">
-          <span className="text-xs text-white">LOCK</span>
+          <span className="text-xs text-white">{t('enhancedGridItem.locked')}</span>
         </div>
       )}
     </div>

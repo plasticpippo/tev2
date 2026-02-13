@@ -476,7 +476,9 @@
     "backspace": "Cancella",
     "enter": "Invio",
     "shift": "Maiusc",
-    "capsLock": "Bloc Maiusc"
+    "capsLock": "Bloc Maiusc",
+    "enable": "Attiva tastiera virtuale",
+    "disable": "Disattiva tastiera virtuale"
   },
   "tillSetupScreen": {
     "title": "Configurazione Terminale",
@@ -495,5 +497,83 @@
       "title": "Sezione Layout Griglia",
       "description": "Questa e l'area principale del layout della griglia dove puoi disporre i tuoi prodotti."
     }
+  },
+  "enhancedGridItem": {
+    "ariaLabel": "Prodotto {{name}}, prezzo {{price}}",
+    "locked": "BLOC"
+  },
+  "categoryTabs": {
+    "favourites": "Preferiti",
+    "all": "Tutti"
+  },
+  "api": {
+    "tokenExpired": "Token scaduto, rimozione dalla memoria",
+    "clearingSubscribers": "Rimozione di tutti i sottoscrittori...",
+    "notifyingSubscribers": "Notifica ai sottoscrittori del cambiamento dati...",
+    "tokenExpiredInvalid": "Token scaduto o non valido, cancellazione autenticazione e reindirizzamento al login",
+    "invalidToken": "Token non valido o scaduto. Accedi nuovamente.",
+    "httpError": "Errore HTTP! stato: {{status}}",
+    "requestTimeout": "Richiesta scaduta. Verifica la connessione di rete e riprova.",
+    "requestError": "Errore nella richiesta a {{url}}",
+    "unexpectedError": "Si e verificato un errore imprevisto"
+  },
+  "tableService": {
+    "errorFetchingRooms": "Errore nel caricamento delle stanze",
+    "errorSavingRoom": "Errore nel salvataggio della stanza",
+    "errorDeletingRoom": "Errore nell'eliminazione della stanza",
+    "failedDeleteRoom": "Impossibile eliminare la stanza",
+    "errorFetchingTables": "Errore nel caricamento dei tavoli",
+    "errorSavingTable": "Errore nel salvataggio del tavolo",
+    "errorDeletingTable": "Errore nell'eliminazione del tavolo",
+    "failedDeleteTable": "Impossibile eliminare il tavolo",
+    "errorUpdatingTablePosition": "Errore nell'aggiornamento della posizione del tavolo"
+  },
+  "inventoryService": {
+    "errorFetchingStockItems": "Errore nel caricamento degli articoli di magazzino",
+    "errorSavingStockItem": "Errore nel salvataggio dell'articolo di magazzino",
+    "errorDeletingStockItem": "Errore nell'eliminazione dell'articolo di magazzino",
+    "failedDeleteStockItem": "Impossibile eliminare l'articolo di magazzino",
+    "stockLevelUpdateResponse": "Risposta aggiornamento livello magazzino",
+    "invalidStockItemIdFormat": "Formato ID articolo di magazzino non valido",
+    "stockLevelUpdateWarnings": "Aggiornamento livello magazzino completato con avvisi",
+    "errorUpdatingStockLevels": "Errore nell'aggiornamento dei livelli di magazzino",
+    "errorFetchingStockAdjustments": "Errore nel caricamento delle rettifiche di magazzino",
+    "errorSavingStockAdjustment": "Errore nel salvataggio della rettifica di magazzino"
+  },
+  "productService": {
+    "errorFetchingProducts": "Errore nel caricamento dei prodotti",
+    "errorSavingProduct": "Errore nel salvataggio del prodotto",
+    "errorDeletingProduct": "Errore nell'eliminazione del prodotto",
+    "failedDeleteProduct": "Impossibile eliminare il prodotto",
+    "errorFetchingCategories": "Errore nel caricamento delle categorie",
+    "errorSavingCategory": "Errore nel salvataggio della categoria",
+    "errorDeletingCategory": "Errore nell'eliminazione della categoria",
+    "failedDeleteCategory": "Impossibile eliminare la categoria"
+  },
+  "orderService": {
+    "errorFetchingSession": "Errore nel caricamento della sessione ordine",
+    "errorSavingSession": "Errore nel salvataggio della sessione ordine",
+    "errorUpdatingSessionStatus": "Errore nell'aggiornamento dello stato della sessione ordine",
+    "invalidStatus": "Stato non valido: {{status}}",
+    "sessionCleared": "Sessione ordine cancellata",
+    "errorFetchingActivityLogs": "Errore nel caricamento dei log attivita ordini",
+    "errorSavingActivityLog": "Errore nel salvataggio del log attivita ordine",
+    "notAuthenticatedSession": "Utente non autenticato per la sessione ordine, restituisce null",
+    "notAuthenticatedSessionSave": "Utente non autenticato per il salvataggio della sessione ordine, restituisce null",
+    "notAuthenticatedSessionStatus": "Utente non autenticato per l'aggiornamento dello stato della sessione ordine ({{status}}), restituisce null"
+  },
+  "tillService": {
+    "errorFetchingTills": "Errore nel caricamento delle casse",
+    "errorSavingTill": "Errore nel salvataggio della cassa",
+    "errorDeletingTill": "Errore nell'eliminazione della cassa",
+    "failedDeleteTill": "Impossibile eliminare la cassa"
+  },
+  "userService": {
+    "errorFetchingUsers": "Errore nel caricamento degli utenti",
+    "errorSavingUser": "Errore nel salvataggio dell'utente",
+    "errorDeletingUser": "Errore nell'eliminazione dell'utente",
+    "failedDeleteUser": "Impossibile eliminare l'utente",
+    "errorDuringLogin": "Errore durante l'accesso",
+    "userLoggedOut": "Utente disconnesso e dati cancellati"
   }
 }

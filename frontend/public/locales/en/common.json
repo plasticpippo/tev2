@@ -476,7 +476,9 @@
     "backspace": "Backspace",
     "enter": "Enter",
     "shift": "Shift",
-    "capsLock": "Caps Lock"
+    "capsLock": "Caps Lock",
+    "enable": "Enable virtual keyboard",
+    "disable": "Disable virtual keyboard"
   },
   "tillSetupScreen": {
     "title": "Terminal Setup",
@@ -495,5 +497,83 @@
       "title": "Grid Layout Section",
       "description": "This is the main grid layout area where you can arrange your product items."
     }
+  },
+  "enhancedGridItem": {
+    "ariaLabel": "Product {{name}}, price {{price}}",
+    "locked": "LOCK"
+  },
+  "categoryTabs": {
+    "favourites": "Favourites",
+    "all": "All"
+  },
+  "api": {
+    "tokenExpired": "Token is expired, clearing it from storage",
+    "clearingSubscribers": "Clearing all subscribers...",
+    "notifyingSubscribers": "Notifying subscribers of data change...",
+    "tokenExpiredInvalid": "Token expired or invalid, clearing authentication and redirecting to login",
+    "invalidToken": "Invalid or expired token. Please log in again.",
+    "httpError": "HTTP error! status: {{status}}",
+    "requestTimeout": "Request timed out. Please check your network connection and try again.",
+    "requestError": "Error making request to {{url}}",
+    "unexpectedError": "An unexpected error occurred"
+  },
+  "tableService": {
+    "errorFetchingRooms": "Error fetching rooms",
+    "errorSavingRoom": "Error saving room",
+    "errorDeletingRoom": "Error deleting room",
+    "failedDeleteRoom": "Failed to delete room",
+    "errorFetchingTables": "Error fetching tables",
+    "errorSavingTable": "Error saving table",
+    "errorDeletingTable": "Error deleting table",
+    "failedDeleteTable": "Failed to delete table",
+    "errorUpdatingTablePosition": "Error updating table position"
+  },
+  "inventoryService": {
+    "errorFetchingStockItems": "Error fetching stock items",
+    "errorSavingStockItem": "Error saving stock item",
+    "errorDeletingStockItem": "Error deleting stock item",
+    "failedDeleteStockItem": "Failed to delete stock item",
+    "stockLevelUpdateResponse": "Stock level update response",
+    "invalidStockItemIdFormat": "Invalid stock item ID format",
+    "stockLevelUpdateWarnings": "Stock level update completed with warnings",
+    "errorUpdatingStockLevels": "Error updating stock levels",
+    "errorFetchingStockAdjustments": "Error fetching stock adjustments",
+    "errorSavingStockAdjustment": "Error saving stock adjustment"
+  },
+  "productService": {
+    "errorFetchingProducts": "Error fetching products",
+    "errorSavingProduct": "Error saving product",
+    "errorDeletingProduct": "Error deleting product",
+    "failedDeleteProduct": "Failed to delete product",
+    "errorFetchingCategories": "Error fetching categories",
+    "errorSavingCategory": "Error saving category",
+    "errorDeletingCategory": "Error deleting category",
+    "failedDeleteCategory": "Failed to delete category"
+  },
+  "orderService": {
+    "errorFetchingSession": "Error fetching order session",
+    "errorSavingSession": "Error saving order session",
+    "errorUpdatingSessionStatus": "Error updating order session status",
+    "invalidStatus": "Invalid status: {{status}}",
+    "sessionCleared": "Order session cleared",
+    "errorFetchingActivityLogs": "Error fetching order activity logs",
+    "errorSavingActivityLog": "Error saving order activity log",
+    "notAuthenticatedSession": "User not authenticated for order session, returning null",
+    "notAuthenticatedSessionSave": "User not authenticated for order session save, returning null",
+    "notAuthenticatedSessionStatus": "User not authenticated for order session status update ({{status}}), returning null"
+  },
+  "tillService": {
+    "errorFetchingTills": "Error fetching tills",
+    "errorSavingTill": "Error saving till",
+    "errorDeletingTill": "Error deleting till",
+    "failedDeleteTill": "Failed to delete till"
+  },
+  "userService": {
+    "errorFetchingUsers": "Error fetching users",
+    "errorSavingUser": "Error saving user",
+    "errorDeletingUser": "Error deleting user",
+    "failedDeleteUser": "Failed to delete user",
+    "errorDuringLogin": "Error during login",
+    "userLoggedOut": "User logged out and data cleared"
   }
 }

@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Product, Category, ProductVariant } from '../../shared/types';
+import i18n from '../src/i18n';
 
 // Products
 export const getProducts = async (): Promise<Product[]> => {
@@ -7,8 +8,8 @@ export const getProducts = async (): Promise<Product[]> => {
   try {
     const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
     return result;
- } catch (error) {
-    console.error('Error fetching products:', error);
+  } catch (error) {
+    console.error(i18n.t('productService.errorFetchingProducts'), error);
     return [];
   }
 };
@@ -26,16 +27,16 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedProduct = await response.json();
     notifyUpdates();
     return savedProduct;
- } catch (error) {
-    console.error('Error saving product:', error);
+  } catch (error) {
+    console.error(i18n.t('productService.errorSavingProduct'), error);
     throw error;
- }
+  }
 };
 
 export const deleteProduct = async (productId: number): Promise<{ success: boolean, message?: string }> => {
@@ -47,14 +48,14 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting product:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete product' };
+    console.error(i18n.t('productService.errorDeletingProduct'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('productService.failedDeleteProduct') };
   }
 };
 
@@ -65,7 +66,7 @@ export const getCategories = async (): Promise<Category[]> => {
     const result = await makeApiRequest(apiUrl('/api/categories'), undefined, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    console.error(i18n.t('productService.errorFetchingCategories'), error);
     return [];
   }
 };
@@ -83,14 +84,14 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedCategory = await response.json();
     notifyUpdates();
     return savedCategory;
   } catch (error) {
-    console.error('Error saving category:', error);
+    console.error(i18n.t('productService.errorSavingCategory'), error);
     throw error;
   }
 };
@@ -104,13 +105,13 @@ export const deleteCategory = async (categoryId: number): Promise<{ success: boo
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting category:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete category' };
+    console.error(i18n.t('productService.errorDeletingCategory'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('productService.failedDeleteCategory') };
   }
 };

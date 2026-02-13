@@ -4,6 +4,7 @@ import { authenticateToken } from '../middleware/auth';
 import { validateRoomName } from '../utils/validation';
 import { sanitizeName, sanitizeDescription, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
+import i18n from '../i18n';
 
 const router = Router();
 
@@ -34,7 +35,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching rooms', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch rooms' });
+    res.status(500).json({ error: i18n.t('errors:rooms.fetchFailed') });
   }
 });
 
@@ -50,7 +51,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
     }
 
     res.json(room);
@@ -58,7 +59,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch room' });
+    res.status(500).json({ error: i18n.t('errors:rooms.fetchOneFailed') });
   }
 });
 
@@ -69,7 +70,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     // Validate required fields
     if (!name) {
-      return res.status(400).json({ error: 'Name is required' });
+      return res.status(400).json({ error: i18n.t('errors:rooms.nameRequired') });
     }
 
     // Sanitize name and description
@@ -105,12 +106,12 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (existingRoomWithSameName) {
-      return res.status(400).json({ error: 'A room with this name already exists' });
+      return res.status(400).json({ error: i18n.t('errors:rooms.duplicateName') });
     }
 
     // Validate description length
     if (description && description.length > 500) {
-      return res.status(400).json({ error: 'Description must be 500 characters or less' });
+      return res.status(400).json({ error: i18n.t('errors:rooms.descriptionTooLong') });
     }
 
     const newRoom = await prisma.room.create({
@@ -128,7 +129,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error creating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create room' });
+    res.status(500).json({ error: i18n.t('errors:rooms.createFailed') });
   }
 });
 
@@ -144,7 +145,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
     }
 
     // Sanitize name and description if provided
@@ -188,13 +189,13 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       });
 
       if (existingRoomWithSameName) {
-        return res.status(400).json({ error: 'A room with this name already exists' });
+        return res.status(400).json({ error: i18n.t('errors:rooms.duplicateName') });
       }
     }
 
     // If description is provided and too long, return error
     if (description !== undefined && description.length > 500) {
-      return res.status(400).json({ error: 'Description must be 500 characters or less' });
+      return res.status(400).json({ error: i18n.t('errors:rooms.descriptionTooLong') });
     }
 
     const updatedRoom = await prisma.room.update({
@@ -213,7 +214,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error updating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update room' });
+    res.status(500).json({ error: i18n.t('errors:rooms.updateFailed') });
   }
 });
 
@@ -227,7 +228,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     });
 
     if (!room) {
-      return res.status(404).json({ error: 'Room not found' });
+      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
     }
 
     // Check if room has any tables assigned to it
@@ -239,7 +240,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 
     if (tables > 0) {
       return res.status(400).json({
-        error: `Cannot delete room with ${tables} assigned table(s). Please delete or reassign tables first.`,
+        error: i18n.t('errors:rooms.cannotDeleteWithTables', { count: tables }),
         tableCount: tables
       });
     }
@@ -253,7 +254,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     logError(error instanceof Error ? error : 'Error deleting room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete room' });
+    res.status(500).json({ error: i18n.t('errors:rooms.deleteFailed') });
   }
 });
 

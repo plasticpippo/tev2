@@ -1,6 +1,7 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { OrderItem, OrderActivityLog } from '../../shared/types';
 import type { OrderSession } from './apiBase';
+import i18n from '../src/i18n';
 
 // Order Sessions
 export const getOrderSession = async (): Promise<OrderSession | null> => {
@@ -15,14 +16,14 @@ export const getOrderSession = async (): Promise<OrderSession | null> => {
         return null;
       } else if (response.status === 401) {
         // User not authenticated, return null instead of throwing
-        console.warn('User not authenticated for order session, returning null');
+        console.warn(i18n.t('orderService.notAuthenticatedSession'));
         return null;
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(i18n.t('api.httpError', { status: response.status }));
     }
     return await response.json();
   } catch (error) {
-    console.error('Error fetching order session:', error);
+    console.error(i18n.t('orderService.errorFetchingSession'), error);
     // Return null instead of throwing to prevent errors during initialization
     return null;
   }
@@ -39,16 +40,16 @@ export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSe
     if (!response.ok) {
       if (response.status === 401) {
         // User not authenticated, don't throw error to prevent app crashes
-        console.warn('User not authenticated for order session save, returning null');
+        console.warn(i18n.t('orderService.notAuthenticatedSessionSave'));
         return null;
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(i18n.t('api.httpError', { status: response.status }));
     }
     const savedSession = await response.json();
     notifyUpdates();
     return savedSession;
   } catch (error) {
-    console.error('Error saving order session:', error);
+    console.error(i18n.t('orderService.errorSavingSession'), error);
     // Return null instead of throwing to prevent errors during initialization
     return null;
   }
@@ -68,7 +69,7 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
         endpoint = '/api/order-sessions/current/assign-tab';
         break;
       default:
-        throw new Error(`Invalid status: ${status}`);
+        throw new Error(i18n.t('orderService.invalidStatus', { status }));
     }
     
     const response = await fetch(apiUrl(endpoint), {
@@ -80,16 +81,16 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
     if (!response.ok) {
       if (response.status === 401) {
         // User not authenticated, don't throw error to prevent app crashes
-        console.warn(`User not authenticated for order session status update (${status}), returning null`);
+        console.warn(i18n.t('orderService.notAuthenticatedSessionStatus', { status }));
         return null;
       }
-      throw new Error(`HTTP error! status: ${response.status}`);
+      throw new Error(i18n.t('api.httpError', { status: response.status }));
     }
     const updatedSession = await response.json();
     notifyUpdates();
     return updatedSession;
   } catch (error) {
-    console.error(`Error updating order session status (${status}):`, error);
+    console.error(i18n.t('orderService.errorUpdatingSessionStatus'), error);
     // Return null instead of throwing to prevent errors during initialization
     return null;
   }
@@ -98,7 +99,7 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
 export const clearOrderSession = async (): Promise<void> => {
   // Helper function to clear the session after completion
   // In our implementation, this happens by updating the status to 'completed' or 'pending_logout'
-  console.log('Order session cleared');
+  console.log(i18n.t('orderService.sessionCleared'));
 };
 
 // Order Activity Log
@@ -107,8 +108,8 @@ export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
   try {
     const result = await makeApiRequest(apiUrl('/api/order-activity-logs'), undefined, cacheKey);
     return result;
- } catch (error) {
-    console.error('Error fetching order activity logs:', error);
+  } catch (error) {
+    console.error(i18n.t('orderService.errorFetchingActivityLogs'), error);
     return [];
   }
 };
@@ -123,14 +124,14 @@ export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedLog = await response.json();
     notifyUpdates();
     return savedLog;
   } catch (error) {
-    console.error('Error saving order activity log:', error);
+    console.error(i18n.t('orderService.errorSavingActivityLog'), error);
     throw error;
- }
+  }
 };

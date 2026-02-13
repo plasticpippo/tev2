@@ -31,7 +31,8 @@
     "orderSessionRestored": "Order session restored successfully",
     "orderSessionLogoutMarked": "Order session marked for logout successfully",
     "orderSessionCompleted": "Order session completed successfully",
-    "orderSessionAssignedToTab": "Order session assigned to tab successfully"
+    "orderSessionAssignedToTab": "Order session assigned to tab successfully",
+    "layoutLoaded": "Shared layout loaded successfully"
   },
   "response": {
     "ok": "OK",

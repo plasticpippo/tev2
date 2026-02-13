@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Room, Table } from '../../shared/types';
+import i18n from '../src/i18n';
 
 // Rooms
 export const getRooms = async (): Promise<Room[]> => {
@@ -8,7 +9,7 @@ export const getRooms = async (): Promise<Room[]> => {
     const result = await makeApiRequest(apiUrl('/api/rooms'), { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching rooms:', error);
+    console.error(i18n.t('tableService.errorFetchingRooms'), error);
     return [];
   }
 };
@@ -26,14 +27,14 @@ export const saveRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'update
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedRoom = await response.json();
     notifyUpdates();
     return savedRoom;
   } catch (error) {
-    console.error('Error saving room:', error);
+    console.error(i18n.t('tableService.errorSavingRoom'), error);
     throw error;
   }
 };
@@ -47,14 +48,14 @@ export const deleteRoom = async (roomId: string): Promise<{ success: boolean; me
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting room:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete room' };
+    console.error(i18n.t('tableService.errorDeletingRoom'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('tableService.failedDeleteRoom') };
   }
 };
 
@@ -65,7 +66,7 @@ export const getTables = async (): Promise<Table[]> => {
     const result = await makeApiRequest(apiUrl('/api/tables'), { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching tables:', error);
+    console.error(i18n.t('tableService.errorFetchingTables'), error);
     return [];
   }
 };
@@ -83,16 +84,16 @@ export const saveTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'upd
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedTable = await response.json();
     notifyUpdates();
     return savedTable;
   } catch (error) {
-    console.error('Error saving table:', error);
+    console.error(i18n.t('tableService.errorSavingTable'), error);
     throw error;
- }
+  }
 };
 
 export const deleteTable = async (tableId: string): Promise<{ success: boolean; message?: string }> => {
@@ -104,14 +105,14 @@ export const deleteTable = async (tableId: string): Promise<{ success: boolean; 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting table:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete table' };
+    console.error(i18n.t('tableService.errorDeletingTable'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('tableService.failedDeleteTable') };
   }
 };
 
@@ -126,14 +127,14 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const updatedTable = await response.json();
     notifyUpdates();
     return updatedTable;
   } catch (error) {
-    console.error('Error updating table position:', error);
+    console.error(i18n.t('tableService.errorUpdatingTablePosition'), error);
     throw error;
   }
 };

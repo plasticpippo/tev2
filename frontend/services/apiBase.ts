@@ -1,5 +1,6 @@
 import type { OrderItem } from '@shared/types';
 import { HTTP_ERROR_MESSAGES, CUSTOM_ERROR_MESSAGES } from '../utils/errorMessages';
+import i18n from '../src/i18n';
 
 // Define OrderSession interface for frontend
 export interface OrderSession {
@@ -98,7 +99,7 @@ export const getAuthHeaders = (): Record<string, string> => {
   
   // Check if token exists and is expired
   if (token && isTokenExpired(token)) {
-    console.log('Token is expired, clearing it from storage');
+    console.log(i18n.t('api.tokenExpired'));
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
     token = null;
@@ -175,12 +176,12 @@ export const subscribeToUpdates = (callback: () => void): (() => void) => {
 };
 
 export const clearAllSubscribers = (): void => {
-  console.log("Clearing all subscribers...");
+  console.log(i18n.t('api.clearingSubscribers'));
   subscribers = [];
 };
 
 export const notifyUpdates = () => {
-  console.log("Notifying subscribers of data change...");
+  console.log(i18n.t('api.notifyingSubscribers'));
   subscribers.forEach(callback => callback());
 };
 
@@ -220,7 +221,7 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
         
         // Check if the error is related to token expiration
         if (errorData.error && (errorData.error.includes('Invalid or expired token') || errorData.error.includes('expired'))) {
-          console.log('Token expired or invalid, clearing authentication and redirecting to login');
+          console.log(i18n.t('api.tokenExpiredInvalid'));
           
           // Clear authentication data
           localStorage.removeItem('authToken');
@@ -232,7 +233,7 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
           }
         }
         
-        throw new Error(errorData.error || 'Invalid or expired token. Please log in again.');
+        throw new Error(errorData.error || i18n.t('api.invalidToken'));
       }
       
       if (!response.ok) {
@@ -248,7 +249,7 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
         const serverMessage = errorData.error;
 
         // Build error message in order of preference: custom -> server -> default HTTP message
-        const errorMessage = customMessage || serverMessage || defaultHttpMessage || `HTTP error! status: ${response.status}`;
+        const errorMessage = customMessage || serverMessage || defaultHttpMessage || i18n.t('api.httpError', { status: response.status });
 
         throw new Error(errorMessage);
       }
@@ -262,19 +263,19 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
       clearTimeout(timeoutId);
       // Handle AbortError specifically for timeout
       if (error instanceof Error && error.name === 'AbortError') {
-        throw new Error('Request timed out. Please check your network connection and try again.');
+        throw new Error(i18n.t('api.requestTimeout') as string);
       }
       // Don't log or rethrow abort errors - they're expected when cancelling
       if (error instanceof Error && error.message?.includes('aborted')) {
         throw error;
       }
-      console.error(`Error making request to ${url}:`, error);
+      console.error(i18n.t('api.requestError', { url }), error);
       // If it's already an Error object, just rethrow it
       if (error instanceof Error) {
         throw error;
       }
       // Otherwise, wrap it in an Error object
-      throw new Error(error.message || 'An unexpected error occurred');
+      throw new Error(error.message || i18n.t('api.unexpectedError') as string);
     })
     .finally(() => {
       // Clean up the cache when the request completes

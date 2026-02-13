@@ -31,7 +31,8 @@
     "orderSessionRestored": "Sessione ordine ripristinata con successo",
     "orderSessionLogoutMarked": "Sessione ordine contrassegnata per il logout con successo",
     "orderSessionCompleted": "Sessione ordine completata con successo",
-    "orderSessionAssignedToTab": "Sessione ordine assegnata al conto con successo"
+    "orderSessionAssignedToTab": "Sessione ordine assegnata al conto con successo",
+    "layoutLoaded": "Layout condiviso caricato con successo"
   },
   "response": {
     "ok": "OK",

@@ -24,7 +24,7 @@ export const EditLayoutButton: React.FC<EditLayoutButtonProps> = ({ userRole }) 
     <button
       onClick={enterEditMode}
       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-sm transition-colors flex items-center gap-2"
-      title={t('editLayoutButton.title')}
+      title={t('editLayoutButton.title') as string}
     >
       <span>{t('editLayoutButton.edit')}</span>
       <span>{t('editLayoutButton.editLayout')}</span>

@@ -4,6 +4,7 @@ import type { StockAdjustment } from '../types';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import i18n from '../i18n';
 
 export const stockAdjustmentsRouter = express.Router();
 
@@ -18,7 +19,7 @@ stockAdjustmentsRouter.get('/', authenticateToken, async (req: Request, res: Res
     logError(error instanceof Error ? error : 'Error fetching stock adjustments', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch stock adjustments' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchFailed') });
   }
 });
 
@@ -33,7 +34,7 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
     });
     
     if (!stockAdjustment) {
-      return res.status(404).json({ error: 'Stock adjustment not found' });
+      return res.status(404).json({ error: i18n.t('errors:stockAdjustments.notFound') });
     }
     
     res.json(stockAdjustment);
@@ -41,7 +42,7 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
     logError(error instanceof Error ? error : 'Error fetching stock adjustment', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch stock adjustment' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchOneFailed') });
   }
 });
 
@@ -53,7 +54,7 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (typeof stockItemId === 'string' && !uuidRegex.test(stockItemId)) {
-      return res.status(400).json({ error: 'Invalid stock item ID format' });
+      return res.status(400).json({ error: i18n.t('errors:stockAdjustments.invalidStockItemIdFormat') });
     }
     
     // Validate that the stock item exists
@@ -62,7 +63,7 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     });
     
     if (!stockItem) {
-      return res.status(400).json({ error: `Invalid stock item ID: ${stockItemId}` });
+      return res.status(400).json({ error: i18n.t('errors:stockAdjustments.invalidStockItemId', { stockItemId }) });
     }
     
     // Update the stock item quantity
@@ -93,7 +94,7 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     logError(error instanceof Error ? error : 'Error creating stock adjustment', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create stock adjustment' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.createFailed') });
   }
 });
 
@@ -134,7 +135,7 @@ stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req
     logError(error instanceof Error ? error : 'Error fetching orphaned stock adjustment references', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch orphaned stock adjustment references' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchOrphanedFailed') });
   }
 });
 
@@ -172,7 +173,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     
     if (orphanedAdjustments.length === 0) {
       return res.status(200).json({
-        message: 'No orphaned references found',
+        message: i18n.t('errors:stockAdjustments.noOrphanedReferences'),
         deletedCount: 0
       });
     }
@@ -188,7 +189,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     });
     
     res.status(200).json({
-      message: `Successfully removed ${orphanedIds.length} orphaned stock adjustment references`,
+      message: i18n.t('errors:stockAdjustments.orphanedReferencesRemoved', { count: orphanedIds.length }),
       deletedCount: orphanedIds.length,
       removedRecords: orphanedAdjustments
     });
@@ -196,7 +197,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     logError(error instanceof Error ? error : 'Error cleaning up orphaned stock adjustment references', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to clean up orphaned stock adjustment references' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.cleanupOrphanedFailed') });
   }
 });
 
@@ -242,7 +243,7 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     const hasIssues = integrityReport.orphanedAdjustments > 0;
     
     res.status(200).json({
-      message: hasIssues ? 'Data integrity issues found' : 'Data integrity validation passed',
+      message: hasIssues ? i18n.t('errors:stockAdjustments.dataIntegrityIssues') : i18n.t('errors:stockAdjustments.dataIntegrityPassed'),
       hasIssues,
       report: integrityReport
     });
@@ -250,7 +251,7 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     logError(error instanceof Error ? error : 'Error validating data integrity', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to validate data integrity' });
+    res.status(500).json({ error: i18n.t('errors:stockAdjustments.validateIntegrityFailed') });
   }
 });
 

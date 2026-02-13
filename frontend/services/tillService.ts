@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Till } from '../../shared/types';
+import i18n from '../src/i18n';
 
 // Tills
 export const getTills = async (): Promise<Till[]> => {
@@ -8,7 +9,7 @@ export const getTills = async (): Promise<Till[]> => {
     const result = await makeApiRequest(apiUrl('/api/tills'), undefined, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching tills:', error);
+    console.error(i18n.t('tillService.errorFetchingTills'), error);
     return [];
   }
 };
@@ -26,14 +27,14 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedTill = await response.json();
     notifyUpdates();
     return savedTill;
   } catch (error) {
-    console.error('Error saving till:', error);
+    console.error(i18n.t('tillService.errorSavingTill'), error);
     throw error;
   }
 };
@@ -47,13 +48,13 @@ export const deleteTill = async (tillId: number): Promise<{success: boolean, mes
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting till:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete till' };
+    console.error(i18n.t('tillService.errorDeletingTill'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('tillService.failedDeleteTill') };
   }
 };

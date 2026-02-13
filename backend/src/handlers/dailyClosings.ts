@@ -6,6 +6,7 @@ import { logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import i18n from '../i18n';
 
 export const dailyClosingsRouter = express.Router();
 
@@ -55,7 +56,7 @@ dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Respon
         closedAt: closing.closedAt.toISOString(),
         summary: closing.summary as any,
         userId: closing.userId,
-        userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
+        userName: user?.name || i18n.t('common:unknownUser')
       };
     }));
 
@@ -64,7 +65,7 @@ dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Respon
     logError(error instanceof Error ? error : 'Error fetching daily closings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch daily closings' });
+    res.status(500).json({ error: i18n.t('errors:dailyClosings.fetchFailed') });
   }
 });
 
@@ -78,7 +79,7 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
     });
 
     if (!dailyClosing) {
-      res.status(404).json({ error: 'Daily closing not found' });
+      res.status(404).json({ error: i18n.t('errors:dailyClosings.notFound') });
       return;
     }
 
@@ -97,7 +98,7 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
+      userName: user?.name || i18n.t('common:unknownUser')
     };
 
     res.json(result);
@@ -105,7 +106,7 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
     logError(error instanceof Error ? error : 'Error fetching daily closing', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch daily closing' });
+    res.status(500).json({ error: i18n.t('errors:dailyClosings.fetchOneFailed') });
   }
 });
 
@@ -116,14 +117,14 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
 
     // Validate required fields
     if (!closedAt || !userId) {
-      res.status(400).json({ error: 'Missing required fields: closedAt or userId' });
+      res.status(400).json({ error: i18n.t('errors:dailyClosings.missingRequiredFields') });
       return;
     }
 
     // Get current settings to determine the business day start
     const settings = await prisma.settings.findFirst();
     if (!settings) {
-      res.status(500).json({ error: 'Settings not found' });
+      res.status(500).json({ error: i18n.t('errors:settings.notFound') });
       return;
     }
 
@@ -189,7 +190,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: user?.name || 'Unknown User' // Fallback to 'Unknown User' if user not found
+      userName: user?.name || i18n.t('common:unknownUser')
     };
 
     res.status(201).json(result);
@@ -197,7 +198,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
     logError(error instanceof Error ? error : 'Error creating daily closing', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create daily closing' });
+    res.status(500).json({ error: i18n.t('errors:dailyClosings.createFailed') });
   }
 });
 

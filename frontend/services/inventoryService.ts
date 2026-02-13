@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { StockItem, StockAdjustment } from '../../shared/types';
+import i18n from '../src/i18n';
 
 // Stock Items
 export const getStockItems = async (): Promise<StockItem[]> => {
@@ -8,7 +9,7 @@ export const getStockItems = async (): Promise<StockItem[]> => {
     const result = await makeApiRequest(apiUrl('/api/stock-items'), undefined, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching stock items:', error);
+    console.error(i18n.t('inventoryService.errorFetchingStockItems'), error);
     return [];
   }
 };
@@ -26,14 +27,14 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedItem = await response.json();
     notifyUpdates();
     return savedItem;
- } catch (error) {
-    console.error('Error saving stock item:', error);
+  } catch (error) {
+    console.error(i18n.t('inventoryService.errorSavingStockItem'), error);
     throw error;
   }
 };
@@ -47,14 +48,14 @@ export const deleteStockItem = async (itemId: string): Promise<{ success: boolea
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
     return { success: true };
   } catch (error) {
-    console.error('Error deleting stock item:', error);
-    return { success: false, message: error instanceof Error ? error.message : 'Failed to delete stock item' };
+    console.error(i18n.t('inventoryService.errorDeletingStockItem'), error);
+    return { success: false, message: error instanceof Error ? error.message : i18n.t('inventoryService.failedDeleteStockItem') };
   }
 };
 
@@ -70,26 +71,26 @@ export const updateStockLevels = async (consumptions: { stockItemId: string, qua
        // Check if it's a 400 error with a specific message
        if (response.status === 400) {
          const errorData = await response.json();
-         console.warn('Stock level update response:', errorData);
+         console.warn(i18n.t('inventoryService.stockLevelUpdateResponse'), errorData);
          // If the error is related to invalid stock item references, we might want to handle it differently
          if (errorData.error && errorData.error.includes('Invalid stock item ID format')) {
-           throw new Error(`Invalid stock item ID format: ${errorData.error}`);
+           throw new Error(`${i18n.t('inventoryService.invalidStockItemIdFormat')}: ${errorData.error}`);
          }
        }
-       throw new Error(`HTTP error! status: ${response.status}`);
+       throw new Error(i18n.t('api.httpError', { status: response.status }));
      }
      
      // Check if the response contains warnings (for orphaned references)
      const responseData = await response.json();
      if (responseData.warnings) {
-       console.warn('Stock level update completed with warnings:', responseData.warnings);
+       console.warn(i18n.t('inventoryService.stockLevelUpdateWarnings'), responseData.warnings);
      }
      
      notifyUpdates();
    } catch (error) {
-     console.error('Error updating stock levels:', error);
+     console.error(i18n.t('inventoryService.errorUpdatingStockLevels'), error);
      throw error;
- }
+  }
 };
 
 // Stock Adjustments
@@ -98,8 +99,8 @@ export const getStockAdjustments = async (): Promise<StockAdjustment[]> => {
   try {
     const result = await makeApiRequest(apiUrl('/api/stock-adjustments'), undefined, cacheKey);
     return result;
- } catch (error) {
-    console.error('Error fetching stock adjustments:', error);
+  } catch (error) {
+    console.error(i18n.t('inventoryService.errorFetchingStockAdjustments'), error);
     return [];
   }
 };
@@ -114,14 +115,14 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedAdjustment = await response.json();
     notifyUpdates();
     return savedAdjustment;
   } catch (error) {
-    console.error('Error saving stock adjustment:', error);
+    console.error(i18n.t('inventoryService.errorSavingStockAdjustment'), error);
     throw error;
- }
+  }
 };

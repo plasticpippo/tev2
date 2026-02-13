@@ -9,6 +9,7 @@ import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistServ
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
 import { logError, logAuthEvent, logDataAccess, logAuditEvent } from '../utils/logger';
 import { toUserDTO, toUserDTOArray, UserResponseDTO } from '../types/dto';
+import i18n from '../i18n';
 
 // Validate JWT_SECRET at module load time - fail fast if invalid
 validateJwtSecret();
@@ -28,7 +29,7 @@ usersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching users', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch users' });
+    res.status(500).json({ error: i18n.t('users.fetchFailed') });
   }
 });
 
@@ -41,7 +42,7 @@ usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     });
     
     if (!user) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: i18n.t('users.notFound') });
     }
     
     // Transform user to DTO to exclude sensitive fields
@@ -51,7 +52,7 @@ usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error fetching user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch user' });
+    res.status(500).json({ error: i18n.t('users.fetchOneFailed') });
   }
 });
 
@@ -61,7 +62,7 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password: string };
     
     if (!password) {
-      return res.status(400).json({ error: 'Password is required' });
+      return res.status(400).json({ error: i18n.t('users.passwordRequired') });
     }
     
     // Check if username already exists
@@ -70,7 +71,7 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     });
     
     if (existingUser) {
-      return res.status(409).json({ error: 'Username already exists' });
+      return res.status(409).json({ error: i18n.t('users.duplicateUsername') });
     }
     
     // Hash the password before storing
@@ -98,7 +99,7 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     logError(error instanceof Error ? error : 'Error creating user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create user' });
+    res.status(500).json({ error: i18n.t('users.createFailed') });
   }
 });
 
@@ -138,7 +139,7 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error updating user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update user' });
+    res.status(500).json({ error: i18n.t('users.updateFailed') });
   }
 });
 
@@ -166,7 +167,7 @@ usersRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request,
     logError(error instanceof Error ? error : 'Error deleting user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete user' });
+    res.status(500).json({ error: i18n.t('users.deleteFailed') });
   }
 });
 
@@ -176,7 +177,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     const { username, password } = req.body;
     
     if (!username || !password) {
-      return res.status(400).json({ error: 'Username and password are required' });
+      return res.status(400).json({ error: i18n.t('auth.missingCredentials') });
     }
     
     // Find user by username only
@@ -192,7 +193,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
         correlationId: (req as any).correlationId,
         reason: 'User not found'
       });
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: i18n.t('auth.invalidCredentials') });
     }
     
     // Compare password using bcrypt
@@ -204,7 +205,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
         correlationId: (req as any).correlationId,
         reason: 'Invalid password'
       });
-      return res.status(401).json({ error: 'Invalid credentials' });
+      return res.status(401).json({ error: i18n.t('auth.invalidCredentials') });
     }
     
     // Generate JWT token
@@ -234,7 +235,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error during login', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Login failed due to server error. Please try again later.' });
+    res.status(500).json({ error: i18n.t('users.loginFailed') });
   }
 });
 
@@ -245,7 +246,7 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: 'Access denied. No token provided.' });
+      return res.status(401).json({ error: i18n.t('auth.tokenMissing') });
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
@@ -254,7 +255,7 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     const userId = req.user?.id;
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated.' });
+      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
     }
 
     // Decode the JWT to get the expiration time
@@ -273,12 +274,12 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     });
 
     // Return success response
-    res.status(200).json({ message: 'Successfully logged out.' });
+    res.status(200).json({ message: i18n.t('api.success.logoutSuccess') });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error during logout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Logout failed due to server error. Please try again later.' });
+    res.status(500).json({ error: i18n.t('users.logoutFailed') });
   }
 });
 
@@ -288,19 +289,19 @@ usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req
     const { userId } = req.body;
     
     if (!userId) {
-      return res.status(400).json({ error: 'User ID is required' });
+      return res.status(400).json({ error: i18n.t('users.userIdRequired') });
     }
     
     // Revoke all tokens for the target user
     await revokeAllUserTokens(userId.toString());
     
     // Return success response
-    res.status(200).json({ message: 'All tokens for the user have been revoked successfully.' });
+    res.status(200).json({ message: i18n.t('users.tokensRevoked') });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error revoking all tokens', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to revoke all tokens. Please try again later.' });
+    res.status(500).json({ error: i18n.t('users.revokeFailed') });
   }
 });
 

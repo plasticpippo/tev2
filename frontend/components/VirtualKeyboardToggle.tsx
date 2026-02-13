@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 import useDeviceDetection from '../hooks/useDeviceDetection';
 
@@ -7,6 +8,7 @@ interface VirtualKeyboardToggleProps {
 }
 
 const VirtualKeyboardToggle: React.FC<VirtualKeyboardToggleProps> = ({ className = '' }) => {
+  const { t } = useTranslation();
   const { isKeyboardEnabled, toggleKeyboard } = useVirtualKeyboard();
   const { isDesktop } = useDeviceDetection();
 
@@ -34,8 +36,8 @@ const VirtualKeyboardToggle: React.FC<VirtualKeyboardToggleProps> = ({ className
         }
         ${className}
       `}
-      title={isKeyboardEnabled ? 'Disable virtual keyboard' : 'Enable virtual keyboard'}
-      aria-label={isKeyboardEnabled ? 'Disable virtual keyboard' : 'Enable virtual keyboard'}
+      title={isKeyboardEnabled ? t('virtualKeyboard.disable') : t('virtualKeyboard.enable')}
+      aria-label={isKeyboardEnabled ? t('virtualKeyboard.disable') : t('virtualKeyboard.enable')}
     >
       <svg
         width="24"

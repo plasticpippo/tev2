@@ -98,7 +98,17 @@
     "duplicateUsername": "Nome utente gia esistente",
     "deleteFailed": "Eliminazione utente non riuscita",
     "cannotDeleteSelf": "Impossibile eliminare il proprio account",
-    "invalidRole": "Ruolo utente non valido"
+    "invalidRole": "Ruolo utente non valido",
+    "fetchFailed": "Impossibile recuperare gli utenti",
+    "fetchOneFailed": "Impossibile recuperare l'utente",
+    "passwordRequired": "La password e obbligatoria",
+    "createFailed": "Impossibile creare l'utente",
+    "updateFailed": "Impossibile aggiornare l'utente",
+    "loginFailed": "Accesso non riuscito a causa di un errore del server. Riprova piu tardi.",
+    "logoutFailed": "Disconnessione non riuscita a causa di un errore del server. Riprova piu tardi.",
+    "userIdRequired": "L'ID utente e obbligatorio",
+    "tokensRevoked": "Tutti i token dell'utente sono stati revocati con successo.",
+    "revokeFailed": "Impossibile revocare tutti i token. Riprova piu tardi."
   },
   "tills": {
     "notFound": "Cassa non trovata",
@@ -111,7 +121,16 @@
     "roomNotFound": "Sala non trovata",
     "invalidData": "Dati tavolo non validi",
     "deleteFailed": "Eliminazione tavolo non riuscita",
-    "roomDeleteFailed": "Eliminazione sala non riuscita"
+    "roomDeleteFailed": "Eliminazione sala non riuscita",
+    "fetchFailed": "Impossibile recuperare i tavoli",
+    "fetchOneFailed": "Impossibile recuperare il tavolo",
+    "nameAndRoomRequired": "Nome e roomId sono obbligatori",
+    "validationFailed": "Validazione non riuscita",
+    "createFailed": "Impossibile creare il tavolo",
+    "updateFailed": "Impossibile aggiornare il tavolo",
+    "cannotDeleteWithTabs": "Impossibile eliminare il tavolo con conti aperti. Chiudere o riassegnare i conti prima.",
+    "coordinatesRequired": "Le coordinate x e y sono obbligatorie",
+    "positionUpdateFailed": "Impossibile aggiornare la posizione del tavolo"
   },
   "tabs": {
     "notFound": "Conto non trovato",
@@ -143,16 +162,68 @@
     "notFound": "Layout non trovato",
     "invalidData": "Dati layout non validi",
     "duplicateName": "Esiste gia un layout con questo nome",
-    "deleteFailed": "Eliminazione layout non riuscita"
+    "deleteFailed": "Eliminazione layout non riuscita",
+    "fetchFailed": "Impossibile recuperare il layout. Riprova piu tardi.",
+    "positionsMustBeArray": "Le posizioni devono essere un array",
+    "positionMissingFields": "Ogni posizione deve avere variantId, gridColumn e gridRow",
+    "gridColumnRange": "gridColumn deve essere compreso tra 1 e 4",
+    "gridRowMin": "gridRow deve essere almeno 1",
+    "saveFailed": "Impossibile salvare il layout. Controlla i dati e riprova.",
+    "accessDenied": "Accesso negato. Non sei il proprietario di questo layout.",
+    "fetchSharedFailed": "Impossibile recuperare i layout condivisi. Riprova piu tardi.",
+    "sharedNotFound": "Layout condiviso non trovato",
+    "fetchOneSharedFailed": "Impossibile recuperare il layout condiviso. Riprova piu tardi.",
+    "nameRequired": "Il nome del layout e obbligatorio",
+    "categoryIdRequired": "L'ID categoria e obbligatorio",
+    "positionsRequired": "L'array delle posizioni e obbligatorio e non deve essere vuoto",
+    "createSharedFailed": "Impossibile creare il layout condiviso. Controlla i dati e riprova.",
+    "nameCannotBeEmpty": "Il nome del layout non puo essere vuoto",
+    "positionsNonEmptyArray": "Le posizioni devono essere un array non vuoto",
+    "updateSharedFailed": "Impossibile aggiornare il layout condiviso. Controlla i dati e riprova.",
+    "deleteSharedFailed": "Impossibile eliminare il layout condiviso. Riprova piu tardi.",
+    "loadSharedFailed": "Impossibile caricare il layout condiviso. Riprova piu tardi."
   },
   "settings": {
     "notFound": "Impostazioni non trovate",
     "invalidData": "Dati impostazioni non validi",
-    "updateFailed": "Aggiornamento impostazioni non riuscito"
+    "updateFailed": "Aggiornamento impostazioni non riuscito",
+    "fetchFailed": "Impossibile recuperare le impostazioni"
   },
   "dailyClosings": {
     "notFound": "Chiusura giornaliera non trovata",
     "alreadyExists": "Esiste gia una chiusura giornaliera per questa data",
-    "invalidData": "Dati chiusura giornaliera non validi"
+    "invalidData": "Dati chiusura giornaliera non validi",
+    "fetchFailed": "Impossibile recuperare le chiusure giornaliere",
+    "fetchOneFailed": "Impossibile recuperare la chiusura giornaliera",
+    "createFailed": "Impossibile creare la chiusura giornaliera",
+    "missingRequiredFields": "Campi obbligatori mancanti: closedAt o userId"
+  },
+  "rooms": {
+    "notFound": "Sala non trovata",
+    "invalidData": "Dati sala non validi",
+    "duplicateName": "Esiste gia una sala con questo nome",
+    "nameRequired": "Il nome e obbligatorio",
+    "descriptionTooLong": "La descrizione deve essere di massimo 500 caratteri",
+    "fetchFailed": "Impossibile recuperare le sale",
+    "fetchOneFailed": "Impossibile recuperare la sala",
+    "createFailed": "Impossibile creare la sala",
+    "updateFailed": "Impossibile aggiornare la sala",
+    "deleteFailed": "Impossibile eliminare la sala",
+    "cannotDeleteWithTables": "Impossibile eliminare la sala con {{count}} tavolo/i assegnato/i. Eliminare o riassegnare prima i tavoli."
+  },
+  "stockAdjustments": {
+    "notFound": "Rettifica magazzino non trovata",
+    "fetchFailed": "Impossibile recuperare le rettifiche magazzino",
+    "fetchOneFailed": "Impossibile recuperare la rettifica magazzino",
+    "createFailed": "Impossibile creare la rettifica magazzino",
+    "invalidStockItemIdFormat": "Formato ID articolo magazzino non valido",
+    "invalidStockItemId": "ID articolo magazzino non valido: {{stockItemId}}",
+    "fetchOrphanedFailed": "Impossibile recuperare i riferimenti orfani delle rettifiche magazzino",
+    "cleanupOrphanedFailed": "Impossibile pulire i riferimenti orfani delle rettifiche magazzino",
+    "validateIntegrityFailed": "Impossibile validare l'integrita dei dati",
+    "noOrphanedReferences": "Nessun riferimento orfano trovato",
+    "orphanedReferencesRemoved": "Rimossi con successo {{count}} riferimenti orfani delle rettifiche magazzino",
+    "dataIntegrityIssues": "Problemi di integrita dei dati rilevati",
+    "dataIntegrityPassed": "Validazione integrita dei dati superata"
   }
 }
