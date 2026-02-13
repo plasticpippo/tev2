@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Table, Room } from '../../shared/types';
 import { useToast } from '../contexts/ToastContext';
 
@@ -19,6 +20,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
   onTableAssign,
   currentTableId
 }) => {
+  const { t } = useTranslation();
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(currentTableId || null);
   const [isAssigning, setIsAssigning] = useState(false);
@@ -72,10 +74,10 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
       try {
         await onTableAssign(selectedTableId);
         const table = tables.find(t => t.id === selectedTableId);
-        addToast(`Order assigned to ${table?.name || 'table'}`, 'success');
+        addToast(t('tableAssignmentModal.orderAssignedTo', { tableName: table?.name || 'table' }), 'success');
         onClose();
       } catch (error) {
-        addToast('Failed to assign table', 'error');
+        addToast(t('tableAssignmentModal.failedToAssignTable'), 'error');
       } finally {
         setIsAssigning(false);
       }
@@ -86,10 +88,10 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     setIsAssigning(true);
     try {
       await onTableAssign('');
-      addToast('Table assignment cleared', 'success');
+      addToast(t('tableAssignmentModal.tableAssignmentCleared'), 'success');
       onClose();
     } catch (error) {
-      addToast('Failed to clear table assignment', 'error');
+      addToast(t('tableAssignmentModal.failedToClearTableAssignment'), 'error');
     } finally {
       setIsAssigning(false);
     }
@@ -115,16 +117,26 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     }
   };
 
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'available': return t('tableAssignmentModal.statusLabelAvailable');
+      case 'occupied': return t('tableAssignmentModal.statusLabelOccupied');
+      case 'reserved': return t('tableAssignmentModal.statusLabelReserved');
+      case 'unavailable': return t('tableAssignmentModal.statusLabelUnavailable');
+      default: return status;
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-5xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-amber-400">Assign to Table</h2>
+          <h2 className="text-2xl font-bold text-amber-400">{t('tableAssignmentModal.title')}</h2>
           <button
             onClick={onClose}
             className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
-            aria-label="Close"
+            aria-label={t('tableAssignmentModal.close')}
             disabled={isAssigning}
           >
             &times;
@@ -133,7 +145,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
 
         {/* Room Selector */}
         <div className="mb-4">
-          <label className="block text-sm text-slate-400 mb-2">Select Room</label>
+          <label className="block text-sm text-slate-400 mb-2">{t('tableAssignmentModal.selectRoom')}</label>
           <div className="flex gap-2 flex-wrap">
             {rooms.map(room => (
               <button
@@ -157,7 +169,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
             ))}
           </div>
           {rooms.length === 0 && (
-            <p className="text-slate-400 text-sm mt-2">No rooms available. Create rooms in Admin Panel first.</p>
+            <p className="text-slate-400 text-sm mt-2">{t('tableAssignmentModal.noRoomsAvailable')}</p>
           )}
         </div>
 
@@ -174,7 +186,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                 )}
               </h3>
               <div className="text-sm text-slate-400">
-                {roomTables.length} {roomTables.length === 1 ? 'table' : 'tables'}
+                {t('tableAssignmentModal.tableCount', { count: roomTables.length })}
               </div>
             </div>
 
@@ -227,7 +239,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                           top: `${table.y - canvasBounds.minY}px`
                         }}
                         disabled={table.status === 'occupied' || table.status === 'unavailable' || isAssigning}
-                        title={`${table.name} - {table.status}`}
+                        title={`${table.name} - ${getStatusLabel(table.status)}`}
                       >
                         <span className="text-sm font-bold select-none">{table.name}</span>
                       </button>
@@ -238,8 +250,8 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
                     <div className="text-slate-500 text-6xl mb-4">TABLE</div>
-                    <p className="text-slate-400 text-lg">No tables in this room</p>
-                    <p className="text-slate-500 text-sm mt-2">Add tables in Admin Panel</p>
+                    <p className="text-slate-400 text-lg">{t('tableAssignmentModal.noTablesInRoom')}</p>
+                    <p className="text-slate-500 text-sm mt-2">{t('tableAssignmentModal.addTablesInAdmin')}</p>
                   </div>
                 </div>
               )}
@@ -251,7 +263,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
           <div className="flex-grow flex items-center justify-center bg-slate-900 rounded-lg border-2 border-slate-700 min-h-[400px]">
             <div className="text-center">
               <div className="text-slate-500 text-6xl mb-4">ROOM</div>
-              <p className="text-slate-400 text-lg">Select a room to view tables</p>
+              <p className="text-slate-400 text-lg">{t('tableAssignmentModal.selectRoomToViewTables')}</p>
             </div>
           </div>
         )}
@@ -264,9 +276,9 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               return table ? (
                 <div className="flex justify-between items-center">
                   <div>
-                    <p className="font-semibold text-white">Selected: {table.name}</p>
+                    <p className="font-semibold text-white">{t('tableAssignmentModal.selected', { name: table.name })}</p>
                     <p className={`text-sm ${getStatusTextColor(table.status)}`}>
-                      Status: {table.status.charAt(0).toUpperCase() + table.status.slice(1)}
+                      {t('tableAssignmentModal.status', { status: getStatusLabel(table.status) })}
                     </p>
                   </div>
                   <div className={`w-4 h-4 rounded-full ${getStatusColor(table.status).split(' ')[0]}`}></div>
@@ -285,7 +297,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                 disabled={isAssigning}
                 className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
               >
-                {isAssigning ? 'Clearing...' : 'Clear Table'}
+                {isAssigning ? t('tableAssignmentModal.clearing') : t('tableAssignmentModal.clearTable')}
               </button>
             )}
             <button
@@ -293,7 +305,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               disabled={isAssigning}
               className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
             >
-              Cancel
+              {t('buttons.cancel')}
             </button>
           </div>
           <button
@@ -305,29 +317,29 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                 : 'bg-slate-700 text-slate-500 cursor-not-allowed'
             }`}
           >
-            {isAssigning ? 'Assigning...' : 'Assign to Table'}
+            {isAssigning ? t('tableAssignmentModal.assigning') : t('tableAssignmentModal.assignToTable')}
           </button>
         </div>
 
         {/* Status Legend */}
         <div className="mt-4 pt-4 border-t border-slate-700">
-          <p className="text-xs text-slate-400 mb-2 font-semibold">Table Status Legend:</p>
+          <p className="text-xs text-slate-400 mb-2 font-semibold">{t('tableAssignmentModal.tableStatusLegend')}</p>
           <div className="flex gap-4 flex-wrap text-xs">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="text-slate-400">Available</span>
+              <span className="text-slate-400">{t('tableAssignmentModal.statusAvailable')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <span className="text-slate-400">Occupied (cannot assign)</span>
+              <span className="text-slate-400">{t('tableAssignmentModal.statusOccupied')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <span className="text-slate-400">Reserved</span>
+              <span className="text-slate-400">{t('tableAssignmentModal.statusReserved')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-              <span className="text-slate-400">Unavailable (cannot assign)</span>
+              <span className="text-slate-400">{t('tableAssignmentModal.statusUnavailable')}</span>
             </div>
           </div>
         </div>

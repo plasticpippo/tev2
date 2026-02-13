@@ -46,8 +46,8 @@ export const initI18n = async (): Promise<void> => {
         addPath: `${__dirname}/../../locales/{{lng}}/{{ns}}.missing.json`,
       },
       
-      // Default namespace
-      ns: ['common'],
+      // Default namespace and additional namespaces
+      ns: ['common', 'errors', 'api'],
       defaultNS: 'common',
       
       // Load all languages

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface ErrorMessageProps {
   message: string;
@@ -21,6 +22,8 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
   showClear = false,
   showGoBack = false
 }) => {
+  const { t } = useTranslation();
+
   const getBgColor = () => {
     switch (type) {
       case 'warning': return 'bg-amber-900 bg-opacity-50';
@@ -60,7 +63,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
               onClick={onRetry}
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-accent-primary-hover hover:bg-amber-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-amber-500"
             >
-              Retry
+              {t('errorMessage.retry')}
             </button>
           )}
           {showClear && onClear && (
@@ -69,7 +72,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
               onClick={onClear}
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-slate-700 hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
             >
-              Clear Form
+              {t('errorMessage.clearForm')}
             </button>
           )}
           {showGoBack && onGoBack && (
@@ -78,7 +81,7 @@ const ErrorMessage: React.FC<ErrorMessageProps> = ({
               onClick={onGoBack}
               className="inline-flex items-center px-3 py-1.5 border border-transparent text-xs font-medium rounded text-white bg-bg-tertiary hover:bg-slate-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-500"
             >
-              Go Back
+              {t('errorMessage.goBack')}
             </button>
           )}
         </div>

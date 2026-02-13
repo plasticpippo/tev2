@@ -60,7 +60,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
       }
       onSave();
     } catch (err) {
-      setErrors([{ field: 'general', message: 'Failed to save room: ' + (err instanceof Error ? err.message : 'Unknown error') }]);
+      setErrors([{ field: 'general', message: t('tables.failedToSaveRoom', { error: err instanceof Error ? err.message : t('tables.unknownError') }) }]);
     } finally {
       setIsSubmitting(false);
     }
@@ -104,7 +104,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
                 autoFocus
                 required
               />
-              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title="Required field">
+              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title={t('tables.requiredField')}>
                 !
               </div>
             </div>
@@ -141,7 +141,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
             onClick={onClose}
             disabled={isSubmitting}
             className="btn btn-secondary disabled:opacity-50"
-            title="Cancel changes"
+            title={t('tables.cancelChanges')}
           >
             {t('buttons.cancel', { ns: 'common' })}
           </button>
@@ -149,7 +149,7 @@ const RoomModal: React.FC<RoomModalProps> = ({ room, onClose, onSave }) => {
             type="submit"
             disabled={isSubmitting}
             className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
-            title="Save room details"
+            title={t('tables.saveRoomDetails')}
           >
             {isSubmitting ? (
               <>
@@ -231,7 +231,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
       }
       onSave();
     } catch (err) {
-      setErrors([{ field: 'general', message: 'Failed to save table: ' + (err instanceof Error ? err.message : 'Unknown error') }]);
+      setErrors([{ field: 'general', message: t('tables.failedToSaveTable', { error: err instanceof Error ? err.message : t('tables.unknownError') }) }]);
     } finally {
       setIsSubmitting(false);
     }
@@ -275,7 +275,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
                 autoFocus
                 required
               />
-              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title="Required field">
+              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title={t('tables.requiredField')}>
                 !
               </div>
             </div>
@@ -306,7 +306,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
                   <option key={room.id} value={room.id}>{room.name}</option>
                 ))}
               </select>
-              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title="Required field">
+              <div className="absolute -right-5 top-3 w-4 h-4 bg-amber-500 rounded-full flex items-center justify-center text-xs text-slate-900 font-bold" title={t('tables.requiredField')}>
                 !
               </div>
             </div>
@@ -434,7 +434,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
             onClick={onClose}
             disabled={isSubmitting}
             className="btn btn-secondary disabled:opacity-50"
-            title="Cancel changes"
+            title={t('tables.cancelChanges')}
           >
             {t('buttons.cancel', { ns: 'common' })}
           </button>
@@ -442,7 +442,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
             type="submit"
             disabled={isSubmitting}
             className="btn btn-primary disabled:opacity-50 flex items-center gap-2"
-            title="Save table details"
+            title={t('tables.saveTableDetails')}
           >
             {isSubmitting ? (
               <>
@@ -461,31 +461,31 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
 interface TableManagementProps {}
 
 // Helper function to get quick tips based on active tab
-const getQuickTips = (tab: 'layout' | 'rooms' | 'tables') => {
+const getQuickTips = (tab: 'layout' | 'rooms' | 'tables', t: (key: string) => string) => {
   switch(tab) {
     case 'layout':
       return [
-        'Use View Mode to see the current layout without editing',
-        'Switch to Edit Mode to add or modify tables',
-        'Use Drag Mode to reposition existing tables',
-        'Select a room from the dropdown to focus on specific area',
-        'Try keyboard shortcut Ctrl+D to cycle through layout modes'
+        t('tables.tips.layout.tip1'),
+        t('tables.tips.layout.tip2'),
+        t('tables.tips.layout.tip3'),
+        t('tables.tips.layout.tip4'),
+        t('tables.tips.layout.tip5')
       ];
     case 'rooms':
       return [
-        'Add rooms to organize your table layout by area',
-        'Each room can have multiple tables assigned to it',
-        'Rooms help separate dining areas (indoor, outdoor, private)',
-        'Try keyboard shortcut Ctrl+M to quickly switch to rooms tab',
-        'Remember to assign tables to rooms after creating them'
+        t('tables.tips.rooms.tip1'),
+        t('tables.tips.rooms.tip2'),
+        t('tables.tips.rooms.tip3'),
+        t('tables.tips.rooms.tip4'),
+        t('tables.tips.rooms.tip5')
       ];
     case 'tables':
       return [
-        'Tables must be assigned to a room to appear in layout',
-        'Use descriptive names for easy identification (VIP-1, Patio-2)',
-        'Set appropriate status (Available, Occupied, Reserved)',
-        'Try keyboard shortcut Ctrl+T to quickly switch to tables tab',
-        'Update positions in bulk using layout editor'
+        t('tables.tips.tables.tip1'),
+        t('tables.tips.tables.tip2'),
+        t('tables.tips.tables.tip3'),
+        t('tables.tips.tables.tip4'),
+        t('tables.tips.tables.tip5')
       ];
     default:
       return [];
@@ -611,8 +611,24 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
     ? tables.filter(table => table.roomId === selectedRoomId)
     : tables;
 
+  // Helper function to get translated status
+  const getTranslatedStatus = (status: Table['status']) => {
+    switch (status) {
+      case 'available':
+        return t('tables.statusAvailable');
+      case 'occupied':
+        return t('tables.statusOccupied');
+      case 'reserved':
+        return t('tables.statusReserved');
+      case 'unavailable':
+        return t('tables.statusUnavailable');
+      default:
+        return status;
+    }
+  };
+
   // Get quick tips based on active tab
-  const quickTips = getQuickTips(activeTab);
+  const quickTips = getQuickTips(activeTab, t);
 
   return (
     <div className="h-full flex flex-col">
@@ -627,25 +643,25 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
           <button
             className={`btn ${activeTab === 'layout' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('layout')}
-            title="Manage table layouts visually"
+            title={t('tables.manageTableLayouts')}
           >
-            Layout
+            {t('tables.layout')}
             <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">L</span>
           </button>
           <button
             className={`btn ${activeTab === 'rooms' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('rooms')}
-            title="Manage room organization"
+            title={t('tables.manageRoomOrganization')}
           >
-            Rooms
+            {t('tables.rooms')}
             <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">M</span>
           </button>
           <button
             className={`btn ${activeTab === 'tables' ? 'btn-primary' : 'btn-secondary'} text-sm`}
             onClick={() => setActiveTab('tables')}
-            title="Manage individual tables"
+            title={t('tables.manageIndividualTables')}
           >
-            Tables
+            {t('tables.tables')}
             <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">T</span>
           </button>
         </div>
@@ -657,7 +673,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
           <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
             <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd" />
           </svg>
-          Quick Tips: {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+          {t('tables.quickTips')}: {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
         </h4>
         <ul className="text-xs text-slate-300 space-y-1">
           {quickTips.map((tip, index) => (
@@ -674,17 +690,17 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
           <div className="h-full">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                Table Layout Editor
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title="Visual table layout management">?</span>
+                {t('tables.layoutEditor')}
+                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.visualTableLayoutManagement')}>?</span>
               </h3>
               <div className="flex gap-2">
                 <select
                   value={selectedRoomId || ''}
                   onChange={(e) => setSelectedRoomId(e.target.value || null)}
                   className="bg-slate-800 border border-slate-700 rounded-md p-2 text-sm"
-                  title="Select a room to focus on specific area"
+                  title={t('tables.selectRoomFocus')}
                 >
-                  <option value="">Select a room</option>
+                  <option value="">{t('tables.selectRoom')}</option>
                   {rooms.map(room => (
                     <option key={room.id} value={room.id}>{room.name}</option>
                   ))}
@@ -693,19 +709,19 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                   value={layoutMode}
                   onChange={(e) => setLayoutMode(e.target.value as any)}
                   className="bg-slate-800 border border-slate-700 rounded-md p-2 text-sm"
-                  title="Change layout mode (view, edit, drag)"
+                  title={t('tables.changeLayoutMode')}
                 >
-                  <option value="view">View Mode</option>
-                  <option value="edit">Edit Mode</option>
-                  <option value="drag">Drag Mode</option>
+                  <option value="view">{t('tables.viewMode')}</option>
+                  <option value="edit">{t('tables.editMode')}</option>
+                  <option value="drag">{t('tables.dragMode')}</option>
                 </select>
               </div>
             </div>
             <TableLayoutEditor selectedRoomId={selectedRoomId} />
             <div className="mt-4 text-xs text-slate-500">
-              <p className="mb-1"><strong>View Mode:</strong> Browse the layout without making changes</p>
-              <p className="mb-1"><strong>Edit Mode:</strong> Add, modify, or delete tables</p>
-              <p><strong>Drag Mode:</strong> Move existing tables around</p>
+              <p className="mb-1">{t('tables.viewModeDescription')}</p>
+              <p className="mb-1">{t('tables.editModeDescription')}</p>
+              <p>{t('tables.dragModeDescription')}</p>
             </div>
           </div>
         )}
@@ -714,49 +730,49 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                Room Management
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title="Organize your venue into rooms/zones">?</span>
+                {t('tables.title')}
+                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.organizeVenueRooms')}>?</span>
               </h3>
               <button
                 onClick={() => { setEditingRoom(undefined); setIsRoomModalOpen(true); }}
                 className="btn btn-primary text-sm flex items-center gap-1"
-                title="Add a new room"
+                title={t('tables.addNewRoom')}
               >
-                Add Room
+                {t('tables.addRoom')}
                 <span className="text-xs bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">+</span>
               </button>
             </div>
             
             <div className="mb-4 p-3 bg-slate-800 rounded-md border border-slate-700 text-sm text-slate-300">
-              <p className="mb-1"><strong>Rooms</strong> help you organize your tables by physical areas in your venue.</p>
-              <p>Examples: Indoor Dining, Outdoor Patio, VIP Area, Private Rooms</p>
+              <p className="mb-1">{t('tables.roomsHelp')}</p>
+              <p>{t('tables.roomsExamples')}</p>
             </div>
             
             {loading ? (
-              <div className="text-center py-8 text-slate-50">Loading rooms...</div>
+              <div className="text-center py-8 text-slate-50">{t('tables.loadingRooms')}</div>
             ) : (
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
                 {rooms.map(room => (
                   <div key={room.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
                     <div>
                       <p className="font-semibold">{room.name}</p>
-                      <p className="text-sm text-slate-400">{room.description || 'No description'}</p>
+                      <p className="text-sm text-slate-400">{room.description || t('tables.noDescription')}</p>
                     </div>
                     <div className="flex items-center gap-2">
                       <button
                         onClick={() => { setEditingRoom(room); setIsRoomModalOpen(true); }}
                         className="btn btn-info text-sm flex items-center gap-1"
-                        title="Edit room details"
+                        title={t('tables.editRoomDetails')}
                       >
-                        Edit
+                        {t('tables.edit')}
                         <span className="text-xs">✎</span>
                       </button>
                       <button
                         onClick={() => setDeletingRoom(room)}
                         className="btn btn-danger text-sm flex items-center gap-1"
-                        title="Delete this room"
+                        title={t('tables.deleteRoom')}
                       >
-                        Delete
+                        {t('tables.delete')}
                         <span className="text-xs">✕</span>
                       </button>
                     </div>
@@ -770,36 +786,36 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-bold text-slate-400 mb-2">No rooms added yet</h3>
-                    <p className="text-slate-500 mb-4 max-w-xs sm:max-w-md mx-auto">Create your first room to organize tables by physical areas in your venue</p>
+                    <h3 className="text-lg font-bold text-slate-400 mb-2">{t('tables.noRooms')}</h3>
+                    <p className="text-slate-500 mb-4 max-w-xs sm:max-w-md mx-auto">{t('tables.createFirstRoom')}</p>
                     <button
                       onClick={() => { setEditingRoom(undefined); setIsRoomModalOpen(true); }}
                       className="btn btn-primary inline-flex items-center gap-2"
-                      title="Add your first room"
+                      title={t('tables.addFirstRoomTitle')}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                       </svg>
-                      Add Your First Room
+                      {t('tables.addYourFirstRoom')}
                     </button>
                     <div className="mt-6 text-left max-w-xs sm:max-w-md mx-auto">
-                      <h4 className="text-sm font-bold text-slate-400 mb-2">Room Examples:</h4>
+                      <h4 className="text-sm font-bold text-slate-400 mb-2">{t('tables.roomExamples')}</h4>
                       <ul className="text-xs text-slate-500 space-y-1">
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Indoor Dining
+                          {t('tables.indoorDining')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Outdoor Patio
+                          {t('tables.outdoorPatio')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          VIP Area
+                          {t('tables.vipArea')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Private Rooms
+                          {t('tables.privateRooms')}
                         </li>
                       </ul>
                     </div>
@@ -814,26 +830,26 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
           <div>
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
-                Table Management
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title="Manage individual tables">?</span>
+                {t('tables.title')}
+                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.manageIndividualTables')}>?</span>
               </h3>
               <button
                 onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
                 className="btn btn-primary text-sm flex items-center gap-1"
-                title="Add a new table"
+                title={t('tables.addNewTable')}
               >
-                Add Table
+                {t('tables.addTable')}
                 <span className="text-xs bg-slate-900 rounded-full w-4 h-4 flex items-center justify-center">+</span>
               </button>
             </div>
             
             <div className="mb-4 p-3 bg-slate-800 rounded-md border border-slate-700 text-sm text-slate-300">
-              <p className="mb-1"><strong>Tables</strong> must be assigned to a room to appear in the layout.</p>
-              <p>Set status to track availability: Available, Occupied, Reserved, Unavailable</p>
+              <p className="mb-1">{t('tables.tablesMustBeAssigned')}</p>
+              <p>{t('tables.setStatusTracking')}</p>
             </div>
             
             {loading ? (
-              <div className="text-center py-8 text-slate-500">Loading tables...</div>
+              <div className="text-center py-8 text-slate-500">{t('tables.loadingTables')}</div>
             ) : (
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
                 {roomTables.map(table => {
@@ -843,25 +859,25 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       <div>
                         <p className="font-semibold">{table.name}</p>
                         <p className="text-sm text-slate-400">
-                          Room: {room?.name || 'Unassigned'} | Status: {table.status.charAt(0).toUpperCase() + table.status.slice(1)}
+                          {t('tables.roomInfo', { name: room?.name || t('tables.unassigned') })} | {t('tables.statusLabel', { status: getTranslatedStatus(table.status) })}
                         </p>
-                        <p className="text-xs text-slate-500">Position: ({table.x}, {table.y}) | Size: {table.width}x{table.height}</p>
+                        <p className="text-xs text-slate-500">{t('tables.positionLabel', { x: table.x, y: table.y })} | {t('tables.sizeLabel', { width: table.width, height: table.height })}</p>
                       </div>
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => { setEditingTable(table); setIsTableModalOpen(true); }}
                           className="btn btn-info text-sm flex items-center gap-1"
-                          title="Edit table details"
+                          title={t('tables.editTableDetails')}
                         >
-                          Edit
+                          {t('tables.edit')}
                           <span className="text-xs">✎</span>
                         </button>
                         <button
                           onClick={() => setDeletingTable(table)}
                           className="btn btn-danger text-sm flex items-center gap-1"
-                          title="Delete this table"
+                          title={t('tables.deleteTable')}
                         >
-                          Delete
+                          {t('tables.delete')}
                           <span className="text-xs">✕</span>
                         </button>
                       </div>
@@ -877,41 +893,41 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
                       </svg>
                     </div>
                     <h3 className="text-lg font-bold text-slate-400 mb-2">
-                      {selectedRoomId ? 'No tables in this room' : 'No tables added yet'}
+                      {selectedRoomId ? t('tables.noTablesInRoom') : t('tables.noTables')}
                     </h3>
                     <p className="text-slate-500 mb-4 max-w-xs sm:max-w-md mx-auto">
                       {selectedRoomId
-                        ? 'Add your first table to this room to get started.'
-                        : 'Add your first table to organize seating arrangements.'}
+                        ? t('tables.addFirstTableToRoom')
+                        : t('tables.createFirstTable')}
                     </p>
                     <button
                       onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
                       className="btn btn-primary inline-flex items-center gap-2"
-                      title="Add your first table"
+                      title={t('tables.addFirstTableTitle')}
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
                         <path fillRule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clipRule="evenodd" />
                       </svg>
-                      {selectedRoomId ? 'Add Table to Room' : 'Add Your First Table'}
+                      {selectedRoomId ? t('tables.addTableToRoom') : t('tables.addYourFirstTable')}
                     </button>
                     <div className="mt-6 text-left max-w-xs sm:max-w-md mx-auto">
-                      <h4 className="text-sm font-bold text-slate-400 mb-2">Pro Tips:</h4>
+                      <h4 className="text-sm font-bold text-slate-400 mb-2">{t('tables.proTips')}</h4>
                       <ul className="text-xs text-slate-500 space-y-1">
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Assign tables to rooms for better organization
+                          {t('tables.assignTablesToRooms')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Use descriptive names (VIP-1, Patio-2)
+                          {t('tables.useDescriptiveNames')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Set appropriate status (Available, Occupied, Reserved)
+                          {t('tables.setAppropriateStatus')}
                         </li>
                         <li className="flex items-start">
                           <span className="mr-2 text-amber-400">•</span>
-                          Update positions using the visual layout editor
+                          {t('tables.updatePositionsLayout')}
                         </li>
                       </ul>
                     </div>

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product, Category, ProductVariant } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 import HelpGuide from './HelpGuide';
@@ -6,7 +7,7 @@ import HelpGuide from './HelpGuide';
 interface AvailableProductsPanelProps {
   products: Product[];
   categories: Category[];
- showFavoritesOnly: boolean;
+  showFavoritesOnly: boolean;
   setShowFavoritesOnly: (show: boolean) => void;
   selectedCategory: number | 'all';
   setSelectedCategory: (category: number | 'all') => void;
@@ -24,19 +25,21 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
   setShowFavoritesOnly,
   selectedCategory,
   setSelectedCategory,
- activeFilterType,
+  activeFilterType,
   setActiveFilterType,
   activeCategoryId,
   setActiveCategoryId,
   handleAddItemToGrid
 }) => {
- return (
+  const { t } = useTranslation();
+
+  return (
     <div className="bg-slate-700 p-4 rounded-lg" role="region" aria-labelledby="available-products-heading">
       <div className="flex justify-between items-center mb-2">
-        <h3 id="available-products-heading" className="text-lg font-semibold text-amber-200">Available Products</h3>
-        <HelpGuide feature="available-products" title="Available Products Panel" description="Drag products from this panel onto the grid canvas to add them to your layout." position="left" />
+        <h3 id="available-products-heading" className="text-lg font-semibold text-amber-200">{t('availableProductsPanel.title') as string}</h3>
+        <HelpGuide feature="available-products" title={t('availableProductsPanel.helpTitle') as string} description={t('availableProductsPanel.helpDescription') as string} position="left" />
       </div>
-      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label="Product filtering options">
+      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label={t('availableProductsPanel.filterOptionsAriaLabel') as string}>
         <button
           onClick={() => {
             const newShowFavorites = !showFavoritesOnly;
@@ -52,9 +55,9 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
             }
           }}
           className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${showFavoritesOnly ? 'bg-amber-50 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
-          aria-label={showFavoritesOnly ? 'Turn off favorites filter' : 'Turn on favorites filter'}
+          aria-label={showFavoritesOnly ? t('availableProductsPanel.turnOffFavoritesFilter') as string : t('availableProductsPanel.turnOnFavoritesFilter') as string}
         >
-          FAV Favourites {showFavoritesOnly ? 'ON' : 'OFF'}
+          {t('availableProductsPanel.favoritesButton') as string} {showFavoritesOnly ? t('availableProductsPanel.favoritesOn') as string : t('availableProductsPanel.favoritesOff') as string}
         </button>
         {/* Special "All Products" category button */}
         <button
@@ -65,9 +68,9 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
             setActiveCategoryId(0); // Special "All Products" category
           }}
           className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === 0 ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
-          aria-label="Show all products"
+          aria-label={t('availableProductsPanel.showAllProducts') as string}
         >
-          All Products
+          {t('availableProductsPanel.allProducts') as string}
         </button>
         {categories.map(category => (
           <button
@@ -85,13 +88,13 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
               }
             }}
             className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === category.id ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
-            aria-label={`Filter by ${category.name} category`}
+            aria-label={t('availableProductsPanel.filterByCategory', { categoryName: category.name }) as string}
           >
             {category.name}
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded" role="list" aria-label="List of available products to add to the grid">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded" role="list" aria-label={t('availableProductsPanel.productsListAriaLabel') as string}>
         {(() => {
           let filteredProducts = products;
           
@@ -115,7 +118,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
                 key={`${product.id}-${variant.id}`}
                 onClick={() => handleAddItemToGrid(product, variant)}
                 className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-32 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
-                aria-label={`Add ${product.name} ${variant.name} to grid`}
+                aria-label={t('availableProductsPanel.addToGrid', { productName: product.name, variantName: variant.name }) as string}
                 role="listitem"
               >
                 <p className={`font-bold ${variant.textColor}`}>{product.name}</p>

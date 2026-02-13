@@ -5,6 +5,7 @@ import { validateProduct, validateProductName, validateCategoryId, validateProdu
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import i18n from '../i18n';
 
 export const productsRouter = express.Router();
 
@@ -25,7 +26,7 @@ productsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error fetching products', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch products. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:products.fetchFailed') });
   }
 });
 
@@ -45,7 +46,7 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
     });
     
     if (!product) {
-      return res.status(404).json({ error: 'Product not found' });
+      return res.status(404).json({ error: i18n.t('errors:products.notFound') });
     }
     
     res.json(product);
@@ -53,7 +54,7 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
     logError(error instanceof Error ? error : 'Error fetching product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch product. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:products.fetchOneFailed') });
   }
 });
 
@@ -65,7 +66,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     // Validate product data
     const validation = validateProduct({ name, categoryId, variants });
     if (!validation.isValid) {
-      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+      return res.status(400).json({ error: i18n.t('errors:products.validationFailed'), details: validation.errors });
     }
     
     // Validate category exists
@@ -74,7 +75,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     });
     
     if (!category) {
-      return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+      return res.status(400).json({ error: i18n.t('errors:products.invalidCategoryId', { categoryId }) });
     }
     
     // If variants have stock consumption, validate stock item references
@@ -103,7 +104,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         
         if (invalidStockItemIds.length > 0) {
           return res.status(400).json({
-            error: `Invalid stock item references: ${invalidStockItemIds.join(', ')}`
+            error: i18n.t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
           });
         }
       }
@@ -143,7 +144,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
    logError(error instanceof Error ? error : 'Error creating product', {
      correlationId: (req as any).correlationId,
    });
-   res.status(500).json({ error: 'Failed to create product. Please check your data and try again.' });
+   res.status(500).json({ error: i18n.t('errors:products.createFailed') });
   }
 });
 
@@ -179,13 +180,13 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           const variant = variants[i];
           const variantError = validateProductVariant(variant);
           if (variantError) {
-            validationErrors.push(`Variant ${i + 1}: ${variantError}`);
+            validationErrors.push(i18n.t('errors:products.variantError', { index: i + 1, error: variantError }));
           }
         }
       }
       
       if (validationErrors.length > 0) {
-        return res.status(400).json({ error: 'Validation failed', details: validationErrors });
+        return res.status(400).json({ error: i18n.t('errors:products.validationFailed'), details: validationErrors });
       }
     }
     
@@ -196,7 +197,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       });
       
       if (!category) {
-        return res.status(400).json({ error: `Invalid category ID: ${categoryId}` });
+        return res.status(400).json({ error: i18n.t('errors:products.invalidCategoryId', { categoryId }) });
       }
     }
     
@@ -226,7 +227,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         
         if (invalidStockItemIds.length > 0) {
           return res.status(400).json({
-            error: `Invalid stock item references: ${invalidStockItemIds.join(', ')}`
+            error: i18n.t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
           });
         }
       }
@@ -306,7 +307,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
     logError(error instanceof Error ? error : 'Error updating product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update product. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('errors:products.updateFailed') });
   }
 });
 
@@ -342,7 +343,7 @@ productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Reque
     logError(error instanceof Error ? error : 'Error deleting product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete product. The product may be in use or referenced elsewhere.' });
+    res.status(500).json({ error: i18n.t('errors:products.deleteFailedInUse') });
   }
 });
 

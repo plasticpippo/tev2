@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product, ProductVariant, Category, Till } from '@shared/types';
 import { formatCurrency } from '../utils/formatting';
 
@@ -12,6 +13,7 @@ interface ProductGridProps {
 }
 
 export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, onAddToCart, assignedTillId, makableVariantIds, tills }) => {
+  const { t } = useTranslation();
   const [selectedFilter, setSelectedFilter] = useState<'favourites' | 'all' | number>('favourites');
 
   const visibleCategories = useMemo(() => {
@@ -47,13 +49,13 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
     <>
       <div className="flex flex-col h-full bg-slate-900 rounded-lg">
       <div className="flex-shrink-0 p-4">
-        <h2 className="text-2xl font-bold text-amber-400 mb-3">Products</h2>
+        <h2 className="text-2xl font-bold text-amber-400 mb-3">{t('productGrid.title')}</h2>
         <div className="flex flex-wrap gap-2 mb-3">
            <button
             onClick={() => setSelectedFilter('favourites')}
             className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedFilter === 'favourites' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
           >
-            FAV Favourites
+            {t('productGrid.favourites')}
           </button>
           {visibleCategories.map(category => (
             <button
@@ -68,7 +70,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
             onClick={() => setSelectedFilter('all')}
             className={`ml-auto px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedFilter === 'all' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
           >
-            All
+            {t('productGrid.all')}
           </button>
         </div>
       </div>
@@ -89,7 +91,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
                     <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
                     <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
                   </div>
-                   {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">OUT OF STOCK</span></div>}
+                   {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">{t('productGrid.outOfStock')}</span></div>}
                 </button>
               )
             })}

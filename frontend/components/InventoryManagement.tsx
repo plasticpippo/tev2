@@ -1,4 +1,5 @@
 import React, { useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { StockItem, StockAdjustment, User, Category, Product } from '@shared/types';
 import * as inventoryApi from '../services/inventoryService';
 import * as productApi from '../services/productService';
@@ -15,6 +16,7 @@ interface AdjustmentModalProps {
 }
 
 const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUser, onClose, onSave, preselectedItemId }) => {
+    const { t } = useTranslation();
     const [stockItemId, setStockItemId] = useState<string | ''>(preselectedItemId || '');
     const [quantity, setQuantity] = useState<number | ''>('');
     const [selectedUnitId, setSelectedUnitId] = useState<string>('base');
@@ -42,7 +44,7 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
 
         await inventoryApi.saveStockAdjustment({
             stockItemId,
-            itemName: selectedItem?.name || 'Unknown',
+            itemName: selectedItem?.name || t('inventoryManagement.unknown'),
             quantity: finalQuantityInBaseUnits,
             reason,
             userId: currentUser.id,
@@ -54,35 +56,35 @@ const AdjustmentModal: React.FC<AdjustmentModalProps> = ({ stockItems, currentUs
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
           <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
-            <h3 className="text-xl font-bold text-amber-400 mb-4">New Stock Adjustment</h3>
+            <h3 className="text-xl font-bold text-amber-400 mb-4">{t('inventoryManagement.newStockAdjustment')}</h3>
             <div className="space-y-4">
               <div>
-                <label className="block text-sm text-slate-400">Stock Item</label>
+                <label className="block text-sm text-slate-400">{t('inventoryManagement.stockItem')}</label>
                 <select value={stockItemId} onChange={e => setStockItemId(e.target.value)} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required>
-                    <option value="" disabled>Select an item...</option>
+                    <option value="" disabled>{t('inventoryManagement.selectAnItem')}</option>
                     {stockItems.map(item => <option key={item.id} value={item.id}>{item.name}</option>)}
                 </select>
               </div>
               <div className="flex gap-2">
                 <div className="flex-grow">
-                    <label className="block text-sm text-slate-400">Quantity</label>
-                    <VKeyboardInput k-type="numeric" type="number" value={quantity} onChange={e => setQuantity(e.target.value === '' ? '' : parseFloat(e.target.value))} placeholder="e.g., -1 or 24" className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
+                    <label className="block text-sm text-slate-400">{t('inventoryManagement.quantity')}</label>
+                    <VKeyboardInput k-type="numeric" type="number" value={quantity} onChange={e => setQuantity(e.target.value === '' ? '' : parseFloat(e.target.value))} placeholder={t('inventoryManagement.quantityPlaceholder')} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
                 </div>
                 <div className="w-1/3">
-                    <label className="block text-sm text-slate-400">Unit</label>
+                    <label className="block text-sm text-slate-400">{t('inventoryManagement.unit')}</label>
                     <select value={selectedUnitId} onChange={e => setSelectedUnitId(e.target.value)} disabled={!selectedItem} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md disabled:opacity-50">
                         {availableUnits.map(unit => <option key={unit.id} value={unit.id}>{unit.name}</option>)}
                     </select>
                 </div>
               </div>
                <div>
-                <label className="block text-sm text-slate-400">Reason</label>
-                <VKeyboardInput k-type="full" type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder="e.g., Wastage, Delivery" className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
+                <label className="block text-sm text-slate-400">{t('inventoryManagement.reason')}</label>
+                <VKeyboardInput k-type="full" type="text" value={reason} onChange={e => setReason(e.target.value)} placeholder={t('inventoryManagement.reasonPlaceholder')} className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md" required />
               </div>
             </div>
             <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
-              <button type="button" onClick={onClose} className="btn btn-secondary">Cancel</button>
-              <button type="submit" className="btn btn-primary">Save Adjustment</button>
+              <button type="button" onClick={onClose} className="btn btn-secondary">{t('buttons.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{t('inventoryManagement.saveAdjustment')}</button>
             </div>
           </form>
         </div>
@@ -100,6 +102,7 @@ interface InventoryManagementProps {
 }
 
 export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockItems, stockAdjustments, currentUser, products, categories, onDataUpdate }) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'ingredients' | 'goods'>('ingredients');
     const [isAdjustmentModalOpen, setIsAdjustmentModalOpen] = useState(false);
     const [preselectedItemId, setPreselectedItemId] = useState<string | undefined>(undefined);
@@ -160,21 +163,21 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
             <div className="flex-shrink-0 space-y-4">
                 <div className="flex gap-2">
                     <button onClick={() => setActiveTab('ingredients')} className={`btn ${activeTab === 'ingredients' ? 'btn-primary' : 'btn-secondary'}`}>
-                        Ingredients
+                        {t('inventoryManagement.ingredients')}
                     </button>
                     <button onClick={() => setActiveTab('goods')} className={`btn ${activeTab === 'goods' ? 'btn-primary' : 'btn-secondary'}`}>
-                        Sellable Goods
+                        {t('inventoryManagement.sellableGoods')}
                     </button>
                 </div>
                 <div className="bg-slate-800 p-2 rounded-md flex gap-2 items-center">
-                    <input type="text" placeholder="Search by name..." value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="flex-grow p-2 bg-slate-900 border border-slate-700 rounded-md text-sm" />
+                    <input type="text" placeholder={t('inventoryManagement.searchByName')} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="flex-grow p-2 bg-slate-900 border border-slate-700 rounded-md text-sm" />
                     <select onChange={e => setCategoryFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))} value={categoryFilter} className="bg-slate-900 border border-slate-700 p-2 rounded-md text-sm">
-                        <option value="all">All Categories</option>
+                        <option value="all">{t('inventoryManagement.allCategories')}</option>
                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    <button onClick={() => setStockLevelFilter('all')} className={`btn ${stockLevelFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm`}>All</button>
-                    <button onClick={() => setStockLevelFilter('low')} className={`btn ${stockLevelFilter === 'low' ? 'btn-warning' : 'btn-secondary'} btn-sm`}>Low</button>
-                    <button onClick={() => setStockLevelFilter('out')} className={`btn ${stockLevelFilter === 'out' ? 'btn-danger' : 'btn-secondary'} btn-sm`}>Out</button>
+                    <button onClick={() => setStockLevelFilter('all')} className={`btn ${stockLevelFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.all')}</button>
+                    <button onClick={() => setStockLevelFilter('low')} className={`btn ${stockLevelFilter === 'low' ? 'btn-warning' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.low')}</button>
+                    <button onClick={() => setStockLevelFilter('out')} className={`btn ${stockLevelFilter === 'out' ? 'btn-danger' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.out')}</button>
                 </div>
             </div>
             
@@ -183,14 +186,14 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
                     <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
                         <div>
                             <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-slate-400">Tracked in: {item.baseUnit}</p>
+                            <p className="text-sm text-slate-400">{t('inventoryManagement.trackedIn', { unit: item.baseUnit })}</p>
                         </div>
                         <div className="flex items-center gap-4">
                             <span className={`text-xl font-bold ${item.quantity <= 0 ? 'text-red-400' : item.quantity <= 10 ? 'text-yellow-400' : 'text-green-400'}`}>
-                                {item.quantity} in stock
+                                {t('inventoryManagement.inStock', { quantity: item.quantity })}
                             </span>
                              <button onClick={() => handleOpenAdjustModal(item.id)} className="btn btn-success btn-sm">
-                                Adjust
+                                {t('inventoryManagement.adjust')}
                             </button>
                         </div>
                     </div>

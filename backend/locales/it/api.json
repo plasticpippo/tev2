@@ -19,7 +19,19 @@
     "settingsSaved": "Impostazioni salvate con successo",
     "layoutSaved": "Layout salvato con successo",
     "tableAssigned": "Tavolo assegnato con successo",
-    "tillAssigned": "Cassa assegnata con successo"
+    "tillAssigned": "Cassa assegnata con successo",
+    "stockLevelsUpdated": "Livelli magazzino aggiornati con successo",
+    "stockLevelsUpdatedWithWarnings": "Livelli magazzino aggiornati con avvisi",
+    "orphanedReferencesCleaned": "Rimossi con successo {{count}} riferimenti ai consumi magazzino orfani",
+    "noOrphanedReferences": "Nessun riferimento orfano trovato",
+    "dataIntegrityIssuesFound": "Problemi di integrita dei dati rilevati",
+    "dataIntegrityValidationPassed": "Validazione integrita dei dati superata",
+    "orderSessionCreated": "Sessione ordine creata con successo",
+    "orderSessionUpdated": "Sessione ordine aggiornata con successo",
+    "orderSessionRestored": "Sessione ordine ripristinata con successo",
+    "orderSessionLogoutMarked": "Sessione ordine contrassegnata per il logout con successo",
+    "orderSessionCompleted": "Sessione ordine completata con successo",
+    "orderSessionAssignedToTab": "Sessione ordine assegnata al conto con successo"
   },
   "response": {
     "ok": "OK",

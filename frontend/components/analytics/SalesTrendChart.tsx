@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 
@@ -8,6 +9,8 @@ interface SalesTrendChartProps {
 }
 
 export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, dateRange }) => {
+    const { t } = useTranslation();
+
     const trendData = useMemo(() => {
         const dataMap = new Map<string, number>();
         const now = new Date();
@@ -54,11 +57,12 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, 
     }, [transactions, dateRange]);
 
     const maxSales = Math.max(...trendData.map(d => d.total), 1);
-    const title = dateRange === 'week' ? 'Last 7 Days' : dateRange === 'month' ? 'Last 30 Days' : 'Last 12 Months';
+    const dateRangeKey = dateRange === 'week' ? 'last7Days' : dateRange === 'month' ? 'last30Days' : 'last12Months';
+    const title = t('salesTrendChart.title', { dateRange: t(`dateTime.${dateRangeKey}`) });
 
     return (
         <div className="bg-slate-800 p-6 rounded-lg">
-            <h3 className="text-xl font-bold text-slate-300 mb-4">{title} Sales Trend</h3>
+            <h3 className="text-xl font-bold text-slate-300 mb-4">{title}</h3>
             <div>
                 <div className="flex justify-between items-end h-64 space-x-1">
                     {trendData.map((day, index) => (

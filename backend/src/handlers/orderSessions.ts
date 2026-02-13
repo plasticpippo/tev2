@@ -11,9 +11,10 @@ export const orderSessionsRouter = express.Router();
 orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     logDebug('[GET /api/order-sessions/current] Fetching session', { userId, correlationId: (req as any).correlationId });
@@ -67,7 +68,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
     
     if (!orderSession) {
       logDebug('[GET /api/order-sessions/current] No session found for user', { userId, correlationId: (req as any).correlationId });
-      return res.status(404).json({ error: 'No active order session found' });
+      return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     
     // Parse the items JSON string back to array
@@ -82,10 +83,11 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
     logDebug('[GET /api/order-sessions/current] Returning session', { sessionId: orderSession.id, itemsCount: orderSessionWithParsedItems.items?.length || 0, correlationId: (req as any).correlationId });
     res.json(orderSessionWithParsedItems);
   } catch (error) {
+    const t = req.t.bind(req);
     logError(error instanceof Error ? error : 'Error fetching order session', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch order session' });
+    res.status(500).json({ error: t('errors:orderSessions.fetchFailed') });
   }
 });
 
@@ -93,9 +95,10 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
 orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     const { items } = req.body as { items: OrderSession['items'] };
@@ -188,10 +191,11 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
     logDebug('[POST /api/order-sessions/current] Returning response', { statusCode, sessionId: result.orderSession.id, correlationId: (req as any).correlationId });
     res.status(statusCode).json(result.orderSession);
   } catch (error) {
+    const t = req.t.bind(req);
     logError(error instanceof Error ? error : 'Error creating/updating order session', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create/update order session' });
+    res.status(500).json({ error: t('errors:orderSessions.createUpdateFailed') });
   }
 });
 
@@ -199,9 +203,10 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
 orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     const { items } = req.body as { items: OrderSession['items'] };
@@ -232,13 +237,14 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
 
     res.json(updatedOrderSession);
   } catch (error) {
+    const t = req.t.bind(req);
     if (error instanceof Error && error.message === 'NOT_FOUND') {
-      return res.status(404).json({ error: 'No active order session found' });
+      return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error updating order session', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update order session' });
+    res.status(500).json({ error: t('errors:orderSessions.updateFailed') });
   }
 });
 
@@ -246,9 +252,10 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
 orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
 
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     logDebug('[PUT /api/order-sessions/current/logout] Logout request received', { userId, correlationId: (req as any).correlationId });
@@ -289,13 +296,14 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
 
     res.json(updatedOrderSession);
   } catch (error) {
+    const t = req.t.bind(req);
     if (error instanceof Error && error.message === 'NOT_FOUND') {
-      return res.status(404).json({ error: 'No active order session found' });
+      return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error marking order session for logout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to mark order session for logout' });
+    res.status(500).json({ error: t('errors:orderSessions.logoutMarkFailed') });
   }
 });
 
@@ -303,9 +311,10 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
 orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     // Use transaction to prevent race conditions
@@ -334,13 +343,14 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
 
     res.json(updatedOrderSession);
   } catch (error) {
+    const t = req.t.bind(req);
     if (error instanceof Error && error.message === 'NOT_FOUND') {
-      return res.status(404).json({ error: 'No active order session found' });
+      return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error completing order session', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to complete order session' });
+    res.status(500).json({ error: t('errors:orderSessions.completeFailed') });
   }
 });
 
@@ -348,9 +358,10 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
 orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Request, res: Response) => {
   try {
     const userId = req.user?.id;
+    const t = req.t.bind(req);
     
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
     }
 
     // Use transaction to prevent race conditions
@@ -379,13 +390,14 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
 
     res.json(updatedOrderSession);
   } catch (error) {
+    const t = req.t.bind(req);
     if (error instanceof Error && error.message === 'NOT_FOUND') {
-      return res.status(404).json({ error: 'No active order session found' });
+      return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error assigning order session to tab', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to assign order session to tab' });
+    res.status(500).json({ error: t('errors:orderSessions.assignTabFailed') });
   }
 });
 

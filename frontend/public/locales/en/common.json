@@ -76,6 +76,7 @@
     "yesterday": "Yesterday",
     "last7Days": "Last 7 Days",
     "last30Days": "Last 30 Days",
+    "last12Months": "Last 12 Months",
     "thisWeek": "This Week",
     "thisMonth": "This Month",
     "custom": "Custom",
@@ -106,7 +107,8 @@
     "page": "Page",
     "of": "of",
     "itemsPerPage": "Items per page",
-    "showing": "Showing {{from}} to {{to}} of {{total}} items"
+    "showing": "Showing {{from}} to {{to}} of {{total}} items",
+    "showingResults": "Showing {{from}}-{{to}} of {{total}} results"
   },
   "table": {
     "noData": "No data available",
@@ -129,5 +131,369 @@
     "title": "Bar POS Pro",
     "loading": "Loading POS...",
     "version": "Version"
+  },
+  "tableContext": {
+    "errorFetchingRooms": "Error fetching rooms",
+    "errorFetchingTables": "Error fetching tables",
+    "roomCreated": "Room \"{{name}}\" created successfully",
+    "errorAddingRoom": "Error adding room",
+    "roomUpdated": "Room updated successfully",
+    "errorUpdatingRoom": "Error updating room",
+    "failedDeleteRoom": "Failed to delete room",
+    "roomDeleted": "Room deleted successfully",
+    "errorDeletingRoom": "Error deleting room",
+    "tableCreated": "Table \"{{name}}\" created successfully",
+    "errorAddingTable": "Error adding table",
+    "tableUpdated": "Table updated successfully",
+    "errorUpdatingTable": "Error updating table",
+    "failedDeleteTable": "Failed to delete table",
+    "tableDeleted": "Table deleted successfully",
+    "errorDeletingTable": "Error deleting table",
+    "failedUpdatePosition": "Failed to update table position",
+    "contextError": "useTableContext must be used within a TableProvider"
+  },
+  "tableAssignmentModal": {
+    "title": "Assign to Table",
+    "close": "Close",
+    "selectRoom": "Select Room",
+    "noRoomsAvailable": "No rooms available. Create rooms in Admin Panel first.",
+    "tableCount_one": "{{count}} table",
+    "tableCount_other": "{{count}} tables",
+    "noTablesInRoom": "No tables in this room",
+    "addTablesInAdmin": "Add tables in Admin Panel",
+    "selectRoomToViewTables": "Select a room to view tables",
+    "selected": "Selected: {{name}}",
+    "status": "Status: {{status}}",
+    "clearing": "Clearing...",
+    "clearTable": "Clear Table",
+    "assigning": "Assigning...",
+    "assignToTable": "Assign to Table",
+    "tableStatusLegend": "Table Status Legend:",
+    "statusAvailable": "Available",
+    "statusOccupied": "Occupied (cannot assign)",
+    "statusReserved": "Reserved",
+    "statusUnavailable": "Unavailable (cannot assign)",
+    "orderAssignedTo": "Order assigned to {{tableName}}",
+    "failedToAssignTable": "Failed to assign table",
+    "tableAssignmentCleared": "Table assignment cleared",
+    "failedToClearTableAssignment": "Failed to clear table assignment",
+    "statusLabelAvailable": "Available",
+    "statusLabelOccupied": "Occupied",
+    "statusLabelReserved": "Reserved",
+    "statusLabelUnavailable": "Unavailable"
+  },
+  "tableLayoutEditor": {
+    "selectRoom": "Select a Room",
+    "mode": "Mode",
+    "dragToReposition": "Drag tables to reposition",
+    "editMode": "Edit Mode",
+    "dragMode": "Drag Mode",
+    "tableCount_one": "{{count}} table",
+    "tableCount_other": "{{count}} tables",
+    "tableStatus": "Table Status",
+    "statusAvailable": "Available",
+    "statusOccupied": "Occupied",
+    "statusReserved": "Reserved",
+    "statusUnavailable": "Unavailable",
+    "building": "BUILDING",
+    "selectRoomToViewLayout": "Select a room to view its layout",
+    "createRoomFirst": "Create a room first if none exist",
+    "tip": "Tip",
+    "tipViewMode": "Switch to Edit or Drag mode to reposition tables",
+    "tipEditMode": "Drag tables to new positions - changes save automatically",
+    "dragging": "Dragging..."
+  },
+  "enhancedGridLayout": {
+    "title": "Enhanced Grid Layout",
+    "undo": "Undo",
+    "redo": "Redo",
+    "clear": "Clear",
+    "resetZoom": "Reset zoom",
+    "zoomLevel": "Zoom Level",
+    "dragDropInfo": "Drag and drop items to rearrange them on the grid",
+    "keyboardInfo": "Use arrow keys to move selected items",
+    "help": {
+      "gridLayoutTitle": "Grid Layout Canvas",
+      "gridLayoutDescription": "Drag and drop items to arrange them on the grid. Use toolbar buttons to manage your layout.",
+      "undoTitle": "Undo Action",
+      "undoDescription": "Revert the last action performed on the grid layout. Use Ctrl+Z to undo.",
+      "redoTitle": "Redo Action",
+      "redoDescription": "Reapply the last undone action. Use Ctrl+Y or Ctrl+Shift+Z to redo.",
+      "zoomTitle": "Zoom Level",
+      "zoomDescription": "Current zoom level of the grid. Click to reset to 100%. Use Ctrl+Plus/Minus to adjust.",
+      "clearGridTitle": "Clear Grid",
+      "clearGridDescription": "Remove all items from the grid. This action cannot be undone.",
+      "dragDropTitle": "Drag and Drop",
+      "dragDropDescription": "Drag products from the panel to the grid or move existing items by dragging them.",
+      "keyboardNavTitle": "Keyboard Navigation",
+      "keyboardNavDescription": "Select an item and use arrow keys to move it. Hold Shift for larger movements."
+    }
+  },
+  "inventoryManagement": {
+    "ingredients": "Ingredients",
+    "sellableGoods": "Sellable Goods",
+    "searchByName": "Search by name...",
+    "allCategories": "All Categories",
+    "all": "All",
+    "low": "Low",
+    "out": "Out",
+    "trackedIn": "Tracked in: {{unit}}",
+    "inStock": "{{quantity}} in stock",
+    "adjust": "Adjust",
+    "newStockAdjustment": "New Stock Adjustment",
+    "stockItem": "Stock Item",
+    "selectAnItem": "Select an item...",
+    "quantity": "Quantity",
+    "quantityPlaceholder": "e.g., -1 or 24",
+    "unit": "Unit",
+    "reason": "Reason",
+    "reasonPlaceholder": "e.g., Wastage, Delivery",
+    "saveAdjustment": "Save Adjustment",
+    "unknown": "Unknown"
+  },
+  "gridControls": {
+    "title": "Grid Controls",
+    "description": "Adjust the grid layout settings like columns, size, spacing, and snapping behavior to customize your product grid.",
+    "columns": "Columns",
+    "columnsDescription": "Number of columns in the grid. More columns allow for wider grids but smaller items.",
+    "gridUnitSize": "Grid Unit Size",
+    "gridUnitSizeDescription": "Size of each grid cell in pixels. Larger cells mean bigger items but fewer items visible at once.",
+    "gutter": "Gutter",
+    "gutterDescription": "Spacing between grid items in pixels. Increase for more breathing room between items.",
+    "padding": "Padding",
+    "paddingDescription": "Space around the edges of the grid container. Adjust to control the margin around the grid.",
+    "snapToGrid": "Snap to Grid",
+    "snapToGridDescription": "When enabled, items will snap to the nearest grid position when moved.",
+    "showGridLines": "Show Grid Lines",
+    "showGridLinesDescription": "Toggle visibility of grid lines to help with alignment and positioning."
+  },
+  "transferItemsModal": {
+    "title": "Transfer Items",
+    "fromTab": "From tab:",
+    "close": "Close",
+    "selectItemQuantities": "1. Select Item Quantities to Move",
+    "noItemsInTab": "This tab has no items.",
+    "item": "Item",
+    "outOf": "(out of {{quantity}})",
+    "decreaseQuantity": "Decrease quantity of {{itemName}}",
+    "increaseQuantity": "Increase quantity of {{itemName}}",
+    "chooseDestination": "2. Choose Destination",
+    "selectDestinationTab": "Select destination tab: {{tabName}}",
+    "createNewTab": "Create new tab",
+    "newTab": "+ New Tab",
+    "enterNewTabName": "Enter new tab name...",
+    "confirmTabName": "Confirm Tab Name",
+    "selected": "Selected:",
+    "cancel": "Cancel",
+    "moveItems": "Move Items ({{count}})"
+  },
+  "gridTemplates": {
+    "title": "Grid Templates",
+    "close": "Close",
+    "filterByCategory": "Filter by category:",
+    "currentLayout": "Current Layout",
+    "cancel": "Cancel",
+    "applyTemplate": "Apply Template",
+    "itemsColumns": "Items: {{items}} | Columns: {{columns}}",
+    "categories": {
+      "all": "All",
+      "restaurant": "Restaurant",
+      "retail": "Retail",
+      "bar": "Bar",
+      "cafe": "Cafe"
+    },
+    "templates": {
+      "restaurantStandard": {
+        "name": "Restaurant Standard",
+        "description": "Common restaurant layout with food categories organized by sections"
+      },
+      "retailStandard": {
+        "name": "Retail Standard",
+        "description": "Basic retail layout with common product categories"
+      },
+      "barStandard": {
+        "name": "Bar Standard",
+        "description": "Bar layout with drinks organized by type"
+      },
+      "cafeStandard": {
+        "name": "Cafe Standard",
+        "description": "Cafe layout with coffee and pastries"
+      }
+    }
+  },
+  "helpGuide": {
+    "ariaLabel": "Help for {{feature}}",
+    "gridControls": {
+      "title": "Grid Controls",
+      "description": "Adjust the grid layout settings like columns, size, spacing, and snapping behavior to customize your product grid."
+    },
+    "dragAndDrop": {
+      "title": "Drag & Drop Items",
+      "description": "Drag products from the left panel onto the grid canvas to add them. Drag existing items to reposition them on the grid."
+    },
+    "layoutManagement": {
+      "title": "Layout Management",
+      "description": "Save, load, and manage different grid layouts for different purposes. Set a default layout for new sessions."
+    },
+    "templates": {
+      "title": "Layout Templates",
+      "description": "Apply pre-made templates to quickly set up common grid arrangements like kitchen, bar, or retail layouts."
+    },
+    "undoRedo": {
+      "title": "Undo/Redo Actions",
+      "description": "Use Ctrl+Z to undo and Ctrl+Y or Ctrl+Shift+Z to redo your layout changes."
+    },
+    "zoom": {
+      "title": "Zoom Controls",
+      "description": "Adjust the zoom level to get a better view of your grid layout. Use Ctrl+Plus/Minus to zoom in/out."
+    },
+    "keyboardNav": {
+      "title": "Keyboard Navigation",
+      "description": "Select an item and use arrow keys to move it precisely. Hold Shift for larger movements."
+    }
+  },
+  "helpSystem": {
+    "ariaLabel": {
+      "closeHelpTour": "Close help tour"
+    },
+    "stepCounter": "Step {{current}} of {{total}}",
+    "buttons": {
+      "previous": "Previous",
+      "next": "Next",
+      "finish": "Finish"
+    },
+    "steps": {
+      "welcome": {
+        "title": "Welcome to Grid Customization",
+        "description": "This guide will help you understand how to customize your product grid layout."
+      },
+      "availableProducts": {
+        "title": "Available Products Panel",
+        "description": "Drag products from this panel onto the grid canvas to add them to your layout."
+      },
+      "gridCanvas": {
+        "title": "Grid Layout Canvas",
+        "description": "This is where you arrange your products. Drag items to reposition them."
+      },
+      "gridControls": {
+        "title": "Grid Controls",
+        "description": "Adjust grid settings like columns, size, and spacing to fit your needs."
+      },
+      "layoutManagement": {
+        "title": "Layout Management",
+        "description": "Save, load, and manage different grid layouts for different purposes."
+      },
+      "keyboardShortcuts": {
+        "title": "Keyboard Shortcuts",
+        "description": "Use Ctrl+Z to undo, Ctrl+Y to redo, and arrow keys to fine-tune item positions."
+      }
+    }
+  },
+  "availableProductsPanel": {
+    "title": "Available Products",
+    "helpTitle": "Available Products Panel",
+    "helpDescription": "Drag products from this panel onto the grid canvas to add them to your layout.",
+    "filterOptionsAriaLabel": "Product filtering options",
+    "favoritesButton": "FAV Favourites",
+    "favoritesOn": "ON",
+    "favoritesOff": "OFF",
+    "turnOffFavoritesFilter": "Turn off favorites filter",
+    "turnOnFavoritesFilter": "Turn on favorites filter",
+    "allProducts": "All Products",
+    "showAllProducts": "Show all products",
+    "filterByCategory": "Filter by {{categoryName}} category",
+    "productsListAriaLabel": "List of available products to add to the grid",
+    "addToGrid": "Add {{productName}} {{variantName}} to grid"
+  },
+  "enhancedGridCanvas": {
+    "gridAriaLabel": "Product grid layout",
+    "productAriaLabel": "Product {{name}}, price {{price}}, position {{x}}, {{y}}, {{width}} by {{height}} grid units",
+    "resizeTopEdge": "Resize top edge",
+    "resizeRightEdge": "Resize right edge",
+    "resizeBottomEdge": "Resize bottom edge",
+    "resizeLeftEdge": "Resize left edge",
+    "resizeTopRightCorner": "Resize top-right corner",
+    "resizeTopLeftCorner": "Resize top-left corner",
+    "resizeBottomRightCorner": "Resize bottom-right corner",
+    "resizeBottomLeftCorner": "Resize bottom-left corner",
+    "dragProductsHere": "Drag products here to arrange them on the grid"
+  },
+  "productPerformanceTable": {
+    "title": "Product Performance",
+    "noProductsFound": "No products found for the selected filters.",
+    "product": "Product",
+    "category": "Category",
+    "quantitySold": "Quantity Sold",
+    "averagePrice": "Average Price",
+    "totalRevenue": "Total Revenue",
+    "transactions": "Transactions"
+  },
+  "managerDashboard": {
+    "loadingDashboard": "Loading Dashboard...",
+    "businessDayManagement": "Business Day Management",
+    "recentDailyClosings": "Recent Daily Closings",
+    "loading": "Loading...",
+    "noRecentClosings": "No recent closings",
+    "transactions": "{{count}} txns",
+    "errorFetchingClosings": "Error fetching recent daily closings"
+  },
+  "orderActivityHistory": {
+    "title": "Order Activity History",
+    "description": "A log of items removed from orders and cleared orders before payment.",
+    "noActivity": "No order activity has been logged.",
+    "orderCleared": "Order with {{count}} item(s) cleared.",
+    "by": "by"
+  },
+  "tableErrorBoundary": {
+    "title": "Tables System Error",
+    "description": "Something went wrong with the tables system.",
+    "errorDetails": "Error details",
+    "reloadPage": "Reload Page"
+  },
+  "salesTrendChart": {
+    "title": "{{dateRange}} Sales Trend"
+  },
+  "errorPage": {
+    "title": "An Error Occurred",
+    "description": "Something went wrong while processing your request.",
+    "unexpectedError": "An unexpected error occurred",
+    "goBack": "Go Back"
+  },
+  "productGrid": {
+    "title": "Products",
+    "favourites": "FAV Favourites",
+    "all": "All",
+    "outOfStock": "OUT OF STOCK"
+  },
+  "errorMessage": {
+    "retry": "Retry",
+    "clearForm": "Clear Form",
+    "goBack": "Go Back"
+  },
+  "virtualKeyboard": {
+    "done": "Done",
+    "space": "Space",
+    "backspace": "Backspace",
+    "enter": "Enter",
+    "shift": "Shift",
+    "capsLock": "Caps Lock"
+  },
+  "tillSetupScreen": {
+    "title": "Terminal Setup",
+    "subtitle": "Select which Till this device will operate as.",
+    "noTillsConfigured": "No tills have been configured. Please set them up in the Admin Panel on another device."
+  },
+  "editLayoutButton": {
+    "edit": "EDIT",
+    "editLayout": "Edit Layout",
+    "title": "Edit product layout"
+  },
+  "enhancedGridLayoutSection": {
+    "title": "Enhanced Grid Layout",
+    "currentLayout": "Current Layout",
+    "helpGuide": {
+      "title": "Grid Layout Section",
+      "description": "This is the main grid layout area where you can arrange your product items."
+    }
   }
 }

@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface PaginationMetadata {
   totalCount: number;
@@ -21,6 +22,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
   onLimitChange,
   currentLimit = 10
 }) => {
+  const { t } = useTranslation();
   const { currentPage, totalPages, hasNextPage, hasPrevPage } = metadata;
 
   const handlePrevious = () => {
@@ -87,7 +89,11 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
     <div className="flex flex-col sm:flex-row items-center justify-between pt-4">
       <div className="mb-4 sm:mb-0">
         <span className="text-sm text-slate-400">
-          Showing {(currentPage - 1) * currentLimit + 1}-{Math.min(currentPage * currentLimit, metadata.totalCount)} of {metadata.totalCount} results
+          {t('pagination.showingResults', {
+            from: (currentPage - 1) * currentLimit + 1,
+            to: Math.min(currentPage * currentLimit, metadata.totalCount),
+            total: metadata.totalCount
+          })}
         </span>
       </div>
       
@@ -118,7 +124,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
               : 'bg-slate-800 text-slate-500 cursor-not-allowed'
           }`}
         >
-          Previous
+          {t('pagination.previous')}
         </button>
         
         {/* Page numbers */}
@@ -150,7 +156,7 @@ export const PaginationControls: React.FC<PaginationControlsProps> = ({
               : 'bg-slate-800 text-slate-500 cursor-not-allowed'
           }`}
         >
-          Next
+          {t('pagination.next')}
         </button>
       </div>
     </div>

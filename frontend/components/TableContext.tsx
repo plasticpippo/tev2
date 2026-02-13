@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useCallback, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Room, Table } from '../../shared/types';
 import { useToast } from '../contexts/ToastContext';
 import { useSessionContext } from '../contexts/SessionContext';
@@ -33,6 +34,7 @@ interface TableContextType {
 const TableContext = createContext<TableContextType | undefined>(undefined);
 
 export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [rooms, setRooms] = useState<Room[]>([]);
   const [tables, setTables] = useState<Table[]>([]);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('view');
@@ -53,7 +55,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setRooms(data);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error fetching rooms';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorFetchingRooms');
       if (isMountedRef.current) {
         setError(errorMessage);
       }
@@ -64,7 +66,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLoading(false);
       }
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Fetch tables from API
   const fetchTables = useCallback(async () => {
@@ -75,7 +77,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setTables(data);
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error fetching tables';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorFetchingTables');
       if (isMountedRef.current) {
         setError(errorMessage);
       }
@@ -86,7 +88,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         setLoading(false);
       }
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Add a new room
   const addRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>) => {
@@ -94,10 +96,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setLoading(true);
       const newRoom = await saveRoom(roomData);
       setRooms(prev => [...prev, newRoom]);
-      addToast(`Room "${newRoom.name}" created successfully`, 'success');
+      addToast(t('tableContext.roomCreated', { name: newRoom.name }), 'success');
       return newRoom;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error adding room';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorAddingRoom');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error adding room:', err);
@@ -105,7 +107,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Update a room
   const updateRoom = useCallback(async (id: string, roomData: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>>) => {
@@ -113,10 +115,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setLoading(true);
       const updatedRoom = await saveRoom({ ...roomData, id } as Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'> & { id?: string });
       setRooms(prev => prev.map(room => room.id === id ? updatedRoom : room));
-      addToast('Room updated successfully', 'success');
+      addToast(t('tableContext.roomUpdated'), 'success');
       return updatedRoom;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error updating room';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorUpdatingRoom');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error updating room:', err);
@@ -124,7 +126,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Delete a room
   const deleteRoom = useCallback(async (id: string) => {
@@ -133,7 +135,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const result = await deleteRoomService(id);
 
       if (!result.success) {
-        throw new Error(result.message || 'Failed to delete room');
+        throw new Error(result.message || t('tableContext.failedDeleteRoom'));
       }
 
       setRooms(prev => prev.filter(room => room.id !== id));
@@ -142,9 +144,9 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       if (selectedRoomId === id) {
         setSelectedRoomId(null);
       }
-      addToast('Room deleted successfully', 'success');
+      addToast(t('tableContext.roomDeleted'), 'success');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error deleting room';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorDeletingRoom');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error deleting room:', err);
@@ -152,7 +154,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast, selectedRoomId]);
+  }, [addToast, selectedRoomId, t]);
 
   // Add a new table
   const addTable = useCallback(async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>) => {
@@ -160,10 +162,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setLoading(true);
       const newTable = await saveTable(tableData);
       setTables(prev => [...prev, newTable]);
-      addToast(`Table "${newTable.name}" created successfully`, 'success');
+      addToast(t('tableContext.tableCreated', { name: newTable.name }), 'success');
       return newTable;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error adding table';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorAddingTable');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error adding table:', err);
@@ -171,7 +173,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Update a table
   const updateTable = useCallback(async (id: string, tableData: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>>) => {
@@ -179,10 +181,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       setLoading(true);
       const updatedTable = await saveTable({ ...tableData, id } as Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'> & { id?: string });
       setTables(prev => prev.map(table => table.id === id ? updatedTable : table));
-      addToast('Table updated successfully', 'success');
+      addToast(t('tableContext.tableUpdated'), 'success');
       return updatedTable;
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error updating table';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorUpdatingTable');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error updating table:', err);
@@ -190,7 +192,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Delete a table
   const deleteTable = useCallback(async (id: string) => {
@@ -199,13 +201,13 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       const result = await deleteTableService(id);
 
       if (!result.success) {
-        throw new Error(result.message || 'Failed to delete table');
+        throw new Error(result.message || t('tableContext.failedDeleteTable'));
       }
 
       setTables(prev => prev.filter(table => table.id !== id));
-      addToast('Table deleted successfully', 'success');
+      addToast(t('tableContext.tableDeleted'), 'success');
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Error deleting table';
+      const errorMessage = err instanceof Error ? err.message : t('tableContext.errorDeletingTable');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error deleting table:', err);
@@ -213,7 +215,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     } finally {
       setLoading(false);
     }
-  }, [addToast]);
+  }, [addToast, t]);
 
   // Update table position (for drag and drop)
   const updateTablePosition = useCallback(async (id: string, x: number, y: number) => {
@@ -233,7 +235,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     try {
       await updateTablePositionService(id, x, y);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to update table position';
+      const errorMessage = error instanceof Error ? error.message : t('tableContext.failedUpdatePosition');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error updating table position:', error);
@@ -246,7 +248,7 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         );
       }
     }
-  }, [addToast, tables]);
+  }, [addToast, tables, t]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
@@ -329,9 +331,10 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 };
 
 export const useTableContext = () => {
+  const { t } = useTranslation();
   const context = useContext(TableContext);
   if (context === undefined) {
-    throw new Error('useTableContext must be used within a TableProvider');
+    throw new Error(t('tableContext.contextError'));
   }
   return context;
 };

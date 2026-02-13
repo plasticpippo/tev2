@@ -28,7 +28,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
         setDailyClosings(response);
         setError(null);
       } catch (err) {
-        setError('Failed to fetch daily closing data');
+        setError(t('dailyClosing.errors.failedToFetch'));
         console.error('Error fetching daily closings:', err);
       } finally {
         setLoading(false);
@@ -311,7 +311,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                                   const [tillId, tillName] = tillKey.split('-');
                                   return (
                                     <div key={tillKey} className="flex justify-between text-sm bg-slate-900 p-2 rounded">
-                                      <span className="text-slate-300">{tillName || `Till ${tillId}`}</span>
+                                      <span className="text-slate-300">{tillName || t('dailyClosing.fallbackTill', { id: tillId })}</span>
                                       <span className="font-medium">
                                         {t('dailyClosing.details.transactionsCount', { count: data.transactions })}, {formatCurrency(data.total)}
                                       </span>
@@ -377,7 +377,7 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
                 const [tillId, tillName] = tillKey.split('-');
                 return (
                   <div key={tillKey} className="flex justify-between bg-slate-700 p-2 rounded">
-                    <span className="text-slate-300">{tillName || `Till ${tillId}`}</span>
+                    <span className="text-slate-300">{tillName || t('dailyClosing.fallbackTill', { id: tillId })}</span>
                     <span className="font-medium">
                       {t('dailyClosing.details.transactionsCount', { count: data.transactions })}, {formatCurrency(data.total)}
                     </span>

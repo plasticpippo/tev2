@@ -76,6 +76,7 @@
     "yesterday": "Ieri",
     "last7Days": "Ultimi 7 Giorni",
     "last30Days": "Ultimi 30 Giorni",
+    "last12Months": "Ultimi 12 Mesi",
     "thisWeek": "Questa Settimana",
     "thisMonth": "Questo Mese",
     "custom": "Personalizzato",
@@ -106,7 +107,8 @@
     "page": "Pagina",
     "of": "di",
     "itemsPerPage": "Elementi per pagina",
-    "showing": "Visualizzazione da {{from}} a {{to}} di {{total}} elementi"
+    "showing": "Visualizzazione da {{from}} a {{to}} di {{total}} elementi",
+    "showingResults": "Visualizzazione {{from}}-{{to}} di {{total}} risultati"
   },
   "table": {
     "noData": "Nessun dato disponibile",
@@ -129,5 +131,369 @@
     "title": "Bar POS Pro",
     "loading": "Caricamento POS...",
     "version": "Versione"
+  },
+  "tableContext": {
+    "errorFetchingRooms": "Errore nel caricamento delle stanze",
+    "errorFetchingTables": "Errore nel caricamento dei tavoli",
+    "roomCreated": "Stanza \"{{name}}\" creata con successo",
+    "errorAddingRoom": "Errore nell'aggiunta della stanza",
+    "roomUpdated": "Stanza aggiornata con successo",
+    "errorUpdatingRoom": "Errore nell'aggiornamento della stanza",
+    "failedDeleteRoom": "Impossibile eliminare la stanza",
+    "roomDeleted": "Stanza eliminata con successo",
+    "errorDeletingRoom": "Errore nell'eliminazione della stanza",
+    "tableCreated": "Tavolo \"{{name}}\" creato con successo",
+    "errorAddingTable": "Errore nell'aggiunta del tavolo",
+    "tableUpdated": "Tavolo aggiornato con successo",
+    "errorUpdatingTable": "Errore nell'aggiornamento del tavolo",
+    "failedDeleteTable": "Impossibile eliminare il tavolo",
+    "tableDeleted": "Tavolo eliminato con successo",
+    "errorDeletingTable": "Errore nell'eliminazione del tavolo",
+    "failedUpdatePosition": "Impossibile aggiornare la posizione del tavolo",
+    "contextError": "useTableContext deve essere utilizzato all'interno di un TableProvider"
+  },
+  "tableAssignmentModal": {
+    "title": "Assegna al Tavolo",
+    "close": "Chiudi",
+    "selectRoom": "Seleziona Stanza",
+    "noRoomsAvailable": "Nessuna stanza disponibile. Crea stanze nel Pannello Admin prima.",
+    "tableCount_one": "{{count}} tavolo",
+    "tableCount_other": "{{count}} tavoli",
+    "noTablesInRoom": "Nessun tavolo in questa stanza",
+    "addTablesInAdmin": "Aggiungi tavoli nel Pannello Admin",
+    "selectRoomToViewTables": "Seleziona una stanza per visualizzare i tavoli",
+    "selected": "Selezionato: {{name}}",
+    "status": "Stato: {{status}}",
+    "clearing": "Rimozione...",
+    "clearTable": "Rimuovi Tavolo",
+    "assigning": "Assegnazione...",
+    "assignToTable": "Assegna al Tavolo",
+    "tableStatusLegend": "Legenda Stato Tavoli:",
+    "statusAvailable": "Disponibile",
+    "statusOccupied": "Occupato (non assegnabile)",
+    "statusReserved": "Prenotato",
+    "statusUnavailable": "Non disponibile (non assegnabile)",
+    "orderAssignedTo": "Ordine assegnato a {{tableName}}",
+    "failedToAssignTable": "Impossibile assegnare il tavolo",
+    "tableAssignmentCleared": "Assegnazione tavolo rimossa",
+    "failedToClearTableAssignment": "Impossibile rimuovere l'assegnazione del tavolo",
+    "statusLabelAvailable": "Disponibile",
+    "statusLabelOccupied": "Occupato",
+    "statusLabelReserved": "Prenotato",
+    "statusLabelUnavailable": "Non disponibile"
+  },
+  "tableLayoutEditor": {
+    "selectRoom": "Seleziona una Stanza",
+    "mode": "Modalita",
+    "dragToReposition": "Trascina i tavoli per riposizionarli",
+    "editMode": "Modalita Modifica",
+    "dragMode": "Modalita Trascinamento",
+    "tableCount_one": "{{count}} tavolo",
+    "tableCount_other": "{{count}} tavoli",
+    "tableStatus": "Stato Tavolo",
+    "statusAvailable": "Disponibile",
+    "statusOccupied": "Occupato",
+    "statusReserved": "Prenotato",
+    "statusUnavailable": "Non disponibile",
+    "building": "EDIFICIO",
+    "selectRoomToViewLayout": "Seleziona una stanza per visualizzare la disposizione",
+    "createRoomFirst": "Crea prima una stanza se non ne esistono",
+    "tip": "Suggerimento",
+    "tipViewMode": "Passa alla modalita Modifica o Trascinamento per riposizionare i tavoli",
+    "tipEditMode": "Trascina i tavoli nelle nuove posizioni - le modifiche vengono salvate automaticamente",
+    "dragging": "Trascinamento..."
+  },
+  "enhancedGridLayout": {
+    "title": "Layout Griglia Avanzata",
+    "undo": "Annulla",
+    "redo": "Ripeti",
+    "clear": "Cancella",
+    "resetZoom": "Reimposta zoom",
+    "zoomLevel": "Livello Zoom",
+    "dragDropInfo": "Trascina e rilascia gli elementi per riorganizzarli sulla griglia",
+    "keyboardInfo": "Usa le frecce per spostare gli elementi selezionati",
+    "help": {
+      "gridLayoutTitle": "Canvas Layout Griglia",
+      "gridLayoutDescription": "Trascina e rilascia gli elementi per organizzarli sulla griglia. Usa i pulsanti della barra degli strumenti per gestire il layout.",
+      "undoTitle": "Azione Annulla",
+      "undoDescription": "Annulla l'ultima azione eseguita sul layout della griglia. Usa Ctrl+Z per annullare.",
+      "redoTitle": "Azione Ripeti",
+      "redoDescription": "Riapplica l'ultima azione annullata. Usa Ctrl+Y o Ctrl+Shift+Z per ripetere.",
+      "zoomTitle": "Livello Zoom",
+      "zoomDescription": "Livello di zoom attuale della griglia. Clicca per reimpostare al 100%. Usa Ctrl+Più/Meno per regolare.",
+      "clearGridTitle": "Cancella Griglia",
+      "clearGridDescription": "Rimuovi tutti gli elementi dalla griglia. Questa azione non puo essere annullata.",
+      "dragDropTitle": "Trascina e Rilascia",
+      "dragDropDescription": "Trascina i prodotti dal pannello alla griglia o sposta gli elementi esistenti trascinandoli.",
+      "keyboardNavTitle": "Navigazione Tastiera",
+      "keyboardNavDescription": "Seleziona un elemento e usa le frecce per spostarlo. Tieni premuto Shift per movimenti piu ampi."
+    }
+  },
+  "inventoryManagement": {
+    "ingredients": "Ingredienti",
+    "sellableGoods": "Beni Vendibili",
+    "searchByName": "Cerca per nome...",
+    "allCategories": "Tutte le Categorie",
+    "all": "Tutti",
+    "low": "Basso",
+    "out": "Esaurito",
+    "trackedIn": "Monitorato in: {{unit}}",
+    "inStock": "{{quantity}} in magazzino",
+    "adjust": "Aggiusta",
+    "newStockAdjustment": "Nuova Rettifica Magazzino",
+    "stockItem": "Articolo Magazzino",
+    "selectAnItem": "Seleziona un articolo...",
+    "quantity": "Quantita",
+    "quantityPlaceholder": "es., -1 o 24",
+    "unit": "Unita",
+    "reason": "Motivo",
+    "reasonPlaceholder": "es., Spreco, Consegna",
+    "saveAdjustment": "Salva Rettifica",
+    "unknown": "Sconosciuto"
+  },
+  "gridControls": {
+    "title": "Controlli Griglia",
+    "description": "Regola le impostazioni del layout della griglia come colonne, dimensione, spaziatura e comportamento di aggancio per personalizzare la griglia dei prodotti.",
+    "columns": "Colonne",
+    "columnsDescription": "Numero di colonne nella griglia. Piu colonne permettono griglie piu ampie ma elementi piu piccoli.",
+    "gridUnitSize": "Dimensione Unità Griglia",
+    "gridUnitSizeDescription": "Dimensione di ogni cella della griglia in pixel. Celle piu grandi significano elementi piu grandi ma meno elementi visibili contemporaneamente.",
+    "gutter": "Spaziatura",
+    "gutterDescription": "Spaziatura tra gli elementi della griglia in pixel. Aumenta per piu spazio tra gli elementi.",
+    "padding": "Padding",
+    "paddingDescription": "Spazio attorno ai bordi del contenitore della griglia. Regola per controllare il margine attorno alla griglia.",
+    "snapToGrid": "Aggancia alla Griglia",
+    "snapToGridDescription": "Quando attivo, gli elementi si agganceranno alla posizione della griglia piu vicina quando spostati.",
+    "showGridLines": "Mostra Linee Griglia",
+    "showGridLinesDescription": "Attiva/disattiva la visibilita delle linee della griglia per aiutare con l'allineamento e il posizionamento."
+  },
+  "transferItemsModal": {
+    "title": "Trasferisci Articoli",
+    "fromTab": "Dal tab:",
+    "close": "Chiudi",
+    "selectItemQuantities": "1. Seleziona Quantita da Spostare",
+    "noItemsInTab": "Questo tab non ha articoli.",
+    "item": "Articolo",
+    "outOf": "(su {{quantity}})",
+    "decreaseQuantity": "Diminuisci quantita di {{itemName}}",
+    "increaseQuantity": "Aumenta quantita di {{itemName}}",
+    "chooseDestination": "2. Scegli Destinazione",
+    "selectDestinationTab": "Seleziona tab di destinazione: {{tabName}}",
+    "createNewTab": "Crea nuovo tab",
+    "newTab": "+ Nuovo Tab",
+    "enterNewTabName": "Inserisci nome nuovo tab...",
+    "confirmTabName": "Conferma Nome Tab",
+    "selected": "Selezionato:",
+    "cancel": "Annulla",
+    "moveItems": "Sposta Articoli ({{count}})"
+  },
+  "gridTemplates": {
+    "title": "Modelli Griglia",
+    "close": "Chiudi",
+    "filterByCategory": "Filtra per categoria:",
+    "currentLayout": "Layout Corrente",
+    "cancel": "Annulla",
+    "applyTemplate": "Applica Modello",
+    "itemsColumns": "Elementi: {{items}} | Colonne: {{columns}}",
+    "categories": {
+      "all": "Tutti",
+      "restaurant": "Ristorante",
+      "retail": "Vendita al Dettaglio",
+      "bar": "Bar",
+      "cafe": "Caffe"
+    },
+    "templates": {
+      "restaurantStandard": {
+        "name": "Ristorante Standard",
+        "description": "Layout ristorante comune con categorie di cibo organizzate per sezioni"
+      },
+      "retailStandard": {
+        "name": "Vendita Standard",
+        "description": "Layout vendita base con categorie di prodotti comuni"
+      },
+      "barStandard": {
+        "name": "Bar Standard",
+        "description": "Layout bar con bevande organizzate per tipo"
+      },
+      "cafeStandard": {
+        "name": "Caffe Standard",
+        "description": "Layout caffe con caffe e pasticcini"
+      }
+    }
+  },
+  "helpGuide": {
+    "ariaLabel": "Aiuto per {{feature}}",
+    "gridControls": {
+      "title": "Controlli Griglia",
+      "description": "Regola le impostazioni del layout della griglia come colonne, dimensione, spaziatura e comportamento di aggancio per personalizzare la griglia dei prodotti."
+    },
+    "dragAndDrop": {
+      "title": "Trascina e Rilascia Elementi",
+      "description": "Trascina i prodotti dal pannello sinistro sulla griglia per aggiungerli. Trascina gli elementi esistenti per riposizionarli sulla griglia."
+    },
+    "layoutManagement": {
+      "title": "Gestione Layout",
+      "description": "Salva, carica e gestisci diversi layout della griglia per diversi scopi. Imposta un layout predefinito per le nuove sessioni."
+    },
+    "templates": {
+      "title": "Modelli Layout",
+      "description": "Applica modelli predefiniti per configurare rapidamente disposizioni comuni come cucina, bar o layout vendita."
+    },
+    "undoRedo": {
+      "title": "Azioni Annulla/Ripeti",
+      "description": "Usa Ctrl+Z per annullare e Ctrl+Y o Ctrl+Shift+Z per ripetere le modifiche del layout."
+    },
+    "zoom": {
+      "title": "Controlli Zoom",
+      "description": "Regola il livello di zoom per avere una visione migliore del layout della griglia. Usa Ctrl+Più/Meno per ingrandire/rimpicciolire."
+    },
+    "keyboardNav": {
+      "title": "Navigazione Tastiera",
+      "description": "Seleziona un elemento e usa i tasti freccia per spostarlo con precisione. Tieni premuto Shift per movimenti piu ampi."
+    }
+  },
+  "helpSystem": {
+    "ariaLabel": {
+      "closeHelpTour": "Chiudi tour guidato"
+    },
+    "stepCounter": "Passo {{current}} di {{total}}",
+    "buttons": {
+      "previous": "Precedente",
+      "next": "Avanti",
+      "finish": "Fine"
+    },
+    "steps": {
+      "welcome": {
+        "title": "Benvenuto nella Personalizzazione Griglia",
+        "description": "Questa guida ti aiuterà a capire come personalizzare il layout della griglia dei prodotti."
+      },
+      "availableProducts": {
+        "title": "Pannello Prodotti Disponibili",
+        "description": "Trascina i prodotti da questo pannello sulla griglia per aggiungerli al tuo layout."
+      },
+      "gridCanvas": {
+        "title": "Canvas Layout Griglia",
+        "description": "Qui organizzi i tuoi prodotti. Trascina gli elementi per riposizionarli."
+      },
+      "gridControls": {
+        "title": "Controlli Griglia",
+        "description": "Regola le impostazioni della griglia come colonne, dimensione e spaziatura in base alle tue esigenze."
+      },
+      "layoutManagement": {
+        "title": "Gestione Layout",
+        "description": "Salva, carica e gestisci diversi layout della griglia per diversi scopi."
+      },
+      "keyboardShortcuts": {
+        "title": "Scorciatoie Tastiera",
+        "description": "Usa Ctrl+Z per annullare, Ctrl+Y per ripetere e i tasti freccia per regolare con precisione le posizioni."
+      }
+    }
+  },
+  "availableProductsPanel": {
+    "title": "Prodotti Disponibili",
+    "helpTitle": "Pannello Prodotti Disponibili",
+    "helpDescription": "Trascina i prodotti da questo pannello sulla griglia per aggiungerli al tuo layout.",
+    "filterOptionsAriaLabel": "Opzioni di filtro prodotti",
+    "favoritesButton": "FAV Preferiti",
+    "favoritesOn": "ON",
+    "favoritesOff": "OFF",
+    "turnOffFavoritesFilter": "Disattiva filtro preferiti",
+    "turnOnFavoritesFilter": "Attiva filtro preferiti",
+    "allProducts": "Tutti i Prodotti",
+    "showAllProducts": "Mostra tutti i prodotti",
+    "filterByCategory": "Filtra per categoria {{categoryName}}",
+    "productsListAriaLabel": "Elenco dei prodotti disponibili da aggiungere alla griglia",
+    "addToGrid": "Aggiungi {{productName}} {{variantName}} alla griglia"
+  },
+  "enhancedGridCanvas": {
+    "gridAriaLabel": "Layout griglia prodotti",
+    "productAriaLabel": "Prodotto {{name}}, prezzo {{price}}, posizione {{x}}, {{y}}, {{width}} per {{height}} unità griglia",
+    "resizeTopEdge": "Ridimensiona bordo superiore",
+    "resizeRightEdge": "Ridimensiona bordo destro",
+    "resizeBottomEdge": "Ridimensiona bordo inferiore",
+    "resizeLeftEdge": "Ridimensiona bordo sinistro",
+    "resizeTopRightCorner": "Ridimensiona angolo superiore destro",
+    "resizeTopLeftCorner": "Ridimensiona angolo superiore sinistro",
+    "resizeBottomRightCorner": "Ridimensiona angolo inferiore destro",
+    "resizeBottomLeftCorner": "Ridimensiona angolo inferiore sinistro",
+    "dragProductsHere": "Trascina i prodotti qui per organizzarli sulla griglia"
+  },
+  "productPerformanceTable": {
+    "title": "Prestazioni Prodotti",
+    "noProductsFound": "Nessun prodotto trovato per i filtri selezionati.",
+    "product": "Prodotto",
+    "category": "Categoria",
+    "quantitySold": "Quantita Venduta",
+    "averagePrice": "Prezzo Medio",
+    "totalRevenue": "Ricavo Totale",
+    "transactions": "Transazioni"
+  },
+  "managerDashboard": {
+    "loadingDashboard": "Caricamento Dashboard...",
+    "businessDayManagement": "Gestione Giornata Lavorativa",
+    "recentDailyClosings": "Chiusure Recenti",
+    "loading": "Caricamento...",
+    "noRecentClosings": "Nessuna chiusura recente",
+    "transactions": "{{count}} trans",
+    "errorFetchingClosings": "Errore nel caricamento delle chiusure recenti"
+  },
+  "orderActivityHistory": {
+    "title": "Storico Attivita Ordini",
+    "description": "Un registro degli articoli rimossi dagli ordini e degli ordini cancellati prima del pagamento.",
+    "noActivity": "Nessuna attivita ordine registrata.",
+    "orderCleared": "Ordine con {{count}} articolo/i cancellato.",
+    "by": "da"
+  },
+  "tableErrorBoundary": {
+    "title": "Errore Sistema Tavoli",
+    "description": "Si e verificato un errore nel sistema dei tavoli.",
+    "errorDetails": "Dettagli errore",
+    "reloadPage": "Ricarica Pagina"
+  },
+  "salesTrendChart": {
+    "title": "Trend Vendite {{dateRange}}"
+  },
+  "errorPage": {
+    "title": "Si e Verificato un Errore",
+    "description": "Si e verificato un problema durante l'elaborazione della richiesta.",
+    "unexpectedError": "Si e verificato un errore imprevisto",
+    "goBack": "Torna Indietro"
+  },
+  "productGrid": {
+    "title": "Prodotti",
+    "favourites": "FAV Preferiti",
+    "all": "Tutti",
+    "outOfStock": "ESAURITO"
+  },
+  "errorMessage": {
+    "retry": "Riprova",
+    "clearForm": "Cancella Modulo",
+    "goBack": "Torna Indietro"
+  },
+  "virtualKeyboard": {
+    "done": "Fatto",
+    "space": "Spazio",
+    "backspace": "Cancella",
+    "enter": "Invio",
+    "shift": "Maiusc",
+    "capsLock": "Bloc Maiusc"
+  },
+  "tillSetupScreen": {
+    "title": "Configurazione Terminale",
+    "subtitle": "Seleziona quale cassa questo dispositivo operera.",
+    "noTillsConfigured": "Nessuna cassa configurata. Configurale nel Pannello Admin su un altro dispositivo."
+  },
+  "editLayoutButton": {
+    "edit": "MODIFICA",
+    "editLayout": "Modifica Layout",
+    "title": "Modifica layout prodotti"
+  },
+  "enhancedGridLayoutSection": {
+    "title": "Layout Griglia Avanzata",
+    "currentLayout": "Layout Corrente",
+    "helpGuide": {
+      "title": "Sezione Layout Griglia",
+      "description": "Questa e l'area principale del layout della griglia dove puoi disporre i tuoi prodotti."
+    }
   }
 }

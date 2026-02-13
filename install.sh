@@ -251,7 +251,10 @@ check_prerequisites() {
 }
 
 install_basic_tools() {
-    detect_distro
+    # Call detect_distro if not already detected
+    if [[ -z "$DISTRO_FAMILY" ]]; then
+        detect_distro
+    fi
     
     case "$DISTRO_FAMILY" in
         debian)
@@ -262,13 +265,13 @@ install_basic_tools() {
             $SUDO dnf install -y -q curl wget 2>/dev/null || $SUDO yum install -y -q curl wget
             ;;
         arch)
-            $SUDO pacman -S --noconfirm --quiet curl wget
+            $SUDO pacman -S --noconfirm --needed curl wget
             ;;
         suse)
-            $SUDO zypper -q install -y curl wget
+            $SUDO zypper --non-interactive install -y curl wget
             ;;
         alpine)
-            $SUDO apk add --quiet curl wget
+            $SUDO apk add --no-cache curl wget
             ;;
     esac
 }
@@ -410,7 +413,21 @@ install_docker_debian() {
     # Add Docker's official GPG key
     local keyring_dir="/usr/share/keyrings"
     $SUDO mkdir -p "$keyring_dir"
-    curl -fsSL "https://download.docker.com/linux/${DISTRO}/gpg" | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>/dev/null
+    
+    # Determine the actual distro for Docker repo (map derivatives to their parent)
+    local docker_distro="$DISTRO"
+    case "$DISTRO" in
+        linuxmint|pop|elementary|kali|mx)
+            # These are Ubuntu/Debian derivatives - try Ubuntu first, then Debian
+            if curl -fsSL "https://download.docker.com/linux/ubuntu/dists/$(. /etc/os-release && echo "$VERSION_CODENAME")/" &>/dev/null; then
+                docker_distro="ubuntu"
+            else
+                docker_distro="debian"
+            fi
+            ;;
+    esac
+    
+    curl -fsSL "https://download.docker.com/linux/${docker_distro}/gpg" | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>/dev/null
     
     # Set up repository
     local arch
@@ -418,13 +435,17 @@ install_docker_debian() {
     arch=$(dpkg --print-architecture)
     codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
     
-    # Handle Ubuntu derivatives that might not have a Docker repo
-    if [[ -z "$codename" ]] || ! curl -fsSL "https://download.docker.com/linux/$DISTRO/dists/$codename/" &>/dev/null; then
-        codename="focal"  # Fallback to Ubuntu 20.04
-        DISTRO="ubuntu"
+    # Handle derivatives that might not have a Docker repo
+    if [[ -z "$codename" ]] || ! curl -fsSL "https://download.docker.com/linux/$docker_distro/dists/$codename/" &>/dev/null; then
+        # Try to detect Ubuntu version from ID_LIKE or default to a known stable version
+        if [[ "$docker_distro" == "ubuntu" ]]; then
+            codename="jammy"  # Ubuntu 22.04 LTS (most compatible)
+        else
+            codename="bookworm"  # Debian 12
+        fi
     fi
     
-    echo "deb [arch=$arch signed-by=$keyring_dir/docker.gpg] https://download.docker.com/linux/$DISTRO $codename stable" | \
+    echo "deb [arch=$arch signed-by=$keyring_dir/docker.gpg] https://download.docker.com/linux/$docker_distro $codename stable" | \
         $SUDO tee /etc/apt/sources.list.d/docker.list > /dev/null
     
     # Install Docker
@@ -437,25 +458,94 @@ install_docker_debian() {
 install_docker_redhat() {
     print_info "Installing Docker for RHEL/Fedora/CentOS..."
     
-    # Remove old versions
+    # Remove old versions (ignore errors if packages don't exist)
     $SUDO dnf remove -y docker docker-client docker-client-latest docker-common \
         docker-latest docker-latest-logrotate docker-logrotate docker-selinux \
         docker-engine-selinux docker-engine 2>/dev/null || true
     
     # Install dnf-plugins-core if needed
-    $SUDO dnf install -y -q dnf-plugins-core 2>/dev/null || $SUDO yum install -y -q yum-utils
+    $SUDO dnf install -y -q dnf-plugins-core 2>/dev/null || $SUDO yum install -y -q yum-utils 2>/dev/null || true
+    
+    # Detect if we're using dnf5 (Fedora 41+) by checking the major version
+    local is_dnf5=false
+    if command -v dnf &> /dev/null; then
+        local dnf_major
+        # Extract first number from version (compatible with both GNU and BSD grep)
+        dnf_major=$(dnf --version 2>/dev/null | head -1 | grep -o '[0-9]*' | head -1)
+        dnf_major=${dnf_major:-4}  # Default to 4 if detection fails
+        if [[ "$dnf_major" -ge 5 ]]; then
+            is_dnf5=true
+            print_info "Detected dnf5 (version $dnf_major)"
+        fi
+    fi
     
     # Add Docker repository
+    local repo_url
     if [[ "$DISTRO" == "fedora" ]]; then
-        $SUDO dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo
+        repo_url="https://download.docker.com/linux/fedora/docker-ce.repo"
     else
-        $SUDO dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo 2>/dev/null || \
-        $SUDO yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+        repo_url="https://download.docker.com/linux/centos/docker-ce.repo"
+    fi
+    
+    # Try different methods to add the repository
+    local repo_added=false
+    
+    # Method 1: dnf5 syntax (Fedora 41+)
+    if [[ "$is_dnf5" == "true" ]]; then
+        print_info "Trying dnf5 syntax to add repository..."
+        if $SUDO dnf config-manager addrepo --from-repofile="$repo_url" 2>&1; then
+            print_info "Added Docker repository using dnf5 syntax"
+            repo_added=true
+        fi
+    fi
+    
+    # Method 2: dnf4 syntax (older Fedora/RHEL)
+    if [[ "$repo_added" == "false" ]] && [[ "$is_dnf5" == "false" ]]; then
+        print_info "Trying dnf4 syntax to add repository..."
+        if $SUDO dnf config-manager --add-repo "$repo_url" 2>&1; then
+            print_info "Added Docker repository using dnf4 syntax"
+            repo_added=true
+        fi
+    fi
+    
+    # Method 3: yum-config-manager (RHEL/CentOS fallback)
+    if [[ "$repo_added" == "false" ]]; then
+        print_info "Trying yum-config-manager to add repository..."
+        if $SUDO yum-config-manager --add-repo "$repo_url" 2>&1; then
+            print_info "Added Docker repository using yum-config-manager"
+            repo_added=true
+        fi
+    fi
+    
+    # Method 4: Direct download (most reliable fallback)
+    if [[ "$repo_added" == "false" ]]; then
+        print_info "Adding Docker repository by direct download..."
+        if command -v curl &> /dev/null; then
+            if $SUDO curl -fsSL "$repo_url" -o /etc/yum.repos.d/docker-ce.repo 2>&1; then
+                print_info "Downloaded Docker repository file"
+                repo_added=true
+            fi
+        elif command -v wget &> /dev/null; then
+            if $SUDO wget -q "$repo_url" -O /etc/yum.repos.d/docker-ce.repo 2>&1; then
+                print_info "Downloaded Docker repository file"
+                repo_added=true
+            fi
+        fi
+    fi
+    
+    if [[ "$repo_added" == "false" ]]; then
+        print_error "Failed to add Docker repository"
+        exit 1
     fi
     
     # Install Docker
-    $SUDO dnf install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null || \
-    $SUDO yum install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    print_info "Installing Docker packages..."
+    if ! $SUDO dnf install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null; then
+        if ! $SUDO yum install -y -q docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin 2>/dev/null; then
+            print_error "Failed to install Docker packages"
+            exit 1
+        fi
+    fi
     
     print_success "Docker installed successfully"
 }
@@ -463,8 +553,20 @@ install_docker_redhat() {
 install_docker_arch() {
     print_info "Installing Docker for Arch Linux/Manjaro..."
     
+    # Update package database
+    $SUDO pacman -Sy
+    
     # Install Docker
-    $SUDO pacman -S --noconfirm --needed docker docker-compose
+    $SUDO pacman -S --noconfirm --needed docker
+    
+    # Check if docker compose plugin is included
+    # In Arch, docker-compose is available as a separate package
+    # The docker package may or may not include the compose plugin
+    if ! docker compose version &>/dev/null 2>&1; then
+        # Install docker-compose as standalone package
+        print_info "Installing docker-compose..."
+        $SUDO pacman -S --noconfirm --needed docker-compose 2>/dev/null || true
+    fi
     
     print_success "Docker installed successfully"
 }
@@ -472,12 +574,26 @@ install_docker_arch() {
 install_docker_suse() {
     print_info "Installing Docker for openSUSE..."
     
-    # Add Docker repository
-    $SUDO zypper addrepo https://download.docker.com/linux/suse/docker-ce.repo 2>/dev/null || \
-    $SUDO zypper ar https://download.docker.com/linux/opensuse/docker-ce.repo
+    # openSUSE has Docker in its official repositories
+    # Docker Inc. doesn't provide official repos for openSUSE
     
-    # Install Docker
-    $SUDO zypper --gpg-auto-import-keys install -y docker docker-compose
+    # Refresh repositories
+    $SUDO zypper refresh
+    
+    # Install Docker from openSUSE official repos
+    # Package names in openSUSE: docker and docker-compose or docker-compose-plugin
+    $SUDO zypper --gpg-auto-import-keys --non-interactive install -y docker
+    
+    # Check if docker-compose-plugin is available, otherwise install docker-compose
+    if zypper search -x docker-compose-plugin &>/dev/null; then
+        $SUDO zypper --gpg-auto-import-keys --non-interactive install -y docker-compose-plugin || \
+        $SUDO zypper --gpg-auto-import-keys --non-interactive install -y docker-compose
+    else
+        $SUDO zypper --gpg-auto-import-keys --non-interactive install -y docker-compose
+    fi
+    
+    # Enable docker service
+    $SUDO systemctl enable docker
     
     print_success "Docker installed successfully"
 }
@@ -495,7 +611,11 @@ install_docker_alpine() {
     fi
     
     # Install Docker
+    # Note: docker-cli-compose is the correct package name for docker compose in Alpine
     $SUDO apk add docker docker-cli-compose
+    
+    # Enable docker service at boot
+    $SUDO rc-update add docker boot 2>/dev/null || true
     
     print_success "Docker installed successfully"
 }
@@ -566,15 +686,26 @@ start_docker_service() {
     print_info "Waiting for Docker to be ready..."
     local max_attempts=30
     local attempt=0
-    while ! docker info &> /dev/null; do
+    while true; do
+        # Try with sudo first (in case user isn't in docker group yet)
+        if $SUDO docker info &> /dev/null 2>&1; then
+            print_success "Docker is ready"
+            return 0
+        fi
+        # Also try without sudo (in case user is in docker group)
+        if docker info &> /dev/null 2>&1; then
+            print_success "Docker is ready"
+            return 0
+        fi
         attempt=$((attempt + 1))
         if [[ $attempt -ge $max_attempts ]]; then
             print_error "Docker failed to start"
+            print_info "Check Docker status with: systemctl status docker"
+            print_info "Check Docker logs with: journalctl -xeu docker"
             exit 1
         fi
         sleep 1
     done
-    print_success "Docker is ready"
 }
 
 #===============================================================================
@@ -832,26 +963,42 @@ DEBUG_LOGGING=${DEBUG_LOGGING}
 build_and_run() {
     print_header "Building and Starting Containers"
     
-    # Check if Docker is running
-    if ! docker info &> /dev/null; then
-        print_error "Docker is not running. Please start Docker first."
-        if confirm "Start Docker now?" "y"; then
-            start_docker_service
+    # Determine if we need to use sudo for docker commands
+    # Check if user can run docker without sudo
+    DOCKER_CMD="docker"
+    if ! docker info &> /dev/null 2>&1; then
+        if $SUDO docker info &> /dev/null 2>&1; then
+            DOCKER_CMD="$SUDO docker"
+            print_info "Using sudo for docker commands (user not in docker group yet)"
         else
-            exit 1
+            print_error "Docker is not running. Please start Docker first."
+            if confirm "Start Docker now?" "y"; then
+                start_docker_service
+                # Check again
+                if ! docker info &> /dev/null 2>&1; then
+                    if $SUDO docker info &> /dev/null 2>&1; then
+                        DOCKER_CMD="$SUDO docker"
+                    else
+                        print_error "Docker still not accessible"
+                        exit 1
+                    fi
+                fi
+            else
+                exit 1
+            fi
         fi
     fi
     
     # Stop existing containers if running
-    if docker compose ps -q 2>/dev/null | grep -q .; then
+    if $DOCKER_CMD compose ps -q 2>/dev/null | grep -q .; then
         print_info "Stopping existing containers..."
-        docker compose down
+        $DOCKER_CMD compose down
     fi
     
     # Build and start containers
     print_step "Building containers (this may take a few minutes)..."
     
-    if docker compose up -d --build 2>&1 | tee /tmp/docker-build.log; then
+    if $DOCKER_CMD compose up -d --build 2>&1 | tee /tmp/docker-build.log; then
         print_success "Containers built successfully"
     else
         print_error "Container build failed. Check /tmp/docker-build.log for details"
@@ -864,7 +1011,7 @@ build_and_run() {
     
     # Show status
     print_step "Container status:"
-    docker compose ps
+    $DOCKER_CMD compose ps
     
     # Display success message
     display_success_message
@@ -875,15 +1022,18 @@ wait_for_healthy_services() {
     local interval=5
     local elapsed=0
     
+    # Use the global DOCKER_CMD set in build_and_run
+    local docker_cmd="${DOCKER_CMD:-docker}"
+    
     while [[ $elapsed -lt $max_wait ]]; do
         # Check if all services are running
         # Note: grep -c returns exit code 1 when no matches, but still outputs "0"
         # Use || true to prevent set -e from exiting, then sanitize output
         local unhealthy
         local starting
-        unhealthy=$(docker compose ps --format json 2>/dev/null | \
+        unhealthy=$($docker_cmd compose ps --format json 2>/dev/null | \
             grep -c '"Health":"unhealthy"' 2>/dev/null) || unhealthy=0
-        starting=$(docker compose ps --format json 2>/dev/null | \
+        starting=$($docker_cmd compose ps --format json 2>/dev/null | \
             grep -c '"Health":"starting"' 2>/dev/null) || starting=0
         
         # Sanitize variables to ensure they contain only digits
@@ -898,7 +1048,7 @@ wait_for_healthy_services() {
             # Check if all services are running
             local running
             local expected
-            running=$(docker compose ps -q 2>/dev/null | wc -l)
+            running=$($docker_cmd compose ps -q 2>/dev/null | wc -l)
             # Sanitize: remove whitespace
             running=$(printf '%s' "$running" | tr -cd '0-9')
             running=${running:-0}
@@ -918,7 +1068,7 @@ wait_for_healthy_services() {
         elapsed=$((elapsed + interval))
     done
     
-    print_warning "Some services may still be starting. Check status with: docker compose ps"
+    print_warning "Some services may still be starting. Check status with: $docker_cmd compose ps"
 }
 
 display_success_message() {

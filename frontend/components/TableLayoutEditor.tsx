@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useTableContext } from './TableContext';
 import { Table } from '@shared/types';
 
@@ -7,6 +8,7 @@ interface TableLayoutEditorProps {
 }
 
 const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selectedRoomId }) => {
+  const { t } = useTranslation();
   const { tables, rooms, layoutMode, updateTablePosition } = useTableContext();
   const [draggingTableId, setDraggingTableId] = useState<string | null>(null);
   const [localPositions, setLocalPositions] = useState<Record<string, { x: number; y: number }>>({});
@@ -137,22 +139,28 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
 
   // Get table status text
   const getStatusText = (status: Table['status']) => {
-    return status.charAt(0).toUpperCase() + status.slice(1);
+    switch (status) {
+      case 'available': return t('tableLayoutEditor.statusAvailable');
+      case 'occupied': return t('tableLayoutEditor.statusOccupied');
+      case 'reserved': return t('tableLayoutEditor.statusReserved');
+      case 'unavailable': return t('tableLayoutEditor.statusUnavailable');
+      default: return status;
+    }
   };
 
   return (
     <div className="flex flex-col h-full">
       <div className="mb-4">
         <h3 className="text-lg font-semibold text-slate-300">
-          {selectedRoom ? selectedRoom.name : 'Select a Room'}
+          {selectedRoom ? selectedRoom.name : t('tableLayoutEditor.selectRoom')}
         </h3>
         {selectedRoom?.description && (
           <p className="text-sm text-slate-400">{selectedRoom.description}</p>
         )}
         {selectedRoomId && (
           <p className="text-xs text-slate-500 mt-1">
-            Mode: <span className="font-semibold text-amber-400">{layoutMode}</span>
-            {layoutMode !== 'view' && ' - Drag tables to reposition'}
+            {t('tableLayoutEditor.mode')}: <span className="font-semibold text-amber-400">{layoutMode}</span>
+            {layoutMode !== 'view' && ` - ${t('tableLayoutEditor.dragToReposition')}`}
           </p>
         )}
       </div>
@@ -211,42 +219,42 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
             {layoutMode !== 'view' && (
               <div className="absolute top-4 left-4 bg-amber-600 text-white px-3 py-2 rounded-md text-sm font-bold shadow-lg flex items-center gap-2">
                 <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                {layoutMode === 'edit' ? 'Edit Mode' : 'Drag Mode'}
+                {layoutMode === 'edit' ? t('tableLayoutEditor.editMode') : t('tableLayoutEditor.dragMode')}
               </div>
             )}
             
             {/* Table count indicator */}
             <div className="absolute top-4 right-4 bg-slate-700 text-white px-3 py-2 rounded-md text-xs font-medium shadow-lg">
-              {roomTables.length} {roomTables.length === 1 ? 'table' : 'tables'}
+              {t('tableLayoutEditor.tableCount', { count: roomTables.length })}
             </div>
             
             {/* Status legend */}
             <div className="absolute bottom-4 left-4 bg-slate-900/90 backdrop-blur-sm rounded-lg p-3 text-xs space-y-2">
-              <p className="font-bold text-slate-300 mb-2">Table Status</p>
+              <p className="font-bold text-slate-300 mb-2">{t('tableLayoutEditor.tableStatus')}</p>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-green-500"></div>
-                <span className="text-slate-400">Available</span>
+                <span className="text-slate-400">{t('tableLayoutEditor.statusAvailable')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-red-500"></div>
-                <span className="text-slate-400">Occupied</span>
+                <span className="text-slate-400">{t('tableLayoutEditor.statusOccupied')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <span className="text-slate-400">Reserved</span>
+                <span className="text-slate-400">{t('tableLayoutEditor.statusReserved')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-                <span className="text-slate-400">Unavailable</span>
+                <span className="text-slate-400">{t('tableLayoutEditor.statusUnavailable')}</span>
               </div>
             </div>
           </>
         ) : (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <div className="text-slate-500 text-6xl mb-4">BUILDING</div>
-              <p className="text-slate-400 text-lg">Select a room to view its layout</p>
-              <p className="text-slate-500 text-sm mt-2">Create a room first if none exist</p>
+              <div className="text-slate-500 text-6xl mb-4">{t('tableLayoutEditor.building')}</div>
+              <p className="text-slate-400 text-lg">{t('tableLayoutEditor.selectRoomToViewLayout')}</p>
+              <p className="text-slate-500 text-sm mt-2">{t('tableLayoutEditor.createRoomFirst')}</p>
             </div>
           </div>
         )}
@@ -256,15 +264,15 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
         <div className="mt-4 p-3 bg-slate-700 rounded-md">
           <div className="flex items-center justify-between text-sm">
             <div className="text-slate-300">
-              <span className="font-semibold">Tip:</span> 
+              <span className="font-semibold">{t('tableLayoutEditor.tip')}:</span> 
               {layoutMode === 'view' 
-                ? ' Switch to Edit or Drag mode to reposition tables' 
-                : ' Drag tables to new positions - changes save automatically'}
+                ? ` ${t('tableLayoutEditor.tipViewMode')}` 
+                : ` ${t('tableLayoutEditor.tipEditMode')}`}
             </div>
             {draggingTableId && (
               <div className="text-amber-400 font-semibold flex items-center gap-2">
                 <div className="w-2 h-2 bg-amber-400 rounded-full animate-ping"></div>
-                Dragging...
+                {t('tableLayoutEditor.dragging')}
               </div>
             )}
           </div>

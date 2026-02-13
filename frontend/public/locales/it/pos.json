@@ -1,8 +1,10 @@
 {
   "productGrid": {
     "title": "Prodotti",
+    "all": "Tutti",
     "allProducts": "Tutti i Prodotti",
     "favourites": "Preferiti",
+    "outOfStock": "Esaurito",
     "noProducts": "Nessun prodotto disponibile",
     "noProductsInCategory": "Nessun prodotto in questa categoria",
     "selectCategory": "Seleziona una categoria",

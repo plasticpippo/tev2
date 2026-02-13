@@ -1,8 +1,10 @@
 {
   "productGrid": {
     "title": "Products",
+    "all": "All",
     "allProducts": "All Products",
     "favourites": "Favourites",
+    "outOfStock": "Out of Stock",
     "noProducts": "No products available",
     "noProductsInCategory": "No products in this category",
     "selectCategory": "Select a category",

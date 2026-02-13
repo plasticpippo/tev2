@@ -50,7 +50,16 @@
     "duplicateName": "Esiste gia un prodotto con questo nome",
     "deleteFailed": "Eliminazione prodotto non riuscita",
     "variantNotFound": "Variante prodotto non trovata",
-    "invalidPrice": "Valore prezzo non valido"
+    "invalidPrice": "Valore prezzo non valido",
+    "fetchFailed": "Impossibile recuperare i prodotti. Riprova piu tardi.",
+    "fetchOneFailed": "Impossibile recuperare il prodotto. Riprova piu tardi.",
+    "createFailed": "Impossibile creare il prodotto. Controlla i dati e riprova.",
+    "updateFailed": "Impossibile aggiornare il prodotto. Controlla i dati e riprova.",
+    "deleteFailedInUse": "Impossibile eliminare il prodotto. Il prodotto potrebbe essere in uso o referenziato altrove.",
+    "validationFailed": "Validazione non riuscita",
+    "invalidCategoryId": "ID categoria non valido: {{categoryId}}",
+    "invalidStockItemReferences": "Riferimenti ad articoli magazzino non validi: {{ids}}",
+    "variantError": "Variante {{index}}: {{error}}"
   },
   "categories": {
     "notFound": "Categoria non trovata",
@@ -65,7 +74,23 @@
     "duplicateName": "Esiste gia un articolo magazzino con questo nome",
     "deleteFailed": "Eliminazione articolo magazzino non riuscita",
     "insufficientStock": "Scorta insufficiente per {{name}}",
-    "invalidQuantity": "Valore quantita non valido"
+    "invalidQuantity": "Valore quantita non valido",
+    "invalidIdFormat": "Formato ID articolo magazzino non valido",
+    "fetchFailed": "Impossibile recuperare gli articoli magazzino. Riprova piu tardi.",
+    "fetchOneFailed": "Impossibile recuperare l'articolo magazzino. Riprova piu tardi.",
+    "createFailed": "Impossibile creare l'articolo magazzino. Controlla i dati e riprova.",
+    "updateFailed": "Impossibile aggiornare l'articolo magazzino. Controlla i dati e riprova.",
+    "validationFailed": "Validazione non riuscita",
+    "invalidConsumptionsData": "Dati consumi non validi",
+    "noValidItemsToUpdate": "Nessun articolo magazzino valido da aggiornare",
+    "insufficientStockDetailed": "Scorta insufficiente per l'articolo \"{{name}}\" (ID: {{id}}). Richiesto: {{required}}, Disponibile: {{available}}.",
+    "updateLevelsFailed": "Impossibile aggiornare i livelli di magazzino. Controlla i dati e riprova.",
+    "cannotDeleteInUse": "Impossibile eliminare l'articolo magazzino. E attualmente utilizzato in una ricetta prodotto.",
+    "deleteFailedInUse": "Impossibile eliminare l'articolo magazzino. L'articolo potrebbe essere in uso nelle ricette dei prodotti.",
+    "fetchOrphanedFailed": "Impossibile recuperare i riferimenti ai consumi magazzino orfani. Riprova piu tardi.",
+    "cleanupOrphanedFailed": "Impossibile pulire i riferimenti ai consumi magazzino orfani. Riprova piu tardi.",
+    "validateIntegrityFailed": "Impossibile validare l'integrita dei dati. Riprova piu tardi.",
+    "purchasingUnitError": "Unita di acquisto {{index}}: {{error}}"
   },
   "users": {
     "notFound": "Utente non trovato",
@@ -104,7 +129,15 @@
     "notFound": "Sessione ordine non trovata",
     "invalidData": "Dati sessione ordine non validi",
     "alreadyCompleted": "Sessione ordine gia completata",
-    "accessDenied": "Accesso alla sessione ordine negato"
+    "accessDenied": "Accesso alla sessione ordine negato",
+    "userNotAuthenticated": "Utente non autenticato",
+    "noActiveSessionFound": "Nessuna sessione ordine attiva trovata",
+    "fetchFailed": "Impossibile recuperare la sessione ordine",
+    "createUpdateFailed": "Impossibile creare/aggiornare la sessione ordine",
+    "updateFailed": "Impossibile aggiornare la sessione ordine",
+    "logoutMarkFailed": "Impossibile contrassegnare la sessione ordine per il logout",
+    "completeFailed": "Impossibile completare la sessione ordine",
+    "assignTabFailed": "Impossibile assegnare la sessione ordine al conto"
   },
   "layouts": {
     "notFound": "Layout non trovato",

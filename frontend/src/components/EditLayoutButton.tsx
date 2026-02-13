@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLayout } from '../contexts/LayoutContext';
 
 interface EditLayoutButtonProps {
@@ -6,6 +7,7 @@ interface EditLayoutButtonProps {
 }
 
 export const EditLayoutButton: React.FC<EditLayoutButtonProps> = ({ userRole }) => {
+  const { t } = useTranslation();
   const { enterEditMode, isEditMode } = useLayout();
 
   // Only show for admin users
@@ -22,10 +24,10 @@ export const EditLayoutButton: React.FC<EditLayoutButtonProps> = ({ userRole }) 
     <button
       onClick={enterEditMode}
       className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg font-semibold text-sm transition-colors flex items-center gap-2"
-      title="Edit product layout"
+      title={t('editLayoutButton.title')}
     >
-      <span>EDIT</span>
-      <span>Edit Layout</span>
+      <span>{t('editLayoutButton.edit')}</span>
+      <span>{t('editLayoutButton.editLayout')}</span>
     </button>
   );
 };

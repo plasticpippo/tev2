@@ -90,7 +90,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
             onClick={() => setDateRange(preset)}
             className={`px-3 py-2 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
             aria-pressed={dateRange === preset}
-            aria-label={`Filter by ${label}`}
+            aria-label={t('transactions.ariaLabels.filterBy', { label })}
             data-testid={`date-range-${preset}`}
         >
             {label}
@@ -111,7 +111,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                     <button
                         onClick={() => setDateRange('custom')}
                         className={`px-3 py-2 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
-                        aria-label="Filter by custom date range"
+                        aria-label={t('transactions.ariaLabels.filterByCustomDateRange')}
                         aria-pressed={dateRange === 'custom'}
                     >
                         {t('transactions.dateRange.custom')}
@@ -126,14 +126,14 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div>
                                     <label htmlFor="till-select" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.till')}</label>
-                                    <select id="till-select" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" data-testid="till-select" role="combobox">
+                                    <select id="till-select" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label={t('transactions.ariaLabels.filterByTill')} data-testid="till-select" role="combobox">
                                         <option value="all">{t('transactions.allTills')}</option>
                                         {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                     </select>
                                 </div>
                                 <div>
                                     <label htmlFor="user-select" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.user')}</label>
-                                    <select id="user-select" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user" data-testid="user-select" role="combobox">
+                                    <select id="user-select" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label={t('transactions.ariaLabels.filterByUser')} data-testid="user-select" role="combobox">
                                         <option value="all">{t('transactions.allUsers')}</option>
                                         {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                     </select>
@@ -155,7 +155,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                     value={customStartTime}
                                     onChange={e => setCustomStartTime(e.target.value)}
                                     className="bg-slate-700 p-2 rounded-md text-sm"
-                                    aria-label="Start time"
+                                    aria-label={t('transactions.ariaLabels.startTime')}
                                 />
                                 <label htmlFor="custom-end-date" className="text-sm text-slate-400">{t('transactions.filters.to')}</label>
                                 <input
@@ -164,7 +164,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                     value={customEnd}
                                     onChange={e => setCustomEnd(e.target.value)}
                                     className="bg-slate-700 p-2 rounded-md text-sm"
-                                    aria-label="End date"
+                                    aria-label={t('transactions.ariaLabels.endDate')}
                                 />
                                 <input
                                     id="custom-end-time"
@@ -172,7 +172,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                                     value={customEndTime}
                                     onChange={e => setCustomEndTime(e.target.value)}
                                     className="bg-slate-700 p-2 rounded-md text-sm"
-                                    aria-label="End time"
+                                    aria-label={t('transactions.ariaLabels.endTime')}
                                 />
                             </div>
                         </div>
@@ -181,14 +181,14 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <label htmlFor="till-select-preset" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.till')}</label>
-                                <select id="till-select-preset" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by till" role="combobox" data-testid="till-select">
+                                <select id="till-select-preset" value={selectedTillId} onChange={e => setSelectedTillId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label={t('transactions.ariaLabels.filterByTill')} role="combobox" data-testid="till-select">
                                     <option value="all">{t('transactions.allTills')}</option>
                                     {tills.map(t => <option key={t.id} value={t.id}>{t.name}</option>)}
                                 </select>
                             </div>
                             <div>
                                 <label htmlFor="user-select-preset" className="block text-sm font-medium text-slate-400 mb-1">{t('transactions.filters.user')}</label>
-                                <select id="user-select-preset" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label="Filter by user">
+                                <select id="user-select-preset" value={selectedUserId} onChange={e => setSelectedUserId(e.target.value === 'all' ? 'all' : Number(e.target.value))} className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm" aria-label={t('transactions.ariaLabels.filterByUser')}>
                                     <option value="all">{t('transactions.allUsers')}</option>
                                     {users.map(u => <option key={u.id} value={u.id}>{u.name}</option>)}
                                 </select>
@@ -213,7 +213,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                             <button
                                 onClick={() => setSelectedTransaction(t)}
                                 className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === t.id ? 'bg-amber-60 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
-                                aria-label={`Transaction ${t.id} for ${formatCurrency(t.total)} by ${t.userName} at ${t.tillName}`}
+                                aria-label={t('transactions.ariaLabels.transactionDetails', { id: t.id, total: formatCurrency(t.total), user: t.userName, till: t.tillName })}
                             >
                                 <div className="flex justify-between items-center">
                                     <span className="font-bold">{formatCurrency(t.total)}</span>

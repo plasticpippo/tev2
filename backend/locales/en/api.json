@@ -19,7 +19,19 @@
     "settingsSaved": "Settings saved successfully",
     "layoutSaved": "Layout saved successfully",
     "tableAssigned": "Table assigned successfully",
-    "tillAssigned": "Till assigned successfully"
+    "tillAssigned": "Till assigned successfully",
+    "stockLevelsUpdated": "Stock levels updated successfully",
+    "stockLevelsUpdatedWithWarnings": "Stock levels updated with warnings",
+    "orphanedReferencesCleaned": "Successfully removed {{count}} orphaned stock consumption references",
+    "noOrphanedReferences": "No orphaned references found",
+    "dataIntegrityIssuesFound": "Data integrity issues found",
+    "dataIntegrityValidationPassed": "Data integrity validation passed",
+    "orderSessionCreated": "Order session created successfully",
+    "orderSessionUpdated": "Order session updated successfully",
+    "orderSessionRestored": "Order session restored successfully",
+    "orderSessionLogoutMarked": "Order session marked for logout successfully",
+    "orderSessionCompleted": "Order session completed successfully",
+    "orderSessionAssignedToTab": "Order session assigned to tab successfully"
   },
   "response": {
     "ok": "OK",

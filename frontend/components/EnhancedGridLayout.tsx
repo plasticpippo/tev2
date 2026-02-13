@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { produce } from 'immer';
+import { useTranslation } from 'react-i18next';
 import EnhancedGridCanvas from './EnhancedGridCanvas';
 import EnhancedGridItem from './EnhancedGridItem';
 import type { ProductVariant } from '../../shared/types';
@@ -122,6 +123,7 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
   enableKeyboardNavigation = true,
   enableHistory = true,
 }) => {
+  const { t } = useTranslation();
   const [historyManager] = useState(() => new LayoutHistoryManager());
   const [isDragging, setIsDragging] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
@@ -381,8 +383,8 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
     >
       <div className="flex justify-between items-center mb-4">
         <h3 className="text-lg font-semibold text-amber-200 flex items-center">
-          Enhanced Grid Layout
-          <HelpGuide feature="grid-layout" title="Grid Layout Canvas" description="Drag and drop items to arrange them on the grid. Use toolbar buttons to manage your layout." position="right" />
+          {t('enhancedGridLayout.title')}
+          <HelpGuide feature="grid-layout" title={t('enhancedGridLayout.help.gridLayoutTitle')} description={t('enhancedGridLayout.help.gridLayoutDescription')} position="right" />
         </h3>
         
         {/* Toolbar with undo/redo and zoom controls */}
@@ -393,10 +395,10 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
             className={`px-3 py-1 rounded ${historyManager.canUndo() && !disabled
               ? 'bg-blue-600 hover:bg-blue-700 text-white'
               : 'bg-gray-500 text-gray-300 cursor-not-allowed'} transition-colors duration-200 flex items-center`}
-            aria-label="Undo"
+            aria-label={t('enhancedGridLayout.undo')}
           >
-            ↶ Undo
-            <HelpGuide feature="undo-redo" title="Undo Action" description="Revert the last action performed on the grid layout. Use Ctrl+Z to undo." position="bottom" />
+            ↶ {t('enhancedGridLayout.undo')}
+            <HelpGuide feature="undo-redo" title={t('enhancedGridLayout.help.undoTitle')} description={t('enhancedGridLayout.help.undoDescription')} position="bottom" />
           </button>
           
           <button
@@ -405,19 +407,19 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
             className={`px-3 py-1 rounded ${historyManager.canRedo() && !disabled
               ? 'bg-blue-600 hover:bg-blue-700 text-white'
               : 'bg-gray-500 text-gray-300 cursor-not-allowed'} transition-colors duration-200 flex items-center`}
-            aria-label="Redo"
+            aria-label={t('enhancedGridLayout.redo')}
           >
-            ↷ Redo
-            <HelpGuide feature="undo-redo" title="Redo Action" description="Reapply the last undone action. Use Ctrl+Y or Ctrl+Shift+Z to redo." position="bottom" />
+            ↷ {t('enhancedGridLayout.redo')}
+            <HelpGuide feature="undo-redo" title={t('enhancedGridLayout.help.redoTitle')} description={t('enhancedGridLayout.help.redoDescription')} position="bottom" />
           </button>
           
           <button
             onClick={() => setZoomLevel(1)}
             className="px-3 py-1 bg-gray-600 hover:bg-gray-700 text-white rounded transition-colors duration-200 flex items-center"
-            aria-label="Reset zoom"
+            aria-label={t('enhancedGridLayout.resetZoom')}
           >
             {Math.round(zoomLevel * 100)}%
-            <HelpGuide feature="zoom" title="Zoom Level" description="Current zoom level of the grid. Click to reset to 100%. Use Ctrl+Plus/Minus to adjust." position="bottom" />
+            <HelpGuide feature="zoom" title={t('enhancedGridLayout.help.zoomTitle')} description={t('enhancedGridLayout.help.zoomDescription')} position="bottom" />
           </button>
           
           <button
@@ -426,10 +428,10 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
             className={`px-3 py-1 rounded ${!disabled && layout.gridItems.length > 0
               ? 'bg-red-600 hover:bg-red-700 text-white'
               : 'bg-gray-500 text-gray-300 cursor-not-allowed'} transition-colors duration-200 flex items-center`}
-            aria-label="Clear grid"
+            aria-label={t('enhancedGridLayout.clear')}
           >
-            Clear
-            <HelpGuide feature="clear-grid" title="Clear Grid" description="Remove all items from the grid. This action cannot be undone." position="bottom" />
+            {t('enhancedGridLayout.clear')}
+            <HelpGuide feature="clear-grid" title={t('enhancedGridLayout.help.clearGridTitle')} description={t('enhancedGridLayout.help.clearGridDescription')} position="bottom" />
           </button>
         </div>
       </div>
@@ -457,12 +459,12 @@ const EnhancedGridLayout: React.FC<EnhancedGridLayoutProps> = ({
       
       <div className="mt-2 text-sm text-slate-400 flex justify-between">
         <span className="flex items-center">
-          Drag and drop items to rearrange them on the grid
-          <HelpGuide feature="drag-and-drop" title="Drag and Drop" description="Drag products from the panel to the grid or move existing items by dragging them." position="top" />
+          {t('enhancedGridLayout.dragDropInfo')}
+          <HelpGuide feature="drag-and-drop" title={t('enhancedGridLayout.help.dragDropTitle')} description={t('enhancedGridLayout.help.dragDropDescription')} position="top" />
         </span>
         <span className="flex items-center">
-          Use arrow keys to move selected items
-          <HelpGuide feature="keyboard-nav" title="Keyboard Navigation" description="Select an item and use arrow keys to move it. Hold Shift for larger movements." position="top" />
+          {t('enhancedGridLayout.keyboardInfo')}
+          <HelpGuide feature="keyboard-nav" title={t('enhancedGridLayout.help.keyboardNavTitle')} description={t('enhancedGridLayout.help.keyboardNavDescription')} position="top" />
         </span>
       </div>
     </div>

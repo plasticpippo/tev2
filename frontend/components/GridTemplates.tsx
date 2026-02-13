@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { ProductGridLayout, ProductVariant, Product } from '../../shared/types';
 
 // Define preset templates
@@ -22,9 +23,10 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
   onApplyTemplate,
   products,
   variants,
-  currentLayoutName = 'Current Layout',
+  currentLayoutName,
   onCancel
 }) => {
+  const { t } = useTranslation();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
   const [filterCategory, setFilterCategory] = useState<string>('all');
 
@@ -137,29 +139,29 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
   const TEMPLATES = [
     {
       id: 'restaurant-standard',
-      name: 'Restaurant Standard',
-      description: 'Common restaurant layout with food categories organized by sections',
+      name: t('gridTemplates.templates.restaurantStandard.name'),
+      description: t('gridTemplates.templates.restaurantStandard.description'),
       category: 'restaurant' as const,
       layout: generateTemplateLayout('restaurant')
     },
     {
       id: 'retail-standard',
-      name: 'Retail Standard',
-      description: 'Basic retail layout with common product categories',
+      name: t('gridTemplates.templates.retailStandard.name'),
+      description: t('gridTemplates.templates.retailStandard.description'),
       category: 'retail' as const,
       layout: generateTemplateLayout('retail')
     },
     {
       id: 'bar-standard',
-      name: 'Bar Standard',
-      description: 'Bar layout with drinks organized by type',
+      name: t('gridTemplates.templates.barStandard.name'),
+      description: t('gridTemplates.templates.barStandard.description'),
       category: 'bar' as const,
       layout: generateTemplateLayout('bar')
     },
     {
       id: 'cafe-standard',
-      name: 'Cafe Standard',
-      description: 'Cafe layout with coffee and pastries',
+      name: t('gridTemplates.templates.cafeStandard.name'),
+      description: t('gridTemplates.templates.cafeStandard.description'),
       category: 'cafe' as const,
       layout: generateTemplateLayout('cafe')
     }
@@ -188,11 +190,11 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-modal="true" aria-labelledby="templates-title">
       <div className="bg-slate-800 rounded-lg p-6 w-11/12 h-5/6 max-w-xs sm:max-w-4xl overflow-auto">
         <div className="flex justify-between items-center mb-4">
-          <h2 id="templates-title" className="text-2xl font-bold text-amber-300">Grid Templates</h2>
+          <h2 id="templates-title" className="text-2xl font-bold text-amber-300">{t('gridTemplates.title')}</h2>
           <button
             onClick={onCancel}
             className="text-white bg-red-600 hover:bg-red-700 rounded-full w-8 h-8 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-slate-800 transition-colors duration-200"
-            aria-label="Close"
+            aria-label={t('gridTemplates.close')}
           >
             &times;
           </button>
@@ -200,7 +202,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
 
         <div className="mb-4">
           <label htmlFor="template-category" className="block text-sm font-medium text-slate-300 mb-2">
-            Filter by category:
+            {t('gridTemplates.filterByCategory')}
           </label>
           <select
             id="template-category"
@@ -210,7 +212,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
           >
             {categories.map(category => (
               <option key={category} value={category}>
-                {category.charAt(0).toUpperCase() + category.slice(1)}
+                {t(`gridTemplates.categories.${category}`)}
               </option>
             ))}
           </select>
@@ -240,11 +242,11 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
                   <h3 className="font-semibold text-lg text-amber-200">{template.name}</h3>
                   <p className="text-sm text-slate-400 mt-1">{template.description}</p>
                   <div className="mt-2 text-xs text-slate-500">
-                    Items: {template.layout.gridItems.length} | Columns: {template.layout.columns}
+                    {t('gridTemplates.itemsColumns', { items: template.layout.gridItems.length, columns: template.layout.columns })}
                   </div>
                 </div>
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-700 text-slate-300 capitalize">
-                  {template.category}
+                  {t(`gridTemplates.categories.${template.category}`)}
                 </span>
               </div>
             </div>
@@ -256,7 +258,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
             onClick={onCancel}
             className="px-4 py-2 bg-slate-600 hover:bg-slate-700 text-white rounded-md transition-colors duration-200"
           >
-            Cancel
+            {t('gridTemplates.cancel')}
           </button>
           <button
             onClick={handleApplyTemplate}
@@ -267,7 +269,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
                 : 'bg-gray-500 text-gray-300 cursor-not-allowed'
             }`}
           >
-            Apply Template
+            {t('gridTemplates.applyTemplate')}
           </button>
         </div>
       </div>

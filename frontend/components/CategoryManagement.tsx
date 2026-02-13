@@ -29,9 +29,9 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
     const newErrors: Record<string, string> = {};
     
     if (!name.trim()) {
-      newErrors.name = 'Category name is required';
+      newErrors.name = t('categories.validation.nameRequired');
     } else if (name.trim().length > 255) {
-      newErrors.name = 'Category name must be 255 characters or less';
+      newErrors.name = t('categories.validation.nameMaxLength');
     }
     
     setErrors(newErrors);
@@ -50,7 +50,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ category, tills, onClose,
       onSave();
     } catch (error) {
       console.error('Error saving category:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save category. Please check your data and try again.');
+      alert(error instanceof Error ? error.message : t('categories.errors.failedToSave'));
     }
   };
 
@@ -133,7 +133,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
         onDataUpdate();
       } catch (error) {
         console.error('Error deleting category:', error);
-        alert(error instanceof Error ? error.message : 'Failed to delete category. The category may have associated products or be in use elsewhere.');
+        alert(error instanceof Error ? error.message : t('categories.errors.failedToDelete'));
       }
     }
   };

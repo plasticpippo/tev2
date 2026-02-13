@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import type { Transaction, Tab, User, Till, Settings, DailyClosing } from '@shared/types';
 import { getDailyClosings } from '../services/dailyClosingService';
 import { format } from 'date-fns';
+import { useTranslation } from 'react-i18next';
 
 import { TotalSalesTicker } from './dashboard/TotalSalesTicker';
 import { TillStatus } from './dashboard/TillStatus';
@@ -18,6 +19,7 @@ interface ManagerDashboardProps {
 }
 
 export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions, tabs, users, tills, settings, currentUser }) => {
+    const { t } = useTranslation();
     const [recentClosings, setRecentClosings] = useState<DailyClosing[]>([]);
     const [loadingClosings, setLoadingClosings] = useState(true);
     
@@ -38,17 +40,17 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
                 
                 setRecentClosings(recent);
             } catch (error) {
-                console.error('Error fetching recent daily closings:', error);
+                console.error(t('managerDashboard.errorFetchingClosings'), error);
             } finally {
                 setLoadingClosings(false);
             }
         };
         
         fetchRecentClosings();
-    }, []);
+    }, [t]);
     
     if (!settings) {
-        return <div className="text-center text-slate-400">Loading Dashboard...</div>;
+        return <div className="text-center text-slate-400">{t('managerDashboard.loadingDashboard')}</div>;
     }
     
     return (
@@ -56,7 +58,7 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
             <TotalSalesTicker transactions={transactions} settings={settings} />
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 <div className="bg-slate-800 p-4 rounded-lg">
-                    <h2 className="text-lg font-bold text-slate-300 mb-3 text-center">Business Day Management</h2>
+                    <h2 className="text-lg font-bold text-slate-300 mb-3 text-center">{t('managerDashboard.businessDayManagement')}</h2>
                     <DailyClosingButton
                         settings={settings}
                         userId={currentUser.id}
@@ -64,22 +66,22 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
                     />
                 </div>
                 <div className="bg-slate-800 p-4 rounded-lg">
-                    <h2 className="text-lg font-bold text-slate-300 mb-3 text-center">Recent Daily Closings</h2>
+                    <h2 className="text-lg font-bold text-slate-300 mb-3 text-center">{t('managerDashboard.recentDailyClosings')}</h2>
                     {loadingClosings ? (
-                        <div className="text-center text-slate-400 py-4">Loading...</div>
+                        <div className="text-center text-slate-400 py-4">{t('managerDashboard.loading')}</div>
                     ) : recentClosings.length > 0 ? (
                         <div className="space-y-2 max-h-40 overflow-y-auto">
                             {recentClosings.map(closing => (
                                 <div key={closing.id} className="flex justify-between text-sm border-b border-slate-700 pb-2">
                                     <span className="text-slate-300">{format(new Date(closing.closedAt), 'MMM dd, HH:mm')}</span>
                                     <span className="text-amber-400">{closing.userName}</span>
-                                    <span className="text-green-400">{closing.summary.transactions} txns</span>
+                                    <span className="text-green-400">{t('managerDashboard.transactions', { count: closing.summary.transactions })}</span>
                                     <span className="text-green-400">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(closing.summary.totalSales)}</span>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center text-slate-400 py-4">No recent closings</div>
+                        <div className="text-center text-slate-400 py-4">{t('managerDashboard.noRecentClosings')}</div>
                     )}
                 </div>
             </div>

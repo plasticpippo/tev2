@@ -98,7 +98,7 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
       onSave();
     } catch (error) {
       console.error('Error saving stock item:', error);
-      alert(error instanceof Error ? error.message : 'Failed to save stock item. Please check your data and try again.');
+      alert(error instanceof Error ? error.message : t('stockItems.failedToSave'));
     } finally {
       setIsSaving(false);
     }
@@ -281,7 +281,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                     setDeletingItem(null);
                     onDataUpdate();
                 } else {
-                    setDeleteError(result.message || 'An unknown error occurred.');
+                    setDeleteError(result.message || t('stockItems.unknownError'));
                 }
             } finally {
                 setIsDeleting(false);
@@ -352,7 +352,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                 message={deleteError || t('stockItems.confirmDeleteMessage', { name: deletingItem?.name })}
                 onConfirm={deleteError ? () => { setDeletingItem(null); setDeleteError(''); } : confirmDelete}
                 onCancel={() => { setDeletingItem(null); setDeleteError(''); }}
-                confirmText={isDeleting ? t('stockItems.deleting') : (deleteError ? 'OK' : 'Confirm')}
+                confirmText={isDeleting ? t('stockItems.deleting') : (deleteError ? t('stockItems.ok') : t('stockItems.confirm'))}
                 disabled={isDeleting}
             />
         </div>

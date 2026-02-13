@@ -91,7 +91,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                             <select value={sc.stockItemId} onChange={e => handleUpdateConsumption(index, 'stockItemId', e.target.value)} className="flex-grow p-2 bg-slate-600 border border-slate-500 rounded-md text-sm">
                                 {stockItems.map(si => <option key={si.id} value={si.id}>{si.name}</option>)}
                             </select>
-                            <VKeyboardInput k-type="numeric" type="number" value={sc.quantity} onChange={e => handleUpdateConsumption(index, 'quantity', parseFloat(e.target.value) || 0)} placeholder="Qty" className="w-24 p-2 bg-slate-600 border border-slate-500 rounded-md text-sm" />
+                            <VKeyboardInput k-type="numeric" type="number" value={sc.quantity} onChange={e => handleUpdateConsumption(index, 'quantity', parseFloat(e.target.value) || 0)} placeholder={t('products.quantity')} className="w-24 p-2 bg-slate-600 border border-slate-500 rounded-md text-sm" />
                             <span className="text-slate-400 text-sm w-12 text-center">{getBaseUnitForStockItem(sc.stockItemId)}</span>
                             <button type="button" onClick={() => handleRemoveConsumption(index)} className="btn btn-danger btn-sm">&times;</button>
                         </div>
@@ -154,14 +154,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
     
     // Validate product name
     if (!name.trim()) {
-      newErrors.name = 'Product name is required';
+      newErrors.name = t('products.validation.productNameRequired');
     } else if (name.trim().length > 255) {
-      newErrors.name = 'Product name must be 255 characters or less';
+      newErrors.name = t('products.validation.productNameMaxLength');
     }
     
     // Validate category
     if (!categoryId) {
-      newErrors.category = 'Category is required';
+      newErrors.category = t('products.validation.categoryRequired');
     }
     
     // Validate variants
@@ -169,13 +169,13 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
       const variant = variants[i];
       
       if (!variant.name?.trim()) {
-        newErrors[`variant-${i}-name`] = 'Variant name is required';
+        newErrors[`variant-${i}-name`] = t('products.validation.variantNameRequired');
       }
       
       if (typeof variant.price !== 'number' || variant.price < 0) {
-        newErrors[`variant-${i}-price`] = 'Price must be a non-negative number';
+        newErrors[`variant-${i}-price`] = t('products.validation.priceNonNegative');
       } else if (variant.price > 999999) {
-        newErrors[`variant-${i}-price`] = 'Price must be 999999 or less';
+        newErrors[`variant-${i}-price`] = t('products.validation.priceMaxLength');
       }
     }
     
@@ -194,7 +194,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
-      setApiError(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+      setApiError(error instanceof Error ? error.message : t('products.errors.failedToSave'));
     } finally {
       setIsSaving(false);
     }
@@ -223,7 +223,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
       onSave();
     } catch (error) {
       console.error('Error saving product:', error);
-      setApiError(error instanceof Error ? error.message : 'Failed to save product. Please check your data and try again.');
+      setApiError(error instanceof Error ? error.message : t('products.errors.failedToSave'));
     } finally {
       setIsSaving(false);
     }
@@ -347,7 +347,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
         onDataUpdate();
       } catch (error) {
         console.error('Error deleting product:', error);
-        setDeleteError(error instanceof Error ? error.message : 'Failed to delete product. The product may be in use or referenced elsewhere.');
+        setDeleteError(error instanceof Error ? error.message : t('products.errors.failedToDelete'));
       } finally {
         setIsDeleting(false);
       }

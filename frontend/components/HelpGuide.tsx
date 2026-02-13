@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import Tooltip from './Tooltip';
 
 interface HelpGuideProps {
@@ -16,6 +17,7 @@ const HelpGuide: React.FC<HelpGuideProps> = ({
   position = 'top', 
   delay = 500 
 }) => {
+  const { t } = useTranslation();
   const [showGuide, setShowGuide] = useState(false);
   
   // Feature-specific help content
@@ -23,38 +25,38 @@ const HelpGuide: React.FC<HelpGuideProps> = ({
     switch(feature) {
       case 'grid-controls':
         return {
-          title: 'Grid Controls',
-          description: 'Adjust the grid layout settings like columns, size, spacing, and snapping behavior to customize your product grid.'
+          title: t('helpGuide.gridControls.title'),
+          description: t('helpGuide.gridControls.description')
         };
       case 'drag-and-drop':
         return {
-          title: 'Drag & Drop Items',
-          description: 'Drag products from the left panel onto the grid canvas to add them. Drag existing items to reposition them on the grid.'
+          title: t('helpGuide.dragAndDrop.title'),
+          description: t('helpGuide.dragAndDrop.description')
         };
       case 'layout-management':
         return {
-          title: 'Layout Management',
-          description: 'Save, load, and manage different grid layouts for different purposes. Set a default layout for new sessions.'
+          title: t('helpGuide.layoutManagement.title'),
+          description: t('helpGuide.layoutManagement.description')
         };
       case 'templates':
         return {
-          title: 'Layout Templates',
-          description: 'Apply pre-made templates to quickly set up common grid arrangements like kitchen, bar, or retail layouts.'
+          title: t('helpGuide.templates.title'),
+          description: t('helpGuide.templates.description')
         };
       case 'undo-redo':
         return {
-          title: 'Undo/Redo Actions',
-          description: 'Use Ctrl+Z to undo and Ctrl+Y or Ctrl+Shift+Z to redo your layout changes.'
+          title: t('helpGuide.undoRedo.title'),
+          description: t('helpGuide.undoRedo.description')
         };
       case 'zoom':
         return {
-          title: 'Zoom Controls',
-          description: 'Adjust the zoom level to get a better view of your grid layout. Use Ctrl+Plus/Minus to zoom in/out.'
+          title: t('helpGuide.zoom.title'),
+          description: t('helpGuide.zoom.description')
         };
       case 'keyboard-nav':
         return {
-          title: 'Keyboard Navigation',
-          description: 'Select an item and use arrow keys to move it precisely. Hold Shift for larger movements.'
+          title: t('helpGuide.keyboardNav.title'),
+          description: t('helpGuide.keyboardNav.description')
         };
       default:
         return { title, description };
@@ -72,7 +74,7 @@ const HelpGuide: React.FC<HelpGuideProps> = ({
       <span 
         className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-accent-primary text-white text-xs font-bold cursor-help"
         onClick={() => setShowGuide(!showGuide)}
-        aria-label={`Help for ${feature}`}
+        aria-label={t('helpGuide.ariaLabel', { feature }) as string}
         role="button"
       >
         ?

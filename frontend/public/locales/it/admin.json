@@ -62,7 +62,20 @@
     "confirmDelete": "Sei sicuro di voler eliminare \"{{name}}\"? Questo eliminera tutte le sue varianti.",
     "noProducts": "Nessun prodotto trovato",
     "uncategorized": "Senza Categoria",
-    "favourite": "Preferito"
+    "favourite": "Preferito",
+    "quantity": "Qta",
+    "validation": {
+      "productNameRequired": "Il nome del prodotto e obbligatorio",
+      "productNameMaxLength": "Il nome del prodotto deve essere di massimo 255 caratteri",
+      "categoryRequired": "La categoria e obbligatoria",
+      "variantNameRequired": "Il nome della variante e obbligatorio",
+      "priceNonNegative": "Il prezzo deve essere un numero non negativo",
+      "priceMaxLength": "Il prezzo deve essere 999999 o inferiore"
+    },
+    "errors": {
+      "failedToSave": "Impossibile salvare il prodotto. Verifica i dati e riprova.",
+      "failedToDelete": "Impossibile eliminare il prodotto. Il prodotto potrebbe essere in uso o referenziato altrove."
+    }
   },
   "categories": {
     "title": "Gestione Categorie",
@@ -77,7 +90,15 @@
     "allTills": "Tutte le Casse",
     "none": "Nessuno",
     "confirmDelete": "Sei sicuro di voler eliminare la categoria \"{{name}}\"? I prodotti in questa categoria diventeranno senza categoria.",
-    "noCategories": "Nessuna categoria trovata"
+    "noCategories": "Nessuna categoria trovata",
+    "validation": {
+      "nameRequired": "Il nome della categoria e obbligatorio",
+      "nameMaxLength": "Il nome della categoria deve essere di massimo 255 caratteri"
+    },
+    "errors": {
+      "failedToSave": "Impossibile salvare la categoria. Verifica i dati e riprova.",
+      "failedToDelete": "Impossibile eliminare la categoria. La categoria potrebbe avere prodotti associati o essere in uso altrove."
+    }
   },
   "stockItems": {
     "title": "Gestione Articoli Magazzino",
@@ -126,7 +147,11 @@
     "delete": "Elimina",
     "deleting": "Eliminazione...",
     "edit": "Modifica",
-    "confirmDeleteTitle": "Conferma Eliminazione"
+    "confirmDeleteTitle": "Conferma Eliminazione",
+    "failedToSave": "Impossibile salvare l'articolo magazzino. Verifica i dati e riprova.",
+    "unknownError": "Si e verificato un errore sconosciuto.",
+    "ok": "OK",
+    "confirm": "Conferma"
   },
   "inventory": {
     "title": "Gestione Inventario",
@@ -230,7 +255,85 @@
     "viewMode": "Modalita Visualizzazione",
     "editMode": "Modalita Modifica",
     "dragMode": "Modalita Trascinamento",
-    "quickTips": "Suggerimenti Rapidi"
+    "quickTips": "Suggerimenti Rapidi",
+    "requiredField": "Campo obbligatorio",
+    "cancelChanges": "Annulla modifiche",
+    "saveRoomDetails": "Salva dettagli sala",
+    "saveTableDetails": "Salva dettagli tavolo",
+    "failedToSaveRoom": "Impossibile salvare la sala: {{error}}",
+    "failedToSaveTable": "Impossibile salvare il tavolo: {{error}}",
+    "unknownError": "Errore sconosciuto",
+    "loadingRooms": "Caricamento sale...",
+    "loadingTables": "Caricamento tavoli...",
+    "noDescription": "Nessuna descrizione",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "addYourFirstRoom": "Aggiungi la Tua Prima Sala",
+    "addTableToRoom": "Aggiungi Tavolo alla Sala",
+    "addYourFirstTable": "Aggiungi il Tuo Primo Tavolo",
+    "createFirstRoom": "Crea la tua prima sala per organizzare i tavoli per aree fisiche nel tuo locale",
+    "createFirstTable": "Aggiungi il tuo primo tavolo per organizzare la disposizione dei posti.",
+    "addFirstTableToRoom": "Aggiungi il tuo primo tavolo a questa sala per iniziare.",
+    "roomExamples": "Esempi di Sale:",
+    "indoorDining": "Sala Interna",
+    "outdoorPatio": "Terrazza Esterna",
+    "vipArea": "Area VIP",
+    "privateRooms": "Sale Private",
+    "proTips": "Suggerimenti:",
+    "roomsHelp": "Le sale ti aiutano a organizzare i tavoli per aree fisiche nel tuo locale.",
+    "roomsExamples": "Esempi: Sala Interna, Terrazza Esterna, Area VIP, Sale Private",
+    "tablesMustBeAssigned": "I tavoli devono essere assegnati a una sala per apparire nel layout.",
+    "setStatusTracking": "Imposta lo stato per tracciare la disponibilita: Disponibile, Occupato, Prenotato, Non Disponibile",
+    "roomInfo": "Sala: {{name}}",
+    "unassigned": "Non assegnato",
+    "statusLabel": "Stato: {{status}}",
+    "positionLabel": "Posizione: ({{x}}, {{y}})",
+    "sizeLabel": "Dimensioni: {{width}}x{{height}}",
+    "manageTableLayouts": "Gestisci layout tavoli visivamente",
+    "manageRoomOrganization": "Gestisci organizzazione sale",
+    "manageIndividualTables": "Gestisci singoli tavoli",
+    "selectRoomFocus": "Seleziona una sala per concentrarti su un'area specifica",
+    "changeLayoutMode": "Cambia modalita layout (visualizza, modifica, trascina)",
+    "visualTableLayoutManagement": "Gestione layout tavoli visuale",
+    "organizeVenueRooms": "Organizza il tuo locale in sale/zone",
+    "addNewRoom": "Aggiungi una nuova sala",
+    "editRoomDetails": "Modifica dettagli sala",
+    "deleteRoom": "Elimina questa sala",
+    "addFirstRoomTitle": "Aggiungi la tua prima sala",
+    "addNewTable": "Aggiungi un nuovo tavolo",
+    "editTableDetails": "Modifica dettagli tavolo",
+    "deleteTable": "Elimina questo tavolo",
+    "addFirstTableTitle": "Aggiungi il tuo primo tavolo",
+    "assignTablesToRooms": "Assegna i tavoli alle sale per una migliore organizzazione",
+    "useDescriptiveNames": "Usa nomi descrittivi (VIP-1, Terrazza-2)",
+    "setAppropriateStatus": "Imposta lo stato appropriato (Disponibile, Occupato, Prenotato)",
+    "updatePositionsLayout": "Aggiorna le posizioni usando l'editor layout visuale",
+    "viewModeDescription": "Modalita Visualizzazione: Sfoglia il layout senza apportare modifiche",
+    "editModeDescription": "Modalita Modifica: Aggiungi, modifica o elimina tavoli",
+    "dragModeDescription": "Modalita Trascinamento: Sposta i tavoli esistenti",
+    "tips": {
+      "layout": {
+        "tip1": "Usa la Modalita Visualizzazione per vedere il layout corrente senza modifiche",
+        "tip2": "Passa alla Modalita Modifica per aggiungere o modificare tavoli",
+        "tip3": "Usa la Modalita Trascinamento per riposizionare i tavoli esistenti",
+        "tip4": "Seleziona una sala dal menu a tendina per concentrarti su un'area specifica",
+        "tip5": "Prova la scorciatoia da tastiera Ctrl+D per scorrere le modalita layout"
+      },
+      "rooms": {
+        "tip1": "Aggiungi sale per organizzare il layout dei tavoli per area",
+        "tip2": "Ogni sala puo avere piu tavoli assegnati",
+        "tip3": "Le sale aiutano a separare le aree pranzo (interno, esterno, privato)",
+        "tip4": "Prova la scorciatoia da tastiera Ctrl+M per passare rapidamente alla scheda sale",
+        "tip5": "Ricorda di assegnare i tavoli alle sale dopo averli creati"
+      },
+      "tables": {
+        "tip1": "I tavoli devono essere assegnati a una sala per apparire nel layout",
+        "tip2": "Usa nomi descrittivi per una facile identificazione (VIP-1, Terrazza-2)",
+        "tip3": "Imposta lo stato appropriato (Disponibile, Occupato, Prenotato)",
+        "tip4": "Prova la scorciatoia da tastiera Ctrl+T per passare rapidamente alla scheda tavoli",
+        "tip5": "Aggiorna le posizioni in blocco usando l'editor layout"
+      }
+    }
   },
   "transactions": {
     "title": "Storico Transazioni",
@@ -260,6 +363,16 @@
       "tip": "Mancia",
       "total": "Totale",
       "table": "Tavolo: {{name}}"
+    },
+    "ariaLabels": {
+      "filterBy": "Filtra per {{label}}",
+      "filterByCustomDateRange": "Filtra per intervallo di date personalizzato",
+      "filterByTill": "Filtra per cassa",
+      "filterByUser": "Filtra per utente",
+      "startTime": "Ora inizio",
+      "endDate": "Data fine",
+      "endTime": "Ora fine",
+      "transactionDetails": "Transazione {{id}} per {{total}} di {{user}} su {{till}}"
     }
   },
   "activity": {
@@ -534,6 +647,10 @@
     "combined": {
       "paymentMethods": "Metodi di Pagamento Combinati",
       "tillSummary": "Riepilogo Casse Combinato"
-    }
+    },
+    "errors": {
+      "failedToFetch": "Impossibile recuperare i dati di chiusura giornaliera"
+    },
+    "fallbackTill": "Cassa {{id}}"
   }
 }

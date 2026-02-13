@@ -62,7 +62,20 @@
     "confirmDelete": "Are you sure you want to delete \"{{name}}\"? This will delete all its variants.",
     "noProducts": "No products found",
     "uncategorized": "Uncategorized",
-    "favourite": "Favourite"
+    "favourite": "Favourite",
+    "quantity": "Qty",
+    "validation": {
+      "productNameRequired": "Product name is required",
+      "productNameMaxLength": "Product name must be 255 characters or less",
+      "categoryRequired": "Category is required",
+      "variantNameRequired": "Variant name is required",
+      "priceNonNegative": "Price must be a non-negative number",
+      "priceMaxLength": "Price must be 999999 or less"
+    },
+    "errors": {
+      "failedToSave": "Failed to save product. Please check your data and try again.",
+      "failedToDelete": "Failed to delete product. The product may be in use or referenced elsewhere."
+    }
   },
   "categories": {
     "title": "Category Management",
@@ -77,7 +90,15 @@
     "allTills": "All Tills",
     "none": "None",
     "confirmDelete": "Are you sure you want to delete the category \"{{name}}\"? Products in this category will become uncategorized.",
-    "noCategories": "No categories found"
+    "noCategories": "No categories found",
+    "validation": {
+      "nameRequired": "Category name is required",
+      "nameMaxLength": "Category name must be 255 characters or less"
+    },
+    "errors": {
+      "failedToSave": "Failed to save category. Please check your data and try again.",
+      "failedToDelete": "Failed to delete category. The category may have associated products or be in use elsewhere."
+    }
   },
   "stockItems": {
     "title": "Stock Item Management",
@@ -126,7 +147,11 @@
     "delete": "Delete",
     "deleting": "Deleting...",
     "edit": "Edit",
-    "confirmDeleteTitle": "Confirm Delete"
+    "confirmDeleteTitle": "Confirm Delete",
+    "failedToSave": "Failed to save stock item. Please check your data and try again.",
+    "unknownError": "An unknown error occurred.",
+    "ok": "OK",
+    "confirm": "Confirm"
   },
   "inventory": {
     "title": "Inventory Management",
@@ -230,7 +255,85 @@
     "viewMode": "View Mode",
     "editMode": "Edit Mode",
     "dragMode": "Drag Mode",
-    "quickTips": "Quick Tips"
+    "quickTips": "Quick Tips",
+    "requiredField": "Required field",
+    "cancelChanges": "Cancel changes",
+    "saveRoomDetails": "Save room details",
+    "saveTableDetails": "Save table details",
+    "failedToSaveRoom": "Failed to save room: {{error}}",
+    "failedToSaveTable": "Failed to save table: {{error}}",
+    "unknownError": "Unknown error",
+    "loadingRooms": "Loading rooms...",
+    "loadingTables": "Loading tables...",
+    "noDescription": "No description",
+    "edit": "Edit",
+    "delete": "Delete",
+    "addYourFirstRoom": "Add Your First Room",
+    "addTableToRoom": "Add Table to Room",
+    "addYourFirstTable": "Add Your First Table",
+    "createFirstRoom": "Create your first room to organize tables by physical areas in your venue",
+    "createFirstTable": "Add your first table to organize seating arrangements.",
+    "addFirstTableToRoom": "Add your first table to this room to get started.",
+    "roomExamples": "Room Examples:",
+    "indoorDining": "Indoor Dining",
+    "outdoorPatio": "Outdoor Patio",
+    "vipArea": "VIP Area",
+    "privateRooms": "Private Rooms",
+    "proTips": "Pro Tips:",
+    "roomsHelp": "Rooms help you organize your tables by physical areas in your venue.",
+    "roomsExamples": "Examples: Indoor Dining, Outdoor Patio, VIP Area, Private Rooms",
+    "tablesMustBeAssigned": "Tables must be assigned to a room to appear in the layout.",
+    "setStatusTracking": "Set status to track availability: Available, Occupied, Reserved, Unavailable",
+    "roomInfo": "Room: {{name}}",
+    "unassigned": "Unassigned",
+    "statusLabel": "Status: {{status}}",
+    "positionLabel": "Position: ({{x}}, {{y}})",
+    "sizeLabel": "Size: {{width}}x{{height}}",
+    "manageTableLayouts": "Manage table layouts visually",
+    "manageRoomOrganization": "Manage room organization",
+    "manageIndividualTables": "Manage individual tables",
+    "selectRoomFocus": "Select a room to focus on specific area",
+    "changeLayoutMode": "Change layout mode (view, edit, drag)",
+    "visualTableLayoutManagement": "Visual table layout management",
+    "organizeVenueRooms": "Organize your venue into rooms/zones",
+    "addNewRoom": "Add a new room",
+    "editRoomDetails": "Edit room details",
+    "deleteRoom": "Delete this room",
+    "addFirstRoomTitle": "Add your first room",
+    "addNewTable": "Add a new table",
+    "editTableDetails": "Edit table details",
+    "deleteTable": "Delete this table",
+    "addFirstTableTitle": "Add your first table",
+    "assignTablesToRooms": "Assign tables to rooms for better organization",
+    "useDescriptiveNames": "Use descriptive names (VIP-1, Patio-2)",
+    "setAppropriateStatus": "Set appropriate status (Available, Occupied, Reserved)",
+    "updatePositionsLayout": "Update positions using the visual layout editor",
+    "viewModeDescription": "View Mode: Browse the layout without making changes",
+    "editModeDescription": "Edit Mode: Add, modify, or delete tables",
+    "dragModeDescription": "Drag Mode: Move existing tables around",
+    "tips": {
+      "layout": {
+        "tip1": "Use View Mode to see the current layout without editing",
+        "tip2": "Switch to Edit Mode to add or modify tables",
+        "tip3": "Use Drag Mode to reposition existing tables",
+        "tip4": "Select a room from the dropdown to focus on specific area",
+        "tip5": "Try keyboard shortcut Ctrl+D to cycle through layout modes"
+      },
+      "rooms": {
+        "tip1": "Add rooms to organize your table layout by area",
+        "tip2": "Each room can have multiple tables assigned to it",
+        "tip3": "Rooms help separate dining areas (indoor, outdoor, private)",
+        "tip4": "Try keyboard shortcut Ctrl+M to quickly switch to rooms tab",
+        "tip5": "Remember to assign tables to rooms after creating them"
+      },
+      "tables": {
+        "tip1": "Tables must be assigned to a room to appear in layout",
+        "tip2": "Use descriptive names for easy identification (VIP-1, Patio-2)",
+        "tip3": "Set appropriate status (Available, Occupied, Reserved)",
+        "tip4": "Try keyboard shortcut Ctrl+T to quickly switch to tables tab",
+        "tip5": "Update positions in bulk using layout editor"
+      }
+    }
   },
   "transactions": {
     "title": "Transaction History",
@@ -260,6 +363,16 @@
       "tip": "Tip",
       "total": "Total",
       "table": "Table: {{name}}"
+    },
+    "ariaLabels": {
+      "filterBy": "Filter by {{label}}",
+      "filterByCustomDateRange": "Filter by custom date range",
+      "filterByTill": "Filter by till",
+      "filterByUser": "Filter by user",
+      "startTime": "Start time",
+      "endDate": "End date",
+      "endTime": "End time",
+      "transactionDetails": "Transaction {{id}} for {{total}} by {{user}} at {{till}}"
     }
   },
   "activity": {
@@ -534,6 +647,10 @@
     "combined": {
       "paymentMethods": "Combined Payment Methods",
       "tillSummary": "Combined Till Summary"
-    }
+    },
+    "errors": {
+      "failedToFetch": "Failed to fetch daily closing data"
+    },
+    "fallbackTill": "Till {{id}}"
   }
 }

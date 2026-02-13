@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../utils/formatting';
 import type { ProductVariant } from '../../shared/types';
 import ProductGridItem from './ProductGridItem';
@@ -52,6 +53,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
   onDragEnd,
   disabled = false,
 }) => {
+  const { t } = useTranslation();
   const [draggingItem, setDraggingItem] = useState<{ id: string; offsetX: number; offsetY: number } | null>(null);
   const [dragPreviewPosition, setDragPreviewPosition] = useState<{ x: number; y: number } | null>(null);
   const [resizingItem, setResizingItem] = useState<{ id: string; direction: string; startX: number; startY: number; startWidth: number; startHeight: number; startXPos: number; startYPos: number } | null>(null);
@@ -313,7 +315,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
       onDrop={handleDrop}
       tabIndex={0}
       role="grid"
-      aria-label="Product grid layout"
+      aria-label={t('enhancedGridCanvas.gridAriaLabel')}
     >
       {/* Render grid lines */}
       {gridLines}
@@ -364,7 +366,14 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
             onFocus={() => setKeyboardFocusedItem(item.id)}
             onBlur={() => setKeyboardFocusedItem(null)}
             role="gridcell"
-            aria-label={`Product ${item.name}, price ${formatCurrency(item.price)}, position ${item.x}, ${item.y}, ${item.width} by ${item.height} grid units`}
+            aria-label={t('enhancedGridCanvas.productAriaLabel', { 
+              name: item.name, 
+              price: formatCurrency(item.price), 
+              x: item.x, 
+              y: item.y, 
+              width: item.width, 
+              height: item.height 
+            })}
             tabIndex={0}
           >
             <p className={`font-bold ${item.textColor}`}>{item.name}</p>
@@ -379,56 +388,56 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
                 <div
                   className="absolute top-0 left-1/2 -mt-1 -ml-2 w-4 h-2 cursor-n-resize bg-blue-500 rounded-sm opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'n')}
-                  aria-label="Resize top edge"
+                  aria-label={t('enhancedGridCanvas.resizeTopEdge')}
                 ></div>
                 
                 {/* Right edge handle */}
                 <div
                   className="absolute right-0 top-1/2 -mr-1 -mt-2 w-2 h-4 cursor-e-resize bg-blue-500 rounded-sm opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'e')}
-                  aria-label="Resize right edge"
+                  aria-label={t('enhancedGridCanvas.resizeRightEdge')}
                 ></div>
                 
                 {/* Bottom edge handle */}
                 <div
                   className="absolute bottom-0 left-1/2 -mb-1 -ml-2 w-4 h-2 cursor-s-resize bg-blue-500 rounded-sm opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 's')}
-                  aria-label="Resize bottom edge"
+                  aria-label={t('enhancedGridCanvas.resizeBottomEdge')}
                 ></div>
                 
                 {/* Left edge handle */}
                 <div
                   className="absolute left-0 top-1/2 -ml-1 -mt-2 w-2 h-4 cursor-w-resize bg-blue-500 rounded-sm opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'w')}
-                  aria-label="Resize left edge"
+                  aria-label={t('enhancedGridCanvas.resizeLeftEdge')}
                 ></div>
                 
                 {/* Top-right corner handle */}
                 <div
                   className="absolute top-0 right-0 -mt-1 -mr-1 w-3 h-3 cursor-ne-resize bg-blue-500 rounded opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'ne')}
-                  aria-label="Resize top-right corner"
+                  aria-label={t('enhancedGridCanvas.resizeTopRightCorner')}
                 ></div>
                 
                 {/* Top-left corner handle */}
                 <div
                   className="absolute top-0 left-0 -mt-1 -ml-1 w-3 h-3 cursor-nw-resize bg-blue-500 rounded opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'nw')}
-                  aria-label="Resize top-left corner"
+                  aria-label={t('enhancedGridCanvas.resizeTopLeftCorner')}
                 ></div>
                 
                 {/* Bottom-right corner handle */}
                 <div
                   className="absolute bottom-0 right-0 -mb-1 -mr-1 w-3 h-3 cursor-se-resize bg-blue-500 rounded opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'se')}
-                  aria-label="Resize bottom-right corner"
+                  aria-label={t('enhancedGridCanvas.resizeBottomRightCorner')}
                 ></div>
                 
                 {/* Bottom-left corner handle */}
                 <div
                   className="absolute bottom-0 left-0 -mb-1 -ml-1 w-3 h-3 cursor-sw-resize bg-blue-500 rounded opacity-0 hover:opacity-100 group-hover:opacity-100 transition-opacity"
                   onMouseDown={(e) => handleResizeStart(e, item, 'sw')}
-                  aria-label="Resize bottom-left corner"
+                  aria-label={t('enhancedGridCanvas.resizeBottomLeftCorner')}
                 ></div>
               </div>
             )}
@@ -441,7 +450,7 @@ const EnhancedGridCanvas: React.FC<EnhancedGridCanvasProps> = ({
           className="absolute inset-0 flex items-center justify-center text-slate-400 pointer-events-none"
           style={{ padding: `${containerPadding.y}px ${containerPadding.x}px` }}
         >
-          Drag products here to arrange them on the grid
+          {t('enhancedGridCanvas.dragProductsHere')}
         </div>
       )}
       

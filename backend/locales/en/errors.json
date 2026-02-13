@@ -50,7 +50,16 @@
     "duplicateName": "Product with this name already exists",
     "deleteFailed": "Failed to delete product",
     "variantNotFound": "Product variant not found",
-    "invalidPrice": "Invalid price value"
+    "invalidPrice": "Invalid price value",
+    "fetchFailed": "Failed to fetch products. Please try again later.",
+    "fetchOneFailed": "Failed to fetch product. Please try again later.",
+    "createFailed": "Failed to create product. Please check your data and try again.",
+    "updateFailed": "Failed to update product. Please check your data and try again.",
+    "deleteFailedInUse": "Failed to delete product. The product may be in use or referenced elsewhere.",
+    "validationFailed": "Validation failed",
+    "invalidCategoryId": "Invalid category ID: {{categoryId}}",
+    "invalidStockItemReferences": "Invalid stock item references: {{ids}}",
+    "variantError": "Variant {{index}}: {{error}}"
   },
   "categories": {
     "notFound": "Category not found",
@@ -65,7 +74,23 @@
     "duplicateName": "Stock item with this name already exists",
     "deleteFailed": "Failed to delete stock item",
     "insufficientStock": "Insufficient stock for {{name}}",
-    "invalidQuantity": "Invalid quantity value"
+    "invalidQuantity": "Invalid quantity value",
+    "invalidIdFormat": "Invalid stock item ID format",
+    "fetchFailed": "Failed to fetch stock items. Please try again later.",
+    "fetchOneFailed": "Failed to fetch stock item. Please try again later.",
+    "createFailed": "Failed to create stock item. Please check your data and try again.",
+    "updateFailed": "Failed to update stock item. Please check your data and try again.",
+    "validationFailed": "Validation failed",
+    "invalidConsumptionsData": "Invalid consumptions data",
+    "noValidItemsToUpdate": "No valid stock items to update",
+    "insufficientStockDetailed": "Insufficient stock for item \"{{name}}\" (ID: {{id}}). Required: {{required}}, Available: {{available}}.",
+    "updateLevelsFailed": "Failed to update stock levels. Please check your data and try again.",
+    "cannotDeleteInUse": "Cannot delete stock item. It is currently used in a product recipe.",
+    "deleteFailedInUse": "Failed to delete stock item. The item may be in use in product recipes.",
+    "fetchOrphanedFailed": "Failed to fetch orphaned stock consumption references. Please try again later.",
+    "cleanupOrphanedFailed": "Failed to clean up orphaned stock consumption references. Please try again later.",
+    "validateIntegrityFailed": "Failed to validate data integrity. Please try again later.",
+    "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}"
   },
   "users": {
     "notFound": "User not found",
@@ -104,7 +129,15 @@
     "notFound": "Order session not found",
     "invalidData": "Invalid order session data",
     "alreadyCompleted": "Order session already completed",
-    "accessDenied": "Access denied to order session"
+    "accessDenied": "Access denied to order session",
+    "userNotAuthenticated": "User not authenticated",
+    "noActiveSessionFound": "No active order session found",
+    "fetchFailed": "Failed to fetch order session",
+    "createUpdateFailed": "Failed to create/update order session",
+    "updateFailed": "Failed to update order session",
+    "logoutMarkFailed": "Failed to mark order session for logout",
+    "completeFailed": "Failed to complete order session",
+    "assignTabFailed": "Failed to assign order session to tab"
   },
   "layouts": {
     "notFound": "Layout not found",

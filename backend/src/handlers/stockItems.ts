@@ -6,6 +6,7 @@ import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
+import i18n from '../i18n';
 
 export const stockItemsRouter = express.Router();
 
@@ -21,7 +22,7 @@ stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response)
     res.json(stockItemsWithParsedUnits);
   } catch (error) {
     logError('Error fetching stock items:', { error });
-    res.status(500).json({ error: 'Failed to fetch stock items. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.fetchFailed') });
   }
 });
 
@@ -33,7 +34,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     // Validate UUID format (standard UUID format: 8-4-4-4-12 hex characters)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: 'Invalid stock item ID format' });
+      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
     }
     
     const stockItem = await prisma.stockItem.findUnique({
@@ -41,7 +42,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     });
     
     if (!stockItem) {
-      return res.status(404).json({ error: 'Stock item not found' });
+      return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
     }
     
     // Parse the purchasingUnits JSON string back to array
@@ -53,7 +54,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     res.json(stockItemWithParsedUnits);
   } catch (error) {
     logError('Error fetching stock item:', { error });
-    res.status(500).json({ error: 'Failed to fetch stock item. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.fetchOneFailed') });
   }
 });
 
@@ -65,7 +66,7 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     // Validate stock item data
     const validation = validateStockItem({ name, quantity, baseUnit, purchasingUnits: purchasingUnits || [] });
     if (!validation.isValid) {
-      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+      return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: validation.errors });
     }
     
     const stockItem = await prisma.stockItem.create({
@@ -81,8 +82,8 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     res.status(201).json(stockItem);
   } catch (error) {
     logError('Error creating stock item:', { error });
-    res.status(500).json({ error: 'Failed to create stock item. Please check your data and try again.' });
- }
+    res.status(500).json({ error: i18n.t('errors:stockItems.createFailed') });
+  }
 });
 
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
@@ -91,7 +92,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (r
     const { consumptions } = req.body as { consumptions: { stockItemId: string, quantity: number }[] };
     
     if (!consumptions || !Array.isArray(consumptions)) {
-      return res.status(400).json({ error: 'Invalid consumptions data' });
+      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidConsumptionsData') });
     }
 
     // Filter out invalid consumptions and get all stock item IDs to check
@@ -103,7 +104,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (r
     const stockItemIds = validConsumptions.map(c => c.stockItemId);
     
     if (stockItemIds.length === 0) {
-      return res.status(200).json({ message: 'No valid stock items to update' });
+      return res.status(200).json({ message: i18n.t('errors:stockItems.noValidItemsToUpdate') });
     }
 
     // Get all existing stock items in a single query
@@ -158,14 +159,14 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (r
           
           logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
           return res.status(400).json({
-            error: `Insufficient stock for item "${stockItemName}" (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`
+            error: i18n.t('errors:stockItems.insufficientStockDetailed', { name: stockItemName, id: stockItemId, required: quantity, available: currentQuantity })
           });
         }
       }
       
       // Return a warning response instead of failing completely
       return res.status(200).json({
-        message: 'Stock levels updated with warnings',
+        message: i18n.t('api:success.stockLevelsUpdatedWithWarnings'),
         warnings: [`Found and skipped ${invalidStockItemIds.length} invalid stock item references: ${invalidStockItemIds.join(', ')}`],
         invalidStockItemIds
       });
@@ -197,16 +198,16 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (r
         
         logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
         return res.status(400).json({
-          error: `Insufficient stock for item "${stockItemName}" (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`
+          error: i18n.t('errors:stockItems.insufficientStockDetailed', { name: stockItemName, id: stockItemId, required: quantity, available: currentQuantity })
         });
       }
     }
     
-    res.status(200).json({ message: 'Stock levels updated successfully' });
- } catch (error) {
-     logError('Error updating stock levels:', { error });
-     res.status(500).json({ error: 'Failed to update stock levels. Please check your data and try again.' });
- }
+    res.status(200).json({ message: i18n.t('api:success.stockLevelsUpdated') });
+  } catch (error) {
+      logError('Error updating stock levels:', { error });
+      res.status(500).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
+  }
 });
 
 // PUT /api/stock-items/:id - Update a stock item
@@ -217,7 +218,7 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: 'Invalid stock item ID format' });
+      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
     }
     
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
@@ -254,13 +255,13 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
           const unit = purchasingUnits[i];
           const unitError = validatePurchasingUnit(unit);
           if (unitError) {
-            errors.push(`Purchasing Unit ${i + 1}: ${unitError}`);
+            errors.push(i18n.t('errors:stockItems.purchasingUnitError', { index: i + 1, error: unitError }));
           }
         }
       }
       
       if (errors.length > 0) {
-        return res.status(400).json({ error: 'Validation failed', details: errors });
+        return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: errors });
       }
     }
     
@@ -281,7 +282,7 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       });
       
       if (!stockItem) {
-        return res.status(404).json({ error: 'Stock item not found' });
+        return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
       }
       
       return res.json(stockItem);
@@ -295,7 +296,7 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     res.json(stockItem);
   } catch (error) {
     logError('Error updating stock item:', { error });
-    res.status(500).json({ error: 'Failed to update stock item. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.updateFailed') });
   }
 });
 
@@ -307,7 +308,7 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: 'Invalid stock item ID format' });
+      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
     }
     
     // Check if this stock item is used in any product variants
@@ -317,7 +318,7 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     if (stockConsumptions > 0) {
       return res.status(400).json({
-        error: 'Cannot delete stock item. It is currently used in a product recipe.'
+        error: i18n.t('errors:stockItems.cannotDeleteInUse')
       });
     }
     
@@ -328,7 +329,7 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     res.status(204).send();
   } catch (error) {
     logError('Error deleting stock item:', { error });
-    res.status(500).json({ error: 'Failed to delete stock item. The item may be in use in product recipes.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.deleteFailedInUse') });
   }
 });
 
@@ -376,7 +377,7 @@ stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Requ
     res.json(formattedOrphanedConsumptions);
   } catch (error) {
     logError('Error fetching orphaned stock consumption references:', { error });
-    res.status(500).json({ error: 'Failed to fetch orphaned stock consumption references. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.fetchOrphanedFailed') });
   }
 });
 
@@ -423,7 +424,7 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     
     if (formattedOrphanedConsumptions.length === 0) {
       return res.status(200).json({
-        message: 'No orphaned references found',
+        message: i18n.t('api:success.noOrphanedReferences'),
         deletedCount: 0
       });
     }
@@ -439,13 +440,13 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     });
     
     res.status(200).json({
-      message: `Successfully removed ${orphanedIds.length} orphaned stock consumption references`,
+      message: i18n.t('api:success.orphanedReferencesCleaned', { count: orphanedIds.length }),
       deletedCount: orphanedIds.length,
       removedRecords: formattedOrphanedConsumptions
     });
   } catch (error) {
       logError('Error cleaning up orphaned stock consumption references:', { error });
-      res.status(500).json({ error: 'Failed to clean up orphaned stock consumption references. Please try again later.' });
+      res.status(500).json({ error: i18n.t('errors:stockItems.cleanupOrphanedFailed') });
   }
 });
 
@@ -530,13 +531,13 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
                      integrityReport.negativeStockItems > 0;
     
     res.status(200).json({
-      message: hasIssues ? 'Data integrity issues found' : 'Data integrity validation passed',
+      message: hasIssues ? i18n.t('api:success.dataIntegrityIssuesFound') : i18n.t('api:success.dataIntegrityValidationPassed'),
       hasIssues,
       report: integrityReport
     });
   } catch (error) {
     logError('Error validating data integrity:', { error });
-    res.status(500).json({ error: 'Failed to validate data integrity. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:stockItems.validateIntegrityFailed') });
   }
 });
 

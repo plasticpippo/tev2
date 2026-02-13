@@ -30,6 +30,9 @@ COPY tsconfig.json ./
 # Copy source code
 COPY src/ ./src/
 
+# Copy locales for i18n translations
+COPY locales/ ./locales/
+
 # Build the application with explicit config
 RUN npx tsc --project tsconfig.json
 

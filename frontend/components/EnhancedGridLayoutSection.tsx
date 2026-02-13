@@ -1,4 +1,5 @@
 import React, { useState, useCallback, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import EnhancedGridLayout, { EnhancedGridItemData, EnhancedProductGridLayout } from './EnhancedGridLayout';
 import HelpGuide from './HelpGuide';
 
@@ -33,6 +34,8 @@ const EnhancedGridLayoutSection: React.FC<EnhancedGridLayoutSectionProps> = ({
   gutter = 8,
   containerPadding = { x: 16, y: 16 },
 }) => {
+  const { t } = useTranslation();
+
   // Convert the basic grid items to the enhanced format
   const enhancedGridItems = useMemo(() => {
     return gridItems.map(item => ({
@@ -46,7 +49,7 @@ const EnhancedGridLayoutSection: React.FC<EnhancedGridLayoutSectionProps> = ({
 
   // Create the enhanced layout object
   const enhancedLayout: EnhancedProductGridLayout = {
-    name: 'Current Layout',
+    name: t('enhancedGridLayoutSection.currentLayout'),
     tillId: 1, // Placeholder till ID
     columns,
     gridSize,
@@ -87,8 +90,8 @@ const EnhancedGridLayoutSection: React.FC<EnhancedGridLayoutSectionProps> = ({
   return (
     <div className="bg-slate-700 p-4 rounded-lg">
       <h3 className="text-lg font-semibold mb-2 text-amber-200 flex items-center">
-        Enhanced Grid Layout
-        <HelpGuide feature="grid-section" title="Grid Layout Section" description="This is the main grid layout area where you can arrange your product items." position="right" />
+        {t('enhancedGridLayoutSection.title')}
+        <HelpGuide feature="grid-section" title={t('enhancedGridLayoutSection.helpGuide.title')} description={t('enhancedGridLayoutSection.helpGuide.description')} position="right" />
       </h3>
       <EnhancedGridLayout
         layout={enhancedLayout}

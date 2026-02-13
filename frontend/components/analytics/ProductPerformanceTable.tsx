@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { formatCurrency } from '../../utils/formatting';
 
 interface ProductPerformance {
@@ -21,10 +22,12 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
   products, 
   loading = false 
 }) => {
+  const { t } = useTranslation();
+
   if (loading) {
     return (
       <div className="bg-slate-800 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-slate-300 mb-4">Product Performance</h3>
+        <h3 className="text-xl font-bold text-slate-300 mb-4">{t('productPerformanceTable.title')}</h3>
         <div className="animate-pulse">
           <div className="h-4 bg-slate-700 rounded w-1/4 mb-4"></div>
           <div className="space-y-3">
@@ -43,24 +46,24 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
   if (products.length === 0) {
     return (
       <div className="bg-slate-800 p-6 rounded-lg">
-        <h3 className="text-xl font-bold text-slate-300 mb-4">Product Performance</h3>
-        <p className="text-slate-400">No products found for the selected filters.</p>
+        <h3 className="text-xl font-bold text-slate-300 mb-4">{t('productPerformanceTable.title')}</h3>
+        <p className="text-slate-400">{t('productPerformanceTable.noProductsFound')}</p>
       </div>
     );
   }
 
   return (
     <div className="bg-slate-800 p-6 rounded-lg overflow-x-auto">
-      <h3 className="text-xl font-bold text-slate-300 mb-4">Product Performance</h3>
+      <h3 className="text-xl font-bold text-slate-300 mb-4">{t('productPerformanceTable.title')}</h3>
       <table className="min-w-full divide-y divide-slate-700">
         <thead>
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Product</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Category</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Quantity Sold</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Average Price</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Total Revenue</th>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Transactions</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.product')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.category')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.quantitySold')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.averagePrice')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.totalRevenue')}</th>
+            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.transactions')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-700">

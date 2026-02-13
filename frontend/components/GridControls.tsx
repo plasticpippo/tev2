@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import HelpGuide from './HelpGuide';
 
 interface GridControlsProps {
@@ -30,19 +31,21 @@ const GridControls: React.FC<GridControlsProps> = ({
   showGridLines,
   setShowGridLines,
 }) => {
+  const { t } = useTranslation();
+
   return (
     <div className="bg-slate-700 p-4 rounded-lg mb-4">
       <div className="flex justify-between items-center mb-3">
-        <h3 className="text-lg font-semibold text-amber-300">Grid Controls</h3>
-        <HelpGuide feature="grid-controls" title="Grid Controls" description="Adjust the grid layout settings like columns, size, spacing, and snapping behavior to customize your product grid." />
+        <h3 className="text-lg font-semibold text-amber-300">{t('gridControls.title')}</h3>
+        <HelpGuide feature="grid-controls" title={t('gridControls.title')} description={t('gridControls.description')} />
       </div>
       
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
         {/* Columns Control */}
         <div className="relative">
           <label className="block text-sm font-medium text-slate-300 mb-1 flex items-center">
-            Columns: {columns}
-            <HelpGuide feature="columns" title="Columns" description="Number of columns in the grid. More columns allow for wider grids but smaller items." position="top" />
+            {t('gridControls.columns')}: {columns}
+            <HelpGuide feature="columns" title={t('gridControls.columns')} description={t('gridControls.columnsDescription')} position="top" />
           </label>
           <input
             type="range"
@@ -61,8 +64,8 @@ const GridControls: React.FC<GridControlsProps> = ({
         {/* Grid Size Control */}
         <div className="relative">
           <label className="block text-sm font-medium text-slate-300 mb-1 flex items-center">
-            Grid Unit Size: {gridSize.width}px × {gridSize.height}px
-            <HelpGuide feature="grid-size" title="Grid Unit Size" description="Size of each grid cell in pixels. Larger cells mean bigger items but fewer items visible at once." position="top" />
+            {t('gridControls.gridUnitSize')}: {gridSize.width}px × {gridSize.height}px
+            <HelpGuide feature="grid-size" title={t('gridControls.gridUnitSize')} description={t('gridControls.gridUnitSizeDescription')} position="top" />
           </label>
           <div className="flex space-x-2">
             <input
@@ -83,8 +86,8 @@ const GridControls: React.FC<GridControlsProps> = ({
         {/* Gutter Control */}
         <div className="relative">
           <label className="block text-sm font-medium text-slate-300 mb-1 flex items-center">
-            Gutter: {gutter}px
-            <HelpGuide feature="gutter" title="Gutter" description="Spacing between grid items in pixels. Increase for more breathing room between items." position="top" />
+            {t('gridControls.gutter')}: {gutter}px
+            <HelpGuide feature="gutter" title={t('gridControls.gutter')} description={t('gridControls.gutterDescription')} position="top" />
           </label>
           <input
             type="range"
@@ -103,8 +106,8 @@ const GridControls: React.FC<GridControlsProps> = ({
         {/* Container Padding Control */}
         <div className="relative">
           <label className="block text-sm font-medium text-slate-300 mb-1 flex items-center">
-            Padding: {containerPadding.x}px
-            <HelpGuide feature="padding" title="Padding" description="Space around the edges of the grid container. Adjust to control the margin around the grid." position="top" />
+            {t('gridControls.padding')}: {containerPadding.x}px
+            <HelpGuide feature="padding" title={t('gridControls.padding')} description={t('gridControls.paddingDescription')} position="top" />
           </label>
           <input
             type="range"
@@ -134,8 +137,8 @@ const GridControls: React.FC<GridControlsProps> = ({
               <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${snapToGrid ? 'transform translate-x-4' : ''}`}></div>
             </div>
             <div className="ml-3 text-sm font-medium text-slate-300 flex items-center">
-              Snap to Grid
-              <HelpGuide feature="snap-to-grid" title="Snap to Grid" description="When enabled, items will snap to the nearest grid position when moved." position="top" />
+              {t('gridControls.snapToGrid')}
+              <HelpGuide feature="snap-to-grid" title={t('gridControls.snapToGrid')} description={t('gridControls.snapToGridDescription')} position="top" />
             </div>
           </label>
         </div>
@@ -154,8 +157,8 @@ const GridControls: React.FC<GridControlsProps> = ({
               <div className={`absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform ${showGridLines ? 'transform translate-x-4' : ''}`}></div>
             </div>
             <div className="ml-3 text-sm font-medium text-slate-300 flex items-center">
-              Show Grid Lines
-              <HelpGuide feature="show-grid-lines" title="Show Grid Lines" description="Toggle visibility of grid lines to help with alignment and positioning." position="top" />
+              {t('gridControls.showGridLines')}
+              <HelpGuide feature="show-grid-lines" title={t('gridControls.showGridLines')} description={t('gridControls.showGridLinesDescription')} position="top" />
             </div>
           </label>
         </div>

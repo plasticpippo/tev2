@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import HelpGuide from './HelpGuide';
 
 interface HelpStep {
   id: string;
-  title: string;
-  description: string;
+  titleKey: string;
+  descriptionKey: string;
   elementId: string;
   position?: 'top' | 'bottom' | 'left' | 'right';
 }
@@ -15,49 +16,50 @@ interface HelpSystemProps {
 }
 
 const HelpSystem: React.FC<HelpSystemProps> = ({ isActive = false, onComplete }) => {
+  const { t } = useTranslation();
   const [currentStep, setCurrentStep] = useState(0);
   const [showTour, setShowTour] = useState(isActive);
   
   const helpSteps: HelpStep[] = [
     {
       id: 'step1',
-      title: 'Welcome to Grid Customization',
-      description: 'This guide will help you understand how to customize your product grid layout.',
+      titleKey: 'helpSystem.steps.welcome.title',
+      descriptionKey: 'helpSystem.steps.welcome.description',
       elementId: 'layout-customizer-title',
       position: 'bottom'
     },
     {
       id: 'step2',
-      title: 'Available Products Panel',
-      description: 'Drag products from this panel onto the grid canvas to add them to your layout.',
+      titleKey: 'helpSystem.steps.availableProducts.title',
+      descriptionKey: 'helpSystem.steps.availableProducts.description',
       elementId: 'available-products-panel',
       position: 'right'
     },
     {
       id: 'step3',
-      title: 'Grid Layout Canvas',
-      description: 'This is where you arrange your products. Drag items to reposition them.',
+      titleKey: 'helpSystem.steps.gridCanvas.title',
+      descriptionKey: 'helpSystem.steps.gridCanvas.description',
       elementId: 'grid-canvas',
       position: 'top'
     },
     {
       id: 'step4',
-      title: 'Grid Controls',
-      description: 'Adjust grid settings like columns, size, and spacing to fit your needs.',
+      titleKey: 'helpSystem.steps.gridControls.title',
+      descriptionKey: 'helpSystem.steps.gridControls.description',
       elementId: 'grid-controls',
       position: 'bottom'
     },
     {
       id: 'step5',
-      title: 'Layout Management',
-      description: 'Save, load, and manage different grid layouts for different purposes.',
+      titleKey: 'helpSystem.steps.layoutManagement.title',
+      descriptionKey: 'helpSystem.steps.layoutManagement.description',
       elementId: 'layout-management',
       position: 'left'
     },
     {
       id: 'step6',
-      title: 'Keyboard Shortcuts',
-      description: 'Use Ctrl+Z to undo, Ctrl+Y to redo, and arrow keys to fine-tune item positions.',
+      titleKey: 'helpSystem.steps.keyboardShortcuts.title',
+      descriptionKey: 'helpSystem.steps.keyboardShortcuts.description',
       elementId: 'keyboard-shortcuts',
       position: 'top'
     }
@@ -103,7 +105,7 @@ const HelpSystem: React.FC<HelpSystemProps> = ({ isActive = false, onComplete })
           <button 
             onClick={handleClose}
             className="text-slate-400 hover:text-white"
-            aria-label="Close help tour"
+            aria-label={t('helpSystem.ariaLabel.closeHelpTour')}
           >
             &times;
           </button>
@@ -111,12 +113,12 @@ const HelpSystem: React.FC<HelpSystemProps> = ({ isActive = false, onComplete })
         
         <div className="mb-4">
           <div className="flex justify-between items-start">
-            <h3 className="text-xl font-bold text-amber-300">{currentHelpStep.title}</h3>
+            <h3 className="text-xl font-bold text-amber-300">{t(currentHelpStep.titleKey)}</h3>
             <span className="text-slate-400 text-sm">
-              Step {currentStep + 1} of {helpSteps.length}
+              {t('helpSystem.stepCounter', { current: currentStep + 1, total: helpSteps.length })}
             </span>
           </div>
-          <p className="mt-2 text-slate-300">{currentHelpStep.description}</p>
+          <p className="mt-2 text-slate-300">{t(currentHelpStep.descriptionKey)}</p>
         </div>
         
         <div className="flex justify-between mt-6">
@@ -129,14 +131,14 @@ const HelpSystem: React.FC<HelpSystemProps> = ({ isActive = false, onComplete })
                 : 'bg-slate-600 hover:bg-slate-500 text-white'
             }`}
           >
-            Previous
+            {t('helpSystem.buttons.previous')}
           </button>
           
           <button
             onClick={handleNext}
             className="px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded"
           >
-            {currentStep === helpSteps.length - 1 ? 'Finish' : 'Next'}
+            {currentStep === helpSteps.length - 1 ? t('helpSystem.buttons.finish') : t('helpSystem.buttons.next')}
           </button>
         </div>
       </div>
