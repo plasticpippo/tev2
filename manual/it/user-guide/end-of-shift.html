@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fine Turno - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Fine Turno</h1>
+                <p class="page-description">
+                    Impara come disconnetterti correttamente, comprendi la persistenza della sessione e consegne al prossimo membro del personale.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="logging-out">Disconnessione</h2>
+                    <p>Per disconnettersi dal sistema POS:</p>
+                    <ol>
+                        <li>Individua il tuo nome utente nel <strong>pannello ordini</strong> (lato destro dello schermo)</li>
+                        <li>Clicca il pulsante <strong>Disconnetti</strong> accanto al tuo nome</li>
+                        <li>Verrai riportato alla schermata di accesso</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Order panel showing user info and logout button -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128682;</div>
+                        <div class="image-placeholder-text">
+                            Pannello Ordini con Pulsante Disconnessione<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            Disconnettiti sempre quando lasci il terminale POS. Questo previene accessi non autorizzati e garantisce la corretta tracciabilità.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="session-persistence">Comprensione Persistenza Sessione</h2>
+                    <p>Informazioni importanti su come i dati persistono nel sistema:</p>
+                    
+                    <h3>Cosa Persiste Dopo la Disconnessione</h3>
+                    <ul>
+                        <li><strong>Conti Aperti</strong> - Tutti i conti salvati rimangono nel sistema</li>
+                        <li><strong>Stato Tavoli</strong> - Le assegnazioni tavoli correnti rimangono</li>
+                        <li><strong>Storico Ordini</strong> - Tutte le transazioni completate sono salvate</li>
+                    </ul>
+                    
+                    <h3>Cosa NON Persiste</h3>
+                    <ul>
+                        <li><strong>Ordine Corrente</strong> - Gli ordini non salvati vengono persi quando ti disconnetti</li>
+                        <li><strong>Stato Accesso</strong> - Il prossimo utente deve accedere con le proprie credenziali</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Prima di disconnetterti, controlla se ci sono conti aperti che devono essere elaborati. I conti salvati saranno disponibili per il prossimo membro del personale.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="handover-checklist">Checklist Fine Turno</h2>
+                    <p>Prima di terminare il tuo turno, completa questi passaggi:</p>
+                    
+                    <h3>1. Elabora Ordini in Sospeso</h3>
+                    <ul>
+                        <li>Controlla se ci sono conti aperti</li>
+                        <li>Elabora pagamenti per ordini pronti</li>
+                        <li>Trasferisci articoli ad altri conti se necessario</li>
+                        <li>Chiudi conti vuoti</li>
+                    </ul>
+                    
+                    <h3>2. Verifica Stato Tavoli</h3>
+                    <ul>
+                        <li>Controlla che i tavoli siano contrassegnati correttamente</li>
+                        <li>Assicurati che gli ordini completati siano pagati</li>
+                    </ul>
+                    
+                    <h3>3. Completa Disconnessione</h3>
+                    <ul>
+                        <li>Clicca Disconnessione nel pannello ordini</li>
+                        <li>Conferma la disconnessione se richiesto</li>
+                        <li>Aspetta che appaia la schermata di accesso</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="handover">Consegnare al Prossimo Membro del Personale</h2>
+                    <p>Quando consegni al prossimo membro del personale:</p>
+                    <ol>
+                        <li><strong>Elabora o trasferisci conti aperti</strong> - Non lasciare ordini attivi incustoditi</li>
+                        <li><strong>Informare il prossimo membro del personale</strong> - Racconta loro di eventuali ordini in sospeso</li>
+                        <li><strong>Disconnettiti completamente</strong> - Non lasciare la tua sessione attiva</li>
+                        <li><strong>Consegnare verbalmente</strong> - Spiega brevemente eventuali situazioni in corso</li>
+                    </ol>
+                    
+                    <div class="callout callout-success">
+                        <div class="callout-title">Best Practice</div>
+                        <div class="callout-content">
+                            Una buona consegna include: nomi dei conti aperti, stato dei tavoli e istruzioni speciali. Questo garantisce continuità del servizio per i clienti.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="daily-closing">Chiusura Giornaliera (Admin)</h2>
+                    <p>Alla fine della giornata lavorativa, gli amministratori dovrebbero eseguire una <strong>Chiusura Giornaliera</strong>:</p>
+                    <ol>
+                        <li>Assicurati che tutte le transazioni siano complete</li>
+                        <li>Clicca il pulsante <strong>Admin</strong></li>
+                        <li>Vai a <strong>Chiusura Giornaliera</strong></li>
+                        <li>Rivedi il riepilogo di chiusura</li>
+                        <li>Clicca <strong>Chiudi Giorno</strong> per finalizzare</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Nota</div>
+                        <div class="callout-content">
+                            La chiusura giornaliera viene tipicamente eseguita da un manager o supervisore alla fine della giornata lavorativa. Genera report e resetta alcuni contatori giornalieri.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="reports-overview">Panoramica Report</h2>
+                    <p>Gli amministratori possono accedere a vari report:</p>
+                    
+                    <ul>
+                        <li><strong>Storico Transazioni</strong> - Visualizza tutte le vendite completate</li>
+                        <li><strong>Riepilogo Chiusura Giornaliera</strong> - Report finanziario di fine giornata</li>
+                        <li><strong>Analisi</strong> - Trend di vendita e metriche di prestazione</li>
+                        <li><strong>Consumi Dettagliati</strong> - Utilizzo magazzino per prodotto</li>
+                    </ul>
+                    
+                    <p>Questi report aiutano a tracciare le prestazioni aziendali e possono essere accessibili dal Pannello Admin.
+                </div>
+
+                <div class="section">
+                    <h2 id="security-reminder">Promemoria Sicurezza</h2>
+                    <p>Ricorda queste pratiche di sicurezza alla fine di ogni turno:</p>
+                    <ul>
+                        <li>Disconnettiti sempre - non lasciare mai la tua sessione attiva</li>
+                        <li>Non condividere le password - ogni utente ha il proprio account</li>
+                        <li>Proteggi il terminale - assicurati che nessun altro possa accedervi</li>
+                        <li>Segnala problemi - comunica al tuo amministratore qualsiasi preoccupazione</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

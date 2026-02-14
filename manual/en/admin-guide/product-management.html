@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Management - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Product Management</h1>
+                <p class="page-description">
+                    Products are the items you sell in your POS system. This guide explains how to create, edit, and manage products and their variants, including pricing, categorization, and stock consumption settings.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="viewing-products">Viewing All Products</h2>
+                    <p>Navigate to the Products section from the Admin Panel sidebar to see a complete list of all products in your system.</p>
+                    
+                    <!-- SCREENSHOT: Product management list showing products with variants -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Product Management List<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Product List Features</h3>
+                    <ul>
+                        <li><strong>Product Name:</strong> The main product identifier</li>
+                        <li><strong>Category:</strong> Which category the product belongs to</li>
+                        <li><strong>Variants:</strong> Number of variants configured for the product</li>
+                        <li><strong>Actions:</strong> Edit and delete buttons for each product</li>
+                    </ul>
+                    
+                    <p>Products are organized by category, making it easy to find related items. You can scroll through the list or use the search function to locate specific products.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-products">Adding New Products</h2>
+                    <p>To add a new product to your catalog:</p>
+                    
+                    <ol>
+                        <li>Click the <strong>Add Product</strong> button at the top of the product list</li>
+                        <li>Enter the <strong>Product Name</strong> (required)</li>
+                        <li>Select a <strong>Category</strong> from the dropdown menu (required)</li>
+                        <li>Add one or more <strong>Variants</strong> (see Variants section below)</li>
+                        <li>Click <strong>Save</strong> to create the product</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Product modal/form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Add Product Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Required Fields:</strong> Both the product name and category must be specified before you can save a new product. Variants are also required - a product must have at least one variant to be sellable.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-products">Editing Existing Products</h2>
+                    <p>To modify an existing product:</p>
+                    
+                    <ol>
+                        <li>Locate the product in the product list</li>
+                        <li>Click the <strong>Edit</strong> button (pencil icon)</li>
+                        <li>Modify the product name or category as needed</li>
+                        <li>Add, edit, or remove variants</li>
+                        <li>Click <strong>Save</strong> to apply your changes</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Important:</strong> Editing a product affects all future transactions. Past transactions retain the product information as it was at the time of sale.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-products">Deleting Products</h2>
+                    <p>To remove a product from your catalog:</p>
+                    
+                    <ol>
+                        <li>Locate the product in the product list</li>
+                        <li>Click the <strong>Delete</strong> button (trash icon)</li>
+                        <li>Confirm the deletion when prompted</li>
+                    </ol>
+                    
+                    <div class="callout callout-danger">
+                        <strong>Warning:</strong> Deleting a product is permanent. All variants and their associated data (including stock consumption configurations) will be removed. This action cannot be undone.
+                    </div>
+                    
+                    <p>If a product has been used in past transactions, consider marking it as unavailable rather than deleting it to maintain historical records.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="managing-variants">Managing Product Variants</h2>
+                    <p>Variants represent different versions or options of a product. Every product must have at least one variant to be sellable.</p>
+                    
+                    <h3>What Are Variants?</h3>
+                    <p>Variants allow you to offer different options for the same product. Common uses include:</p>
+                    <ul>
+                        <li><strong>Size Options:</strong> Small, Medium, Large</li>
+                        <li><strong>Flavor Options:</strong> Chocolate, Vanilla, Strawberry</li>
+                        <li><strong>Preparation Styles:</strong> Regular, Decaf, Extra Shot</li>
+                        <li><strong>Portion Sizes:</strong> Single, Double, Family Size</li>
+                    </ul>
+                    
+                    <h3>Adding Variants</h3>
+                    <p>When creating or editing a product, you can add variants:</p>
+                    <ol>
+                        <li>Click <strong>Add Variant</strong> in the product form</li>
+                        <li>Enter the <strong>Variant Name</strong> (e.g., "Large")</li>
+                        <li>Set the <strong>Price</strong> for this variant</li>
+                        <li>Optionally configure additional settings (see below)</li>
+                        <li>Repeat for additional variants</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Variant configuration form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Variant Configuration Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Variant Settings</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Name</strong></td>
+                                    <td>The variant name displayed in the POS (e.g., "Large", "Chocolate")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Price</strong></td>
+                                    <td>The selling price for this specific variant</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Favourite</strong></td>
+                                    <td>Mark as favourite for quick access in the POS grid</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Background Color</strong></td>
+                                    <td>Custom button color for visual identification</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Text Color</strong></td>
+                                    <td>Text color for the variant button</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stock Consumption</strong></td>
+                                    <td>Define which stock items are consumed when sold</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="pricing">Pricing and Tax Settings</h2>
+                    <p>Each variant has its own price, allowing for flexible pricing based on size, quantity, or other factors.</p>
+                    
+                    <h3>Setting Prices</h3>
+                    <ul>
+                        <li>Enter the price in your local currency</li>
+                        <li>Prices can include decimal values (e.g., 12.99)</li>
+                        <li>Tax is calculated based on your system settings</li>
+                    </ul>
+                    
+                    <h3>Tax Behavior</h3>
+                    <p>The way tax is applied depends on your Settings configuration:</p>
+                    <ul>
+                        <li><strong>Tax Inclusive:</strong> The price you enter includes tax; the system calculates the base price</li>
+                        <li><strong>Tax Exclusive:</strong> Tax is added on top of the price you enter</li>
+                        <li><strong>No Tax:</strong> The price you enter is the final price with no tax calculation</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Check your Settings to understand how tax affects your pricing. The same price may result in different final amounts depending on your tax mode.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="favourites">Marking Favourites</h2>
+                    <p>Favourites are variants that appear in a special "Favourites" category in the POS for quick access.</p>
+                    
+                    <h3>Setting a Variant as Favourite</h3>
+                    <ol>
+                        <li>Edit the product containing the variant</li>
+                        <li>Find the variant you want to mark</li>
+                        <li>Check the <strong>Favourite</strong> checkbox</li>
+                        <li>Save the product</li>
+                    </ol>
+                    
+                    <h3>How Favourites Work</h3>
+                    <ul>
+                        <li>Favourites appear in a dedicated "Favourites" tab in the POS</li>
+                        <li>Multiple variants can be marked as favourites</li>
+                        <li>Favourites from all categories are collected in one place</li>
+                        <li>Useful for frequently ordered items or promotional products</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Favourites tab in POS view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#11088;</div>
+                        <div class="image-placeholder-text">
+                            Favourites Tab in POS<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="button-colors">Customizing Button Colors</h2>
+                    <p>Each variant can have a custom button color, helping staff quickly identify products in the POS grid.</p>
+                    
+                    <h3>Setting Button Colors</h3>
+                    <ol>
+                        <li>Edit the product and locate the variant</li>
+                        <li>Click on the <strong>Background Color</strong> picker</li>
+                        <li>Choose a color from the palette or enter a hex code</li>
+                        <li>Optionally set a <strong>Text Color</strong> for contrast</li>
+                        <li>Save the product</li>
+                    </ol>
+                    
+                    <h3>Best Practices for Colors</h3>
+                    <ul>
+                        <li>Use consistent colors for related products</li>
+                        <li>Ensure text is readable against the background</li>
+                        <li>Consider color-blind users - don't rely solely on color to differentiate</li>
+                        <li>Use high contrast for important or frequently used items</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-consumption">Configuring Stock Consumption</h2>
+                    <p>Stock consumption allows the system to automatically track inventory when products are sold. Each variant can be configured to consume specific stock items.</p>
+                    
+                    <h3>Setting Up Stock Consumption</h3>
+                    <ol>
+                        <li>Edit the product and locate the variant</li>
+                        <li>Find the <strong>Stock Consumption</strong> section</li>
+                        <li>Click <strong>Add Stock Item</strong></li>
+                        <li>Select the stock item to consume</li>
+                        <li>Enter the quantity consumed per sale</li>
+                        <li>Repeat for additional stock items</li>
+                        <li>Save the product</li>
+                    </ol>
+                    
+                    <h3>Example Configuration</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Product Variant</th>
+                                    <th>Stock Item</th>
+                                    <th>Quantity Consumed</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Coffee - Large</td>
+                                    <td>Coffee Beans</td>
+                                    <td>20g</td>
+                                </tr>
+                                <tr>
+                                    <td>Coffee - Large</td>
+                                    <td>Milk</td>
+                                    <td>200ml</td>
+                                </tr>
+                                <tr>
+                                    <td>Coffee - Large</td>
+                                    <td>Large Cup</td>
+                                    <td>1 unit</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> Stock items must be created in the Stock Items section before they can be assigned to product variants.
+                    </div>
+                    
+                    <!-- SCREENSHOT: Stock consumption configuration in variant edit form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Stock Consumption Configuration<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="categories">Category Assignment</h2>
+                    <p>Every product must be assigned to a category. Categories organize products in the POS interface and determine which tills can see which products.</p>
+                    
+                    <h3>Assigning a Category</h3>
+                    <p>When creating or editing a product, select a category from the dropdown menu. The category determines:</p>
+                    <ul>
+                        <li>Where the product appears in the POS category tabs</li>
+                        <li>Which tills can access the product (based on category visibility)</li>
+                        <li>How the product is grouped in reports</li>
+                    </ul>
+                    
+                    <h3>Changing Categories</h3>
+                    <p>You can move a product to a different category at any time:</p>
+                    <ol>
+                        <li>Edit the product</li>
+                        <li>Select a new category from the dropdown</li>
+                        <li>Save the changes</li>
+                    </ol>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Plan your category structure carefully. A well-organized category system makes it easier for staff to find products quickly.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

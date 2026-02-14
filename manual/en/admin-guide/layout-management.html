@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Layout Management - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Layout Management</h1>
+                <p class="page-description">
+                    Layout management allows you to customize how products appear on each till's POS screen. Create custom arrangements, share layouts between tills, and optimize the product grid for efficient service.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Overview</h2>
+                    <p>Layouts determine the visual arrangement of products in the POS interface. Each till can have its own layout, or you can create shared layouts that can be applied to multiple tills.</p>
+                    
+                    <h3>Layout Types</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Till-Specific Layout</strong></td>
+                                    <td>Custom layout for a single till</td>
+                                    <td>Unique configurations per terminal</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Shared Layout</strong></td>
+                                    <td>Reusable layout that can be applied to multiple tills</td>
+                                    <td>Standard layouts across similar terminals</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-layouts">Creating Till-Specific Layouts</h2>
+                    <p>Each till can have its own custom layout for each category. The layout determines where each product variant appears in the grid.</p>
+                    
+                    <h3>Accessing Layout Editor</h3>
+                    <ol>
+                        <li>Log in to the POS on the target till</li>
+                        <li>Enter <strong>Admin Mode</strong></li>
+                        <li>Navigate to the category you want to arrange</li>
+                        <li>Long-press or right-click on the product grid</li>
+                        <li>Select <strong>Edit Layout</strong> or use the layout editing interface</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Layout editor in POS -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128302;</div>
+                        <div class="image-placeholder-text">
+                            POS Layout Editor<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Arranging Products</h3>
+                    <ol>
+                        <li>Drag products to reposition them in the grid</li>
+                        <li>Products snap to a 4-column grid</li>
+                        <li>Multiple rows can be used</li>
+                        <li>Layout saves automatically</li>
+                    </ol>
+                    
+                    <h3>Grid Configuration</h3>
+                    <ul>
+                        <li><strong>Columns:</strong> Fixed at 4 columns</li>
+                        <li><strong>Rows:</strong> Unlimited - scroll as needed</li>
+                        <li><strong>Position:</strong> Specified by gridColumn (1-4) and gridRow (starting at 1)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="shared-layouts">Creating Shared Layouts</h2>
+                    <p>Shared layouts allow you to create a standard arrangement once and apply it to multiple tills.</p>
+                    
+                    <h3>Creating a Shared Layout</h3>
+                    <ol>
+                        <li>Navigate to <strong>Layout Management</strong> in the Admin Panel</li>
+                        <li>Click <strong>Create Shared Layout</strong></li>
+                        <li>Enter a <strong>Name</strong> for the layout</li>
+                        <li>Select the <strong>Category</strong> this layout applies to</li>
+                        <li>Add products and specify their positions</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Shared layout creation form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Create Shared Layout<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Shared Layout Options</h3>
+                    <ul>
+                        <li><strong>Name:</strong> Descriptive identifier for the layout</li>
+                        <li><strong>Category:</strong> Which product category this layout arranges</li>
+                        <li><strong>Positions:</strong> Product-variant-to-grid-position mappings</li>
+                        <li><strong>Owner:</strong> User who created the layout</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="applying-layouts">Applying Shared Layouts</h2>
+                    <p>Once you've created a shared layout, you can apply it to any till.</p>
+                    
+                    <h3>Loading a Layout to a Till</h3>
+                    <ol>
+                        <li>Navigate to <strong>Shared Layouts</strong> in the Admin Panel</li>
+                        <li>Find the layout you want to apply</li>
+                        <li>Click <strong>Load to Till</strong> or use the "Load to Till" action</li>
+                        <li>Select the target till from the list</li>
+                        <li>Confirm the action</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> Loading a shared layout replaces any existing layout for that till and category combination. The layout is copied, not linked, so changes to the shared layout won't affect tills where it's already loaded.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-layouts">Editing Layouts</h2>
+                    <p>You can modify existing layouts at any time.</p>
+                    
+                    <h3>Editing Till-Specific Layouts</h3>
+                    <ol>
+                        <li>Log in to the POS on the target till</li>
+                        <li>Navigate to the category</li>
+                        <li>Enter layout edit mode</li>
+                        <li>Drag products to new positions</li>
+                        <li>Changes save automatically</li>
+                    </ol>
+                    
+                    <h3>Editing Shared Layouts</h3>
+                    <ol>
+                        <li>Navigate to <strong>Shared Layouts</strong> in Admin Panel</li>
+                        <li>Click <strong>Edit</strong> on the layout</li>
+                        <li>Modify the layout configuration</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-layouts">Deleting Layouts</h2>
+                    <p>Remove layouts when they're no longer needed.</p>
+                    
+                    <h3>Deleting a Till Layout</h3>
+                    <ol>
+                        <li>Log in to the POS on the target till</li>
+                        <li>Navigate to the category</li>
+                        <li>Enter layout edit mode</li>
+                        <li>Select <strong>Reset Layout</strong> or <strong>Clear Layout</strong></li>
+                        <li>Confirm the action</li>
+                    </ol>
+                    
+                    <h3>Deleting a Shared Layout</h3>
+                    <ol>
+                        <li>Navigate to <strong>Shared Layouts</strong> in Admin Panel</li>
+                        <li>Click <strong>Delete</strong> on the layout</li>
+                        <li>Confirm the deletion</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Warning:</strong> Deleting a shared layout does not affect tills where it's already loaded. Those tills will retain their copy of the layout.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="favourites-category">Favourites Category</h2>
+                    <p>The Favourites category is a special pseudo-category that shows all products marked as favourites, regardless of which regular category they belong to.</p>
+                    
+                    <h3>Creating Favourites Layout</h3>
+                    <ol>
+                        <li>Products must be marked as favourites in their variant settings</li>
+                        <li>The Favourites category (ID: -1) appears in the POS category list</li>
+                        <li>Create a layout for the Favourites category just like any other</li>
+                    </ol>
+                    
+                    <h3>Layout for Favourites</h3>
+                    <ul>
+                        <li>All favourite products appear in this category</li>
+                        <li>You can customize their arrangement</li>
+                        <li>Useful for quick access to popular items</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Layout Design</h3>
+                    <ul>
+                        <li>Place frequently ordered items in the top rows</li>
+                        <li>Group related products together</li>
+                        <li>Consider the reach zone for touch-screen terminals</li>
+                        <li>Use consistent positioning across similar tills</li>
+                    </ul>
+                    
+                    <h3>Shared Layouts</h3>
+                    <ul>
+                        <li>Create shared layouts for standard terminal configurations</li>
+                        <li>Use different layouts for different terminal types (e.g., bar vs. counter)</li>
+                        <li>Document which tills use which layouts</li>
+                        <li>Update shared layouts when products change</li>
+                    </ul>
+                    
+                    <h3>Maintenance</h3>
+                    <ul>
+                        <li>Review layouts when adding new products</li>
+                        <li>Remove layouts for discontinued products</li>
+                        <li>Test layouts by logging into each till</li>
+                        <li>Consider staff feedback on layout efficiency</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Use shared layouts to maintain consistency across similar terminals, then make small adjustments for specific locations as needed.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="troubleshooting">Troubleshooting</h2>
+                    
+                    <h3>Products Not Appearing</h3>
+                    <p>If products aren't appearing in the POS grid:</p>
+                    <ul>
+                        <li>Check that the category is visible for that till</li>
+                        <li>Verify the product has at least one variant</li>
+                        <li>Ensure the product is in an active category</li>
+                    </ul>
+                    
+                    <h3>Layout Not Saving</h3>
+                    <p>If layout changes aren't saving:</p>
+                    <ul>
+                        <li>Check network connectivity</li>
+                        <li>Ensure you're logged in with proper permissions</li>
+                        <li>Try refreshing the page</li>
+                    </ul>
+                    
+                    <h3>Shared Layout Not Applying</h3>
+                    <p>If a shared layout isn't applying to a till:</p>
+                    <ul>
+                        <li>Verify you're loading to the correct till</li>
+                        <li>Check that the layout category matches the POS category</li>
+                        <li>The till may have a specific layout overriding the shared one</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

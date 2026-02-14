@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Dashboard & Analytics</h1>
+                <p class="page-description">
+                    The Dashboard provides a real-time overview of your business performance, while Analytics offers detailed sales reports and trends to help you make informed decisions.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="dashboard-overview">Dashboard Overview</h2>
+                    <p>The Dashboard is the first screen you see when entering the Admin Panel. It provides an at-a-glance view of your current business status.</p>
+                    
+                    <!-- SCREENSHOT: Full dashboard view showing all widgets -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128200;</div>
+                        <div class="image-placeholder-text">
+                            Dashboard Overview<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Key Dashboard Components</h3>
+                    <ul>
+                        <li><strong>Sales Ticker:</strong> Real-time total sales for the current business day</li>
+                        <li><strong>Business Day Status:</strong> Shows when the current business day started and its status</li>
+                        <li><strong>Till Overview:</strong> Quick view of all active tills and their status</li>
+                        <li><strong>Open Tabs:</strong> Summary of currently open customer tabs</li>
+                        <li><strong>Recent Closings:</strong> List of recent daily closing reports</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="sales-ticker">Total Sales Ticker</h2>
+                    <p>The sales ticker displays the total revenue for the current business day. This figure updates in real-time as transactions are processed.</p>
+                    
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> The sales total reflects all completed transactions since the business day started. It does not include open tabs that haven't been paid yet.
+                    </div>
+                    
+                    <h3>Understanding the Sales Total</h3>
+                    <ul>
+                        <li>The total includes all payment methods (cash, card, etc.)</li>
+                        <li>Tips are included in the displayed total</li>
+                        <li>Tax is displayed according to your tax configuration settings</li>
+                        <li>The total resets when a new business day begins</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day">Business Day Management</h2>
+                    <p>The business day is the fundamental time period for tracking sales and generating reports. Understanding how it works is essential for accurate daily closing.</p>
+                    
+                    <h3>Business Day Start</h3>
+                    <p>The business day can start in two ways:</p>
+                    <ul>
+                        <li><strong>Automatic Start:</strong> The system automatically starts a new business day at the configured time (e.g., 6:00 AM)</li>
+                        <li><strong>After Manual Close:</strong> If you manually close the previous day, a new business day begins with the next transaction</li>
+                    </ul>
+                    
+                    <h3>Business Day Status Display</h3>
+                    <p>The dashboard shows:</p>
+                    <ul>
+                        <li><strong>Start Time:</strong> When the current business day began</li>
+                        <li><strong>Status:</strong> Whether the day is "Open" or "Closed"</li>
+                        <li><strong>Duration:</strong> How long the business day has been active</li>
+                    </ul>
+                    
+                    <h3>Manually Closing the Business Day</h3>
+                    <p>From the dashboard, you can initiate the daily closing process:</p>
+                    <ol>
+                        <li>Click the <strong>Close Business Day</strong> button</li>
+                        <li>Review the closing summary</li>
+                        <li>Confirm to finalize the closing</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Important:</strong> Closing the business day generates a permanent record. Make sure all transactions for the day have been processed before closing.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-status">Till Status Overview</h2>
+                    <p>The dashboard displays the status of all configured tills in your system.</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Active</strong></td>
+                                    <td>Till is currently in use and processing transactions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Idle</strong></td>
+                                    <td>Till is available but not currently processing orders</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Offline</strong></td>
+                                    <td>Till is not connected or has been disabled</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>Each till entry shows:</p>
+                    <ul>
+                        <li>Till name</li>
+                        <li>Current status</li>
+                        <li>Device assignment (if applicable)</li>
+                        <li>Today's transaction count</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="open-tabs">Open Tabs Summary</h2>
+                    <p>The Open Tabs section shows all customer tabs that have not yet been closed. This helps you track outstanding balances.</p>
+                    
+                    <p>For each open tab, you can see:</p>
+                    <ul>
+                        <li>Tab name or identifier</li>
+                        <li>Current balance</li>
+                        <li>Number of items</li>
+                        <li>Time the tab was opened</li>
+                        <li>Assigned table (if applicable)</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Regularly review open tabs to ensure customers haven't forgotten to settle their bills.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="analytics-overview">Analytics Overview</h2>
+                    <p>The Analytics section provides detailed reports and visualizations of your sales data. Access it from the sidebar navigation.</p>
+                    
+                    <!-- SCREENSHOT: Analytics panel showing charts and graphs -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Analytics Panel<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="date-range-selection">Date Range Selection</h2>
+                    <p>Analytics reports can be filtered by date range to focus on specific periods.</p>
+                    
+                    <h3>Available Date Filters</h3>
+                    <ul>
+                        <li><strong>Today:</strong> Current business day only</li>
+                        <li><strong>Yesterday:</strong> Previous business day</li>
+                        <li><strong>Last 7 Days:</strong> Rolling 7-day period</li>
+                        <li><strong>Last 30 Days:</strong> Rolling 30-day period</li>
+                        <li><strong>Custom Range:</strong> Select specific start and end dates</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="hourly-sales-chart">Hourly Sales Chart</h2>
+                    <p>When viewing "Today" in Analytics, you'll see an hourly sales breakdown. This chart helps identify peak business hours.</p>
+                    
+                    <h3>Using the Hourly Chart</h3>
+                    <ul>
+                        <li>Each bar represents one hour of operation</li>
+                        <li>Height indicates total sales for that hour</li>
+                        <li>Hover over bars to see exact values</li>
+                        <li>Use this data to optimize staffing schedules</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Hourly sales bar chart -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128200;</div>
+                        <div class="image-placeholder-text">
+                            Hourly Sales Chart<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="sales-trends">Sales Trend Charts</h2>
+                    <p>For historical date ranges, Analytics displays trend charts showing how sales have changed over time.</p>
+                    
+                    <h3>Trend Chart Features</h3>
+                    <ul>
+                        <li><strong>Line Graph:</strong> Shows daily sales totals over the selected period</li>
+                        <li><strong>Comparison:</strong> Compare current period with previous periods</li>
+                        <li><strong>Average Line:</strong> See your average daily sales</li>
+                        <li><strong>Peak Indicators:</strong> Highlight best-performing days</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="top-products">Top Performing Products</h2>
+                    <p>Analytics shows your best-selling products, helping you understand customer preferences.</p>
+                    
+                    <h3>Product Performance Metrics</h3>
+                    <ul>
+                        <li><strong>Units Sold:</strong> Total quantity sold in the period</li>
+                        <li><strong>Revenue:</strong> Total revenue generated</li>
+                        <li><strong>Percentage:</strong> Share of total sales</li>
+                    </ul>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Rank</th>
+                                    <th>Product</th>
+                                    <th>Units</th>
+                                    <th>Revenue</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Example Product A</td>
+                                    <td>150</td>
+                                    <td>$1,500.00</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Example Product B</td>
+                                    <td>120</td>
+                                    <td>$960.00</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Example Product C</td>
+                                    <td>95</td>
+                                    <td>$760.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-performance">Category Performance</h2>
+                    <p>View sales breakdown by product category to understand which types of products perform best.</p>
+                    
+                    <h3>Category Analytics Include</h3>
+                    <ul>
+                        <li>Total sales per category</li>
+                        <li>Percentage of overall revenue</li>
+                        <li>Item count sold per category</li>
+                        <li>Visual pie chart representation</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Category performance pie chart or bar chart -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Category Performance Chart<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="exporting-reports">Exporting Reports</h2>
+                    <p>Analytics data can be exported for further analysis in spreadsheet applications or accounting software.</p>
+                    
+                    <h3>Export Options</h3>
+                    <ul>
+                        <li><strong>Print:</strong> Generate a printer-friendly version of the current report</li>
+                        <li><strong>PDF:</strong> Save the report as a PDF document</li>
+                        <li><strong>CSV:</strong> Export raw data for spreadsheet analysis</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Export reports regularly to maintain historical records beyond what's stored in the system.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

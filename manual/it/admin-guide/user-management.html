@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Utenti - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Utenti</h1>
+                <p class="page-description">
+                    Gli account utente permettono al personale di accedere al sistema POS. Questa guida spiega come creare, modificare e gestire gli account utente, inclusa l'assegnazione dei ruoli e la gestione delle password.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="viewing-users">Visualizzazione di Tutti gli Utenti</h2>
+                    <p>Naviga alla sezione Utenti dalla sidebar del Pannello Amministratore per vedere l'elenco completo di tutti gli account utente nel tuo sistema.</p>
+                    
+                    <!-- SCREENSHOT: User management list showing all users -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            Elenco Gestione Utenti<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Informazioni dell'Elenco Utenti</h3>
+                    <p>Per ogni utente, l'elenco visualizza:</p>
+                    <ul>
+                        <li><strong>Nome:</strong> Il nome visualizzato dell'utente</li>
+                        <li><strong>Nome Utente:</strong> L'identificatore per il login</li>
+                        <li><strong>Ruolo:</strong> Admin o Cassiere</li>
+                        <li><strong>Azioni:</strong> Pulsanti modifica ed elimina</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-users">Aggiunta di Nuovi Utenti</h2>
+                    <p>Per creare un nuovo account utente:</p>
+                    
+                    <ol>
+                        <li>Clicca il pulsante <strong>Aggiungi Utente</strong> in cima all'elenco utenti</li>
+                        <li>Inserisci il <strong>Nome</strong> dell'utente (nome visualizzato mostrato nell'interfaccia)</li>
+                        <li>Inserisci un <strong>Nome Utente</strong> (usato per il login)</li>
+                        <li>Inserisci una <strong>Password</strong> per l'account</li>
+                        <li>Seleziona un <strong>Ruolo</strong> (Admin o Cassiere)</li>
+                        <li>Clicca <strong>Salva</strong> per creare l'account</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add User form/modal -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Aggiungi Utente<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Requisiti del Nome Utente</h3>
+                    <ul>
+                        <li>Deve essere univoco (nessun utente può avere lo stesso nome utente)</li>
+                        <li>Non fa distinzione tra maiuscole e minuscole (John e john sono considerati lo stesso)</li>
+                        <li>Deve essere facile da ricordare per l'utente</li>
+                        <li>Non può essere cambiato dopo la creazione (senza eliminare e ricreare)</li>
+                    </ul>
+                    
+                    <h3>Requisiti della Password</h3>
+                    <ul>
+                        <li>Dovrebbe essere lunga almeno 8 caratteri</li>
+                        <li>Dovrebbe includere una combinazione di lettere, numeri e simboli</li>
+                        <li>Le password sono salvate in modo sicuro con hash e crittografia</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Nota di Sicurezza:</strong> Scegli password forti per gli account amministratore. Gli utenti admin hanno pieno accesso al sistema, inclusi dati finanziari sensibili.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-roles">Ruoli e Permessi Utente</h2>
+                    <p>Il sistema POS utilizza il controllo degli accessi basato sui ruoli per gestire cosa gli utenti possono fare. Esistono due ruoli principali:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ruolo</th>
+                                    <th>Permessi</th>
+                                    <th>Uso Tipico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Admin</strong></td>
+                                    <td>
+                                        <ul>
+                                            <li>Accesso completo al Pannello Amministratore</li>
+                                            <li>Crea, modifica, elimina prodotti</li>
+                                            <li>Gestisci utenti e ruoli</li>
+                                            <li>Configura impostazioni di sistema</li>
+                                            <li>Chiudi giornata lavorativa</li>
+                                            <li>Visualizza tutti i report e analisi</li>
+                                            <li>Gestisci inventario e magazzino</li>
+                                            <li>Tutti i permessi del Cassiere</li>
+                                        </ul>
+                                    </td>
+                                    <td>Manager, proprietari, supervisori</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cassiere</strong></td>
+                                    <td>
+                                        <ul>
+                                            <li>Accesso solo all'interfaccia POS</li>
+                                            <li>Elabora ordini e pagamenti</li>
+                                            <li>Crea e gestisci conti</li>
+                                            <li>Assegna tavoli</li>
+                                            <li>Nessun accesso al Pannello Amministratore</li>
+                                        </ul>
+                                    </td>
+                                    <td>Cassieri, camerieri, baristi</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Assegnazione dei Ruoli</h3>
+                    <p>Quando crei un utente, seleziona il ruolo appropriato basato sulle responsabilità del lavoro:</p>
+                    <ul>
+                        <li><strong>Admin:</strong> Per utenti che devono gestire il sistema, configurare impostazioni o visualizzare report</li>
+                        <li><strong>Cassiere:</strong> Per utenti che devono solo elaborare vendite e gestire ordini</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Best Practice:</strong> Limita l'accesso admin solo a chi ne ha veramente bisogno. Più account admin ci sono, maggiore è il rischio di sicurezza.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-users">Modifica degli Account Utente</h2>
+                    <p>Per modificare un account utente esistente:</p>
+                    
+                    <ol>
+                        <li>Individua l'utente nell'elenco utenti</li>
+                        <li>Clicca il pulsante <strong>Modifica</strong> (icona matita)</li>
+                        <li>Modifica i campi desiderati:
+                            <ul>
+                                <li><strong>Nome:</strong> Aggiorna il nome visualizzato</li>
+                                <li><strong>Ruolo:</strong> Cambia tra Admin e Cassiere</li>
+                                <li><strong>Password:</strong> Inserisci una nuova password (opzionale)</li>
+                            </ul>
+                        </li>
+                        <li>Clicca <strong>Salva</strong> per applicare le modifiche</li>
+                    </ol>
+                    
+                    <h3>Cosa Può Essere Cambiato</h3>
+                    <ul>
+                        <li><strong>Nome:</strong> Può essere cambiato in qualsiasi momento</li>
+                        <li><strong>Ruolo:</strong> Può essere promosso o retrocesso secondo necessità</li>
+                        <li><strong>Password:</strong> Può essere reimpostata (vedi sezione Gestione Password)</li>
+                        <li><strong>Nome Utente:</strong> Non può essere cambiato direttamente; crea un nuovo utente invece</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="resetting-passwords">Gestione Password</h2>
+                    <p>Le password sono un componente critico della sicurezza. Il sistema fornisce strumenti per gli amministratori per gestire le password degli utenti.</p>
+                    
+                    <h3>Reimpostazione della Password di un Utente</h3>
+                    <p>Come amministratore, puoi reimpostare la password di qualsiasi utente:</p>
+                    <ol>
+                        <li>Modifica l'account utente</li>
+                        <li>Inserisci una nuova password nel campo <strong>Password</strong></li>
+                        <li>Salva le modifiche</li>
+                        <li>Comunica la nuova password all'utente in modo sicuro</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nota:</strong> Quando reimposti una password, le sessioni esistenti dell'utente rimarranno attive fino a quando non effettueranno il logout o la sessione scadrà. Per preoccupazioni immediate sulla sicurezza, considera la revoca di tutti i token.
+                    </div>
+                    
+                    <h3>Best Practice per la Sicurezza delle Password</h3>
+                    <ul>
+                        <li>Usa password forti e uniche per ogni account</li>
+                        <li>Cambia le password periodicamente</li>
+                        <li>Non condividere mai le password tra gli utenti</li>
+                        <li>Cambia le password immediatamente se sospetti che siano state compromesse</li>
+                        <li>Comunica le nuove password attraverso canali sicuri (non email o messaggi)</li>
+                    </ul>
+                    
+                    <h3>Revoca delle Sessioni Utente</h3>
+                    <p>Se hai bisogno di disconnettere immediatamente un utente da tutti i dispositivi:</p>
+                    <ol>
+                        <li>Questa azione revoca tutti i token di autenticazione per l'utente</li>
+                        <li>L'utente dovrà effettuare il login novamente con la password attuale</li>
+                        <li>Usalo se sospetti accesso non autorizzato o quando un dipendente se ne va</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-users">Eliminazione degli Account Utente</h2>
+                    <p>Per rimuovere un account utente dal sistema:</p>
+                    
+                    <ol>
+                        <li>Individua l'utente nell'elenco utenti</li>
+                        <li>Clicca il pulsante <strong>Elimina</strong> (icona cestino)</li>
+                        <li>Conferma l'eliminazione quando richiesto</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Prima di Eliminare:</strong> Considera quanto segue:
+                        <ul>
+                            <li>Le transazioni storiche manterranno il nome dell'utente</li>
+                            <li>Le chiusure giornaliere faranno ancora riferimento all'utente che le ha effettuate</li>
+                            <li>Non puoi recuperare un account eliminato</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Alternativa all'Eliminazione</h3>
+                    <p>Invece di eliminare un utente, considera:</p>
+                    <ul>
+                        <li>Cambiare il loro ruolo in Cassiere se non hanno più bisogno dell'accesso admin</li>
+                        <li>Cambiare la loro password per impedire il login mantenendo i registri</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-performance">Visualizzazione delle Prestazioni Utente</h2>
+                    <p>Il sistema traccia l'attività dell'utente per l'analisi delle prestazioni. Puoi visualizzare le statistiche individuali degli utenti:</p>
+                    
+                    <h3>Metriche Disponibili</h3>
+                    <ul>
+                        <li><strong>Transazioni Elaborate:</strong> Numero di vendite completate</li>
+                        <li><strong>Vendite Totali:</strong> Fatturato generato dall'utente</li>
+                        <li><strong>Transazione Media:</strong> Importo medio della vendita</li>
+                        <li><strong>Articoli Rimossi:</strong> Tracciamento degli articoli cancellati (per responsabilità)</li>
+                    </ul>
+                    
+                    <h3>Accesso ai Report Utente</h3>
+                    <ol>
+                        <li>Vai alla sezione Utenti</li>
+                        <li>Clicca sul nome dell'utente o sul pulsante <strong>Visualizza Report</strong></li>
+                        <li>Seleziona l'intervallo di date per il report</li>
+                        <li>Rivedi le metriche delle prestazioni</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: User performance report view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Report Prestazioni Utente<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security-considerations">Considerazioni sulla Sicurezza</h2>
+                    <p>La gestione utente è una funzione critica per la sicurezza. Segui queste linee guida per mantenere la sicurezza del sistema:</p>
+                    
+                    <h3>Sicurezza degli Account</h3>
+                    <ul>
+                        <li><strong>Privilegio Minimo:</strong> Concedi il ruolo più basso necessario per i doveri di ogni utente</li>
+                        <li><strong>Audit Regolari:</strong> Rivedi periodicamente gli account utente e rimuovi quelli non necessari</li>
+                        <li><strong>Password Forti:</strong> Applica pratiche di password forti</li>
+                        <li><strong>Azione Immediata:</strong> Disabilita o elimina account immediatamente quando i dipendenti se ne vanno</li>
+                    </ul>
+                    
+                    <h3>Protezione degli Account Admin</h3>
+                    <ul>
+                        <li>Limita il numero di account admin</li>
+                        <li>Usa password uniche e forti per ogni admin</li>
+                        <li>Non condividere mai le credenziali admin</li>
+                        <li>Effettua il logout quando lasci la postazione di lavoro incustodita</li>
+                    </ul>
+                    
+                    <div class="callout callout-danger">
+                        <strong>Critico:</strong> Se un account admin è compromesso, cambia immediatamente la password e rivedi tutta l'attività recente per modifiche non autorizzate.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Working with Tabs - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Working with Tabs</h1>
+                <p class="page-description">
+                    Learn how to create, save, load, and manage open tabs for ongoing orders.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="what-are-tabs">What Are Tabs?</h2>
+                    <p><strong>Tabs</strong> are saved orders that you can keep open for later. They are useful when:</p>
+                    <ul>
+                        <li>Customers want to order more items later</li>
+                        <li>A table has multiple customers who pay separately</li>
+                        <li>You need to step away but want to preserve the order</li>
+                        <li>Customers are split-checking during a meal</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            Tabs persist in the system even after you log out. The next staff member can access and continue working on any open tabs.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-tabs">Creating New Tabs</h2>
+                    <p>To create a new tab:</p>
+                    <ol>
+                        <li>Build your order as usual by adding products</li>
+                        <li>Click <strong>Save Tab</strong> in the order panel</li>
+                        <li>Enter a name for the tab (e.g., "Table 5", "John's Tab")</li>
+                        <li>Click <strong>Create</strong> or press Enter</li>
+                        <li>The order is saved as a tab and the current order clears</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Tab manager showing create new tab interface -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128196;</div>
+                        <div class="image-placeholder-text">
+                            Creating a New Tab<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="loading-tabs">Loading Existing Tabs</h2>
+                    <p>To continue working on a saved tab:</p>
+                    <ol>
+                        <li>Click <strong>Tabs</strong> button in the order panel</li>
+                        <li>The Tab Manager modal opens showing all open tabs</li>
+                        <li>Find the tab you want to load</li>
+                        <li>Click <strong>Load Tab</strong> next to that tab</li>
+                        <li>The order items restore in the order panel</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Tabs are sorted by creation time, with the newest tabs appearing first. Look for your tab by name or scroll through the list.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-to-tabs">Adding Items to Existing Tabs</h2>
+                    <p>To add items to a tab without loading it:</p>
+                    <ol>
+                        <li>Build your current order with new items</li>
+                        <li>Click <strong>Tabs</strong> in the order panel</li>
+                        <li>Find the target tab</li>
+                        <li>Click <strong>Add to Tab</strong> next to that tab</li>
+                        <li>The items are added to the tab and your current order clears</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            You can only add items to tabs if you have items in your current order. Build the order first, then use "Add to Tab".
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="closing-tabs">Closing Tabs</h2>
+                    <p>To close (and delete) a tab:</p>
+                    <ol>
+                        <li>Click <strong>Tabs</strong> in the order panel</li>
+                        <li>Find the tab you want to close</li>
+                        <li>Click <strong>Load Tab</strong> to load it first</li>
+                        <li>Process the payment (click <strong>Payment</strong>)</li>
+                        <li>After payment, the tab is automatically closed</li>
+                    </ol>
+                    
+                    <p>Alternatively, if a tab has no items:</p>
+                    <ol>
+                        <li>Click <strong>Tabs</strong> in the order panel</li>
+                        <li>Find the empty tab</li>
+                        <li>Click <strong>Close Tab</strong> to remove it</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="transferring-items">Transferring Items Between Tabs</h2>
+                    <p>To move items from one tab to another:</p>
+                    <ol>
+                        <li>Click <strong>Tabs</strong> in the order panel</li>
+                        <li>Find the source tab (the tab items are coming from)</li>
+                        <li>Click <strong>Transfer</strong> next to that tab</li>
+                        <li>The Transfer Items modal opens</li>
+                        <li>Select the items you want to transfer</li>
+                        <li>Choose the destination tab</li>
+                        <li>Click <strong>Transfer</strong> to complete</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Transfer items modal showing source and destination selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128260;</div>
+                        <div class="image-placeholder-text">
+                            Transferring Items Between Tabs<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Use Case</div>
+                        <div class="callout-content">
+                            Transfer is useful when customers at the same table want to pay separately. Load the tab, transfer specific items to a new tab, and process payment for each customer's items.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tab-information">Tab Information Display</h2>
+                    <p>The Tab Manager shows for each tab:</p>
+                    <ul>
+                        <li><strong>Tab name</strong> - The name you assigned when creating</li>
+                        <li><strong>Tab total</strong> - The sum of all items in the tab</li>
+                        <li><strong>Table assignment</strong> - Which table the tab is linked to (if any)</li>
+                        <li><strong>Creation date</strong> - When the tab was created</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="tabs-with-tables">Tabs and Tables</h2>
+                    <p>Tabs can be linked to tables:</p>
+                    <ul>
+                        <li>When you assign a table to an order, then save as a tab, the table is remembered</li>
+                        <li>When you load a tab with a table, the table assignment restores</li>
+                        <li>This helps track which tab belongs to which table</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

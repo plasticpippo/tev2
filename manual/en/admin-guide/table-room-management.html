@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table & Room Management - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Table & Room Management</h1>
+                <p class="page-description">
+                    The Table & Room Management section allows you to create and organize your restaurant's physical layout. Define rooms, add tables, and arrange them visually to match your floor plan.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Overview</h2>
+                    <p>The Tables section in the Admin Panel provides three tabs for managing your dining area:</p>
+                    
+                    <ul>
+                        <li><strong>Rooms Tab:</strong> Create and manage dining rooms or areas</li>
+                        <li><strong>Tables Tab:</strong> Add and configure individual tables</li>
+                        <li><strong>Layout Tab:</strong> Visually arrange tables within rooms</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Table management interface showing all three tabs -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128186;</div>
+                        <div class="image-placeholder-text">
+                            Table Management Interface<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="rooms-tab">Managing Rooms</h2>
+                    <p>Rooms represent distinct dining areas in your establishment. Examples include "Main Dining," "Patio," "Bar Area," or "Private Room."</p>
+                    
+                    <h3>Viewing Rooms</h3>
+                    <p>The Rooms tab displays all configured rooms with their descriptions and the number of tables assigned to each.</p>
+                    
+                    <h3>Adding a New Room</h3>
+                    <ol>
+                        <li>Go to the <strong>Rooms</strong> tab</li>
+                        <li>Click <strong>Add Room</strong></li>
+                        <li>Enter a <strong>Room Name</strong> (required)</li>
+                        <li>Optionally add a <strong>Description</strong> for additional details</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Room Names:</strong> Room names must be unique. Choose descriptive names that staff can easily identify.
+                    </div>
+                    
+                    <h3>Editing a Room</h3>
+                    <ol>
+                        <li>Find the room in the list</li>
+                        <li>Click the <strong>Edit</strong> button</li>
+                        <li>Modify the name or description</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <h3>Deleting a Room</h3>
+                    <ol>
+                        <li>Find the room in the list</li>
+                        <li>Click the <strong>Delete</strong> button</li>
+                        <li>Confirm the deletion</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Cannot Delete:</strong> You cannot delete a room that has tables assigned to it. First move or delete all tables in the room, then delete the room.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tables-tab">Managing Tables</h2>
+                    <p>Tables are individual seating locations within rooms. Each table can be assigned to orders and tracked for status.</p>
+                    
+                    <h3>Viewing Tables</h3>
+                    <p>The Tables tab shows all tables with their assigned room, status, and capacity.</p>
+                    
+                    <!-- SCREENSHOT: Tables list view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128186;</div>
+                        <div class="image-placeholder-text">
+                            Tables List View<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Adding a New Table</h3>
+                    <ol>
+                        <li>Go to the <strong>Tables</strong> tab</li>
+                        <li>Click <strong>Add Table</strong></li>
+                        <li>Enter the required information:
+                            <ul>
+                                <li><strong>Table Name/Number:</strong> Identifier for the table (e.g., "Table 1", "T5", "Booth A")</li>
+                                <li><strong>Room:</strong> Select which room the table belongs to</li>
+                            </ul>
+                        </li>
+                        <li>Configure optional settings:
+                            <ul>
+                                <li><strong>Capacity:</strong> Number of seats at the table</li>
+                                <li><strong>Status:</strong> Initial status (usually "Available")</li>
+                                <li><strong>Width/Height:</strong> Visual size in the layout editor</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <h3>Table Status Options</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                    <th>Visual Indicator</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Available</strong></td>
+                                    <td>Table is free and ready for guests</td>
+                                    <td>Green</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Occupied</strong></td>
+                                    <td>Table has guests currently seated</td>
+                                    <td>Red/Orange</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Reserved</strong></td>
+                                    <td>Table is reserved for upcoming guests</td>
+                                    <td>Blue</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unavailable</strong></td>
+                                    <td>Table is out of service (cleaning, maintenance)</td>
+                                    <td>Gray</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Editing a Table</h3>
+                    <ol>
+                        <li>Find the table in the list</li>
+                        <li>Click the <strong>Edit</strong> button</li>
+                        <li>Modify any of the table properties</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <h3>Deleting a Table</h3>
+                    <ol>
+                        <li>Find the table in the list</li>
+                        <li>Click the <strong>Delete</strong> button</li>
+                        <li>Confirm the deletion</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Cannot Delete:</strong> You cannot delete a table that has an open tab associated with it. Close or transfer the tab first.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="layout-tab">Visual Layout Editor</h2>
+                    <p>The Layout tab provides a visual editor for arranging tables within rooms. This helps staff quickly locate tables and understand the restaurant layout.</p>
+                    
+                    <!-- SCREENSHOT: Visual layout editor showing tables in a room -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Visual Layout Editor<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Layout Editor Modes</h3>
+                    <p>The layout editor has three modes:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Function</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>View Mode</strong></td>
+                                    <td>Preview the layout without making changes</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Edit Mode</strong></td>
+                                    <td>Select and modify table properties</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Drag Mode</strong></td>
+                                    <td>Drag tables to reposition them on the canvas</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Arranging Tables</h3>
+                    <ol>
+                        <li>Select the <strong>Room</strong> you want to edit from the dropdown</li>
+                        <li>Switch to <strong>Drag Mode</strong></li>
+                        <li>Click and drag tables to their desired positions</li>
+                        <li>Tables will snap to a grid for alignment</li>
+                        <li>Positions are saved automatically</li>
+                    </ol>
+                    
+                    <h3>Resizing Tables</h3>
+                    <ol>
+                        <li>Switch to <strong>Edit Mode</strong></li>
+                        <li>Click on a table to select it</li>
+                        <li>Drag the corners or edges to resize</li>
+                        <li>Changes are saved automatically</li>
+                    </ol>
+                    
+                    <h3>Keyboard Shortcuts</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Shortcut</th>
+                                    <th>Action</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><kbd>Ctrl+R</kbd></td>
+                                    <td>Refresh data</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+L</kbd></td>
+                                    <td>Switch to Layout tab</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+M</kbd></td>
+                                    <td>Switch to Rooms tab</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+T</kbd></td>
+                                    <td>Switch to Tables tab</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl++</kbd></td>
+                                    <td>Add new table/room</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+D</kbd></td>
+                                    <td>Toggle layout mode</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-capacity">Table Capacity</h2>
+                    <p>Setting table capacity helps with reservation management and seating optimization.</p>
+                    
+                    <h3>Setting Capacity</h3>
+                    <ol>
+                        <li>Edit the table</li>
+                        <li>Enter the <strong>Capacity</strong> (number of seats)</li>
+                        <li>Save the changes</li>
+                    </ol>
+                    
+                    <h3>Using Capacity Information</h3>
+                    <ul>
+                        <li>Helps staff assign appropriate tables to party sizes</li>
+                        <li>Prevents overbooking reservations</li>
+                        <li>Useful for planning seating arrangements</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-assignment">Table Assignment in POS</h2>
+                    <p>Once tables are configured, they can be used in the POS interface for order assignment.</p>
+                    
+                    <h3>Assigning Orders to Tables</h3>
+                    <ol>
+                        <li>In the POS view, add items to the order</li>
+                        <li>Click the <strong>Table</strong> button</li>
+                        <li>Select the room and table from the list</li>
+                        <li>The order is now associated with that table</li>
+                    </ol>
+                    
+                    <h3>Table Status Updates</h3>
+                    <p>Table status can change automatically based on activity:</p>
+                    <ul>
+                        <li>When an order is assigned, status changes to <strong>Occupied</strong></li>
+                        <li>When the bill is paid, status returns to <strong>Available</strong></li>
+                        <li>Staff can manually change status as needed</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Room Organization</h3>
+                    <ul>
+                        <li>Create rooms that match your physical layout</li>
+                        <li>Use descriptive names that staff and customers understand</li>
+                        <li>Consider service zones when defining rooms</li>
+                    </ul>
+                    
+                    <h3>Table Naming</h3>
+                    <ul>
+                        <li>Use a consistent naming convention (e.g., "T1", "T2" or "Table 1", "Table 2")</li>
+                        <li>Consider numbering tables in a logical sequence based on location</li>
+                        <li>For special tables, use descriptive names (e.g., "Patio 1", "Bar Seat 1")</li>
+                    </ul>
+                    
+                    <h3>Layout Design</h3>
+                    <ul>
+                        <li>Position tables to match the physical floor plan</li>
+                        <li>Leave adequate space between tables in the layout</li>
+                        <li>Size tables proportionally to their real-world size</li>
+                        <li>Update the layout when physical changes are made</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> A well-designed layout helps new staff learn the floor plan faster and reduces confusion during busy service.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

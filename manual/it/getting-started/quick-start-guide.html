@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guida Rapida - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Guida Rapida</h1>
+                <p class="page-description">
+                    Inizia rapidamente con il sistema POS. Questa guida ti accompagna attraverso i passaggi essenziali 
+                    per iniziare a prendere ordini ed elaborare pagamenti in pochi minuti.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="checklist">Checklist Guida Rapida</h2>
+                    <p>Segui questa checklist per rendere operativo il tuo POS:</p>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>Attività di Configurazione</h3>
+                            <ul>
+                                <li>[ ] Verifica che il sistema sia in funzione e accessibile</li>
+                                <li>[ ] Accedi con le credenziali amministratore</li>
+                                <li>[ ] Cambia la password admin predefinita</li>
+                                <li>[ ] Verifica o crea la tua cassa</li>
+                                <li>[ ] Assegna il tuo dispositivo a una cassa</li>
+                            </ul>
+                            <h3>Attività di Configurazione</h3>
+                            <ul>
+                                <li>[ ] Rivedi le categorie predefinite o creane di tue</li>
+                                <li>[ ] Aggiungi il tuo primo prodotto con una variante</li>
+                                <li>[ ] Verifica le impostazioni delle tasse</li>
+                            </ul>
+                            <h3>Attività Operative</h3>
+                            <ul>
+                                <li>[ ] Prendi il tuo primo ordine di test</li>
+                                <li>[ ] Elabora un pagamento di test</li>
+                                <li>[ ] Crea un conto di test (opzionale)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step1">Passaggio 1: Primo Accesso</h2>
+                    <p>Accedi all'applicazione POS e accedi per la prima volta:</p>
+                    
+                    <h3>Accedere all'Applicazione</h3>
+                    <ol>
+                        <li>Apri il tuo browser web (Chrome consigliato)</li>
+                        <li>Naviga all'URL dell'applicazione POS (es. <code>http://192.168.1.241:80</code>)</li>
+                        <li>Apparirà la schermata di accesso</li>
+                    </ol>
+                    
+                    <h3>Effettuare l'Accesso</h3>
+                    <ol>
+                        <li>Nel campo <strong>Nome Utente</strong>, inserisci: <code>admin</code></li>
+                        <li>Nel campo <strong>Password</strong>, inserisci: <code>admin123</code></li>
+                        <li>Clicca il pulsante <strong>Accedi</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Login screen with username and password fields -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Schermata di Accesso<br>
+                            <em>Mostra il modulo di accesso con campi username, password e il nome della cassa visualizzato</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Assegnazione Cassa (Solo Prima Volta)</h3>
+                    <p>Se è la prima volta che accedi al POS su questo dispositivo e nessuna cassa è assegnata:</p>
+                    <ul>
+                        <li><strong>Come Amministratore:</strong> Vedrai la schermata Configurazione Cassa per selezionare una cassa</li>
+                        <li><strong>Come Cassiere:</strong> Vedrai un messaggio di errore - un admin deve prima configurare la cassa</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Selezione Lingua</div>
+                        <div class="callout-content">
+                            Usa il selettore lingua (EN/IT) nell'angolo in alto a destra della schermata di accesso per cambiare la lingua dell'interfaccia.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step2">Passaggio 2: Comprensione dell'Interfaccia</h2>
+                    <p>Dopo l'accesso, vedrai l'interfaccia POS principale:</p>
+                    
+                    <h3>Layout dell'Interfaccia</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Area</th>
+                                    <th>Posizione</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Griglia Prodotti</td>
+                                    <td>Area Sinistra/Principale</td>
+                                    <td>Griglia visuale dei prodotti organizzati per categoria</td>
+                                </tr>
+                                <tr>
+                                    <td>Schede Categorie</td>
+                                    <td>In alto alla griglia</td>
+                                    <td>Passa tra le categorie di prodotti</td>
+                                </tr>
+                                <tr>
+                                    <td>Pannello Ordini</td>
+                                    <td>Lato destro</td>
+                                    <td>Articoli dell'ordine corrente, quantità e totale</td>
+                                </tr>
+                                <tr>
+                                    <td>Pulsante Admin</td>
+                                    <td>In alto a destra</td>
+                                    <td>Accedi al pannello admin (solo admin)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Main POS interface with labeled areas -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Interfaccia POS Principale<br>
+                            <em>Mostra la griglia prodotti a sinistra e il pannello ordini a destra, con schede categorie in alto</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Accesso al Pannello Admin</h3>
+                    <p>Se hai effettuato l'accesso come amministratore, vedrai un pulsante viola <strong>Admin</strong> nell'angolo in alto a destra. Clicca questo per accedere al pannello di amministrazione per la configurazione.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="step3">Passaggio 3: Crea la Tua Prima Categoria</h2>
+                    <p>Le categorie organizzano i tuoi prodotti nell'interfaccia POS. Crea categorie che corrispondono alla struttura del tuo menu:</p>
+                    
+                    <ol>
+                        <li>Clicca il pulsante <strong>Admin</strong> (in alto a destra)</li>
+                        <li>Nel pannello admin, vai a <strong>Categorie</strong></li>
+                        <li>Clicca <strong>Aggiungi Categoria</strong></li>
+                        <li>Inserisci un nome categoria (es. "Antipasti", "Primi Piatti", "Bevande")</li>
+                        <li>Seleziona quali casse devono mostrare questa categoria:
+                            <ul>
+                                <li>Lascia vuoto per mostrare su tutte le casse</li>
+                                <li>Seleziona casse specifiche per limitare la visibilità</li>
+                            </ul>
+                        </li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Il sistema viene fornito con categorie predefinite (Vino Rosso, Birra, Cocktail, Whiskey, Bevande Analcoliche). Puoi modificare o eliminare queste per corrispondere al tuo menu.
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Category management interface showing add category form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Gestione Categorie<br>
+                            <em>Mostra la lista categorie e il modulo aggiungi categoria</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step4">Passaggio 4: Aggiungi il Tuo Primo Prodotto</h2>
+                    <p>I prodotti sono gli articoli che vendi. Ogni prodotto può avere più varianti (dimensioni, opzioni):</p>
+                    
+                    <ol>
+                        <li>Nel pannello admin, vai a <strong>Prodotti</strong></li>
+                        <li>Clicca <strong>Aggiungi Prodotto</strong></li>
+                        <li>Inserisci il nome del prodotto (es. "Pizza Margherita")</li>
+                        <li>Seleziona la categoria dal menu a tendina</li>
+                        <li>Aggiungi almeno una variante:
+                            <ul>
+                                <li>Clicca <strong>Aggiungi Variante</strong></li>
+                                <li>Inserisci il nome variante (es. "Normale", "Large")</li>
+                                <li>Imposta il prezzo</li>
+                                <li>Scegli i colori dei pulsanti (opzionale - aiuta per l'identificazione rapida)</li>
+                                <li>Contrassegna come "Preferito" per visualizzarla in evidenza (opzionale)</li>
+                            </ul>
+                        </li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <h3>Comprensione delle Varianti</h3>
+                    <p>Le varianti rappresentano diverse versioni dello stesso prodotto:</p>
+                    <ul>
+                        <li><strong>Variazioni di dimensione:</strong> Piccolo, Medio, Grande</li>
+                        <li><strong>Stile di servizio:</strong> Bicchiere, Bottiglia, Spina</li>
+                        <li><strong>Personalizzazione:</strong> Normale, Decaffeinato, Extra Shot</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Preferiti</div>
+                        <div class="callout-content">
+                            Contrassegna le varianti ordinate frequentemente come "Preferito" per visualizzarle nella categoria Preferiti, rendendole rapidamente accessibili durante i periodi di lavoro intenso.
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Product edit form showing variant configuration -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Modulo Modifica Prodotto<br>
+                            <em>Mostra il modulo prodotto con nome, selezione categoria e configurazione variante</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step5">Passaggio 5: Prendi il Tuo Primo Ordine</h2>
+                    <p>Ora sei pronto per prendere un ordine. Torna alla vista POS:</p>
+                    
+                    <ol>
+                        <li>Clicca <strong>Torna al POS</strong> o chiudi il pannello admin</li>
+                        <li>Vedrai la griglia prodotti con le tue categorie</li>
+                        <li>Clicca una scheda categoria per visualizzare i prodotti in quella categoria</li>
+                        <li>Clicca un pulsante variante prodotto per aggiungerlo all'ordine</li>
+                        <li>L'articolo appare nel Pannello Ordini sulla destra</li>
+                    </ol>
+                    
+                    <h3>Regolazione delle Quantità</h3>
+                    <p>Nel Pannello Ordini, puoi modificare l'ordine corrente:</p>
+                    <ul>
+                        <li><strong>Aumenta quantità:</strong> Clicca il pulsante <strong>+</strong> accanto a un articolo</li>
+                        <li><strong>Diminuisci quantità:</strong> Clicca il pulsante <strong>-</strong> (rimuove l'articolo a 0)</li>
+                        <li><strong>Rimuovi articolo:</strong> Clicca l'icona del cestino o riduci la quantità a 0</li>
+                        <li><strong>Cancella ordine intero:</strong> Clicca il pulsante <strong>Cancella</strong> (richiede conferma)</li>
+                    </ul>
+                    
+                    <h3>Visualizzazione Totale Ordine</h3>
+                    <p>Il Pannello Ordini mostra:</p>
+                    <ul>
+                        <li>Subtotale (somma di tutti gli articoli)</li>
+                        <li>Importo tasse (in base alle tue impostazioni delle tasse)</li>
+                        <li>Totale (subtotale + tasse)</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel with items and total -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Pannello Ordini<br>
+                            <em>Mostra gli articoli nell'ordine con quantità, subtotale, tasse e totale</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step6">Passaggio 6: Elabora il Tuo Primo Pagamento</h2>
+                    <p>Completa la vendita elaborando il pagamento:</p>
+                    
+                    <ol>
+                        <li>Rivedi il totale dell'ordine nel Pannello Ordini</li>
+                        <li>Clicca il pulsante <strong>Paga</strong></li>
+                        <li>Apparirà il Modale Pagamento</li>
+                        <li>Seleziona il metodo di pagamento:
+                            <ul>
+                                <li><strong>Contanti</strong> - Per pagamenti in contanti</li>
+                                <li><strong>Carta</strong> - Per pagamenti con carta di credito/debito</li>
+                            </ul>
+                        </li>
+                        <li>Aggiungi una mancia se applicabile (usa i pulsanti mancia o inserisci un importo personalizzato)</li>
+                        <li>Clicca <strong>Completa Pagamento</strong></li>
+                        <li>La transazione viene registrata e l'ordine viene cancellato</li>
+                    </ol>
+                    
+                    <h3>Funzionalità del Modale Pagamento</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Funzionalità</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Riepilogo Ordine</td>
+                                    <td>Mostra tutti gli articoli acquistati</td>
+                                </tr>
+                                <tr>
+                                    <td>Subtotale/Tasse/Totale</td>
+                                    <td>Ripartizione del costo dell'ordine</td>
+                                </tr>
+                                <tr>
+                                    <td>Pulsanti Mancia</td>
+                                    <td>Percentuali mancia rapide (10%, 15%, 20%) o importo personalizzato</td>
+                                </tr>
+                                <tr>
+                                    <td>Metodo Pagamento</td>
+                                    <td>Selezione Contanti o Carta</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Payment modal with order summary and payment options -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Modale Pagamento<br>
+                            <em>Mostra l'interfaccia di pagamento con riepilogo ordine, opzioni mancia e selezione metodo pagamento</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="additional-features">Funzionalità Rapide Aggiuntive</h2>
+                    
+                    <h3>Assegnazione Ordini ai Tavoli</h3>
+                    <p>Per il servizio al tavolo, assegna ordini a tavoli specifici:</p>
+                    <ol>
+                        <li>Nel Pannello Ordini, clicca il pulsante <strong>Tavolo</strong></li>
+                        <li>Seleziona la sala dal menu a tendina</li>
+                        <li>Clicca su un tavolo disponibile</li>
+                        <li>L'ordine è ora associato a quel tavolo</li>
+                    </ol>
+                    
+                    <h3>Creazione Conti</h3>
+                    <p>Salva ordini per pagamento successivo (utile per conti al bar):</p>
+                    <ol>
+                        <li>Aggiungi articoli all'ordine</li>
+                        <li>Clicca <strong>Conti</strong> nel Pannello Ordini</li>
+                        <li>Clicca <strong>Crea Nuovo Conto</strong></li>
+                        <li>Inserisci un nome per il conto (es. nome cliente)</li>
+                        <li>Il conto viene salvato e può essere caricato successivamente</li>
+                    </ol>
+                    
+                    <h3>Utilizzo della Tastiera Virtuale</h3>
+                    <p>Sui dispositivi touch, la tastiera virtuale appare automaticamente quando i campi di input sono focalizzati:</p>
+                    <ul>
+                        <li><strong>Tastierino Numerico</strong> - Per inserire prezzi e quantità</li>
+                        <li><strong>Tastiera Completa</strong> - Per inserimento testo (nomi, note)</li>
+                        <li><strong>Pulsante Fatto</strong> - Chiude la tastiera</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="keyboard-shortcuts">Scorciatoie da Tastiera</h2>
+                    <p>Velocizza il tuo lavoro con queste scorciatoie da tastiera:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Scorciatoia</th>
+                                    <th>Azione</th>
+                                    <th>Contesto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><kbd>Ctrl+R</kbd></td>
+                                    <td>Aggiorna dati</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+L</kbd></td>
+                                    <td>Passa alla scheda Layout</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+M</kbd></td>
+                                    <td>Passa alla scheda Sale</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+T</kbd></td>
+                                    <td>Passa alla scheda Tavoli</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl++</kbd></td>
+                                    <td>Aggiungi nuovo tavolo/sala</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+D</kbd></td>
+                                    <td>Attiva/disattiva modalità layout</td>
+                                    <td>Gestione Tavoli</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>Per un elenco completo delle scorciatoie, vedi il <a href="../reference/keyboard-shortcuts.html">Riferimento Scorciatoie da Tastiera</a>.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="next-steps">Prossimi Passi</h2>
+                    <p>Complimenti! Hai completato la guida rapida. Ora esplora questi argomenti per ottenere il massimo dal tuo sistema POS:</p>
+                    
+                    <h3>Per Operazioni Quotidiane</h3>
+                    <ul>
+                        <li><a href="../user-guide/taking-orders.html">Prendere Ordini</a> - Gestione ordini dettagliata</li>
+                        <li><a href="../user-guide/managing-tables.html">Gestione Tavoli</a> - Assegnazione e stato tavoli</li>
+                        <li><a href="../user-guide/processing-payments.html">Elaborazione Pagamenti</a> - Opzioni di pagamento e mance</li>
+                        <li><a href="../user-guide/working-with-tabs.html">Lavorare con i Conti</a> - Salva e gestisci conti aperti</li>
+                    </ul>
+                    
+                    <h3>Per Configurazione</h3>
+                    <ul>
+                        <li><a href="../admin-guide/product-management.html">Gestione Prodotti</a> - Aggiungi e organizza prodotti</li>
+                        <li><a href="../admin-guide/user-management.html">Gestione Utenti</a> - Crea account del personale</li>
+                        <li><a href="../admin-guide/table-management.html">Gestione Tavoli</a> - Progetta la tua piantina</li>
+                        <li><a href="../admin-guide/settings.html">Impostazioni</a> - Configurazione tasse e giornata lavorativa</li>
+                    </ul>
+                    
+                    <h3>Per Reportistica</h3>
+                    <ul>
+                        <li><a href="../admin-guide/dashboard.html">Dashboard</a> - Panoramica vendite</li>
+                        <li><a href="../admin-guide/analytics.html">Analisi</a> - Trend di vendita e report</li>
+                        <li><a href="../admin-guide/daily-closing.html">Chiusura Giornaliera</a> - Procedure di fine giornata</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

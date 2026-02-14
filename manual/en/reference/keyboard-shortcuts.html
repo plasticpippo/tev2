@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Keyboard Shortcuts - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Keyboard Shortcuts</h1>
+                <p class="page-description">
+                    Quick reference for keyboard shortcuts available throughout the POS system. Using keyboard shortcuts can significantly speed up your workflow and improve efficiency.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="table-management">Table Management Shortcuts</h2>
+                    <p>These shortcuts are available in the <a href="../admin-guide/tables-rooms.html">Table &amp; Room Management</a> section of the Admin Panel. They help administrators quickly navigate between tabs and perform common actions.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">R</span></td>
+                                <td>Refresh Data</td>
+                                <td>Reloads all table and room data from the server. Use this when changes made on another device are not visible.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">L</span></td>
+                                <td>Switch to Layout Tab</td>
+                                <td>Opens the visual layout editor where you can drag and position tables within rooms.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">M</span></td>
+                                <td>Switch to Rooms Tab</td>
+                                <td>Opens the rooms management section for creating and editing rooms.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">T</span></td>
+                                <td>Switch to Tables Tab</td>
+                                <td>Opens the tables management section for creating and editing individual tables.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">+</span></td>
+                                <td>Add New Item</td>
+                                <td>Creates a new table when on the Tables tab, or a new room when on the Rooms tab.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">D</span></td>
+                                <td>Toggle Layout Mode</td>
+                                <td>Cycles through layout modes: View (read-only), Edit (modify properties), and Drag (reposition tables).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="grid-layout">Product Grid Layout Shortcuts</h2>
+                    <p>These shortcuts are available when editing <a href="../admin-guide/products.html">Product Grid Layouts</a>. They help with undo/redo operations and zooming the layout view.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Z</span></td>
+                                <td>Undo</td>
+                                <td>Reverts the last change made to the grid layout. Supports up to 50 levels of undo history.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Shift</span> + <span class="key">Z</span></td>
+                                <td>Redo</td>
+                                <td>Reapplies a change that was undone. Use after Ctrl+Z to restore a change.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Y</span></td>
+                                <td>Redo (Alternative)</td>
+                                <td>Alternative shortcut for redo. Works the same as Ctrl+Shift+Z.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">+</span> or <span class="key">Ctrl</span> + <span class="key">=</span></td>
+                                <td>Zoom In</td>
+                                <td>Increases the zoom level of the layout view. Maximum zoom is 200%.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">-</span></td>
+                                <td>Zoom Out</td>
+                                <td>Decreases the zoom level of the layout view. Minimum zoom is 50%.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">0</span></td>
+                                <td>Reset Zoom</td>
+                                <td>Resets the zoom level back to 100% (default view).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3 id="grid-item-movement">Moving Selected Items</h3>
+                    <p>When a grid item is selected, use arrow keys to reposition it:</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Arrow Keys</span></td>
+                                <td>Move selected item by 1 grid position in the direction pressed.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Shift</span> + <span class="key">Arrow Keys</span></td>
+                                <td>Move selected item by 2 grid positions for faster repositioning.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="general-shortcuts">General Shortcuts</h2>
+                    <p>These shortcuts work throughout the application in various contexts.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Shortcut</th>
+                                <th>Action</th>
+                                <th>Context</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Enter</span></td>
+                                <td>Confirm/Submit</td>
+                                <td>Submits forms, confirms dialog selections, or activates focused buttons.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Escape</span></td>
+                                <td>Cancel/Close</td>
+                                <td>Closes modal dialogs, cancels ongoing operations, or deselects items.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Space</span></td>
+                                <td>Select/Toggle</td>
+                                <td>Selects or toggles checkboxes, radio buttons, and other toggleable elements when focused.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Tab</span></td>
+                                <td>Next Field</td>
+                                <td>Moves focus to the next interactive element in forms and dialogs.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Shift</span> + <span class="key">Tab</span></td>
+                                <td>Previous Field</td>
+                                <td>Moves focus to the previous interactive element in forms and dialogs.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="tips">Tips for Using Shortcuts</h2>
+                    <div class="card">
+                        <div class="card-title">Best Practices</div>
+                        <div class="card-content">
+                            <ul>
+                                <li><strong>Learn the essentials first:</strong> Start with Ctrl+R (refresh) and Ctrl+D (toggle mode) for table management.</li>
+                                <li><strong>Use undo frequently:</strong> Ctrl+Z is your safety net when editing layouts. Experiment confidently knowing you can undo.</li>
+                                <li><strong>Keyboard navigation:</strong> Use Tab and Shift+Tab to navigate forms without reaching for the mouse.</li>
+                                <li><strong>Touch devices:</strong> On touchscreen devices, keyboard shortcuts may require an external keyboard. The virtual keyboard does not support shortcuts.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

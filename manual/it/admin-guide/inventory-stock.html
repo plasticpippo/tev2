@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Inventario e Magazzino - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Inventario e Magazzino</h1>
+                <p class="page-description">
+                    Le sezioni Articoli Magazzino e Inventario ti permettono di gestire il tuo inventario. Traccia i livelli di magazzino, effettua rettifiche e monitora i consumi per mantenere un controllo ottimale dell'inventario.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Panoramica</h2>
+                    <p>Il sistema dell'inventario è composto da due sezioni correlate:</p>
+                    
+                    <ul>
+                        <li><strong>Articoli Magazzino:</strong> Gestisci i singoli articoli di inventario (ingredienti e beni vendibili)</li>
+                        <li><strong>Inventario:</strong> Effettua rettifiche e traccia i cambiamenti dei livelli di magazzino</li>
+                    </ul>
+                    
+                    <p>Gli articoli di magazzino vengono consumati automaticamente quando i prodotti vengono venduti (basato sulla configurazione delle varianti del prodotto), e possono essere rettificati manualmente attraverso la sezione Inventario.
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-items">Gestione Articoli Magazzino</h2>
+                    <p>Gli Articoli Magazzino rappresentano i singoli articoli di inventario nel tuo locale - ingredienti usati nei prodotti, forniture e beni per la rivendita.</p>
+                    
+                    <!-- SCREENSHOT: Stock items list view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Elenco Articoli Magazzino<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Tipi di Articoli Magazzino</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descrizione</th>
+                                    <th>Esempi</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ingrediente</strong></td>
+                                    <td>Articoli consumati nella preparazione dei prodotti</td>
+                                    <td>Caffè in grani, latte, farina, salsa</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Bene Vendibile</strong></td>
+                                    <td>Articoli venduti direttamente senza preparazione</td>
+                                    <td>Acqua in bottiglia, snack confezionati, merce</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-stock-items">Creazione di Articoli Magazzino</h2>
+                    <p>Per creare un nuovo articolo di magazzino:</p>
+                    
+                    <ol>
+                        <li>Naviga a <strong>Articoli Magazzino</strong> nel Pannello Amministratore</li>
+                        <li>Clicca <strong>Aggiungi Articolo Magazzino</strong></li>
+                        <li>Riempi le informazioni richieste:
+                            <ul>
+                                <li><strong>Nome:</strong> Il nome dell'articolo (es. "Caffè in Grani", "Bicchieri Grandi")</li>
+                                <li><strong>Tipo:</strong> Scegli "Ingrediente" o "Bene Vendibile"</li>
+                                <li><strong>Unità Base:</strong> L'unità di misura primaria (es. "kg", "litri", "unità")</li>
+                                <li><strong>Quantità Iniziale:</strong> Livello di magazzino iniziale</li>
+                            </ul>
+                        </li>
+                        <li>Configura le <strong>Unità di Acquisto</strong> opzionali se necessario</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Stock Item form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Aggiungi Articolo Magazzino<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="units-configuration">Configurazione delle Unità</h2>
+                    <p>Gli articoli di magazzino usano unità base per il tracciamento interno e possono avere unità di acquisto per gli ordini.</p>
+                    
+                    <h3>Unità Base</h3>
+                    <p>L'unità base è la misura standard usata per questo articolo. Le unità base comuni includono:</p>
+                    <ul>
+                        <li><strong>kg</strong> - Chilogrammi (per solidi come farina, zucchero)</li>
+                        <li><strong>litri</strong> - Litri (per liquidi come latte, olio)</li>
+                        <li><strong>unità</strong> - Articoli singoli (per bicchieri, tovaglioli)</li>
+                        <li><strong>grammi</strong> - Grammi (per misurazioni precise)</li>
+                        <li><strong>ml</strong> - Millilitri (per piccole quantità di liquido)</li>
+                    </ul>
+                    
+                    <h3>Unità di Acquisto</h3>
+                    <p>Le unità di acquisto definiscono come l'articolo viene tipicamente ordinato. Per esempio:</p>
+                    <ul>
+                        <li>Unità base: <strong>grammi</strong>, Acquisto: sacchetto da 1kg</li>
+                        <li>Unità base: <strong>ml</strong>, Acquisto: cartone da 1L</li>
+                        <li>Unità base: <strong>unità</strong>, Acquisto: confezione da 50</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-levels">Indicatori dei Livelli di Magazzino</h2>
+                    <p>Il sistema visualizza i livelli di magazzino con indicatori visivi per aiutare a identificare gli articoli che necessitano attenzione:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Indicatore</th>
+                                    <th>Significato</th>
+                                    <th>Azione Richiesta</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Verde</strong></td>
+                                    <td>Il livello di magazzino è sano</td>
+                                    <td>Nessuna azione necessaria</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Giallo/Arancione</strong></td>
+                                    <td>Il magazzino si sta esaurendo</td>
+                                    <td>Considera di riordinare presto</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Rosso</strong></td>
+                                    <td>Il magazzino ècriticamente basso o esaurito</td>
+                                    <td>Riordina immediatamente</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nota:</strong> Le soglie dei livelli di magazzino potrebbero essere configurabili in versioni future. Attualmente, gli articoli sono evidenziati quando la quantità è bassa.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-adjustments">Effettuare Rettifiche di Magazzino</h2>
+                    <p>Le rettifiche di magazzino ti permettono di aumentare o diminuire manualmente i livelli di magazzino. Questo è utile per:</p>
+                    <ul>
+                        <li>Registrare consegne</li>
+                        <li>Correggere conteggi inventario</li>
+                        <li>Scartare articoli scaduti o danneggiati</li>
+                        <li>Configurazione magazzino iniziale</li>
+                    </ul>
+                    
+                    <h3>Creazione di una Rettifica di Magazzino</h3>
+                    <ol>
+                        <li>Naviga a <strong>Inventario</strong> nel Pannello Amministratore</li>
+                        <li>Clicca <strong>Aggiungi Rettifica</strong></li>
+                        <li>Seleziona l'<strong>Articolo Magazzino</strong></li>
+                        <li>Inserisci la <strong>Quantità</strong> (positiva per aggiungere, negativa per sottrarre)</li>
+                        <li>Fornisci una <strong>Motivazione</strong> per la rettifica</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Stock adjustment form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9998;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Rettifica Magazzino<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Motivazioni delle Rettifiche</h3>
+                    <p>Le motivazioni comuni per le rettifiche di magazzino includono:</p>
+                    <ul>
+                        <li><strong>Consegna Ricevuta:</strong> Nuovo magazzino dal fornitore</li>
+                        <li><strong>Conteggio Inventario:</strong> Correzione dopo conteggio fisico</li>
+                        <li><strong>Danneggiato/Scaduto:</strong> Articoli scartati</li>
+                        <li><strong>Spreco:</strong> Sciupo o spreco di preparazione</li>
+                        <li><strong>Trasferimento:</strong> Spostamento magazzino tra ubicazioni</li>
+                        <li><strong>Configurazione Iniziale:</strong> Impostazione livelli magazzino iniziali</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adjustment-history">Visualizzazione Storico Rettifiche</h2>
+                    <p>La sezione Inventario mantiene uno storico completo di tutte le rettifiche di magazzino.</p>
+                    
+                    <h3>Accesso allo Storico</h3>
+                    <ol>
+                        <li>Naviga a <strong>Inventario</strong></li>
+                        <li>Visualizza l'elenco dello storico rettifiche</li>
+                        <li>Ogni voce mostra:
+                            <ul>
+                                <li>Data e ora della rettifica</li>
+                                <li>Nome dell'articolo</li>
+                                <li>Cambiamento quantità</li>
+                                <li>Motivazione</li>
+                                <li>Utente che ha effettuato la rettifica</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Adjustment history list -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Storico Rettifiche Magazzino<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="consumption-reports">Report Consumi</h2>
+                    <p>La sezione Consumi Dettagliati fornisce report dettagliati su quali articoli di magazzino sono stati consumati in un periodo.</p>
+                    
+                    <h3>Accesso ai Report Consumi</h3>
+                    <ol>
+                        <li>Naviga a <strong>Consumi Dettagliati</strong> nel Pannello Amministratore</li>
+                        <li>Seleziona un <strong>Intervallo Date</strong></li>
+                        <li>Opzionalmente filtra per:
+                            <ul>
+                                <li><strong>Categoria:</strong> Filtra per categoria prodotto</li>
+                                <li><strong>Tipo Articolo Magazzino:</strong> Ingredienti o Beni Vendibili</li>
+                            </ul>
+                        </li>
+                        <li>Visualizza i dati di consumo</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Consumption report view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Report Consumi Dettagliati<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Comprensione dei Dati di Consumo</h3>
+                    <p>Il report mostra:</p>
+                    <ul>
+                        <li><strong>Consumo Totale:</strong> Quanto di ogni articolo di magazzino è stato usato</li>
+                        <li><strong>Per Prodotto:</strong> Quali prodotti hanno consumato di più</li>
+                        <li><strong>Per Periodo:</strong> Giornaliero, settimanale o intervalli date personalizzati</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="automatic-consumption">Consumo Automatico di Magazzino</h2>
+                    <p>Quando i prodotti vengono venduti, il magazzino viene consumato automaticamente basato sulla configurazione della variante del prodotto.</p>
+                    
+                    <h3>Come Funziona</h3>
+                    <ol>
+                        <li>Ogni variante di prodotto ha impostazioni di <strong>Consumo Magazzino</strong></li>
+                        <li>Quando un articolo viene venduto, il sistema cerca il consumo per quella variante</li>
+                        <li>La quantità specificata viene automaticamente sottratta dall'articolo di magazzino</li>
+                        <li>I livelli di magazzino si aggiornano in tempo reale</li>
+                    </ol>
+                    
+                    <h3>Esempio</h3>
+                    <p>Se una variante "Caffè Grande" è configurata per consumare:</p>
+                    <ul>
+                        <li>20g Caffè in Grani</li>
+                        <li>200ml Latte</li>
+                        <li>1 Bicchiere Grande</li>
+                    </ul>
+                    <p>Ogni volta che un Caffè Grande viene venduto, questi articoli vengono automaticamente detratti dall'inventario.
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practice</h2>
+                    
+                    <h3>Gestione Articoli Magazzino</h3>
+                    <ul>
+                        <li>Crea articoli di magazzino per tutti gli articoli che vuoi tracciare</li>
+                        <li>Usa convenzioni di nomi coerenti</li>
+                        <li>Imposta unità base appropriate per un tracciamento accurato</li>
+                        <li>Configura unità di acquisto per corrispondere all'imballaggio del fornitore</li>
+                    </ul>
+                    
+                    <h3>Rettifiche di Magazzino</h3>
+                    <ul>
+                        <li>Fornisci sempre una motivazione per le rettifiche</li>
+                        <li>Confronta regolarmente il magazzino reale con il magazzino di sistema</li>
+                        <li>Indaga sulle grandi discrepanze</li>
+                        <li>Documenta tutte le rettifiche per responsabilità</li>
+                    </ul>
+                    
+                    <h3>Monitoraggio dei Consumi</h3>
+                    <ul>
+                        <li>Rivedi regolarmente i report consumi</li>
+                        <li>Confronta l'uso reale con l'uso previsto</li>
+                        <li>Identifica articoli con pattern di consumo insoliti</li>
+                        <li>Usa i dati per ottimizzare gli ordini e ridurre gli sprechi</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> I conteggi inventario regolari aiutano a garantire l'accuratezza del sistema. Esegui conteggi fisici periodicamente e confronta con le quantità di sistema.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

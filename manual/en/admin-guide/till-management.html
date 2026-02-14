@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Till Management - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Till Management</h1>
+                <p class="page-description">
+                    Tills represent physical POS terminals or stations in your establishment. This guide explains how to create and manage tills, assign devices, and configure visibility settings.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Overview</h2>
+                    <p>A "till" represents a physical POS terminal or station in your establishment. Each till:</p>
+                    <ul>
+                        <li>Has its own product layout configuration</li>
+                        <li>Can be assigned to specific devices or users</li>
+                        <li>Can have different category visibility settings</li>
+                        <li>Appears in the dashboard for status monitoring</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Till management list view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Till Management List<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="viewing-tills">Viewing All Tills</h2>
+                    <p>Navigate to the Tills section from the Admin Panel sidebar to see all configured tills.</p>
+                    
+                    <h3>Till List Information</h3>
+                    <p>Each till entry shows:</p>
+                    <ul>
+                        <li><strong>Till Name:</strong> The identifier for this terminal</li>
+                        <li><strong>Created:</strong> When the till was created</li>
+                        <li><strong>Actions:</strong> Edit and delete buttons</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-tills">Creating Tills</h2>
+                    <p>To create a new till:</p>
+                    
+                    <ol>
+                        <li>Click the <strong>Add Till</strong> button</li>
+                        <li>Enter a <strong>Till Name</strong> (e.g., "Bar POS", "Counter 1", "Patio Terminal")</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Till form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Add Till Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Till Naming:</strong> Choose descriptive names that help identify each terminal's location or purpose. This makes it easier to manage multiple tills.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="device-assignment">Assigning Devices to Tills</h2>
+                    <p>Each till can be associated with a specific device or workstation. This allows the system to identify which terminal is being used.</p>
+                    
+                    <h3>Understanding Device-Till Relationship</h3>
+                    <ul>
+                        <li><strong>Device Identification:</strong> The system identifies devices by their browser/device characteristics</li>
+                        <li><strong>Persistent Assignment:</strong> Once assigned, the device will automatically connect to the till on future logins</li>
+                        <li><strong>Multiple Devices:</strong> A single device can be reassigned to different tills as needed</li>
+                    </ul>
+                    
+                    <h3>Assigning a Device</h3>
+                    <ol>
+                        <li>Log in to the POS on the target device</li>
+                        <li>The system will prompt for till selection if not yet assigned</li>
+                        <li>Select the appropriate till from the list</li>
+                        <li>The device is now associated with that till</li>
+                    </ol>
+                    
+                    <h3>Reassigning a Device</h3>
+                    <p>If you need to change which till a device connects to:</p>
+                    <ol>
+                        <li>Log in as an administrator</li>
+                        <li>Navigate to the Tills section</li>
+                        <li>Edit the till and clear the device assignment</li>
+                        <li>The next login on that device will prompt for till selection</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-visibility">Till Visibility Settings</h2>
+                    <p>Till visibility is controlled through category settings. Each category can specify which tills can see products in that category.</p>
+                    
+                    <h3>Configuring Category Visibility</h3>
+                    <ol>
+                        <li>Go to the <strong>Categories</strong> section in Admin Panel</li>
+                        <li>Edit a category</li>
+                        <li>Find the <strong>Visible Tills</strong> setting</li>
+                        <li>Select which tills should display this category</li>
+                        <li>Save the category</li>
+                    </ol>
+                    
+                    <h3>Visibility Behavior</h3>
+                    <ul>
+                        <li><strong>All Tills:</strong> If no till is selected, the category is visible to all tills</li>
+                        <li><strong>Specific Tills:</strong> Only selected tills will show this category</li>
+                        <li><strong>Real-time Updates:</strong> Changes take effect immediately</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Category visibility settings with till selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128274;</div>
+                        <div class="image-placeholder-text">
+                            Category Till Visibility Settings<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-tills">Editing Tills</h2>
+                    <p>To modify a till:</p>
+                    
+                    <ol>
+                        <li>Locate the till in the tills list</li>
+                        <li>Click the <strong>Edit</strong> button</li>
+                        <li>Modify the till name</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Note:</strong> Changing the till name does not affect device assignments or existing data.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-tills">Deleting Tills</h2>
+                    <p>To delete a till:</p>
+                    
+                    <ol>
+                        <li>Locate the till in the tills list</li>
+                        <li>Click the <strong>Delete</strong> button</li>
+                        <li>Confirm the deletion</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Important:</strong> When you delete a till:
+                        <ul>
+                            <li>The till is removed from all category visibility settings</li>
+                            <li>Any device assignments are cleared</li>
+                            <li>Historical transaction data remains intact</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-status">Monitoring Till Status</h2>
+                    <p>You can monitor till status from the Dashboard.</p>
+                    
+                    <h3>Till Status Indicators</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Active</strong></td>
+                                    <td>Till is currently processing transactions</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Idle</strong></td>
+                                    <td>Till is logged in but not actively processing</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Offline</strong></td>
+                                    <td>Till is not connected or not configured</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Till Configuration</h3>
+                    <ul>
+                        <li>Create a till for each physical POS terminal</li>
+                        <li>Use descriptive names that indicate location (e.g., "Bar 1", "Patio 1")</li>
+                        <li>Configure category visibility based on what each terminal needs to sell</li>
+                    </ul>
+                    
+                    <h3>Device Management</h3>
+                    <ul>
+                        <li>Assign devices to tills during initial setup</li>
+                        <li>Document which devices are assigned to which tills</li>
+                        <li>Reassign devices when hardware is moved or replaced</li>
+                    </ul>
+                    
+                    <h3>Category Visibility</h3>
+                    <ul>
+                        <li>Configure category visibility to match each terminal's product offerings</li>
+                        <li>For example, bar terminals might only show drink categories</li>
+                        <li>Test visibility by logging into each till after configuration</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Regularly review till status from the Dashboard to ensure all terminals are functioning properly.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

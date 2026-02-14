@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Managing Tables - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Managing Tables</h1>
+                <p class="page-description">
+                    Learn how to assign orders to tables, view table status, and manage table assignments.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="assigning-orders">Assigning Orders to Tables</h2>
+                    <p>Linking orders to tables helps track where customers are seated and organize the workflow. To assign an order to a table:</p>
+                    <ol>
+                        <li>Build your order as usual by adding products</li>
+                        <li>Click the <strong>Assign Table</strong> button in the order panel</li>
+                        <li>The Table Assignment modal opens showing a visual layout</li>
+                        <li>Select a <strong>Room</strong> from the room tabs (if multiple rooms exist)</li>
+                        <li>Choose an <strong>available table</strong> from the visual layout</li>
+                        <li>Click <strong>Assign to Table</strong> to confirm</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Table assignment modal showing room selection and table grid -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#127869;</div>
+                        <div class="image-placeholder-text">
+                            Table Assignment Modal<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-status">Table Status Meanings</h2>
+                    <p>Each table has a status that indicates its current condition. The status is shown by color-coded borders:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Meaning</th>
+                                    <th>Color</th>
+                                    <th>Selectable</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Available</strong></td>
+                                    <td>Table is free and ready for new customers</td>
+                                    <td class="text-success">Green</td>
+                                    <td>Yes</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Occupied</strong></td>
+                                    <td>Table has active orders</td>
+                                    <td class="text-danger">Red</td>
+                                    <td>No</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Reserved</strong></td>
+                                    <td>Table is reserved for upcoming guests</td>
+                                    <td class="text-warning">Yellow</td>
+                                    <td>Yes</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Unavailable</strong></td>
+                                    <td>Table is out of service</td>
+                                    <td class="text-muted">Gray</td>
+                                    <td>No</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            Only tables with "Available" or "Reserved" status can be assigned to new orders. Occupied and unavailable tables cannot be selected.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="changing-tables">Changing Table Assignments</h2>
+                    <p>To change which table an order is assigned to:</p>
+                    <ol>
+                        <li>Click the <strong>Assign Table</strong> button (or "Change Table" if already assigned)</li>
+                        <li>Select a different available table</li>
+                        <li>Click <strong>Assign to Table</strong> to confirm</li>
+                    </ol>
+                    
+                    <p>To remove the table assignment entirely:</p>
+                    <ol>
+                        <li>Click <strong>Assign Table</strong> button</li>
+                        <li>Click <strong>Clear Table</strong> to remove the assignment</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="room-navigation">Navigating Rooms</h2>
+                    <p>If your establishment has multiple rooms (e.g., Main Dining, Patio, Private), use the room selector:</p>
+                    <ol>
+                        <li>In the Table Assignment modal, click on the room name tab</li>
+                        <li>The table layout updates to show tables in that room</li>
+                        <li>Select a table from the current room view</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            The visual layout shows tables in their actual positions within each room, making it easy to identify the right table at a glance.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-indicators">Table Indicators in Order Panel</h2>
+                    <p>When a table is assigned to the current order, the order panel displays:</p>
+                    <ul>
+                        <li><strong>Table name</strong> - The assigned table number/name</li>
+                        <li><strong>Table status</strong> - Current status (available, occupied, etc.)</li>
+                        <li><strong>Change Table button</strong> - Quick access to reassign</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel with table assignment indicator -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#127869;</div>
+                        <div class="image-placeholder-text">
+                            Order Panel with Table Assignment<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="working-with-tabs">Tables and Tabs</h2>
+                    <p>Tables can be combined with tabs for better workflow:</p>
+                    <ul>
+                        <li>Save an order as a <strong>Tab</strong> to keep it open for later</li>
+                        <li>The tab remembers which table it was assigned to</li>
+                        <li>When you load the tab later, the table assignment is restored</li>
+                        <li>Process payment when the customer is ready to leave</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

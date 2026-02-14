@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scorciatoie da Tastiera - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Scorciatoie da Tastiera</h1>
+                <p class="page-description">
+                    Guida rapida per le scorciatoie da tastiera disponibili in tutto il sistema POS. L'uso delle scorciatoie da tastiera puo' aumentare significativamente la velocita' del tuo flusso di lavoro e migliorare l'efficienza.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="table-management">Scorciatoie per Gestione Tavoli</h2>
+                    <p>Queste scorciatoie sono disponibili nella sezione <a href="../admin-guide/tables-rooms.html">Gestione Tavoli e Sale</a> del Pannello di Amministrazione. Aiutano gli amministratori a navigare rapidamente tra le schede e ad eseguire azioni comuni.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Scorciatoia</th>
+                                <th>Azione</th>
+                                <th>Descrizione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">R</span></td>
+                                <td>Aggiorna Dati</td>
+                                <td>Ricarica tutti i dati di tavoli e sale dal server. Usalo quando le modifiche effettuate su un altro dispositivo non sono visibili.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">L</span></td>
+                                <td>Passa a Scheda Layout</td>
+                                <td>Apre l'editor visivo del layout dove puoi trascinare e posizionare i tavoli all'interno delle sale.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">M</span></td>
+                                <td>Passa a Scheda Sale</td>
+                                <td>Apre la sezione di gestione sale per creare e modificare sale.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">T</span></td>
+                                <td>Passa a Scheda Tavoli</td>
+                                <td>Apre la sezione di gestione tavoli per creare e modificare singoli tavoli.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">+</span></td>
+                                <td>Aggiungi Nuovo Elemento</td>
+                                <td>Crea un nuovo tavolo quando sei nella scheda Tavoli, o una nuova sala quando sei nella scheda Sale.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">D</span></td>
+                                <td>Attiva/Disattiva Modalita' Layout</td>
+                                <td>Passa tra le modalita' di layout: Visualizza (sola lettura), Modifica (modifica proprieta'), e Trascina (riposiziona tavoli).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="grid-layout">Scorciatoie per Layout Griglia Prodotti</h2>
+                    <p>Queste scorciatoie sono disponibili quando si modificano i <a href="../admin-guide/products.html">Layout della Griglia Prodotti</a>. Aiutano con le operazioni di annulla/ripristina e con lo zoom della vista del layout.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Scorciatoia</th>
+                                <th>Azione</th>
+                                <th>Descrizione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Z</span></td>
+                                <td>Annulla</td>
+                                <td>Revertisce l'ultima modifica apportata al layout della griglia. Supporta fino a 50 livelli di cronologia di annullamento.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Shift</span> + <span class="key">Z</span></td>
+                                <td>Ripristina</td>
+                                <td>Riapplica una modifica che era stata annullata. Usa dopo Ctrl+Z per ripristinare una modifica.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">Y</span></td>
+                                <td>Ripristina (Alternativo)</td>
+                                <td>Scorciatoia alternativa per ripristina. Funziona come Ctrl+Shift+Z.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">+</span> o <span class="key">Ctrl</span> + <span class="key">=</span></td>
+                                <td>Ingrandisci</td>
+                                <td>Aumenta il livello di zoom della vista del layout. Lo zoom massimo e' 200%.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">-</span></td>
+                                <td>Riduci</td>
+                                <td>Diminuisce il livello di zoom della vista del layout. Lo zoom minimo e' 50%.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Ctrl</span> + <span class="key">0</span></td>
+                                <td>Reimposta Zoom</td>
+                                <td>Reimposta il livello di zoom al 100% (vista predefinita).</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3 id="grid-item-movement">Spostamento degli Elementi Selezionati</h3>
+                    <p>Quando un elemento della griglia e' selezionato, usa i tasti freccia per riposizionarlo:</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Scorciatoia</th>
+                                <th>Azione</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Tasti Freccia</span></td>
+                                <td>Sposta l'elemento selezionato di 1 posizione nella griglia nella direzione premuta.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Shift</span> + <span class="key">Tasti Freccia</span></td>
+                                <td>Sposta l'elemento selezionato di 2 posizioni nella griglia per un riposizionamento piu' rapido.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="general-shortcuts">Scorciatoie Generali</h2>
+                    <p>Queste scorciatoie funzionano in tutta l'applicazione in vari contesti.</p>
+                    
+                    <table class="shortcuts-table">
+                        <thead>
+                            <tr>
+                                <th>Scorciatoia</th>
+                                <th>Azione</th>
+                                <th>Contesto</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="key">Invio</span></td>
+                                <td>Conferma/Invia</td>
+                                <td>Invia moduli, conferma selezioni di dialoghi, o attiva bottoni con focus.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Esc</span></td>
+                                <td>Annulla/Chiudi</td>
+                                <td>Chiude dialoghi modali, annulla operazioni in corso, o deseleziona elementi.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Spazio</span></td>
+                                <td>Seleziona/Alterna</td>
+                                <td>Seleziona o alterna caselle di controllo, pulsanti di opzione e altri elementi alternabili quando hanno il focus.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Tab</span></td>
+                                <td>Campo Successivo</td>
+                                <td>Sposta il focus al prossimo elemento interattivo nei moduli e dialoghi.</td>
+                            </tr>
+                            <tr>
+                                <td><span class="key">Shift</span> + <span class="key">Tab</span></td>
+                                <td>Campo Precedente</td>
+                                <td>Sposta il focus all'elemento interattivo precedente nei moduli e dialoghi.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="section">
+                    <h2 id="tips">Suggerimenti per l'Utilizzo delle Scorciatoie</h2>
+                    <div class="card">
+                        <div class="card-title">Best Practices</div>
+                        <div class="card-content">
+                            <ul>
+                                <li><strong>Impara prima l'essenziale:</strong> Inizia con Ctrl+R (aggiorna) e Ctrl+D (attiva modalita') per la gestione tavoli.</li>
+                                <li><strong>Usa spesso Annulla:</strong> Ctrl+Z e' la tua rete di sicurezza quando modifichi i layout. Sperimenta con fiducia sapendo che puoi annullare.</li>
+                                <li><strong>Navigazione da tastiera:</strong> Usa Tab e Shift+Tab per navigare i moduli senza dover usare il mouse.</li>
+                                <li><strong>Dispositivi touch:</strong> Sui dispositivi touch-screen, le scorciatoie da tastiera potrebbero richiedere una tastiera esterna. La tastiera virtuale non supporta le scorciatoie.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Management - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">User Management</h1>
+                <p class="page-description">
+                    User accounts allow staff to access the POS system. This guide explains how to create, edit, and manage user accounts, including role assignment and password management.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="viewing-users">Viewing All Users</h2>
+                    <p>Navigate to the Users section from the Admin Panel sidebar to see a complete list of all user accounts in your system.</p>
+                    
+                    <!-- SCREENSHOT: User management list showing all users -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            User Management List<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>User List Information</h3>
+                    <p>For each user, the list displays:</p>
+                    <ul>
+                        <li><strong>Name:</strong> The user's display name</li>
+                        <li><strong>Username:</strong> The login identifier</li>
+                        <li><strong>Role:</strong> Admin or Cashier</li>
+                        <li><strong>Actions:</strong> Edit and delete buttons</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-users">Adding New Users</h2>
+                    <p>To create a new user account:</p>
+                    
+                    <ol>
+                        <li>Click the <strong>Add User</strong> button at the top of the user list</li>
+                        <li>Enter the user's <strong>Name</strong> (display name shown in the interface)</li>
+                        <li>Enter a <strong>Username</strong> (used for login)</li>
+                        <li>Enter a <strong>Password</strong> for the account</li>
+                        <li>Select a <strong>Role</strong> (Admin or Cashier)</li>
+                        <li>Click <strong>Save</strong> to create the account</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add User form/modal -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Add User Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Username Requirements</h3>
+                    <ul>
+                        <li>Must be unique (no two users can have the same username)</li>
+                        <li>Case-insensitive (John and john are considered the same)</li>
+                        <li>Should be easy to remember for the user</li>
+                        <li>Cannot be changed after creation (without deleting and recreating)</li>
+                    </ul>
+                    
+                    <h3>Password Requirements</h3>
+                    <ul>
+                        <li>Should be at least 8 characters long</li>
+                        <li>Should include a mix of letters, numbers, and symbols</li>
+                        <li>Passwords are securely hashed and stored encrypted</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Security Note:</strong> Choose strong passwords for admin accounts. Admin users have full access to the system, including sensitive financial data.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-roles">User Roles and Permissions</h2>
+                    <p>The POS system uses role-based access control to manage what users can do. There are two primary roles:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Permissions</th>
+                                    <th>Typical Use</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Admin</strong></td>
+                                    <td>
+                                        <ul>
+                                            <li>Full access to Admin Panel</li>
+                                            <li>Create, edit, delete products</li>
+                                            <li>Manage users and roles</li>
+                                            <li>Configure system settings</li>
+                                            <li>Close business day</li>
+                                            <li>View all reports and analytics</li>
+                                            <li>Manage inventory and stock</li>
+                                            <li>All Cashier permissions</li>
+                                        </ul>
+                                    </td>
+                                    <td>Managers, owners, supervisors</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cashier</strong></td>
+                                    <td>
+                                        <ul>
+                                            <li>Access POS interface only</li>
+                                            <li>Process orders and payments</li>
+                                            <li>Create and manage tabs</li>
+                                            <li>Assign tables</li>
+                                            <li>No Admin Panel access</li>
+                                        </ul>
+                                    </td>
+                                    <td>Cashiers, servers, bartenders</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Assigning Roles</h3>
+                    <p>When creating a user, select the appropriate role based on their job responsibilities:</p>
+                    <ul>
+                        <li><strong>Admin:</strong> For users who need to manage the system, configure settings, or view reports</li>
+                        <li><strong>Cashier:</strong> For users who only need to process sales and manage orders</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Best Practice:</strong> Limit admin access to only those who truly need it. The more admin accounts, the higher the security risk.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-users">Editing User Accounts</h2>
+                    <p>To modify an existing user account:</p>
+                    
+                    <ol>
+                        <li>Locate the user in the user list</li>
+                        <li>Click the <strong>Edit</strong> button (pencil icon)</li>
+                        <li>Modify the desired fields:
+                            <ul>
+                                <li><strong>Name:</strong> Update the display name</li>
+                                <li><strong>Role:</strong> Change between Admin and Cashier</li>
+                                <li><strong>Password:</strong> Enter a new password (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save</strong> to apply changes</li>
+                    </ol>
+                    
+                    <h3>What Can Be Changed</h3>
+                    <ul>
+                        <li><strong>Name:</strong> Can be changed at any time</li>
+                        <li><strong>Role:</strong> Can be upgraded or downgraded as needed</li>
+                        <li><strong>Password:</strong> Can be reset (see Password Management section)</li>
+                        <li><strong>Username:</strong> Cannot be changed directly; create a new user instead</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="resetting-passwords">Password Management</h2>
+                    <p>Passwords are a critical security component. The system provides tools for administrators to manage user passwords.</p>
+                    
+                    <h3>Resetting a User's Password</h3>
+                    <p>As an administrator, you can reset any user's password:</p>
+                    <ol>
+                        <li>Edit the user account</li>
+                        <li>Enter a new password in the <strong>Password</strong> field</li>
+                        <li>Save the changes</li>
+                        <li>Communicate the new password to the user securely</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> When you reset a password, the user's existing sessions will remain active until they log out or the session expires. For immediate security concerns, consider revoking all tokens.
+                    </div>
+                    
+                    <h3>Password Security Best Practices</h3>
+                    <ul>
+                        <li>Use strong, unique passwords for each account</li>
+                        <li>Change passwords periodically</li>
+                        <li>Never share passwords between users</li>
+                        <li>Change passwords immediately if you suspect they've been compromised</li>
+                        <li>Communicate new passwords through secure channels (not email or text)</li>
+                    </ul>
+                    
+                    <h3>Revoking User Sessions</h3>
+                    <p>If you need to immediately log out a user from all devices:</p>
+                    <ol>
+                        <li>This action revokes all authentication tokens for the user</li>
+                        <li>The user will need to log in again with their current password</li>
+                        <li>Use this if you suspect unauthorized access or when an employee leaves</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-users">Deleting User Accounts</h2>
+                    <p>To remove a user account from the system:</p>
+                    
+                    <ol>
+                        <li>Locate the user in the user list</li>
+                        <li>Click the <strong>Delete</strong> button (trash icon)</li>
+                        <li>Confirm the deletion when prompted</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Before Deleting:</strong> Consider the following:
+                        <ul>
+                            <li>Historical transactions will retain the user's name</li>
+                            <li>Daily closings will still reference the user who performed them</li>
+                            <li>You cannot recover a deleted account</li>
+                        </ul>
+                    </div>
+                    
+                    <h3>Alternative to Deletion</h3>
+                    <p>Instead of deleting a user, consider:</p>
+                    <ul>
+                        <li>Changing their role to Cashier if they no longer need admin access</li>
+                        <li>Changing their password to prevent login while preserving records</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-performance">Viewing User Performance</h2>
+                    <p>The system tracks user activity for performance analysis. You can view individual user statistics:</p>
+                    
+                    <h3>Available Metrics</h3>
+                    <ul>
+                        <li><strong>Transactions Processed:</strong> Number of sales completed</li>
+                        <li><strong>Total Sales:</strong> Revenue generated by the user</li>
+                        <li><strong>Average Transaction:</strong> Average sale amount</li>
+                        <li><strong>Items Removed:</strong> Track of cleared items (for accountability)</li>
+                    </ul>
+                    
+                    <h3>Accessing User Reports</h3>
+                    <ol>
+                        <li>Go to the Users section</li>
+                        <li>Click on a user's name or the <strong>View Report</strong> button</li>
+                        <li>Select the date range for the report</li>
+                        <li>Review the performance metrics</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: User performance report view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            User Performance Report<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security-considerations">Security Considerations</h2>
+                    <p>User management is a critical security function. Follow these guidelines to maintain system security:</p>
+                    
+                    <h3>Account Security</h3>
+                    <ul>
+                        <li><strong>Minimum Privilege:</strong> Grant the lowest role necessary for each user's duties</li>
+                        <li><strong>Regular Audits:</strong> Periodically review user accounts and remove unnecessary ones</li>
+                        <li><strong>Strong Passwords:</strong> Enforce strong password practices</li>
+                        <li><strong>Immediate Action:</strong> Disable or delete accounts immediately when employees leave</li>
+                    </ul>
+                    
+                    <h3>Admin Account Protection</h3>
+                    <ul>
+                        <li>Limit the number of admin accounts</li>
+                        <li>Use unique, strong passwords for each admin</li>
+                        <li>Never share admin credentials</li>
+                        <li>Log out when leaving the workstation unattended</li>
+                    </ul>
+                    
+                    <div class="callout callout-danger">
+                        <strong>Critical:</strong> If an admin account is compromised, immediately change the password and review all recent activity for unauthorized changes.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

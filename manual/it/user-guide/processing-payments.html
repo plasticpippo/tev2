@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elaborazione Pagamenti - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Elaborazione Pagamenti</h1>
+                <p class="page-description">
+                    Impara come completare le transazioni, gestire le mance ed elaborare diversi metodi di pagamento.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="opening-payment">Aprire il Modale Pagamento</h2>
+                    <p>Quando un ordine è pronto per essere pagato:</p>
+                    <ol>
+                        <li>Assicurati che tutti gli articoli siano aggiunti all'ordine</li>
+                        <li>Rivedi i totali nel pannello ordini</li>
+                        <li>Clicca il pulsante <strong>Pagamento</strong></li>
+                        <li>Il modale pagamento si apre con un riepilogo ordine completo</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Payment modal showing order summary and payment options -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128179;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot Modale Pagamento<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-modal-overview">Panoramica Modale Pagamento</h2>
+                    <p>Il modale pagamento visualizza informazioni importanti:</p>
+                    
+                    <h3>Informazioni Ordine</h3>
+                    <ul>
+                        <li>Assegnazione tavolo (se applicabile)</li>
+                        <li>Elenco articoli con quantità e prezzi</li>
+                        <li>Subtotale (prima delle tasse)</li>
+                        <li>Importo tasse</li>
+                        <li>Importo mancia</li>
+                        <li><strong>Importo totale dovuto</strong></li>
+                    </ul>
+                    
+                    <h3>Sezione Mancia</h3>
+                    <ul>
+                        <li>Pulsante <strong>-</strong> per diminuire la mancia</li>
+                        <li>Visualizzazione importo mancia corrente</li>
+                        <li>Pulsante <strong>+</strong> per aumentare la mancia</li>
+                    </ul>
+                    
+                    <h3>Pulsanti Metodo Pagamento</h3>
+                    <ul>
+                        <li><strong>Paga in Contanti</strong> (pulsante verde)</li>
+                        <li><strong>Paga con Carta</strong> (pulsante blu)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-tips">Aggiungere Mance</h2>
+                    <p>Per aggiungere una mancia all'ordine:</p>
+                    <ol>
+                        <li>Nel modale pagamento, individua la sezione mancia</li>
+                        <li>Clicca il pulsante <strong>+</strong> per aumentare la mancia in piccoli incrementi</li>
+                        <li>Clicca il pulsante <strong>-</strong> per diminuire la mancia</li>
+                        <li>La mancia viene aggiunta al totale automaticamente</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Tieni premuti i pulsanti +/- per regolare rapidamente l'importo della mancia. L'importo si aggiorna in tempo reale.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-method">Selezionare il Metodo di Pagamento</h2>
+                    <p>Il POS supporta due metodi di pagamento:</p>
+                    
+                    <h3>Pagamento in Contanti</h3>
+                    <ul>
+                        <li>Clicca il pulsante verde <strong>Paga in Contanti</strong></li>
+                        <li>Registra l'importo in contanti ricevuto dal cliente</li>
+                        <li>Calcola e fornisci il resto come necessario</li>
+                        <li>La transazione viene registrata come pagamento in contanti</li>
+                    </ul>
+                    
+                    <h3>Pagamento con Carta</h3>
+                    <ul>
+                        <li>Clicca il pulsante blu <strong>Paga con Carta</strong></li>
+                        <li>Elabora la carta attraverso il tuo terminale di pagamento</li>
+                        <li>Attendi l'autorizzazione del pagamento</li>
+                        <li>La transazione viene registrata come pagamento con carta</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            Il POS non elabora i pagamenti con carta direttamente. Usa il tuo terminale di pagamento esterno per le transazioni con carta. Seleziona "Carta" nel POS per registrare che il pagamento è stato effettuato tramite carta.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="completing-transaction">Completare la Transazione</h2>
+                    <p>Per finalizzare il pagamento:</p>
+                    <ol>
+                        <li>Rivedi il totale finale (incluse tasse e mancia)</li>
+                        <li>Seleziona il metodo di pagamento appropriato</li>
+                        <li>Completa il pagamento fuori dal POS se usi la carta</li>
+                        <li>Clicca il pulsante pagamento per confermare</li>
+                        <li>La transazione viene salvata nel sistema</li>
+                        <li>Il pannello ordini si libera per il prossimo ordine</li>
+                    </ol>
+                    
+                    <div class="callout callout-success">
+                        <div class="callout-title">Successo</div>
+                        <div class="callout-content">
+                            Una volta completato il pagamento, la transazione viene registrata e può essere visualizzata nello Storico Transazioni dagli amministratori.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tax-calculation">Comprensione Calcolo Tasse</h2>
+                    <p>Le tasse vengono calcolate automaticamente in base alle impostazioni del tuo stabilimento:</p>
+                    
+                    <h3>Modalità Tasse</h3>
+                    <ul>
+                        <li><strong>Tasse Inclusa</strong> - I prezzi mostrati includono le tasse</li>
+                        <li><strong>Tasse Esclusa</strong> - Le tasse vengono aggiunte ai prezzi</li>
+                        <li><strong>Senza Tasse</strong> - Nessuna tassa applicata</li>
+                    </ul>
+                    
+                    <p>L'importo delle tasse visualizzato nel modale pagamento riflette la configurazione impostata dal tuo amministratore.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="receipts">Informazioni Scontrino</h2>
+                    <p>Dopo aver completato un pagamento:</p>
+                    <ul>
+                        <li>La transazione viene registrata nel sistema</li>
+                        <li>Gli amministratori possono visualizzare i dettagli della transazione nello Storico Transazioni</li>
+                        <li>I record delle transazioni includono: data, ora, articoli, importi, metodo di pagamento, utente</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

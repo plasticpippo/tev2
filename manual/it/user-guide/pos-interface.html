@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panoramica Interfaccia POS - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Panoramica Interfaccia POS</h1>
+                <p class="page-description">
+                    Familiarizza con il layout della schermata POS principale e i suoi componenti.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="main-screen">Layout Schermata Principale</h2>
+                    <p>L'interfaccia POS è divisa in diverse aree chiave che lavorano insieme per aiutarti a elaborare ordini in modo efficiente:</p>
+                    
+                    <h3>Sezioni dello Schermo</h3>
+                    <ul>
+                        <li><strong>Area Intestazione</strong> (in alto a destra) - Pulsante Admin solo per amministratori</li>
+                        <li><strong>Area Griglia Prodotti</strong> (sinistra/centro) - Visualizza i prodotti organizzati per categoria</li>
+                        <li><strong>Schede Categorie</strong> (sopra la griglia prodotti) - Naviga tra le categorie di prodotti</li>
+                        <li><strong>Pannello Ordini</strong> (lato destro) - Mostra gli articoli dell'ordine corrente, totali e pulsanti azione</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Complete main POS interface showing all screen sections -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot Interfaccia POS Principale<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="product-grid">Area Griglia Prodotti</h2>
+                    <p>La griglia prodotti è l'area di lavoro principale dove selezioni gli articoli per gli ordini. Visualizza:</p>
+                    
+                    <h3>Pulsanti Prodotto</h3>
+                    <ul>
+                        <li>Ogni prodotto appare come un pulsante grande e toccabile</li>
+                        <li>Mostra il nome del prodotto e il prezzo</li>
+                        <li>Colori pulsanti personalizzati configurati dal tuo amministratore</li>
+                        <li>Cliccare su un prodotto lo aggiunge direttamente all'ordine corrente</li>
+                    </ul>
+                    
+                    <h3>Categoria Preferiti</h3>
+                    <p>La prima scheda categoria è <strong>Preferiti</strong>, che mostra gli articoli ordinati frequentemente per accesso rapido. Il tuo amministratore può configurare quali prodotti appaiono qui.</p>
+                    
+                    <!-- SCREENSHOT: Close-up of product grid showing individual product buttons -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Dettaglio Griglia Prodotti<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-navigation">Navigazione Categorie</h2>
+                    <p>Le schede categoria ti permettono di passare tra diversi gruppi di prodotti:</p>
+                    <ol>
+                        <li><strong>Preferiti</strong> - Accesso rapido agli articoli ordinati frequentemente (prima scheda)</li>
+                        <li><strong>Schede categoria</strong> - Categorie aggiuntive configurate dal tuo amministratore</li>
+                        <li>Clicca su qualsiasi scheda categoria per visualizzare i suoi prodotti nella griglia</li>
+                        <li>Scorri orizzontalmente se tutte le schede categoria non entrano nello schermo</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Usa la categoria Preferiti per i tuoi articoli più richiesti per ridurre il numero di clic necessari per ordini comuni.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="order-panel">Pannello Ordini</h2>
+                    <p>Il pannello ordini (sul lato destro dello schermo) è il tuo centro di comando per gestire l'ordine corrente. Visualizza:</p>
+                    
+                    <h3>Sezione Informazioni Utente (In Alto)</h3>
+                    <ul>
+                        <li>Il tuo nome utente connesso</li>
+                        <li>Il tuo ruolo (Admin o Cassiere)</li>
+                        <li>Pulsante Disconnessione</li>
+                    </ul>
+                    
+                    <h3>Informazioni Ordine (Centro)</h3>
+                    <ul>
+                        <li>Articoli dell'ordine corrente con quantità</li>
+                        <li>Prezzi degli articoli</li>
+                        <li>Nome del conto attivo (se stai lavorando con un conto salvato)</li>
+                        <li>Tavolo assegnato (se il tavolo è assegnato)</li>
+                    </ul>
+                    
+                    <h3>Sezione Totali</h3>
+                    <ul>
+                        <li>Subtotale (prima delle tasse)</li>
+                        <li>Importo totale incluse le tasse</li>
+                    </ul>
+                    
+                    <h3>Pulsanti Azione (In Basso)</h3>
+                    <ul>
+                        <li><strong>Visualizza Conti Aperti / Conti</strong> - Apre il gestore conti</li>
+                        <li><strong>Cancella Ordine</strong> - Rimuove tutti gli articoli dall'ordine corrente</li>
+                        <li><strong>Assegna Tavolo</strong> - Apre il modale di assegnazione tavolo</li>
+                        <li><strong>Pagamento</strong> - Apre il modale di pagamento</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel showing items, quantities, totals, and action buttons -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Dettaglio Pannello Ordini<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="header-controls">Controlli Intestazione</h2>
+                    <p>L'area in alto a destra dell'interfaccia POS contiene controlli aggiuntivi:</p>
+                    
+                    <ul>
+                        <li><strong>Pulsante Admin</strong> - Visibile solo agli amministratori; apre il pannello di gestione admin</li>
+                        <li><strong>Selettore Lingua</strong> - Situato sulla schermata di accesso; permette di passare tra Inglese e Italiano</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Nota</div>
+                        <div class="callout-content">
+                            Il pulsante Admin è visibile solo agli utenti con ruolo Amministratore. I cassieri non vedranno questo pulsante.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="layout-management">Personalizzazione Layout</h2>
+                    <p>Gli amministratori possono personalizzare come i prodotti appaiono nella griglia:</p>
+                    <ul>
+                        <li>Colori dei pulsanti prodotto</li>
+                        <li>Dimensioni e posizioni dei pulsanti</li>
+                        <li>Raggruppamenti prodotti</li>
+                        <li>Assegnazioni categoria</li>
+                    </ul>
+                    <p>Per accedere alla modifica del layout, gli amministratori cliccano il pulsante <strong>Modifica Layout</strong> nel pannello ordini (visibile solo agli admin).</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

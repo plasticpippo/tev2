@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Taking Orders - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Taking Orders</h1>
+                <p class="page-description">
+                    Learn how to browse products, add items to cart, adjust quantities, and manage orders.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="browsing-products">Browsing Products by Category</h2>
+                    <p>Products are organized into categories for easy navigation. To browse and select products:</p>
+                    <ol>
+                        <li>Look at the <strong>category tabs</strong> above the product grid</li>
+                        <li>The first tab is <strong>Favourites</strong> - showing frequently ordered items</li>
+                        <li>Click on any category tab to view its products</li>
+                        <li>Products in the selected category will appear in the grid</li>
+                        <li>Scroll through the grid if products don't fit on one screen</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Category tabs with products displayed in the grid -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128194;</div>
+                        <div class="image-placeholder-text">
+                            Category Tabs Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Set up Favourites with your most popular items for faster order processing during busy periods.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-items">Adding Items to Order</h2>
+                    <p>To add a product to the current order:</p>
+                    <ol>
+                        <li>Navigate to the appropriate category using the category tabs</li>
+                        <li>Find the desired product in the grid</li>
+                        <li><strong>Click on the product button</strong></li>
+                        <li>The item immediately appears in the order panel with quantity 1</li>
+                        <li>Click the same product again to increase the quantity</li>
+                    </ol>
+                    
+                    <h3>Quick Quantity Increase</h3>
+                    <p>Repeatedly clicking the same product button quickly adds multiple quantities. Each click adds one more of that item to the order.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="adjusting-quantities">Adjusting Quantities</h2>
+                    <p>Use the quantity controls in the order panel to modify item quantities:</p>
+                    
+                    <h3>Increase Quantity</h3>
+                    <ul>
+                        <li>Click the <strong>+</strong> (plus) button next to an item</li>
+                        <li>Or click the product button in the grid again</li>
+                    </ul>
+                    
+                    <h3>Decrease Quantity</h3>
+                    <ul>
+                        <li>Click the <strong>-</strong> (minus) button next to an item</li>
+                        <li>When quantity reaches 0, the item is removed from the order</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            Decreasing quantity to 0 removes the item from the order entirely. This action cannot be undone.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="viewing-subtotal">Viewing Order Totals</h2>
+                    <p>The order panel displays running totals as you build the order:</p>
+                    <ul>
+                        <li><strong>Order Items</strong> - Each item shows name, unit price, and quantity</li>
+                        <li><strong>Subtotal</strong> - The sum of all items before tax</li>
+                        <li><strong>Tax</strong> - Automatically calculated based on tax settings</li>
+                        <li><strong>Total</strong> - The final amount including tax</li>
+                    </ul>
+                    
+                    <p>The total updates automatically as you add, remove, or modify items.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="clearing-orders">Clearing the Order</h2>
+                    <p>To remove all items from the current order:</p>
+                    <ol>
+                        <li>Click the <strong>Clear Order</strong> button in the order panel</li>
+                        <li>Confirm the action when prompted</li>
+                        <li>All items are removed and the order starts fresh</li>
+                    </ol>
+                    
+                    <div class="callout callout-danger">
+                        <div class="callout-title">Warning</div>
+                        <div class="callout-content">
+                            Clearing an order permanently removes all items. This action cannot be undone. Make sure you want to clear all items before proceeding.
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Alternative</div>
+                        <div class="callout-content">
+                            Instead of clearing, consider saving the order as a <strong>Tab</strong> if the customer might return or want to pay later.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="order-workflow">Order Workflow Summary</h2>
+                    <p>Here is the typical workflow for taking an order:</p>
+                    <ol>
+                        <li><strong>Start a new order</strong> - The order panel should be empty (or load an existing tab)</li>
+                        <li><strong>Select category</strong> - Click the appropriate category tab</li>
+                        <li><strong>Add items</strong> - Click products to add them to the order</li>
+                        <li><strong>Adjust quantities</strong> - Use +/- buttons as needed</li>
+                        <li><strong>Assign table</strong> (optional) - Click "Assign Table" to link order to a table</li>
+                        <li><strong>Review totals</strong> - Check subtotal, tax, and total</li>
+                        <li><strong>Process payment</strong> - Click "Payment" when ready to checkout</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Order panel showing complete order with items -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128179;</div>
+                        <div class="image-placeholder-text">
+                            Complete Order Example<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

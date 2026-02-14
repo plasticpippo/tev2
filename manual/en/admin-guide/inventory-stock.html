@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventory & Stock - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Inventory & Stock Management</h1>
+                <p class="page-description">
+                    The Stock Items and Inventory sections allow you to manage your inventory. Track stock levels, make adjustments, and monitor consumption to maintain optimal inventory control.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Overview</h2>
+                    <p>The inventory system consists of two related sections:</p>
+                    
+                    <ul>
+                        <li><strong>Stock Items:</strong> Manage individual inventory items (ingredients and sellable goods)</li>
+                        <li><strong>Inventory:</strong> Make adjustments and track stock level changes</li>
+                    </ul>
+                    
+                    <p>Stock items are consumed automatically when products are sold (based on product variant configuration), and can be manually adjusted through the Inventory section.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-items">Stock Items Management</h2>
+                    <p>Stock Items represent the individual inventory items in your establishment - ingredients used in products, supplies, and goods for resale.</p>
+                    
+                    <!-- SCREENSHOT: Stock items list view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Stock Items List<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Stock Item Types</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Type</th>
+                                    <th>Description</th>
+                                    <th>Examples</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Ingredient</strong></td>
+                                    <td>Items consumed in preparing products</td>
+                                    <td>Coffee beans, milk, flour, sauce</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Sellable Good</strong></td>
+                                    <td>Items sold directly without preparation</td>
+                                    <td>Bottled water, packaged snacks, merchandise</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-stock-items">Creating Stock Items</h2>
+                    <p>To create a new stock item:</p>
+                    
+                    <ol>
+                        <li>Navigate to <strong>Stock Items</strong> in the Admin Panel</li>
+                        <li>Click <strong>Add Stock Item</strong></li>
+                        <li>Fill in the required information:
+                            <ul>
+                                <li><strong>Name:</strong> The item name (e.g., "Coffee Beans", "Large Cups")</li>
+                                <li><strong>Type:</strong> Choose "Ingredient" or "Sellable Good"</li>
+                                <li><strong>Base Unit:</strong> The primary unit of measurement (e.g., "kg", "liters", "units")</li>
+                                <li><strong>Initial Quantity:</strong> Starting stock level</li>
+                            </ul>
+                        </li>
+                        <li>Configure optional <strong>Purchasing Units</strong> if needed</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Stock Item form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Add Stock Item Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="units-configuration">Units Configuration</h2>
+                    <p>Stock items use base units for internal tracking and can have purchasing units for ordering.</p>
+                    
+                    <h3>Base Units</h3>
+                    <p>The base unit is the standard measurement used for this item. Common base units include:</p>
+                    <ul>
+                        <li><strong>kg</strong> - Kilograms (for solids like flour, sugar)</li>
+                        <li><strong>liters</strong> - Liters (for liquids like milk, oil)</li>
+                        <li><strong>units</strong> - Individual items (for cups, napkins)</li>
+                        <li><strong>grams</strong> - Grams (for precise measurements)</li>
+                        <li><strong>ml</strong> - Milliliters (for small liquid quantities)</li>
+                    </ul>
+                    
+                    <h3>Purchasing Units</h3>
+                    <p>Purchasing units define how the item is typically ordered. For example:</p>
+                    <ul>
+                        <li>Base unit: <strong>grams</strong>, Purchasing: 1kg bag</li>
+                        <li>Base unit: <strong>ml</strong>, Purchasing: 1L carton</li>
+                        <li>Base unit: <strong>units</strong>, Purchasing: 50-pack</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-levels">Stock Level Indicators</h2>
+                    <p>The system displays stock levels with visual indicators to help identify items needing attention:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Indicator</th>
+                                    <th>Meaning</th>
+                                    <th>Action Required</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Green</strong></td>
+                                    <td>Stock level is healthy</td>
+                                    <td>No action needed</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Yellow/Orange</strong></td>
+                                    <td>Stock is getting low</td>
+                                    <td>Consider reordering soon</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Red</strong></td>
+                                    <td>Stock is critically low or out</td>
+                                    <td>Reorder immediately</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Note:</strong> Stock level thresholds may be configurable in future versions. Currently, items are highlighted when quantity is low.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-adjustments">Making Stock Adjustments</h2>
+                    <p>Stock adjustments allow you to manually increase or decrease stock levels. This is useful for:</p>
+                    <ul>
+                        <li>Recording deliveries</li>
+                        <li>Correcting inventory counts</li>
+                        <li>Writing off expired or damaged items</li>
+                        <li>Initial stock setup</li>
+                    </ul>
+                    
+                    <h3>Creating a Stock Adjustment</h3>
+                    <ol>
+                        <li>Navigate to <strong>Inventory</strong> in the Admin Panel</li>
+                        <li>Click <strong>Add Adjustment</strong></li>
+                        <li>Select the <strong>Stock Item</strong></li>
+                        <li>Enter the <strong>Quantity</strong> (positive to add, negative to subtract)</li>
+                        <li>Provide a <strong>Reason</strong> for the adjustment</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Stock adjustment form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9998;</div>
+                        <div class="image-placeholder-text">
+                            Stock Adjustment Form<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Adjustment Reasons</h3>
+                    <p>Common reasons for stock adjustments include:</p>
+                    <ul>
+                        <li><strong>Delivery Received:</strong> New stock from supplier</li>
+                        <li><strong>Inventory Count:</strong> Correction after physical count</li>
+                        <li><strong>Damaged/Expired:</strong> Items written off</li>
+                        <li><strong>Waste:</strong> Spoilage or preparation waste</li>
+                        <li><strong>Transfer:</strong> Moving stock between locations</li>
+                        <li><strong>Initial Setup:</strong> Setting initial stock levels</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adjustment-history">Viewing Adjustment History</h2>
+                    <p>The Inventory section maintains a complete history of all stock adjustments.</p>
+                    
+                    <h3>Accessing History</h3>
+                    <ol>
+                        <li>Navigate to <strong>Inventory</strong></li>
+                        <li>View the adjustment history list</li>
+                        <li>Each entry shows:
+                            <ul>
+                                <li>Date and time of adjustment</li>
+                                <li>Item name</li>
+                                <li>Quantity change</li>
+                                <li>Reason</li>
+                                <li>User who made the adjustment</li>
+                            </ul>
+                        </li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Adjustment history list -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Stock Adjustment History<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="consumption-reports">Consumption Reports</h2>
+                    <p>The Itemised Consumption section provides detailed reports on which stock items have been consumed over a period.</p>
+                    
+                    <h3>Accessing Consumption Reports</h3>
+                    <ol>
+                        <li>Navigate to <strong>Itemised Consumption</strong> in the Admin Panel</li>
+                        <li>Select a <strong>Date Range</strong></li>
+                        <li>Optionally filter by:
+                            <ul>
+                                <li><strong>Category:</strong> Filter by product category</li>
+                                <li><strong>Stock Item Type:</strong> Ingredients or Sellable Goods</li>
+                            </ul>
+                        </li>
+                        <li>View the consumption data</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Consumption report view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Itemised Consumption Report<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Understanding Consumption Data</h3>
+                    <p>The report shows:</p>
+                    <ul>
+                        <li><strong>Total Consumption:</strong> How much of each stock item was used</li>
+                        <li><strong>By Product:</strong> Which products consumed the most</li>
+                        <li><strong>By Period:</strong> Daily, weekly, or custom date ranges</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="automatic-consumption">Automatic Stock Consumption</h2>
+                    <p>When products are sold, stock is automatically consumed based on the product variant configuration.</p>
+                    
+                    <h3>How It Works</h3>
+                    <ol>
+                        <li>Each product variant has <strong>Stock Consumption</strong> settings</li>
+                        <li>When an item is sold, the system looks up the consumption for that variant</li>
+                        <li>The specified quantity is automatically deducted from the stock item</li>
+                        <li>Stock levels update in real-time</li>
+                    </ol>
+                    
+                    <h3>Example</h3>
+                    <p>If a "Large Coffee" variant is configured to consume:</p>
+                    <ul>
+                        <li>20g Coffee Beans</li>
+                        <li>200ml Milk</li>
+                        <li>1 Large Cup</li>
+                    </ul>
+                    <p>Every time a Large Coffee is sold, these items are automatically deducted from inventory.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Stock Item Management</h3>
+                    <ul>
+                        <li>Create stock items for all items you want to track</li>
+                        <li>Use consistent naming conventions</li>
+                        <li>Set appropriate base units for accurate tracking</li>
+                        <li>Configure purchasing units to match supplier packaging</li>
+                    </ul>
+                    
+                    <h3>Stock Adjustments</h3>
+                    <ul>
+                        <li>Always provide a reason for adjustments</li>
+                        <li>Regularly compare actual stock to system stock</li>
+                        <li>Investigate large discrepancies</li>
+                        <li>Document all adjustments for accountability</li>
+                    </ul>
+                    
+                    <h3>Consumption Monitoring</h3>
+                    <ul>
+                        <li>Review consumption reports regularly</li>
+                        <li>Compare actual usage to expected usage</li>
+                        <li>Identify items with unusual consumption patterns</li>
+                        <li>Use data to optimize ordering and reduce waste</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Regular inventory counts help ensure system accuracy. Perform physical counts periodically and compare to system quantities.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Layout - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Layout</h1>
+                <p class="page-description">
+                    La gestione dei layout ti permette di personalizzare come i prodotti appaiono sullo schermo POS di ogni cassa. Crea disposizioni personalizzate, condividi layout tra le casse e ottimizza la griglia prodotti per un servizio efficiente.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Panoramica</h2>
+                    <p>I layout determinano la disposizione visiva dei prodotti nell'interfaccia POS. Ogni cassa puo' avere il proprio layout, oppure puoi creare layout condivisi che possono essere applicati a piu' casse.</p>
+                    
+                    <h3>Tipi di Layout</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Tipo</th>
+                                    <th>Descrizione</th>
+                                    <th>Caso d'Uso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Layout Specifico per Cassa</strong></td>
+                                    <td>Layout personalizzato per una singola cassa</td>
+                                    <td>Configurazioni uniche per terminale</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Layout Condiviso</strong></td>
+                                    <td>Layout riutilizzabile che puo' essere applicato a piu' casse</td>
+                                    <td>Layout standard tra terminali simili</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-layouts">Creazione di Layout Specifici per Cassa</h2>
+                    <p>Ogni cassa puo' avere il proprio layout personalizzato per ogni categoria. Il layout determina dove appare ogni variante del prodotto nella griglia.</p>
+                    
+                    <h3>Accesso all'Editor di Layout</h3>
+                    <ol>
+                        <li>Accedi al POS sulla cassa di destinazione</li>
+                        <li>Entra in <strong>Modalita' Amministratore</strong></li>
+                        <li>Naviga alla categoria che vuoi organizzare</li>
+                        <li>Premi a lungo o fai clic destro sulla griglia prodotti</li>
+                        <li>Seleziona <strong>Modifica Layout</strong> o usa l'interfaccia di editing del layout</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Layout editor in POS -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128302;</div>
+                        <div class="image-placeholder-text">
+                            Editor Layout POS<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Disposizione dei Prodotti</h3>
+                    <ol>
+                        <li>Trascina i prodotti per riposizionarli nella griglia</li>
+                        <li>I prodotti si agganciano a una griglia a 4 colonne</li>
+                        <li>Possono essere usate multiple righe</li>
+                        <li>Il layout si salva automaticamente</li>
+                    </ol>
+                    
+                    <h3>Configurazione della Griglia</h3>
+                    <ul>
+                        <li><strong>Colonne:</strong> Fisse a 4 colonne</li>
+                        <li><strong>Righe:</strong> Illimitate - scorri secondo necessita'</li>
+                        <li><strong>Posizione:</strong> Specificata da gridColumn (1-4) e gridRow (a partire da 1)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="shared-layouts">Creazione di Layout Condivisi</h2>
+                    <p>I layout condivisi ti permettono di creare una disposizione standard una sola volta e applicarla a piu' casse.</p>
+                    
+                    <h3>Creazione di un Layout Condiviso</h3>
+                    <ol>
+                        <li>Naviga a <strong>Gestione Layout</strong> nel Pannello di Amministrazione</li>
+                        <li>Clicca su <strong>Crea Layout Condiviso</strong></li>
+                        <li>Inserisci un <strong>Nome</strong> per il layout</li>
+                        <li>Seleziona la <strong>Categoria</strong> a cui si applica questo layout</li>
+                        <li>Aggiungi i prodotti e specifica le loro posizioni</li>
+                        <li>Clicca su <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Shared layout creation form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Crea Layout Condiviso<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Opzioni del Layout Condiviso</h3>
+                    <ul>
+                        <li><strong>Nome:</strong> Identificatore descrittivo per il layout</li>
+                        <li><strong>Categoria:</strong> Quale categoria di prodotti organizza questo layout</li>
+                        <li><strong>Posizioni:</strong> Mappature variante-prodotto-posizione-griglia</li>
+                        <li><strong>Proprietario:</strong> Utente che ha creato il layout</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="applying-layouts">Applicazione dei Layout Condivisi</h2>
+                    <p>Dopo aver creato un layout condiviso, puoi applicarlo a qualsiasi cassa.</p>
+                    
+                    <h3>Caricamento di un Layout su una Cassa</h3>
+                    <ol>
+                        <li>Naviga a <strong>Layout Condivisi</strong> nel Pannello di Amministrazione</li>
+                        <li>Trova il layout che vuoi applicare</li>
+                        <li>Clicca su <strong>Carica su Cassa</strong> o usa l'azione "Carica su Cassa"</li>
+                        <li>Seleziona la cassa di destinazione dalla lista</li>
+                        <li>Conferma l'azione</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nota:</strong> Caricare un layout condiviso sostituisce qualsiasi layout esistente per quella combinazione cassa-categoria. Il layout viene copiato, non collegato, quindi le modifiche al layout condiviso non influenzeranno le casse dove e' gia' stato caricato.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-layouts">Modifica dei Layout</h2>
+                    <p>Puoi modificare i layout esistenti in qualsiasi momento.</p>
+                    
+                    <h3>Modifica dei Layout Specifici per Cassa</h3>
+                    <ol>
+                        <li>Accedi al POS sulla cassa di destinazione</li>
+                        <li>Naviga alla categoria</li>
+                        <li>Entra in modalita' modifica layout</li>
+                        <li>Trascina i prodotti in nuove posizioni</li>
+                        <li>Le modifiche si salvano automaticamente</li>
+                    </ol>
+                    
+                    <h3>Modifica dei Layout Condivisi</h3>
+                    <ol>
+                        <li>Naviga a <strong>Layout Condivisi</strong> nel Pannello di Amministrazione</li>
+                        <li>Clicca su <strong>Modifica</strong> sul layout</li>
+                        <li>Modifica la configurazione del layout</li>
+                        <li>Clicca su <strong>Salva</strong></li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-layouts">Eliminazione dei Layout</h2>
+                    <p>Rimuovi i layout quando non sono piu' necessari.</p>
+                    
+                    <h3>Eliminazione di un Layout di Cassa</h3>
+                    <ol>
+                        <li>Accedi al POS sulla cassa di destinazione</li>
+                        <li>Naviga alla categoria</li>
+                        <li>Entra in modalita' modifica layout</li>
+                        <li>Seleziona <strong>Reimposta Layout</strong> o <strong>Cancella Layout</strong></li>
+                        <li>Conferma l'azione</li>
+                    </ol>
+                    
+                    <h3>Eliminazione di un Layout Condiviso</h3>
+                    <ol>
+                        <li>Naviga a <strong>Layout Condivisi</strong> nel Pannello di Amministrazione</li>
+                        <li>Clicca su <strong>Elimina</strong> sul layout</li>
+                        <li>Conferma l'eliminazione</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Avviso:</strong> Eliminare un layout condiviso non influenza le casse dove e' gia' stato caricato. Quelle casse manterranno la loro copia del layout.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="favourites-category">Categoria Preferiti</h2>
+                    <p>La categoria Preferiti e' una pseudo-categoria speciale che mostra tutti i prodotti marcati come preferiti, indipendentemente dalla categoria regolare a cui appartengono.</p>
+                    
+                    <h3>Creazione del Layout Preferiti</h3>
+                    <ol>
+                        <li>I prodotti devono essere marcati come preferiti nelle impostazioni delle varianti</li>
+                        <li>La categoria Preferiti (ID: -1) appare nella lista categorie del POS</li>
+                        <li>Crea un layout per la categoria Preferiti come per qualsiasi altra</li>
+                    </ol>
+                    
+                    <h3>Layout per Preferiti</h3>
+                    <ul>
+                        <li>Tutti i prodotti preferiti appaiono in questa categoria</li>
+                        <li>Puoi personalizzare la loro disposizione</li>
+                        <li>Utile per accesso rapido agli articoli popolari</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Progettazione del Layout</h3>
+                    <ul>
+                        <li>Posiziona gli articoli piu' ordinati nelle righe superiori</li>
+                        <li>Raggruppa i prodotti correlati</li>
+                        <li>Considera la zona di raggiungibilita' per i terminali touch-screen</li>
+                        <li>Usa posizioni consistenti tra casse simili</li>
+                    </ul>
+                    
+                    <h3>Layout Condivisi</h3>
+                    <ul>
+                        <li>Crea layout condivisi per configurazioni terminale standard</li>
+                        <li>Usa layout diversi per tipi di terminale diversi (es. bar vs. bancone)</li>
+                        <li>Documenta quali casse usano quali layout</li>
+                        <li>Aggiorna i layout condivisi quando cambiano i prodotti</li>
+                    </ul>
+                    
+                    <h3>Manutenzione</h3>
+                    <ul>
+                        <li>Rivedi i layout quando aggiungi nuovi prodotti</li>
+                        <li>Rimuovi i layout per prodotti discontinuati</li>
+                        <li>Testa i layout effettuando l'accesso su ogni cassa</li>
+                        <li>Considera il feedback del personale sull'efficienza del layout</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Usa i layout condivisi per mantenere la consistenza tra terminali simili, poi apporta piccole aggiustamenti per locali specifici secondo necessita'.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="troubleshooting">Risoluzione Problemi</h2>
+                    
+                    <h3>Prodotti che Non Appare</h3>
+                    <p>Se i prodotti non appaiono nella griglia POS:</p>
+                    <ul>
+                        <li>Verifica che la categoria sia visibile per quella cassa</li>
+                        <li>Controlla che il prodotto abbia almeno una variante</li>
+                        <li>Assicurati che il prodotto sia in una categoria attiva</li>
+                    </ul>
+                    
+                    <h3>Il Layout non si Salva</h3>
+                    <p>Se le modifiche al layout non si salvano:</p>
+                    <ul>
+                        <li>Controlla la connettivita' di rete</li>
+                        <li>Assicurati di essere loggato con i permessi appropriati</li>
+                        <li>Prova ad aggiornare la pagina</li>
+                    </ul>
+                    
+                    <h3>Il Layout Condiviso non si Applica</h3>
+                    <p>Se un layout condiviso non si applica a una cassa:</p>
+                    <ul>
+                        <li>Verifica di star caricando sulla cassa corretta</li>
+                        <li>Controlla che la categoria del layout corrisponda alla categoria POS</li>
+                        <li>La cassa potrebbe avere un layout specifico che sovrascrive quello condiviso</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

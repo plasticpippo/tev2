@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Prodotti - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Prodotti</h1>
+                <p class="page-description">
+                    I prodotti sono gli articoli che vendi nel tuo sistema POS. Questa guida spiega come creare, modificare e gestire i prodotti e le loro varianti, incluse le impostazioni di prezzo, categorizzazione e consumo magazzino.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="viewing-products">Visualizzazione di Tutti i Prodotti</h2>
+                    <p>Naviga alla sezione Prodotti dalla sidebar del Pannello Amministratore per vedere l'elenco completo di tutti i prodotti nel tuo sistema.</p>
+                    
+                    <!-- SCREENSHOT: Product management list showing products with variants -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Elenco Gestione Prodotti<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Funzionalità dell'Elenco Prodotti</h3>
+                    <ul>
+                        <li><strong>Nome Prodotto:</strong> L'identificatore principale del prodotto</li>
+                        <li><strong>Categoria:</strong> A quale categoria appartiene il prodotto</li>
+                        <li><strong>Varianti:</strong> Numero di varianti configurate per il prodotto</li>
+                        <li><strong>Azioni:</strong> Pulsanti modifica ed elimina per ogni prodotto</li>
+                    </ul>
+                    
+                    <p>I prodotti sono organizzati per categoria, rendendo facile trovare articoli correlati. Puoi scorrere l'elenco o usare la funzione di ricerca per trovare prodotti specifici.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-products">Aggiunta di Nuovi Prodotti</h2>
+                    <p>Per aggiungere un nuovo prodotto al tuo catalogo:</p>
+                    
+                    <ol>
+                        <li>Clicca il pulsante <strong>Aggiungi Prodotto</strong> in cima all'elenco prodotti</li>
+                        <li>Inserisci il <strong>Nome Prodotto</strong> (richiesto)</li>
+                        <li>Seleziona una <strong>Categoria</strong> dal menu a discesa (richiesto)</li>
+                        <li>Aggiungi una o più <strong>Varianti</strong> (vedi sezione Varianti sotto)</li>
+                        <li>Clicca <strong>Salva</strong> per creare il prodotto</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Product modal/form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Aggiungi Prodotto<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Campi Richiesti:</strong> Sia il nome del prodotto che la categoria devono essere specificati prima di poter salvare un nuovo prodotto. Le varianti sono anche richieste - un prodotto deve avere almeno una variante per essere vendibile.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-products">Modifica di Prodotti Esistenti</h2>
+                    <p>Per modificare un prodotto esistente:</p>
+                    
+                    <ol>
+                        <li>Individua il prodotto nell'elenco prodotti</li>
+                        <li>Clicca il pulsante <strong>Modifica</strong> (icona matita)</li>
+                        <li>Modifica il nome del prodotto o la categoria secondo necessità</li>
+                        <li>Aggiungi, modifica o rimuovi varianti</li>
+                        <li>Clicca <strong>Salva</strong> per applicare le modifiche</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Importante:</strong> La modifica di un prodotto influenza tutte le transazioni future. Le transazioni passate mantengono le informazioni del prodotto come erano al momento della vendita.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-products">Eliminazione di Prodotti</h2>
+                    <p>Per rimuovere un prodotto dal tuo catalogo:</p>
+                    
+                    <ol>
+                        <li>Individua il prodotto nell'elenco prodotti</li>
+                        <li>Clicca il pulsante <strong>Elimina</strong> (icona cestino)</li>
+                        <li>Conferma l'eliminazione quando richiesto</li>
+                    </ol>
+                    
+                    <div class="callout callout-danger">
+                        <strong>Avviso:</strong> L'eliminazione di un prodotto è permanente. Tutte le varianti e i loro dati associati (incluse le configurazioni di consumo magazzino) verranno rimossi. Questa azione non può essere annullata.
+                    </div>
+                    
+                    <p>Se un prodotto è stato usato in transazioni passate, considera di marcarlo come non disponibile piuttosto che eliminarlo per mantenere i registri storici.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="managing-variants">Gestione delle Varianti di Prodotto</h2>
+                    <p>Le varianti rappresentano diverse versioni o opzioni di un prodotto. Ogni prodotto deve avere almeno una variante per essere vendibile.</p>
+                    
+                    <h3>Cosa sono le Varianti?</h3>
+                    <p>Le varianti ti permettono di offrire diverse opzioni per lo stesso prodotto. Usi comuni includono:</p>
+                    <ul>
+                        <li><strong>Opzioni di Taglia:</strong> Piccolo, Medio, Grande</li>
+                        <li><strong>Opzioni di Gusto:</strong> Cioccolato, Vaniglia, Fragola</li>
+                        <li><strong>Stili di Preparazione:</strong> Normale, Decaffeinato, Shot Extra</li>
+                        <li><strong>Porzioni:</strong> Singola, Doppia, Formato Famiglia</li>
+                    </ul>
+                    
+                    <h3>Aggiunta di Varianti</h3>
+                    <p>Quando crei o modifichi un prodotto, puoi aggiungere varianti:</p>
+                    <ol>
+                        <li>Clicca <strong>Aggiungi Variante</strong> nel modulo del prodotto</li>
+                        <li>Inserisci il <strong>Nome Variante</strong> (es. "Grande")</li>
+                        <li>Imposta il <strong>Prezzo</strong> per questa variante</li>
+                        <li>Configura opzionalmente impostazioni aggiuntive (vedi sotto)</li>
+                        <li>Ripeti per varianti aggiuntive</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Variant configuration form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Configurazione Variante<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Impostazioni delle Varianti</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Impostazione</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Nome</strong></td>
+                                    <td>Il nome della variante visualizzato nel POS (es. "Grande", "Cioccolato")</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prezzo</strong></td>
+                                    <td>Il prezzo di vendita per questa specifica variante</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Preferito</strong></td>
+                                    <td>Marca come preferito per accesso rapido nella griglia POS</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Colore Sfondo</strong></td>
+                                    <td>Colore pulsante personalizzato per identificazione visiva</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Colore Testo</strong></td>
+                                    <td>Colore del testo per il pulsante della variante</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Consumo Magazzino</strong></td>
+                                    <td>Definisci quali articoli di magazzino vengono consumati quando venduti</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="pricing">Impostazioni di Prezzo e Tasse</h2>
+                    <p>Ogni variante ha il proprio prezzo, permettendo una determinazione flessibile del prezzo basata su dimensione, quantità o altri fattori.</p>
+                    
+                    <h3>Impostazione dei Prezzi</h3>
+                    <ul>
+                        <li>Inserisci il prezzo nella tua valuta locale</li>
+                        <li>I prezzi possono includere valori decimali (es. 12,99)</li>
+                        <li>Le tasse sono calcolate in base alle impostazioni del sistema</li>
+                    </ul>
+                    
+                    <h3>Comportamento delle Tasse</h3>
+                    <p>Il modo in cui le tasse vengono applicate dipende dalla configurazione delle Impostazioni:</p>
+                    <ul>
+                        <li><strong>Tassa Inclusa:</strong> Il prezzo che inserisci include le tasse; il sistema calcola il prezzo base</li>
+                        <li><strong>Tassa Esclusa:</strong> Le tasse vengono aggiunte al prezzo che inserisci</li>
+                        <li><strong>Senza Tasse:</strong> Il prezzo che inserisci è il prezzo finale senza calcolo delle tasse</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Controlla le tue Impostazioni per capire come le tasse influenzano i tuoi prezzi. Lo stesso prezzo può risultare in importi finali diversi a seconda della modalità delle tasse.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="favourites">Impostazione dei Preferiti</h2>
+                    <p>I preferiti sono varianti che appaiono in una speciale categoria "Preferiti" nel POS per accesso rapido.</p>
+                    
+                    <h3>Impostare una Variante come Preferita</h3>
+                    <ol>
+                        <li>Modifica il prodotto contenente la variante</li>
+                        <li>Trova la variante che vuoi marcare</li>
+                        <li>Spunta la casella <strong>Preferito</strong></li>
+                        <li>Salva il prodotto</li>
+                    </ol>
+                    
+                    <h3>Come Funzionano i Preferiti</h3>
+                    <ul>
+                        <li>I preferiti appaiono in una scheda dedicata "Preferiti" nel POS</li>
+                        <li>Varie varianti possono essere impostate come preferite</li>
+                        <li>I preferiti di tutte le categorie sono raccolti in un unico posto</li>
+                        <li>Utili per articoli frequentemente ordinati o prodotti promozionali</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Favourites tab in POS view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#11088;</div>
+                        <div class="image-placeholder-text">
+                            Scheda Preferiti nel POS<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="button-colors">Personalizzazione dei Colori dei Pulsanti</h2>
+                    <p>Ogni variante può avere un colore pulsante personalizzato, aiutando il personale a identificare rapidamente i prodotti nella griglia POS.</p>
+                    
+                    <h3>Impostazione dei Colori dei Pulsanti</h3>
+                    <ol>
+                        <li>Modifica il prodotto e individua la variante</li>
+                        <li>Clicca sul selettore <strong>Colore Sfondo</strong></li>
+                        <li>Scegli un colore dalla tavolozza o inserisci un codice esadecimale</li>
+                        <li>Opzionalmente imposta un <strong>Colore Testo</strong> per il contrasto</li>
+                        <li>Salva il prodotto</li>
+                    </ol>
+                    
+                    <h3>Best Practice per i Colori</h3>
+                    <ul>
+                        <li>Usa colori coerenti per prodotti correlati</li>
+                        <li>Assicurati che il testo sia leggibile sullo sfondo</li>
+                        <li>Considera gli utenti daltonici - non fare affidamento solo sul colore per differenziare</li>
+                        <li>Usa alto contrasto per articoli importanti o frequentemente usati</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="stock-consumption">Configurazione del Consumo Magazzino</h2>
+                    <p>Il consumo magazzino permette al sistema di tracciare automaticamente l'inventario quando i prodotti vengono venduti. Ogni variante può essere configurata per consumare specifici articoli di magazzino.</p>
+                    
+                    <h3>Configurazione del Consumo Magazzino</h3>
+                    <ol>
+                        <li>Modifica il prodotto e individua la variante</li>
+                        <li>Trova la sezione <strong>Consumo Magazzino</strong></li>
+                        <li>Clicca <strong>Aggiungi Articolo Magazzino</strong></li>
+                        <li>Seleziona l'articolo di magazzino da consumare</li>
+                        <li>Inserisci la quantità consumata per vendita</li>
+                        <li>Ripeti per articoli di magazzino aggiuntivi</li>
+                        <li>Salva il prodotto</li>
+                    </ol>
+                    
+                    <h3>Esempio di Configurazione</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Variante Prodotto</th>
+                                    <th>Articolo Magazzino</th>
+                                    <th>Quantità Consumata</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Caffè - Grande</td>
+                                    <td>Caffè in Grani</td>
+                                    <td>20g</td>
+                                </tr>
+                                <tr>
+                                    <td>Caffè - Grande</td>
+                                    <td>Latte</td>
+                                    <td>200ml</td>
+                                </tr>
+                                <tr>
+                                    <td>Caffè - Grande</td>
+                                    <td>Bicchiere Grande</td>
+                                    <td>1 unità</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nota:</strong> Gli articoli di magazzino devono essere creati nella sezione Articoli Magazzino prima di poter essere assegnati alle varianti del prodotto.
+                    </div>
+                    
+                    <!-- SCREENSHOT: Stock consumption configuration in variant edit form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Configurazione Consumo Magazzino<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="categories">Assegnazione Categoria</h2>
+                    <p>Ogni prodotto deve essere assegnato a una categoria. Le categorie organizzano i prodotti nell'interfaccia POS e determinano quali casse possono vedere quali prodotti.</p>
+                    
+                    <h3>Assegnazione di una Categoria</h3>
+                    <p>Quando crei o modifichi un prodotto, seleziona una categoria dal menu a discesa. La categoria determina:</p>
+                    <ul>
+                        <li>Dove il prodotto appare nelle schede categoria del POS</li>
+                        <li>Quali casse possono accedere al prodotto (basato sulla visibilità della categoria)</li>
+                        <li>Come il prodotto è raggruppato nei report</li>
+                    </ul>
+                    
+                    <h3>Cambio di Categorie</h3>
+                    <p>Puoi spostare un prodotto in una categoria diversa in qualsiasi momento:</p>
+                    <ol>
+                        <li>Modifica il prodotto</li>
+                        <li>Seleziona una nuova categoria dal menu a discesa</li>
+                        <li>Salva le modifiche</li>
+                    </ol>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Pianifica attentamente la struttura delle categorie. Un sistema di categorie ben organizzato rende più facile per il personale trovare i prodotti rapidamente.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

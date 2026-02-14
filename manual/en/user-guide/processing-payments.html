@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Processing Payments - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Processing Payments</h1>
+                <p class="page-description">
+                    Learn how to complete transactions, handle tips, and process different payment methods.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="opening-payment">Opening the Payment Modal</h2>
+                    <p>When an order is ready to be paid:</p>
+                    <ol>
+                        <li>Ensure all items are added to the order</li>
+                        <li>Review the totals in the order panel</li>
+                        <li>Click the <strong>Payment</strong> button</li>
+                        <li>The payment modal opens with a complete order summary</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Payment modal showing order summary and payment options -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128179;</div>
+                        <div class="image-placeholder-text">
+                            Payment Modal Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-modal-overview">Payment Modal Overview</h2>
+                    <p>The payment modal displays important information:</p>
+                    
+                    <h3>Order Information</h3>
+                    <ul>
+                        <li>Table assignment (if applicable)</li>
+                        <li>List of items with quantities and prices</li>
+                        <li>Subtotal (before tax)</li>
+                        <li>Tax amount</li>
+                        <li>Tip amount</li>
+                        <li><strong>Total amount due</strong></li>
+                    </ul>
+                    
+                    <h3>Tip Section</h3>
+                    <ul>
+                        <li><strong>-</strong> button to decrease tip</li>
+                        <li>Current tip amount display</li>
+                        <li><strong>+</strong> button to increase tip</li>
+                    </ul>
+                    
+                    <h3>Payment Method Buttons</h3>
+                    <ul>
+                        <li><strong>Pay with Cash</strong> (green button)</li>
+                        <li><strong>Pay with Card</strong> (blue button)</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-tips">Adding Tips</h2>
+                    <p>To add a tip to the order:</p>
+                    <ol>
+                        <li>In the payment modal, locate the tip section</li>
+                        <li>Click the <strong>+</strong> button to increase tip in small increments</li>
+                        <li>Click the <strong>-</strong> button to decrease tip</li>
+                        <li>The tip is added to the total automatically</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Hold down the +/- buttons to quickly adjust the tip amount. The amount updates in real-time.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-method">Selecting Payment Method</h2>
+                    <p>The POS supports two payment methods:</p>
+                    
+                    <h3>Cash Payment</h3>
+                    <ul>
+                        <li>Click the green <strong>Pay with Cash</strong> button</li>
+                        <li>Record the cash amount received from the customer</li>
+                        <li>Calculate and provide change as needed</li>
+                        <li>Transaction is recorded as a cash payment</li>
+                    </ul>
+                    
+                    <h3>Card Payment</h3>
+                    <ul>
+                        <li>Click the blue <strong>Pay with Card</strong> button</li>
+                        <li>Process the card through your payment terminal</li>
+                        <li>Wait for payment authorization</li>
+                        <li>Transaction is recorded as a card payment</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            The POS does not process card payments directly. Use your external payment terminal for card transactions. Select "Card" in the POS to record that the payment was made via card.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="completing-transaction">Completing the Transaction</h2>
+                    <p>To finalize payment:</p>
+                    <ol>
+                        <li>Review the final total (including tax and tip)</li>
+                        <li>Select the appropriate payment method</li>
+                        <li>Complete the payment outside the POS if using card</li>
+                        <li>Click the payment button to confirm</li>
+                        <li>The transaction is saved to the system</li>
+                        <li>The order panel clears for the next order</li>
+                    </ol>
+                    
+                    <div class="callout callout-success">
+                        <div class="callout-title">Success</div>
+                        <div class="callout-content">
+                            Once payment is completed, the transaction is recorded and can be viewed in Transaction History by administrators.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tax-calculation">Understanding Tax Calculation</h2>
+                    <p>Tax is automatically calculated based on your establishment's settings:</p>
+                    
+                    <h3>Tax Modes</h3>
+                    <ul>
+                        <li><strong>Tax Inclusive</strong> - Prices shown include tax</li>
+                        <li><strong>Tax Exclusive</strong> - Tax is added on top of prices</li>
+                        <li><strong>No Tax</strong> - No tax is applied</li>
+                    </ul>
+                    
+                    <p>The tax amount displayed in the payment modal reflects the configuration set by your administrator.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="receipts">Receipt Information</h2>
+                    <p>After completing a payment:</p>
+                    <ul>
+                        <li>The transaction is recorded in the system</li>
+                        <li>Administrators can view transaction details in the Transaction History</li>
+                        <li>Transaction records include: date, time, items, amounts, payment method, user</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

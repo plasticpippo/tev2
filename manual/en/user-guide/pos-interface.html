@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS Interface Overview - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">POS Interface Overview</h1>
+                <p class="page-description">
+                    Get familiar with the main POS screen layout and its components.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="main-screen">Main Screen Layout</h2>
+                    <p>The POS interface is divided into several key areas that work together to help you process orders efficiently:</p>
+                    
+                    <h3>Screen Sections</h3>
+                    <ul>
+                        <li><strong>Header Area</strong> (top-right) - Admin button for administrators only</li>
+                        <li><strong>Product Grid Area</strong> (left/center) - Displays products organized by category</li>
+                        <li><strong>Category Tabs</strong> (above product grid) - Navigate between product categories</li>
+                        <li><strong>Order Panel</strong> (right side) - Shows current order items, totals, and action buttons</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Complete main POS interface showing all screen sections -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Main POS Interface Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="product-grid">Product Grid Area</h2>
+                    <p>The product grid is the main working area where you select items for orders. It displays:</p>
+                    
+                    <h3>Product Buttons</h3>
+                    <ul>
+                        <li>Each product appears as a large, tappable button</li>
+                        <li>Shows the product name and price</li>
+                        <li>Custom button colors configured by your administrator</li>
+                        <li>Clicking a product adds it directly to the current order</li>
+                    </ul>
+                    
+                    <h3>Favourites Category</h3>
+                    <p>The first category tab is <strong>Favourites</strong>, which shows frequently ordered items for quick access. Your administrator can configure which products appear here.</p>
+                    
+                    <!-- SCREENSHOT: Close-up of product grid showing individual product buttons -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128230;</div>
+                        <div class="image-placeholder-text">
+                            Product Grid Close-up<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-navigation">Category Navigation</h2>
+                    <p>Category tabs allow you to switch between different groups of products:</p>
+                    <ol>
+                        <li><strong>Favourites</strong> - Quick access to frequently ordered items (first tab)</li>
+                        <li><strong>Category tabs</strong> - Additional categories configured by your administrator</li>
+                        <li>Click any category tab to display its products in the grid</li>
+                        <li>Scroll horizontally if all category tabs don't fit on screen</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Use the Favourites category for your fastest-moving items to reduce the number of clicks needed for common orders.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="order-panel">Order Panel</h2>
+                    <p>The order panel (on the right side of the screen) is your command center for managing the current order. It displays:</p>
+                    
+                    <h3>User Information Section (Top)</h3>
+                    <ul>
+                        <li>Your logged-in username</li>
+                        <li>Your role (Admin or Cashier)</li>
+                        <li>Logout button</li>
+                    </ul>
+                    
+                    <h3>Order Information (Middle)</h3>
+                    <ul>
+                        <li>Current order items with quantities</li>
+                        <li>Item prices</li>
+                        <li>Active tab name (if working with a saved tab)</li>
+                        <li>Assigned table (if table is assigned)</li>
+                    </ul>
+                    
+                    <h3>Totals Section</h3>
+                    <ul>
+                        <li>Subtotal (before tax)</li>
+                        <li>Total amount including tax</li>
+                    </ul>
+                    
+                    <h3>Action Buttons (Bottom)</h3>
+                    <ul>
+                        <li><strong>View Open Tabs / Tabs</strong> - Opens the tab manager</li>
+                        <li><strong>Clear Order</strong> - Removes all items from current order</li>
+                        <li><strong>Assign Table</strong> - Opens table assignment modal</li>
+                        <li><strong>Payment</strong> - Opens the payment modal</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel showing items, quantities, totals, and action buttons -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Order Panel Close-up<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="header-controls">Header Controls</h2>
+                    <p>The top-right area of the POS interface contains additional controls:</p>
+                    
+                    <ul>
+                        <li><strong>Admin Button</strong> - Visible only to administrators; opens the admin management panel</li>
+                        <li><strong>Language Switcher</strong> - Located on the login screen; allows switching between English and Italian</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            The Admin button is only visible to users with Administrator role. Cashiers will not see this button.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="layout-management">Layout Customization</h2>
+                    <p>Administrators can customize how products appear in the grid:</p>
+                    <ul>
+                        <li>Product button colors</li>
+                        <li>Button sizes and positions</li>
+                        <li>Product groupings</li>
+                        <li>Category assignments</li>
+                    </ul>
+                    <p>To access layout editing, administrators click the <strong>Edit Layout</strong> button in the order panel (visible only to admins).</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

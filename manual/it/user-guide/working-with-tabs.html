@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lavorare con i Conti - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Lavorare con i Conti</h1>
+                <p class="page-description">
+                    Impara come creare, salvare, caricare e gestire conti aperti per ordini in corso.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="what-are-tabs">Cosa sono i Conti?</h2>
+                    <p>I <strong>Conti</strong> sono ordini salvati che puoi mantenere aperti per dopo. Sono utili quando:</p>
+                    <ul>
+                        <li>I clienti vogliono ordinare altri articoli dopo</li>
+                        <li>Un tavolo ha più clienti che pagano separatamente</li>
+                        <li>Hai bisogno di allontanarti ma vuoi preservare l'ordine</li>
+                        <li>I clienti stanno dividendo il conto durante il pasto</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Nota</div>
+                        <div class="callout-content">
+                            I conti persistono nel sistema anche dopo la disconnessione. Il prossimo membro del personale può accedere e continuare a lavorare su qualsiasi conto aperto.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-tabs">Creare Nuovi Conti</h2>
+                    <p>Per creare un nuovo conto:</p>
+                    <ol>
+                        <li>Costruisci il tuo ordine come al solito aggiungendo prodotti</li>
+                        <li>Clicca <strong>Salva Conto</strong> nel pannello ordini</li>
+                        <li>Inserisci un nome per il conto (es. "Tavolo 5", "Conto di Mario")</li>
+                        <li>Clicca <strong>Crea</strong> o premi Invio</li>
+                        <li>L'ordine viene salvato come conto e l'ordine corrente si libera</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Tab manager showing create new tab interface -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128196;</div>
+                        <div class="image-placeholder-text">
+                            Creazione di un Nuovo Conto<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="loading-tabs">Caricare Conti Esistenti</h2>
+                    <p>Per continuare a lavorare su un conto salvato:</p>
+                    <ol>
+                        <li>Clicca il pulsante <strong>Conti</strong> nel pannello ordini</li>
+                        <li>Il modale Gestore Conti si apre mostrando tutti i conti aperti</li>
+                        <li>Trova il conto che vuoi caricare</li>
+                        <li>Clicca <strong>Carica Conto</strong> accanto a quel conto</li>
+                        <li>Gli articoli dell'ordine si ripristinano nel pannello ordini</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            I conti sono ordinati per tempo di creazione, con i conti più nuovi che appaiono prima. Trova il tuo conto per nome o scorri nell'elenco.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-to-tabs">Aggiungere Articoli a Conti Esistenti</h2>
+                    <p>Per aggiungere articoli a un conto senza caricarlo:</p>
+                    <ol>
+                        <li>Costruisci il tuo ordine corrente con nuovi articoli</li>
+                        <li>Clicca <strong>Conti</strong> nel pannello ordini</li>
+                        <li>Trova il conto di destinazione</li>
+                        <li>Clicca <strong>Aggiungi al Conto</strong> accanto a quel conto</li>
+                        <li>Gli articoli vengono aggiunti al conto e il tuo ordine corrente si libera</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            Puoi aggiungere articoli ai conti solo se hai articoli nel tuo ordine corrente. Costruisci prima l'ordine, poi usa "Aggiungi al Conto".
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="closing-tabs">Chiudere i Conti</h2>
+                    <p>Per chiudere (ed eliminare) un conto:</p>
+                    <ol>
+                        <li>Clicca <strong>Conti</strong> nel pannello ordini</li>
+                        <li>Trova il conto che vuoi chiudere</li>
+                        <li>Clicca <strong>Carica Conto</strong> per caricarlo prima</li>
+                        <li>Elabora il pagamento (clicca <strong>Pagamento</strong>)</li>
+                        <li>Dopo il pagamento, il conto si chiude automaticamente</li>
+                    </ol>
+                    
+                    <p>In alternativa, se un conto non ha articoli:</p>
+                    <ol>
+                        <li>Clicca <strong>Conti</strong> nel pannello ordini</li>
+                        <li>Trova il conto vuoto</li>
+                        <li>Clicca <strong>Chiudi Conto</strong> per rimuoverlo</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="transferring-items">Trasferire Articoli tra Conti</h2>
+                    <p>Per spostare articoli da un conto a un altro:</p>
+                    <ol>
+                        <li>Clicca <strong>Conti</strong> nel pannello ordini</li>
+                        <li>Trova il conto sorgente (il conto da cui provengono gli articoli)</li>
+                        <li>Clicca <strong>Trasferisci</strong> accanto a quel conto</li>
+                        <li>Si apre il modale Trasferisci Articoli</li>
+                        <li>Seleziona gli articoli che vuoi trasferire</li>
+                        <li>Scegli il conto di destinazione</li>
+                        <li>Clicca <strong>Trasferisci</strong> per completare</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Transfer items modal showing source and destination selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128260;</div>
+                        <div class="image-placeholder-text">
+                            Trasferimento Articoli tra Conti<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Caso d'Uso</div>
+                        <div class="callout-content">
+                            Il trasferimento è utile quando i clienti allo stesso tavolo vogliono pagare separatamente. Carica il conto, trasferisci articoli specifici a un nuovo conto, ed elabora il pagamento per gli articoli di ciascun cliente.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tab-information">Visualizzazione Informazioni Conto</h2>
+                    <p>Il Gestore Conti mostra per ogni conto:</p>
+                    <ul>
+                        <li><strong>Nome conto</strong> - Il nome che hai assegnato alla creazione</li>
+                        <li><strong>Totale conto</strong> - La somma di tutti gli articoli nel conto</li>
+                        <li><strong>Assegnazione tavolo</strong> - A quale tavolo è collegato il conto (se presente)</li>
+                        <li><strong>Data creazione</strong> - Quando il conto è stato creato</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="tabs-with-tables">Conti e Tavoli</h2>
+                    <p>I conti possono essere collegati ai tavoli:</p>
+                    <ul>
+                        <li>Quando assegni un tavolo a un ordine, poi salvi come conto, il tavolo viene memorizzato</li>
+                        <li>Quando carichi un conto con un tavolo, l'assegnazione tavolo si ripristina</li>
+                        <li>Questo aiuta a tracciare quale conto appartiene a quale tavolo</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

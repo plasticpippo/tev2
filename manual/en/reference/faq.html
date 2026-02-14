@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Frequently Asked Questions</h1>
+                <p class="page-description">
+                    Find answers to common questions about using the POS system. Questions are organized by topic to help you find what you need quickly.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="getting-started">Getting Started</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">How do I log in for the first time?</div>
+                        <div class="card-content">
+                            <p>Your administrator will provide you with a username and password. On the login screen, enter your credentials and click the Login button. If your device hasn't been assigned to a <a href="glossary.html#till">Till</a>, you'll see an error message asking you to contact your administrator.</p>
+                            <p>See also: <a href="../user-guide/logging-in.html">Logging In</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">What if my device shows "Till not configured"?</div>
+                        <div class="card-content">
+                            <p>This means your device hasn't been assigned to a till. Contact your administrator to assign your device to a till in the <a href="../admin-guide/tills.html">Till Management</a> section. Once assigned, you'll be able to log in and use the POS.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I change the language?</div>
+                        <div class="card-content">
+                            <p>Click on the language switcher in the header (EN/IT) to toggle between English and Italian. The language preference is saved for your session. Both the interface and error messages will be displayed in the selected language.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="orders-payments">Orders and Payments</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">How do I add items to an order?</div>
+                        <div class="card-content">
+                            <p>Tap on product buttons in the product grid to add items to your current order. Each tap adds one unit of that product variant. To add multiple units quickly, tap the button multiple times or use the quantity controls in the order panel.</p>
+                            <p>See also: <a href="../user-guide/taking-orders.html">Taking Orders</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I remove an item from an order?</div>
+                        <div class="card-content">
+                            <p>In the order panel, tap the minus (-) button next to the item to reduce its quantity. When the quantity reaches zero, the item is removed. Alternatively, use the Clear button to remove all items from the order.</p>
+                            <p><strong>Note:</strong> Removed items are logged in the Order Activity Log for audit purposes.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Can I undo a deleted item?</div>
+                        <div class="card-content">
+                            <p>No, once an item is removed from an order, it cannot be automatically restored. You will need to re-add the item by tapping the product button again. The removal is logged in the Order Activity Log.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I add a tip to a payment?</div>
+                        <div class="card-content">
+                            <p>In the payment modal, use the tip buttons (0%, 5%, 10%, 15%, 20%) or enter a custom tip amount. The tip is added to the total and recorded in the transaction. Tips are included in the daily closing totals.</p>
+                            <p>See also: <a href="../user-guide/payments.html">Processing Payments</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">What payment methods are supported?</div>
+                        <div class="card-content">
+                            <p>The POS supports two payment methods:</p>
+                            <ul>
+                                <li><strong>Cash:</strong> For cash payments, the system shows the amount due and can calculate change.</li>
+                                <li><strong>Card:</strong> For card payments, the system records the transaction. Actual card processing is handled by your external card terminal.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tables-tabs">Tables and Tabs</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">How do I assign an order to a table?</div>
+                        <div class="card-content">
+                            <p>Tap the Table button in the order panel to open the table assignment modal. Select a room, then tap on an available table to assign the order. The table status will update to "Occupied."</p>
+                            <p>See also: <a href="../user-guide/tables.html">Managing Tables</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I transfer an order to another table?</div>
+                        <div class="card-content">
+                            <p>Open the table assignment modal and select a different table. The order will be reassigned, and both table statuses will update accordingly. If the destination table already has an open tab, you'll need to close or transfer that tab first.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">What is a tab and when should I use one?</div>
+                        <div class="card-content">
+                            <p>A <a href="glossary.html#tab">Tab</a> is a saved order that can be loaded and modified later. Use tabs for:</p>
+                            <ul>
+                                <li>Customers who may add more items over time (e.g., bar patrons)</li>
+                                <li>Orders that need to be paid for later</li>
+                                <li>Splitting bills across multiple payments</li>
+                            </ul>
+                            <p>See also: <a href="../user-guide/tabs.html">Working with Tabs</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I transfer items between tabs?</div>
+                        <div class="card-content">
+                            <p>Open the Tab Manager and select the source tab. Use the Transfer Items option to move selected items to another tab. This is useful when customers want to split a bill or when items were added to the wrong tab.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="account-security">Account and Security</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">How do I reset a forgotten password?</div>
+                        <div class="card-content">
+                            <p>Contact your administrator to reset your password. Admin users can change passwords from the <a href="../admin-guide/users.html">User Management</a> section. For security reasons, there is no self-service password reset option.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">What should I do if I see "Session has expired"?</div>
+                        <div class="card-content">
+                            <p>Your login session has timed out for security. Simply log in again with your credentials. Your current order is automatically saved and will be restored when you log back in.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I log out?</div>
+                        <div class="card-content">
+                            <p>Tap the logout button in the header. Your current order is saved and will be available when you (or another user) log in next. If you have an active order, it will be preserved in your order session.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="technical">Technical Issues</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">What happens if the network goes down?</div>
+                        <div class="card-content">
+                            <p>The POS system requires a network connection to function. If the network goes down:</p>
+                            <ul>
+                                <li>You won't be able to process new orders or payments</li>
+                                <li>Existing saved tabs will be available once connectivity is restored</li>
+                                <li>Data entered during the outage may not be saved</li>
+                            </ul>
+                            <p>Contact your IT support or administrator to resolve network issues.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Why is my screen not responding to touch?</div>
+                        <div class="card-content">
+                            <p>If the touchscreen is not responding:</p>
+                            <ul>
+                                <li>Check if the browser window is focused (click anywhere on the screen)</li>
+                                <li>Try refreshing the page (press F5 or Ctrl+R)</li>
+                                <li>Check if the virtual keyboard is blocking touch events</li>
+                                <li>Verify your touchscreen drivers are properly installed</li>
+                            </ul>
+                            <p>If problems persist, contact your administrator.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Why are my changes not appearing?</div>
+                        <div class="card-content">
+                            <p>If changes made on another device are not visible:</p>
+                            <ul>
+                                <li>Refresh the page using Ctrl+R or the refresh button</li>
+                                <li>Log out and log back in to force a data refresh</li>
+                                <li>Check your network connection</li>
+                            </ul>
+                            <p>Some data may take a few seconds to sync across devices.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">What does "Too many requests" mean?</div>
+                        <div class="card-content">
+                            <p>This error appears when you've made too many actions in a short time. The system has rate limiting to prevent abuse. Wait a few seconds and try again. If the problem persists, contact your administrator.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="admin">Administrator Questions</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">How do I add a new user?</div>
+                        <div class="card-content">
+                            <p>Go to <a href="../admin-guide/users.html">User Management</a> in the Admin Panel. Click "Add User" and fill in the required information (username, password, role). Choose between Admin (full access) or Cashier (POS only) roles.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I set up a new till?</div>
+                        <div class="card-content">
+                            <p>Go to <a href="../admin-guide/tills.html">Till Management</a> in the Admin Panel. Click "Add Till" and enter a name for the till. To assign a device, use the device assignment feature or have the user log in from that device.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I close the business day?</div>
+                        <div class="card-content">
+                            <p>Go to <a href="../admin-guide/daily-closing.html">Daily Closing</a> in the Admin Panel. Review the current day's totals and click "Close Day" to generate the closing report. This action is permanent and cannot be undone.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">How do I customize the product grid layout?</div>
+                        <div class="card-content">
+                            <p>Product grid layouts can be customized in <a href="../admin-guide/products.html">Product Management</a>. Select a category and till, then drag and drop products to arrange them. Changes are saved automatically.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

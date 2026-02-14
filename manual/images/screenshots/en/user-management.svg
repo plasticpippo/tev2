@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <defs>
+    <linearGradient id="sidebarGradient6" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="900" height="600" fill="#f8fafc"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="220" height="600" fill="url(#sidebarGradient6)"/>
+  <text x="110" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">TotalEvo</text>
+  
+  <!-- Main Header -->
+  <rect x="220" y="0" width="680" height="80" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="240" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="#1e293b">User Management</text>
+  
+  <!-- Add User Button -->
+  <rect x="760" y="20" width="120" height="35" rx="6" fill="#22c55e"/>
+  <text x="820" y="43" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">+ Add User</text>
+  
+  <!-- Search -->
+  <rect x="240" y="95" width="400" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="260" y="120" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Search users...</text>
+  
+  <!-- Filter -->
+  <rect x="650" y="95" width="230" height="40" rx="6" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="670" y="120" font-family="Arial, sans-serif" font-size="14" fill="#64748b">All Roles</text>
+  
+  <!-- Users Table -->
+  <rect x="240" y="150" width="660" height="390" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Table Header -->
+  <rect x="240" y="150" width="660" height="40" fill="#f8fafc"/>
+  <text x="260" y="175" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">User</text>
+  <text x="380" y="175" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Role</text>
+  <text x="500" y="175" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Status</text>
+  <text x="620" y="175" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Last Login</text>
+  <text x="780" y="175" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Actions</text>
+  
+  <!-- Table Rows -->
+  <g transform="translate(0, 190)">
+    <!-- Row 1 - Admin -->
+    <line x1="240" y1="0" x2="900" y2="0" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="275" cy="25" r="18" fill="#2563eb"/>
+    <text x="275" y="30" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">A</text>
+    <text x="310" y="30" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Admin User</text>
+    <text x="310" y="48" font-family="Arial, sans-serif" font-size="12" fill="#64748b">admin</text>
+    <text x="380" y="30" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Admin</text>
+    <rect x="500" y="10" width="70" height="24" rx="12" fill="#dcfce7"/>
+    <text x="535" y="27" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Active</text>
+    <text x="620" y="30" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Today, 9:00 AM</text>
+    <rect x="780" y="10" width="40" height="24" rx="4" fill="#3b82f6"/>
+    <text x="800" y="26" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Edit</text>
+    <rect x="830" y="10" width="40" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0"/>
+    <text x="850" y="26" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Del</text>
+    
+    <!-- Row 2 - Manager -->
+    <line x1="240" y1="60" x2="900" y2="60" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="275" cy="85" r="18" fill="#f59e0b"/>
+    <text x="275" y="90" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">M</text>
+    <text x="310" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Manager User</text>
+    <text x="310" y="108" font-family="Arial, sans-serif" font-size="12" fill="#64748b">manager</text>
+    <text x="380" y="90" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Manager</text>
+    <rect x="500" y="70" width="70" height="24" rx="12" fill="#dcfce7"/>
+    <text x="535" y="87" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Active</text>
+    <text x="620" y="90" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Yesterday</text>
+    <rect x="780" y="70" width="40" height="24" rx="4" fill="#3b82f6"/>
+    <text x="800" y="86" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Edit</text>
+    <rect x="830" y="70" width="40" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0"/>
+    <text x="850" y="86" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Del</text>
+    
+    <!-- Row 3 - Cashier -->
+    <line x1="240" y1="120" x2="900" y2="120" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="275" cy="145" r="18" fill="#22c55e"/>
+    <text x="275" y="150" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">C</text>
+    <text x="310" y="150" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Cashier User</text>
+    <text x="310" y="168" font-family="Arial, sans-serif" font-size="12" fill="#64748b">cashier1</text>
+    <text x="380" y="150" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Cashier</text>
+    <rect x="500" y="130" width="70" height="24" rx="12" fill="#dcfce7"/>
+    <text x="535" y="147" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Active</text>
+    <text x="620" y="150" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Today, 10:30 AM</text>
+    <rect x="780" y="130" width="40" height="24" rx="4" fill="#3b82f6"/>
+    <text x="800" y="146" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Edit</text>
+    <rect x="830" y="130" width="40" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0"/>
+    <text x="850" y="146" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Del</text>
+    
+    <!-- Row 4 - Inactive -->
+    <line x1="240" y1="180" x2="900" y2="180" stroke="#e2e8f0" stroke-width="1"/>
+    <circle cx="275" cy="205" r="18" fill="#94a3b8"/>
+    <text x="275" y="210" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">J</text>
+    <text x="310" y="210" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">John Smith</text>
+    <text x="310" y="228" font-family="Arial, sans-serif" font-size="12" fill="#64748b">jsmith</text>
+    <text x="380" y="210" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Cashier</text>
+    <rect x="500" y="190" width="80" height="24" rx="12" fill="#fee2e2"/>
+    <text x="540" y="207" font-family="Arial, sans-serif" font-size="11" fill="#ef4444" text-anchor="middle">Inactive</text>
+    <text x="620" y="210" font-family="Arial, sans-serif" font-size="13" fill="#64748b">Jan 15, 2026</text>
+    <rect x="780" y="190" width="40" height="24" rx="4" fill="#3b82f6"/>
+    <text x="800" y="206" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Edit</text>
+    <rect x="830" y="190" width="40" height="24" rx="4" fill="#ef4444"/>
+    <text x="850" y="206" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Del</text>
+  </g>
+  
+  <!-- Footer Label -->
+  <text x="450" y="585" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Screenshot: User Management</text>
+</svg>

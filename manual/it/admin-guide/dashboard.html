@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard e Analisi - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Dashboard e Analisi</h1>
+                <p class="page-description">
+                    La Dashboard fornisce una panoramica in tempo reale delle prestazioni della tua attività, mentre Analisi offre report dettagliati sulle vendite e trend per aiutarti a prendere decisioni informate.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="dashboard-overview">Panoramica Dashboard</h2>
+                    <p>La Dashboard è la prima schermata che vedi quando accedi al Pannello Amministratore. Fornisce una visione immediata dello stato attuale della tua attività.</p>
+                    
+                    <!-- SCREENSHOT: Full dashboard view showing all widgets -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128200;</div>
+                        <div class="image-placeholder-text">
+                            Panoramica Dashboard<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Componenti Principali della Dashboard</h3>
+                    <ul>
+                        <li><strong>Ticker Vendite:</strong> Totale vendite in tempo reale per la giornata lavorativa corrente</li>
+                        <li><strong>Stato Giornata Lavorativa:</strong> Mostra quando è iniziata la giornata lavorativa corrente e il suo stato</li>
+                        <li><strong>Panoramica Casse:</strong> Vista rapida di tutte le casse attive e il loro stato</li>
+                        <li><strong>Conti Aperti:</strong> Riepilogo dei conti clienti attualmente aperti</li>
+                        <li><strong>Chiusure Recenti:</strong> Elenco dei report di chiusura giornaliera recenti</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="sales-ticker">Ticker Totale Vendite</h2>
+                    <p>Il ticker delle vendite visualizza il fatturato totale per la giornata lavorativa corrente. Questa cifra si aggiorna in tempo reale man mano che le transazioni vengono elaborate.</p>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nota:</strong> Il totale delle vendite riflette tutte le transazioni completate dall'inizio della giornata lavorativa. Non include i conti aperti che non sono stati ancora pagati.
+                    </div>
+                    
+                    <h3>Comprendere il Totale Vendite</h3>
+                    <ul>
+                        <li>Il totale include tutti i metodi di pagamento (contanti, carta, ecc.)</li>
+                        <li>Le mance sono incluse nel totale visualizzato</li>
+                        <li>Le tasse sono visualizzate secondo le impostazioni di configurazione delle tasse</li>
+                        <li>Il totale si azzera quando inizia una nuova giornata lavorativa</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day">Gestione Giornata Lavorativa</h2>
+                    <p>La giornata lavorativa è il periodo fondamentale per tracciare le vendite e generare report. Comprendere come funziona è essenziale per una chiusura giornaliera accurata.</p>
+                    
+                    <h3>Inizio Giornata Lavorativa</h3>
+                    <p>La giornata lavorativa può iniziare in due modi:</p>
+                    <ul>
+                        <li><strong>Inizio Automatico:</strong> Il sistema avvia automaticamente una nuova giornata lavorativa all'orario configurato (es. 6:00)</li>
+                        <li><strong>Dopo Chiusura Manuale:</strong> Se chiudi manualmente il giorno precedente, una nuova giornata lavorativa inizia con la prossima transazione</li>
+                    </ul>
+                    
+                    <h3>Visualizzazione Stato Giornata Lavorativa</h3>
+                    <p>La dashboard mostra:</p>
+                    <ul>
+                        <li><strong>Orario Inizio:</strong> Quando è iniziata la giornata lavorativa corrente</li>
+                        <li><strong>Stato:</strong> Se il giorno è "Aperto" o "Chiuso"</li>
+                        <li><strong>Durata:</strong> Quanto tempo la giornata lavorativa è stata attiva</li>
+                    </ul>
+                    
+                    <h3>Chiusura Manuale della Giornata Lavorativa</h3>
+                    <p>Dalla dashboard, puoi avviare il processo di chiusura giornaliera:</p>
+                    <ol>
+                        <li>Clicca il pulsante <strong>Chiudi Giornata Lavorativa</strong></li>
+                        <li>Revisiona il riepilogo di chiusura</li>
+                        <li>Conferma per finalizzare la chiusura</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Importante:</strong> La chiusura della giornata lavorativa genera un record permanente. Assicurati che tutte le transazioni del giorno siano state elaborate prima di chiudere.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-status">Panoramica Stato Casse</h2>
+                    <p>La dashboard visualizza lo stato di tutte le casse configurate nel tuo sistema.</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Stato</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Attiva</strong></td>
+                                    <td>La cassa è attualmente in uso e sta elaborando transazioni</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inattiva</strong></td>
+                                    <td>La cassa è disponibile ma non sta attualmente elaborando ordini</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Offline</strong></td>
+                                    <td>La cassa non è connessa o è stata disabilitata</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>Ogni voce della cassa mostra:</p>
+                    <ul>
+                        <li>Nome della cassa</li>
+                        <li>Stato attuale</li>
+                        <li>Assegnazione dispositivo (se applicabile)</li>
+                        <li>Conteggio transazioni odierne</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="open-tabs">Riepilogo Conti Aperti</h2>
+                    <p>La sezione Conti Aperti mostra tutti i conti clienti che non sono ancora stati chiusi. Questo ti aiuta a tracciare i saldi in sospeso.</p>
+                    
+                    <p>Per ogni conto aperto, puoi vedere:</p>
+                    <ul>
+                        <li>Nome o identificatore del conto</li>
+                        <li>Saldo corrente</li>
+                        <li>Numero di articoli</li>
+                        <li>Orario di apertura del conto</li>
+                        <li>Tavolo assegnato (se applicabile)</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Rivedi regolarmente i conti aperti per assicurarti che i clienti non abbiano dimenticato di saldare il conto.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="analytics-overview">Panoramica Analisi</h2>
+                    <p>La sezione Analisi fornisce report dettagliati e visualizzazioni dei tuoi dati di vendita. Accedila dalla navigazione sidebar.</p>
+                    
+                    <!-- SCREENSHOT: Analytics panel showing charts and graphs -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Pannello Analisi<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="date-range-selection">Selezione Intervallo Date</h2>
+                    <p>I report di Analisi possono essere filtrati per intervallo di date per concentrarti su periodi specifici.</p>
+                    
+                    <h3>Filtri Data Disponibili</h3>
+                    <ul>
+                        <li><strong>Oggi:</strong> Solo la giornata lavorativa corrente</li>
+                        <li><strong>Ieri:</strong> Giornata lavorativa precedente</li>
+                        <li><strong>Ultimi 7 Giorni:</strong> Periodo mobile di 7 giorni</li>
+                        <li><strong>Ultimi 30 Giorni:</strong> Periodo mobile di 30 giorni</li>
+                        <li><strong>Intervallo Personalizzato:</strong> Seleziona date di inizio e fine specifiche</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="hourly-sales-chart">Grafico Vendite Orarie</h2>
+                    <p>Quando visualizzi "Oggi" in Analisi, vedrai una ripartizione delle vendite orarie. Questo grafico aiuta a identificare le ore di picco dell'attività.</p>
+                    
+                    <h3>Utilizzo del Grafico Orario</h3>
+                    <ul>
+                        <li>Ogni barra rappresenta un'ora di attività</li>
+                        <li>L'altezza indica le vendite totali per quell'ora</li>
+                        <li>Passa il mouse sulle barre per vedere i valori esatti</li>
+                        <li>Usa questi dati per ottimizzare gli orari del personale</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Hourly sales bar chart -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128200;</div>
+                        <div class="image-placeholder-text">
+                            Grafico Vendite Orarie<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="sales-trends">Grafici Trend Vendite</h2>
+                    <p>Per intervalli di date storici, Analisi visualizza i grafici dei trend che mostrano come le vendite sono cambiate nel tempo.</p>
+                    
+                    <h3>Funzionalità del Grafico Trend</h3>
+                    <ul>
+                        <li><strong>Grafico a Linee:</strong> Mostra i totali giornalieri delle vendite nel periodo selezionato</li>
+                        <li><strong>Confronto:</strong> Confronta il periodo corrente con i periodi precedenti</li>
+                        <li><strong>Linea Media:</strong> Vedi le tue vendite giornaliere medie</li>
+                        <li><strong>Indicatori di Picco:</strong> Evidenzia i giorni con le migliori prestazioni</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="top-products">Prodotti con Migliori Prestazioni</h2>
+                    <p>Analisi mostra i tuoi prodotti più venduti, aiutandoti a comprendere le preferenze dei clienti.</p>
+                    
+                    <h3>Metriche di Prestazione dei Prodotti</h3>
+                    <ul>
+                        <li><strong>Unità Vendute:</strong> Quantità totale venduta nel periodo</li>
+                        <li><strong>Fatturato:</strong> Fatturato totale generato</li>
+                        <li><strong>Percentuale:</strong> Quota delle vendite totali</li>
+                    </ul>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Posizione</th>
+                                    <th>Prodotto</th>
+                                    <th>Unità</th>
+                                    <th>Fatturato</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Prodotto Esempio A</td>
+                                    <td>150</td>
+                                    <td>1.500,00 €</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Prodotto Esempio B</td>
+                                    <td>120</td>
+                                    <td>960,00 €</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Prodotto Esempio C</td>
+                                    <td>95</td>
+                                    <td>760,00 €</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-performance">Prestazioni per Categoria</h2>
+                    <p>Visualizza la ripartizione delle vendite per categoria di prodotto per capire quali tipi di prodotti hanno le migliori prestazioni.</p>
+                    
+                    <h3>Analisi per Categoria Include</h3>
+                    <ul>
+                        <li>Vendite totali per categoria</li>
+                        <li>Percentuale del fatturato totale</li>
+                        <li>Numero di articoli venduti per categoria</li>
+                        <li>Rappresentazione grafica a torta</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Category performance pie chart or bar chart -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128202;</div>
+                        <div class="image-placeholder-text">
+                            Grafico Prestazioni per Categoria<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="exporting-reports">Esportazione Report</h2>
+                    <p>I dati di Analisi possono essere esportati per ulteriori analisi in applicazioni spreadsheet o software contabile.</p>
+                    
+                    <h3>Opzioni di Esportazione</h3>
+                    <ul>
+                        <li><strong>Stampa:</strong> Genera una versione del report ottimizzata per la stampa</li>
+                        <li><strong>PDF:</strong> Salva il report come documento PDF</li>
+                        <li><strong>CSV:</strong> Esporta i dati grezzi per analisi spreadsheet</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Esporta i report regolarmente per mantenere registri storici oltre a quelli memorizzati nel sistema.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

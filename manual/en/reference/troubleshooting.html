@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Troubleshooting - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Troubleshooting</h1>
+                <p class="page-description">
+                    Solutions to common issues you may encounter with the POS system. If you cannot resolve an issue using this guide, contact your administrator or technical support.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="login-issues">Login Issues</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Invalid username or password"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The credentials entered do not match any user account.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Check that Caps Lock is not enabled on your keyboard</li>
+                                <li>Verify the username is spelled correctly (usernames are case-sensitive)</li>
+                                <li>Re-enter your password carefully, watching for typos</li>
+                                <li>Contact your administrator to verify your account exists and is active</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Till not configured" or "Device not assigned"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The device you're using hasn't been assigned to a till.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Contact your administrator to assign this device to a till</li>
+                                <li>The administrator can do this in <a href="../admin-guide/tills.html">Till Management</a></li>
+                                <li>If you're an admin, log in from an already-assigned device to configure this one</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"User account is inactive"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> Your account has been deactivated by an administrator.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Contact your administrator to reactivate your account</li>
+                                <li>Administrators can change account status in <a href="../admin-guide/users.html">User Management</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Session has expired"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> Your login session has timed out due to inactivity or security policy.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Simply log in again with your credentials</li>
+                                <li>Your current order is automatically saved and will be restored</li>
+                                <li>If this happens frequently, ask your administrator about session timeout settings</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Token has been revoked. Please login again."</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> Your session was invalidated, possibly because you logged in from another device or an administrator revoked your tokens.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Log in again to create a new session</li>
+                                <li>If you didn't log in elsewhere, contact your administrator for security review</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-issues">Payment Processing Errors</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Payment processing failed"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The transaction could not be completed due to a server or network issue.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Check your network connection</li>
+                                <li>Verify the transaction amount is correct</li>
+                                <li>Try the transaction again</li>
+                                <li>If using card payment, verify the card terminal is working</li>
+                                <li>Contact your administrator if the problem persists</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Invalid transaction data"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The order contains invalid or incomplete information.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Clear the order and rebuild it from scratch</li>
+                                <li>Ensure all items have valid prices</li>
+                                <li>Check that the order total is greater than zero</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="network-issues">Network Connectivity Problems</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Application not loading</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The server is unreachable or not responding.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Check that your device is connected to the network</li>
+                                <li>Try accessing other websites to verify internet connectivity</li>
+                                <li>Refresh the page (press F5 or Ctrl+R)</li>
+                                <li>Clear your browser cache and reload</li>
+                                <li>Contact your IT support to verify the server is running</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Database connection error"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The server cannot connect to the database.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>This is a server-side issue - contact your administrator immediately</li>
+                                <li>Do not attempt to process orders until the issue is resolved</li>
+                                <li>Any open tabs will be preserved in the database</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Service unavailable"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The server is temporarily unable to handle requests.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Wait a few moments and try again</li>
+                                <li>The server may be restarting or under heavy load</li>
+                                <li>Contact your administrator if the issue persists</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="data-issues">Data and Sync Issues</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Changes not appearing on other devices</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> Data hasn't synchronized across devices yet.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Refresh the page on the device showing outdated data (Ctrl+R)</li>
+                                <li>Log out and log back in to force a full data refresh</li>
+                                <li>Check network connectivity on both devices</li>
+                                <li>Most data syncs within seconds, but may take longer on slow networks</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Record not found" or "Resource not found"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The item you're trying to access has been deleted or doesn't exist.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Refresh the page to update your data</li>
+                                <li>The item may have been deleted by another user</li>
+                                <li>Return to the main list and select a different item</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"This value already exists" or "Duplicate" error</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> You're trying to create an item with a name that already exists.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Choose a different name for the item</li>
+                                <li>Check if the item already exists in the list</li>
+                                <li>Names must be unique within their category (products, categories, rooms, etc.)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="permission-issues">Permission and Access Issues</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Access denied" or "Unauthorized"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> You don't have permission to perform this action.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Verify you're logged in with the correct account</li>
+                                <li>Some features require Admin role - check with your administrator</li>
+                                <li>If you recently changed roles, log out and log back in</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Admin privileges required"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The action you're trying to perform requires administrator access.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Contact an administrator to perform this action</li>
+                                <li>If you are an admin, verify your account has the Admin role</li>
+                                <li>Log out and log back in to refresh your permissions</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Access denied. You do not own this table/layout."</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> You're trying to access a resource assigned to another till.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Each till has its own layouts and table assignments</li>
+                                <li>Switch to the correct till or device</li>
+                                <li>Contact your administrator if you need access to this resource</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="validation-issues">Validation Errors</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"This field is required"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> A mandatory field was left empty.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Fill in all required fields (marked with asterisks or highlighted)</li>
+                                <li>Check for empty spaces that might look like empty fields</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Invalid format" or "Invalid value"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The entered data doesn't match the expected format.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>For numeric fields, enter only numbers (no letters or special characters)</li>
+                                <li>For prices, use decimal format (e.g., 10.99)</li>
+                                <li>For dates, use the date picker or the expected date format</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Value is out of allowed range"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The entered value is too large or too small.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Check the minimum and maximum allowed values</li>
+                                <li>For quantities, ensure the value is positive</li>
+                                <li>For prices, ensure the value is not negative</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="rate-limiting">Rate Limiting</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Too many requests" or "Too many write operations"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> You've made too many requests in a short time period. The system limits request rates to prevent abuse and ensure stability.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Wait a few seconds before trying again</li>
+                                <li>Avoid rapid repeated clicking or tapping</li>
+                                <li>If using automated tools, reduce the request frequency</li>
+                                <li>Contact your administrator if you consistently hit rate limits during normal use</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="delete-issues">Deletion Issues</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Cannot delete category with assigned products"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The category still has products assigned to it.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Reassign products to a different category first</li>
+                                <li>Or delete the products if they're no longer needed</li>
+                                <li>Once the category is empty, you can delete it</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Cannot delete table with open tabs"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The table has open tabs associated with it.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Close or settle all open tabs for this table</li>
+                                <li>Or reassign tabs to a different table</li>
+                                <li>Once all tabs are closed, you can delete the table</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Cannot delete room with assigned tables"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The room still contains tables.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Delete or reassign all tables in this room first</li>
+                                <li>Once the room is empty, you can delete it</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Cannot delete stock item. It is currently used in a product recipe."</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> The stock item is linked to product variants for stock consumption tracking.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Remove the stock item from all product variants that use it</li>
+                                <li>Go to Product Management and edit each affected product</li>
+                                <li>Once unlinked from all products, you can delete the stock item</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Cannot delete your own account"</div>
+                        <div class="card-content">
+                            <p><strong>Cause:</strong> You're trying to delete the account you're currently logged in with.</p>
+                            <p><strong>Solutions:</strong></p>
+                            <ul>
+                                <li>Ask another administrator to delete your account</li>
+                                <li>Or create a new admin account first, then delete this one</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="when-to-contact">When to Contact Support</h2>
+                    
+                    <p>If you encounter any of the following situations, contact your administrator or technical support immediately:</p>
+                    
+                    <ul>
+                        <li><strong>Database errors:</strong> Any message mentioning "database connection error" or "database query error"</li>
+                        <li><strong>Internal server errors:</strong> Messages saying "Internal server error" or "An unexpected error occurred"</li>
+                        <li><strong>Security concerns:</strong> If you suspect unauthorized access or see unexpected login activity</li>
+                        <li><strong>Data loss:</strong> If transactions, tabs, or other data appear to be missing</li>
+                        <li><strong>Persistent issues:</strong> Problems that continue after following the troubleshooting steps above</li>
+                    </ul>
+                    
+                    <p>When contacting support, provide:</p>
+                    <ul>
+                        <li>The exact error message you saw</li>
+                        <li>What you were trying to do when the error occurred</li>
+                        <li>The time the issue started</li>
+                        <li>Your device and browser information</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

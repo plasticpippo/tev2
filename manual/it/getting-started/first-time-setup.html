@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configurazione Iniziale - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Configurazione Iniziale</h1>
+                <p class="page-description">
+                    Questa guida ti accompagna attraverso il processo completo di configurazione del sistema POS, 
+                    dall'installazione alla configurazione iniziale. Segui questi passaggi per preparare il tuo POS 
+                    alle operazioni quotidiane.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="installation">Metodi di Installazione</h2>
+                    <p>Il sistema POS può essere distribuito usando Docker (consigliato) o manualmente. Scegli il metodo più adatto alla tua infrastruttura.</p>
+                    
+                    <h3>Distribuzione Docker (Consigliata)</h3>
+                    <p>Docker fornisce l'esperienza di distribuzione più semplice e coerente:</p>
+                    <ol>
+                        <li>Assicurati che Docker e Docker Compose siano installati sul tuo server</li>
+                        <li>Clona o scarica il codice sorgente dell'applicazione</li>
+                        <li>Copia il file di ambiente di esempio:
+                            <pre><code>cp .env.example .env</code></pre>
+                        </li>
+                        <li>Modifica il file <code>.env</code> con la tua configurazione (vedi Configurazione Database sotto)</li>
+                        <li>Avvia l'applicazione:
+                            <pre><code>docker compose up -d --build</code></pre>
+                        </li>
+                        <li>L'applicazione sarà disponibile su <code>http://ip-del-tuo-server:80</code></li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Primo Avvio</div>
+                        <div class="callout-content">
+                            Al primo avvio, il sistema automaticamente:
+                            <ul>
+                                <li>Esegui le migrazioni del database</li>
+                                <li>Inserisci i dati essenziali (utenti predefiniti, casse, impostazioni)</li>
+                                <li>Crea le categorie di prodotti predefinite</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3>Distribuzione Manuale</h3>
+                    <p>Per utenti avanzati che preferiscono la distribuzione manuale:</p>
+                    <ol>
+                        <li>Installa Node.js 18+ e PostgreSQL 13+</li>
+                        <li>Clona il codice sorgente dell'applicazione</li>
+                        <li>Installa le dipendenze del backend:
+                            <pre><code>cd backend && npm install</code></pre>
+                        </li>
+                        <li>Installa le dipendenze del frontend:
+                            <pre><code>cd frontend && npm install</code></pre>
+                        </li>
+                        <li>Configura le variabili di ambiente in entrambi i file <code>.env</code></li>
+                        <li>Esegui le migrazioni del database:
+                            <pre><code>cd backend && npx prisma migrate deploy</code></pre>
+                        </li>
+                        <li>Inserisci i dati nel database:
+                            <pre><code>npx prisma db seed</code></pre>
+                        </li>
+                        <li>Avvia il server backend:
+                            <pre><code>npm run dev</code></pre>
+                        </li>
+                        <li>Avvia il server frontend:
+                            <pre><code>cd frontend && npm run dev</code></pre>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="database-configuration">Configurazione Database</h2>
+                    <p>Il sistema POS utilizza PostgreSQL per l'archiviazione dei dati. Configura la connessione al database nel file <code>.env</code>:</p>
+                    
+                    <h3>Variabili di Ambiente Richieste</h3>
+                    <pre><code># Connessione Database
+DATABASE_URL="postgresql://username:password@hostname:5432/database_name"
+
+# JWT Secret (IMPORTANTE: Cambiala!)
+JWT_SECRET="your-secure-secret-key-minimum-32-characters"</code></pre>
+                    
+                    <h3>Esempio di Configurazione</h3>
+                    <pre><code># Esempio per sviluppo locale
+DATABASE_URL="postgresql://totalevo_user:totalevo_password@localhost:5432/bar_pos"
+JWT_SECRET="my-super-secret-jwt-key-change-in-production-2024"</code></pre>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Avviso di Sicurezza</div>
+                        <div class="callout-content">
+                            <p><strong>Cambia sempre il JWT_SECRET in produzione!</strong></p>
+                            <p>Usa una chiave segreta forte e unica di almeno 32 caratteri. Una chiave debole o predefinita può compromettere la sicurezza del tuo sistema.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: .env file configuration example -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128451;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Configurazione Ambiente<br>
+                            <em>Mostra il file .env con le impostazioni DATABASE_URL e JWT_SECRET</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="default-credentials">Credenziali Predefinite</h2>
+                    <p>Il sistema crea account utente predefiniti durante l'inserimento iniziale dei dati. <strong>Cambia queste password immediatamente dopo il primo accesso!</strong></p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ruolo</th>
+                                    <th>Nome Utente</th>
+                                    <th>Password Predefinita</th>
+                                    <th>Livello di Accesso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Amministratore</td>
+                                    <td><code>admin</code></td>
+                                    <td><code>admin123</code></td>
+                                    <td>Pannello admin completo + POS</td>
+                                </tr>
+                                <tr>
+                                    <td>Cassiere</td>
+                                    <td><code>cashier</code></td>
+                                    <td><code>cashier123</code></td>
+                                    <td>Solo interfaccia POS</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Passaggio Critico di Sicurezza</div>
+                        <div class="callout-content">
+                            <p>Non cambiare le password predefinite è un grande rischio di sicurezza. Cambia le password immediatamente dopo l'installazione:</p>
+                            <ol>
+                                <li>Accedi come admin</li>
+                                <li>Vai su Pannello Admin > Gestione Utenti</li>
+                                <li>Modifica ogni utente e imposta una password forte</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-setup">Configurazione Casse</h2>
+                    <p>Le casse rappresentano i terminali POS fisici nel tuo stabilimento. Ogni dispositivo che esegue il POS dovrebbe essere assegnato a una cassa specifica.</p>
+                    
+                    <h3>Casse Predefinite</h3>
+                    <p>Il sistema crea due casse predefinite durante l'inserimento dei dati:</p>
+                    <ul>
+                        <li><strong>Bar Principale</strong> - Una cassa di esempio per l'area di servizio principale</li>
+                        <li><strong>Terrazza</strong> - Una cassa di esempio per il servizio all'aperto</li>
+                    </ul>
+                    
+                    <h3>Creare una Nuova Cassa</h3>
+                    <ol>
+                        <li>Accedi come amministratore</li>
+                        <li>Clicca il pulsante <strong>Admin</strong> (in alto a destra)</li>
+                        <li> Vai a <strong>Gestione Casse</strong></li>
+                        <li>Clicca <strong>Aggiungi Nuova Cassa</strong></li>
+                        <li>Inserisci un nome descrittivo (es. "Bar Principale", "Terrazza", "Cucina")</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <h3>Assegnare un Dispositivo a una Cassa</h3>
+                    <p>Ogni dispositivo (tablet, computer) deve essere assegnato a una cassa:</p>
+                    <ol>
+                        <li>Al primo accesso, se nessuna cassa è assegnata, un admin vedrà la schermata Configurazione Cassa</li>
+                        <li>Seleziona la cassa appropriata dalla lista</li>
+                        <li>L'assegnazione viene salvata nella memoria locale del browser</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            <p><strong>I cassieri non possono accedere finché una cassa non è configurata!</strong></p>
+                            <p>Solo gli amministratori possono accedere su un dispositivo non configurato per impostare l'assegnazione della cassa. Questa è una funzionalità di sicurezza per prevenire accessi non autorizzati.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Till Setup Screen showing till selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Schermata Configurazione Cassa<br>
+                            <em>Mostra l'interfaccia di selezione cassa che appare per gli admin sui dispositivi non configurati</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-configuration">Configurazione Categorie</h2>
+                    <p>Le categorie organizzano i tuoi prodotti nell'interfaccia POS. Le categorie predefinite vengono create durante l'inserimento dei dati:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Categoria</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Vino Rosso</td><td>Selezioni di vino</td></tr>
+                                <tr><td>Birra</td><td>Birre e ale</td></tr>
+                                <tr><td>Cocktail</td><td>Drink miscelati</td></tr>
+                                <tr><td>Whiskey</td><td>Whiskey e superalcolici</td></tr>
+                                <tr><td>Bevande Analcoliche</td><td>Bevande non alcoliche</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Visibilità Categorie</h3>
+                    <p>Le categorie possono essere configurate per mostrare solo su casse specifiche:</p>
+                    <ul>
+                        <li><strong>Visibile su Tutte le Casse</strong> - Impostazione predefinita, la categoria appare ovunque</li>
+                        <li><strong>Solo Casse Specifiche</strong> - La categoria appare solo sui terminali selezionati</li>
+                    </ul>
+                    <p>Questo è utile per stabilimenti con diverse aree di servizio (es. un terminale bar che mostra solo bevande, un terminale cucina che mostra solo cibo).</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day-settings">Impostazioni Giornata Lavorativa</h2>
+                    <p>Configura come il sistema traccia le giornate lavorative nelle Impostazioni:</p>
+                    
+                    <h3>Accedere alle Impostazioni</h3>
+                    <ol>
+                        <li>Accedi come amministratore</li>
+                        <li>Apri il Pannello Admin</li>
+                        <li>Vai a <strong>Impostazioni</strong></li>
+                    </ol>
+                    
+                    <h3>Configurazione Giornata Lavorativa</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Impostazione</th>
+                                    <th>Descrizione</th>
+                                    <th>Predefinito</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Orario Avvio Automatico</td>
+                                    <td>Orario in cui una nuova giornata lavorativa inizia automaticamente</td>
+                                    <td>06:00 (6:00 AM)</td>
+                                </tr>
+                                <tr>
+                                    <td>Chiusura Manuale</td>
+                                    <td>Richiede azione esplicita di chiusura giornaliera</td>
+                                    <td>Abilitato</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p><strong>Concetto di Giornata Lavorativa:</strong> La giornata lavorativa determina quando le vendite vengono registrate. Per i ristoranti che operano dopo mezzanotte, la giornata lavorativa continua fino alla chiusura manuale, assicurando che tutte le vendite tardive vengano registrate nel giorno corretto.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="tax-configuration">Configurazione Tasse</h2>
+                    <p>Configura come il sistema gestisce le tasse nelle Impostazioni:</p>
+                    
+                    <h3>Modalità Tasse</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Modalità</th>
+                                    <th>Descrizione</th>
+                                    <th>Caso d'Uso</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Tasse Inclusa</strong></td>
+                                    <td>I prezzi inseriti includono le tasse; il sistema calcola la parte delle tasse</td>
+                                    <td>Comune nei paesi UE dove i prezzi visualizzati includono l'IVA</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tasse Esclusa</strong></td>
+                                    <td>Le tasse vengono aggiunte al prezzo base al momento del pagamento</td>
+                                    <td>Comune negli USA dove le tasse vengono aggiunte alla cassa</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Senza Tasse</strong></td>
+                                    <td>Nessun calcolo delle tasse effettuato</td>
+                                    <td>Esenti da tasse o test</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Nota</div>
+                        <div class="callout-content">
+                            La modalità tasse predefinita è <strong>Tasse Esclusa</strong>. Cambiala nelle Impostazioni per corrispondere alle tue normative fiscali locali.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security-recommendations">Raccomandazioni di Sicurezza</h2>
+                    <p>Segui queste best practice di sicurezza dopo l'installazione:</p>
+                    
+                    <h3>Azioni Immediata</h3>
+                    <ul>
+                        <li><strong>Cambia le Password Predefinite</strong> - Aggiorna subito le password admin e cassiere</li>
+                        <li><strong>Aggiorna JWT Secret</strong> - Usa una chiave segreta forte e unica</li>
+                        <li><strong>Abilita HTTPS</strong> - Usa certificati SSL/TLS in produzione</li>
+                        <li><strong>Limita Accesso Database</strong> - Assicurati che PostgreSQL non sia accessibile da internet</li>
+                    </ul>
+                    
+                    <h3>Sicurezza Continua</h3>
+                    <ul>
+                        <li><strong>Aggiornamenti Password Regolari</strong> - Richiedi al personale di cambiare le password periodicamente</li>
+                        <li><strong>Limita Accesso Admin</strong> - Concedi il ruolo admin solo a manager fidati</li>
+                        <li><strong>Monitora Log</strong> - Rivedi regolarmente i log delle transazioni e delle attività</li>
+                        <li><strong>Esegui Backup Database</strong> - Implementa backup regolari del database</li>
+                    </ul>
+                    
+                    <h3>Sicurezza di Rete</h3>
+                    <ul>
+                        <li>Posiziona il sistema POS dietro un firewall</li>
+                        <li>Usa una VPN per l'amministrazione remota</li>
+                        <li>Isola la rete POS dal WiFi degli ospiti</li>
+                        <li>Limita la porta del database (5432) solo all'accesso interno</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="next-steps">Prossimi Passi</h2>
+                    <p>Dopo aver completato la configurazione iniziale, procedi a:</p>
+                    <ul>
+                        <li><a href="quick-start-guide.html">Guida Rapida</a> - Impara a prendere il tuo primo ordine</li>
+                        <li><a href="../admin-guide/product-management.html">Gestione Prodotti</a> - Aggiungi i tuoi prodotti e varianti</li>
+                        <li><a href="../admin-guide/user-management.html">Gestione Utenti</a> - Crea account per il tuo personale</li>
+                        <li><a href="../admin-guide/table-management.html">Gestione Tavoli</a> - Configura la tua piantina</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

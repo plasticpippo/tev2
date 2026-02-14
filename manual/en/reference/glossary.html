@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossary - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Glossary</h1>
+                <p class="page-description">
+                    Definitions of key terms used throughout the POS system. Understanding these terms will help you navigate and use the application more effectively.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="a-b">A - B</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Admin</div>
+                        <div class="card-content">
+                            Short for Administrator. A user role with full access to all system features, including user management, settings, and reports. Admins can also access the POS interface. See also: <a href="#cashier">Cashier</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Business Day</div>
+                        <div class="card-content">
+                            The operational period for a restaurant or venue. The business day determines when sales are recorded and can be configured to auto-start at a specific time or require manual activation. Each business day should be closed with a <a href="#daily-closing">Daily Closing</a> report. See also: <a href="../admin-guide/settings.html">Settings</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="c-d">C - D</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Cashier</div>
+                        <div class="card-content">
+                            A user role with access to the POS interface for taking orders and processing payments. Cashiers cannot access admin features like user management or settings. See also: <a href="#admin">Admin</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Category</div>
+                        <div class="card-content">
+                            A group of related products used to organize the product grid. Categories can be assigned visibility to specific <a href="#till">Tills</a>, allowing different areas of a venue to show relevant products. Examples include "Beverages," "Appetizers," and "Main Courses." See also: <a href="../admin-guide/categories.html">Category Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Daily Closing</div>
+                        <div class="card-content">
+                            An end-of-day financial summary that records total sales, payment method breakdown (cash vs. card), transaction count, and <a href="#till">Till</a>-specific totals. Daily closings are permanent records used for accounting and reconciliation. See also: <a href="../admin-guide/daily-closing.html">Daily Closing</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="f-i">F - I</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Favourite</div>
+                        <div class="card-content">
+                            A product variant marked for quick access. Favourites appear prominently in the product grid, making them easy to find for frequently ordered items. Any product variant can be marked as a favourite in <a href="../admin-guide/products.html">Product Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Grid Layout</div>
+                        <div class="card-content">
+                            The visual arrangement of product buttons in the POS interface. Grid layouts can be customized per <a href="#till">Till</a> and <a href="#category">Category</a>, allowing administrators to optimize the interface for different service areas. See also: <a href="../admin-guide/products.html">Product Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Ingredient</div>
+                        <div class="card-content">
+                            A type of <a href="#stock-item">Stock Item</a> that is used in the preparation of products but is not sold directly. Ingredients can be tracked for inventory purposes and linked to product variants for automatic stock deduction. Examples include flour, cooking oil, and spices. See also: <a href="../admin-guide/stock-items.html">Stock Items Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Inventory</div>
+                        <div class="card-content">
+                            The system for tracking stock levels of <a href="#stock-item">Stock Items</a>. Inventory management includes viewing current stock levels, making adjustments (additions or deductions), and monitoring low stock warnings. See also: <a href="../admin-guide/inventory.html">Inventory Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Itemised Consumption</div>
+                        <div class="card-content">
+                            A report showing detailed consumption of <a href="#stock-item">Stock Items</a> over a selected period. This report helps track which ingredients and goods were used, useful for inventory reconciliation and cost analysis. See also: <a href="../admin-guide/itemised-consumption.html">Itemised Consumption</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="o-r">O - R</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Order Session</div>
+                        <div class="card-content">
+                            A record of a user's active order state during their work shift. Order sessions persist between logins, allowing staff to resume their work if they need to log out and back in. Order sessions are automatically managed by the system.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Product</div>
+                        <div class="card-content">
+                            An item available for sale in the POS system. Products belong to a <a href="#category">Category</a> and can have multiple <a href="#variant">Variants</a> representing different sizes, colors, or options. Each product variant has its own price and can be linked to stock consumption rules. See also: <a href="../admin-guide/products.html">Product Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Room</div>
+                        <div class="card-content">
+                            A physical area within a venue that contains <a href="#table">Tables</a>. Rooms help organize table management and can represent different dining areas such as "Main Dining," "Patio," "VIP Area," or "Bar." See also: <a href="../admin-guide/tables-rooms.html">Table &amp; Room Management</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="s-t">S - T</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Sellable Good</div>
+                        <div class="card-content">
+                            A type of <a href="#stock-item">Stock Item</a> that is sold directly to customers. Unlike <a href="#ingredient">Ingredients</a>, sellable goods are tracked individually and can be sold as standalone items. Examples include bottled beverages, packaged snacks, and merchandise. See also: <a href="../admin-guide/stock-items.html">Stock Items Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Stock Adjustment</div>
+                        <div class="card-content">
+                            A record of a change to the quantity of a <a href="#stock-item">Stock Item</a>. Adjustments can be additions (receiving new stock) or deductions (waste, breakage, or other losses). All adjustments are logged with timestamps and user information for audit purposes. See also: <a href="../admin-guide/inventory.html">Inventory Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Stock Item</div>
+                        <div class="card-content">
+                            An inventory-tracked item that can be either an <a href="#ingredient">Ingredient</a> (used in preparation) or a <a href="#sellable-good">Sellable Good</a> (sold directly). Stock items have base units for tracking and can have purchasing units for receiving stock in different quantities. See also: <a href="../admin-guide/stock-items.html">Stock Items Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Tab</div>
+                        <div class="card-content">
+                            An open order that can be saved and loaded later. Tabs are useful for keeping track of ongoing orders for customers who may add items over time, such as bar patrons or hotel guests. Tabs can be assigned to <a href="#table">Tables</a> and transferred between tables. See also: <a href="../user-guide/tabs.html">Working with Tabs</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Table</div>
+                        <div class="card-content">
+                            A physical table within a <a href="#room">Room</a> that can have orders assigned to it. Tables have statuses (Available, Occupied, Reserved, Unavailable) and can be positioned visually in the layout editor. Tables can have open <a href="#tab">Tabs</a> associated with them. See also: <a href="../admin-guide/tables-rooms.html">Table &amp; Room Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Table Status</div>
+                        <div class="card-content">
+                            The current state of a <a href="#table">Table</a>:
+                            <ul>
+                                <li><strong>Available:</strong> The table is free and ready for guests.</li>
+                                <li><strong>Occupied:</strong> The table has guests and may have an open order.</li>
+                                <li><strong>Reserved:</strong> The table is reserved for future guests.</li>
+                                <li><strong>Unavailable:</strong> The table is not available for seating (e.g., under maintenance).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Till</div>
+                        <div class="card-content">
+                            A physical POS terminal or device. Each device must be assigned to a till before users can log in and process orders. Tills are used to track sales by location and generate <a href="#daily-closing">Daily Closing</a> reports. See also: <a href="../admin-guide/tills.html">Till Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Transaction</div>
+                        <div class="card-content">
+                            A completed payment record. Transactions include the total amount, payment method (cash or card), tip amount, items purchased, and the user and till that processed the payment. Transactions are permanent records used for reporting and reconciliation. See also: <a href="../admin-guide/transactions.html">Transaction History</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="u-v">U - V</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">User</div>
+                        <div class="card-content">
+                            A person who can log into the POS system. Users have a role (Admin or Cashier), username, and password. Users can be associated with transactions and order activity for performance tracking. See also: <a href="../admin-guide/users.html">User Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Variant</div>
+                        <div class="card-content">
+                            A specific version of a <a href="#product">Product</a>. Variants represent different options for the same product, such as size (Small, Medium, Large) or preparation style. Each variant has its own price, button color, and optional stock consumption rules. See also: <a href="../admin-guide/products.html">Product Management</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Virtual Keyboard</div>
+                        <div class="card-content">
+                            An on-screen keyboard that appears when input fields are focused on touch devices. The virtual keyboard supports both numeric (for quantities and prices) and full alphanumeric input. It can be enabled or disabled in the application. See also: <a href="../user-guide/virtual-keyboard.html">Virtual Keyboard</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

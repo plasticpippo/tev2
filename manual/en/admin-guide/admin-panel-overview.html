@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel Overview - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Admin Panel Overview</h1>
+                <p class="page-description">
+                    The Admin Panel is the central hub for managing your POS system. From here, administrators can configure products, manage users, view reports, and customize system settings.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="accessing-admin">Accessing the Admin Panel</h2>
+                    <p>The Admin Panel is only accessible to users with administrator privileges. To access the admin panel:</p>
+                    <ol>
+                        <li>Log in to the POS system with an administrator account</li>
+                        <li>Locate the <strong>Admin</strong> button in the top-right corner of the header</li>
+                        <li>Click the button to open the Admin Panel</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Permission Required:</strong> Only users with the <code>Admin</code> role can access the Admin Panel. Cashier accounts will not see the Admin button.
+                    </div>
+                    
+                    <!-- SCREENSHOT: Login screen showing the Admin button visible in the header for admin users -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9881;</div>
+                        <div class="image-placeholder-text">
+                            Admin Button Location in Header<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="navigation-structure">Navigation Structure</h2>
+                    <p>The Admin Panel features a sidebar navigation on the left side of the screen. Each section provides access to different management functions:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Section</th>
+                                    <th>Description</th>
+                                    <th>Common Tasks</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Dashboard</strong></td>
+                                    <td>Overview of business performance</td>
+                                    <td>View sales totals, check till status, manage business day</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Analytics</strong></td>
+                                    <td>Sales reports and trends</td>
+                                    <td>View hourly sales charts, top products, category performance</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Products</strong></td>
+                                    <td>Product and variant management</td>
+                                    <td>Add products, set prices, configure variants</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Categories</strong></td>
+                                    <td>Product category organization</td>
+                                    <td>Create categories, set till visibility</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Stock Items</strong></td>
+                                    <td>Inventory item management</td>
+                                    <td>Add ingredients, configure units, track quantities</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inventory</strong></td>
+                                    <td>Stock level management</td>
+                                    <td>Make adjustments, view stock levels, check history</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Users</strong></td>
+                                    <td>User account management</td>
+                                    <td>Create users, assign roles, reset passwords</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tills</strong></td>
+                                    <td>POS terminal management</td>
+                                    <td>Create tills, assign devices, configure visibility</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tables</strong></td>
+                                    <td>Room and table layout</td>
+                                    <td>Create rooms, add tables, arrange layout</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Transactions</strong></td>
+                                    <td>Transaction history</td>
+                                    <td>View past sales, filter by date/till/user</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Daily Closing</strong></td>
+                                    <td>End-of-day procedures</td>
+                                    <td>Close business day, view closing history</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Itemised Consumption</strong></td>
+                                    <td>Stock consumption reports</td>
+                                    <td>Track ingredient usage, view consumption by period</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Settings</strong></td>
+                                    <td>System configuration</td>
+                                    <td>Configure tax, business day timing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Full admin panel view with sidebar navigation visible -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9881;</div>
+                        <div class="image-placeholder-text">
+                            Admin Panel Sidebar Navigation<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="switching-views">Switching Between Admin and POS Views</h2>
+                    <p>Administrators often need to switch between the Admin Panel and the POS interface. The system provides easy navigation between these views:</p>
+                    
+                    <h3>Returning to POS View</h3>
+                    <ol>
+                        <li>Look for the <strong>Back to POS</strong> button in the header</li>
+                        <li>Click to return to the main sales interface</li>
+                        <li>Your order cart and session will be preserved</li>
+                    </ol>
+                    
+                    <h3>Returning to Admin Panel</h3>
+                    <ol>
+                        <li>From the POS view, click the <strong>Admin</strong> button</li>
+                        <li>You will be taken back to the Admin Panel</li>
+                    </ol>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> You can quickly switch between views without losing your work. The system maintains your session state when navigating between Admin and POS views.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="permission-requirements">Permission Requirements</h2>
+                    <p>The Admin Panel enforces role-based access control. Different sections require different permission levels:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Action</th>
+                                    <th>Required Role</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>View Admin Panel</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>View Dashboard/Analytics</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Create/Edit/Delete Products</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Create/Edit/Delete Users</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Manage Stock/Inventory</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Close Business Day</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Modify Settings</td>
+                                    <td>Admin</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Security Note:</strong> Admin accounts have full access to all system functions. Only grant admin privileges to trusted users who need complete system access.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="data-refresh">Data Refresh Behavior</h2>
+                    <p>The Admin Panel displays real-time data in most sections. Understanding how data refreshes helps you work more effectively:</p>
+                    
+                    <ul>
+                        <li><strong>Dashboard:</strong> Sales totals update automatically as transactions occur</li>
+                        <li><strong>Product/Category Lists:</strong> Refresh when navigating to the section or after making changes</li>
+                        <li><strong>Transaction History:</strong> Shows transactions up to the current moment</li>
+                        <li><strong>Stock Levels:</strong> Update immediately when adjustments are made or products are sold</li>
+                    </ul>
+                    
+                    <p>To manually refresh data in any section, you can navigate away and back, or reload the page.</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

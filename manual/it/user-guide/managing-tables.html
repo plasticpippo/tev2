@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Tavoli - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Tavoli</h1>
+                <p class="page-description">
+                    Impara come assegnare ordini ai tavoli, visualizzare lo stato dei tavoli e gestire le assegnazioni tavoli.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="assigning-orders">Assegnare Ordini ai Tavoli</h2>
+                    <p>Collegare gli ordini ai tavoli aiuta a tracciare dove i clienti sono seduti e organizzare il workflow. Per assegnare un ordine a un tavolo:</p>
+                    <ol>
+                        <li>Costruisci il tuo ordine come al solito aggiungendo prodotti</li>
+                        <li>Clicca il pulsante <strong>Assegna Tavolo</strong> nel pannello ordini</li>
+                        <li>Il modale Assegnazione Tavolo si apre mostrando un layout visuale</li>
+                        <li>Seleziona una <strong>Sala</strong> dalle schede sala (se esistono più sale)</li>
+                        <li>Scegli un <strong>tavolo disponibile</strong> dal layout visuale</li>
+                        <li>Clicca <strong>Assegna al Tavolo</strong> per confermare</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Table assignment modal showing room selection and table grid -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#127869;</div>
+                        <div class="image-placeholder-text">
+                            Modale Assegnazione Tavoloazione Tavolo<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-status">Significati degli Stati Tavolo</h2>
+                    <p>Ogni tavolo ha uno stato che indica la sua condizione corrente. Lo stato è mostrato da bordi codificati per colore:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Stato</th>
+                                    <th>Significato</th>
+                                    <th>Colore</th>
+                                    <th>Selezionabile</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Disponibile</strong></td>
+                                    <td>Il tavolo è libero e pronto per nuovi clienti</td>
+                                    <td class="text-success">Verde</td>
+                                    <td>Sì</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Occupato</strong></td>
+                                    <td>Il tavolo ha ordini attivi</td>
+                                    <td class="text-danger">Rosso</td>
+                                    <td>No</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prenotato</strong></td>
+                                    <td>Il tavolo è prenotato per ospiti in arrivo</td>
+                                    <td class="text-warning">Giallo</td>
+                                    <td>Sì</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Non Disponibile</strong></td>
+                                    <td>Il tavolo è fuori servizio</td>
+                                    <td class="text-muted">Grigio</td>
+                                    <td>No</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Nota</div>
+                        <div class="callout-content">
+                            Solo i tavoli con stato "Disponibile" o "Prenotato" possono essere assegnati a nuovi ordini. I tavoli occupati e non disponibili non possono essere selezionati.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="changing-tables">Cambiare le Assegnazioni Tavolo</h2>
+                    <p>Per cambiare a quale tavolo è assegnato un ordine:</p>
+                    <ol>
+                        <li>Clicca il pulsante <strong>Assegna Tavolo</strong> (o "Cambia Tavolo" se già assegnato)</li>
+                        <li>Seleziona un altro tavolo disponibile</li>
+                        <li>Clicca <strong>Assegna al Tavolo</strong> per confermare</li>
+                    </ol>
+                    
+                    <p>Per rimuovere completamente l'assegnazione tavolo:</p>
+                    <ol>
+                        <li>Clicca il pulsante <strong>Assegna Tavolo</strong></li>
+                        <li>Clicca <strong>Cancella Tavolo</strong> per rimuovere l'assegnazione</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="room-navigation">Navigare le Sale</h2>
+                    <p>Se il tuo stabilimento ha più sale (es. Sala Principale, Terrazza, Privata), usa il selettore sale:</p>
+                    <ol>
+                        <li>Nel modale Assegnazione Tavolo, clicca sulla scheda nome sala</li>
+                        <li>Il layout tavoli si aggiorna per mostrare i tavoli in quella sala</li>
+                        <li>Seleziona un tavolo dalla vista sala corrente</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Il layout visuale mostra i tavoli nella loro posizione effettiva all'interno di ogni sala, rendendo facile identificare il tavolo giusto a colpo d'occhio.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="table-indicators">Indicatori Tavolo nel Pannello Ordini</h2>
+                    <p>Quando un tavolo è assegnato all'ordine corrente, il pannello ordini visualizza:</p>
+                    <ul>
+                        <li><strong>Nome tavolo</strong> - Il numero/nome del tavolo assegnato</li>
+                        <li><strong>Stato tavolo</strong> - Stato corrente (disponibile, occupato, ecc.)</li>
+                        <li><strong>Pulsante Cambia Tavolo</strong> - Accesso rapido per riassegnare</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel with table assignment indicator -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#127869;</div>
+                        <div class="image-placeholder-text">
+                            Pannello Ordini con Assegnazione Tavolo<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="working-with-tabs">Tavoli e Conti</h2>
+                    <p>I tavoli possono essere combinati con i conti per un workflow migliore:</p>
+                    <ul>
+                        <li>Salva un ordine come <strong>Conto</strong> per mantenerlo aperto per dopo</li>
+                        <li>Il conto ricorda a quale tavolo era assegnato</li>
+                        <li>Quando carichi il conto dopo, l'assegnazione tavolo viene ripristinata</li>
+                        <li>Elabora il pagamento quando il cliente è pronto per andare via</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

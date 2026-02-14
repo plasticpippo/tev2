@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daily Closing - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Daily Closing</h1>
+                <p class="page-description">
+                    The Daily Closing feature allows you to end the business day and generate comprehensive reports. This guide explains how to close the business day, understand the generated reports, and handle special situations.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="business-day-concept">Understanding Business Day</h2>
+                    <p>A business day is the operational period for your restaurant. Unlike calendar days, business days are configured to match your establishment's operating hours.</p>
+                    
+                    <h3>Business Day Characteristics</h3>
+                    <ul>
+                        <li>Starts automatically at a configured time (e.g., 6:00 AM)</li>
+                        <li>Continues until manually closed or the next auto-start time</li>
+                        <li>All transactions within the period are grouped together</li>
+                        <li>Sales totals reset when a new business day begins</li>
+                    </ul>
+                    
+                    <h3>Configuring Business Day</h3>
+                    <p>Business day settings can be configured in the <strong>Settings</strong> section:</p>
+                    <ul>
+                        <li><strong>Auto Start Time:</strong> When a new business day automatically begins</li>
+                        <li><strong>Manual Closing:</strong> Whether to require manual end of day</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Business day settings -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128197;</div>
+                        <div class="image-placeholder-text">
+                            Business Day Settings
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="closing-day">Closing the Current Business Day</h2>
+                    <p>To close the business day and generate a closing report:</p>
+                    
+                    <ol>
+                        <li>Navigate to <strong>Daily Closing</strong> in the Admin Panel</li>
+                        <li>Click <strong>Close Business Day</strong></li>
+                        <li>Review the closing summary (see below)</li>
+                        <li>Click <strong>Confirm Closing</strong> to finalize</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Daily Closing Summary -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128196;</div>
+                        <div class="image-placeholder-text">
+                            Daily Closing Summary
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Important:</strong> Once closed, a business day cannot be reopened. All transactions from that period are permanently recorded.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="closing-summary">Understanding the Closing Summary</h2>
+                    <p>The daily closing generates a comprehensive report with the following information:</p>
+                    
+                    <h3>Sales Summary</h3>
+                    <ul>
+                        <li><strong>Total Sales:</strong> Gross revenue for the day</li>
+                        <li><strong>Transaction Count:</strong> Number of transactions processed</li>
+                        <li><strong>Average Transaction:</strong> Average sale amount</li>
+                    </ul>
+                    
+                    <h3>Payment Method Breakdown</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Payment Method</th>
+                                    <th>Amount</th>
+                                    <th>Transactions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Cash</td>
+                                    <td>$X,XXX.XX</td>
+                                    <td>XX</td>
+                                </tr>
+                                <tr>
+                                    <td>Card</td>
+                                    <td>$X,XXX.XX</td>
+                                    <td>XX</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Tips Summary</h3>
+                    <ul>
+                        <li>Total tips collected</li>
+                        <li>Tips by payment method</li>
+                    </ul>
+                    
+                    <h3>Till Breakdown</h3>
+                    <p>Sales grouped by each till:</p>
+                    <ul>
+                        <li>Till name</li>
+                        <li>Total sales</li>
+                        <li>Transaction count</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="closing-history">Viewing Closing History</h2>
+                    <p>Access previous daily closing reports:</p>
+                    
+                    <ol>
+                        <li>Navigate to <strong>Daily Closing</strong> in Admin Panel</li>
+                        <li>View the list of previous closings</li>
+                        <li>Click on a closing to view details</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Closing history list -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128203;</div>
+                        <div class="image-placeholder-text">
+                            Closing History
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Closing History Information</h3>
+                    <ul>
+                        <li><strong>Date:</strong> When the day was closed</li>
+                        <li><strong>User:</strong> Who closed the day</li>
+                        <li><strong>Total Sales:</strong> Revenue for that day</li>
+                        <li><strong>Actions:</strong> View details</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="reopening-day">Reopening a Closed Day</h2>
+                    <p>Once a business day is closed, it cannot be formally reopened through the system. However, there are options if you need to make corrections:</p>
+                    
+                    <h3>Options for Corrections</h3>
+                    <ul>
+                        <li><strong>Manual Records:</strong> Reference any external records you maintain</li>
+                        <li><strong>Transaction History:</strong> Individual transactions are still viewable in the Transactions section</li>
+                        <li><strong>Next Day Adjustment:</strong> Account for discrepancies in the next day's closing</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <strong>Best Practice:</strong> Always review the closing summary carefully before confirming. Ensure all transactions have been processed and all staff have completed their shifts.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Before Closing</h3>
+                    <ul>
+                        <li>Verify all transactions are complete</li>
+                        <li>Ensure all staff have logged out</li>
+                        <li>Check for any open tabs that need attention</li>
+                        <li>Confirm all tills are settled</li>
+                    </ul>
+                    
+                    <h3>After Closing</h3>
+                    <ul>
+                        <li>Print or export the closing report</li>
+                        <li>Reconcile with any external records</li>
+                        <li>File reports for accounting purposes</li>
+                        <li>Address any discrepancies before the next day</li>
+                    </ul>
+                    
+                    <h3>Timing</h3>
+                    <ul>
+                        <li>Close at a consistent time each day</li>
+                        <li>Consider end-of-day procedures when setting auto-start time</li>
+                        <li>Allow time for the closing process before the next auto-start</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Schedule closing for a time when business is typically slow to avoid interruptions.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

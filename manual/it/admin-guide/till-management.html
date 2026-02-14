@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestione Casse - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Gestione Casse</h1>
+                <p class="page-description">
+                    Le casse rappresentano i terminali POS fisici o le postazioni nel tuo locale. Questa guida spiega come creare e gestire le casse, assegnare dispositivi e configurare le impostazioni di visibilità.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="overview">Panoramica</h2>
+                    <p>Una "cassa" rappresenta un terminale POS fisico o una postazione nel tuo locale. Ogni cassa:</p>
+                    <ul>
+                        <li>Ha la propria configurazione di layout prodotti</li>
+                        <li>Può essere assegnata a dispositivi o utenti specifici</li>
+                        <li>Può avere diverse impostazioni di visibilità delle categorie</li>
+                        <li>Appare nella dashboard per il monitoraggio dello stato</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Till management list view -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Elenco Gestione Casse<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="viewing-tills">Visualizzazione di Tutte le Casse</h2>
+                    <p>Naviga alla sezione Casse dalla sidebar del Pannello Amministratore per vedere tutte le casse configurate.</p>
+                    
+                    <h3>Informazioni dell'Elenco Casse</h3>
+                    <p>Ogni voce della cassa mostra:</p>
+                    <ul>
+                        <li><strong>Nome Cassa:</strong> L'identificatore per questo terminale</li>
+                        <li><strong>Creata:</strong> Quando la cassa è stata creata</li>
+                        <li><strong>Azioni:</strong> Pulsanti modifica ed elimina</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="creating-tills">Creazione delle Casse</h2>
+                    <p>Per creare una nuova cassa:</p>
+                    
+                    <ol>
+                        <li>Clicca il pulsante <strong>Aggiungi Cassa</strong></li>
+                        <li>Inserisci un <strong>Nome Cassa</strong> (es. "Bar POS", "Bancone 1", "Terminal Terrazza")</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Add Till form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#10133;</div>
+                        <div class="image-placeholder-text">
+                            Modulo Aggiungi Cassa<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <strong>Nomenclatura delle Casse:</strong> Scegli nomi descrittivi che aiutino a identificare la posizione o lo scopo di ogni terminale. Questo rende più facile gestire casse multiple.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="device-assignment">Assegnazione Dispositivi alle Casse</h2>
+                    <p>Ogni cassa può essere associata a un dispositivo o postazione specifica. Questo permette al sistema di identificare quale terminale è in uso.</p>
+                    
+                    <h3>Comprensione della Relazione Dispositivo-Cassa</h3>
+                    <ul>
+                        <li><strong>Identificazione Dispositivo:</strong> Il sistema identifica i dispositivi dalle loro caratteristiche browser/dispositivo</li>
+                        <li><strong>Assegnazione Permanente:</strong> Una volta assegnato, il dispositivo si connetterà automaticamente alla cassa nei login futuri</li>
+                        <li><strong>Dispositivi Multipli:</strong> Un singolo dispositivo può essere riassegnato a diverse casse secondo necessità</li>
+                    </ul>
+                    
+                    <h3>Assegnazione di un Dispositivo</h3>
+                    <ol>
+                        <li>Effettua il login al POS sul dispositivo target</li>
+                        <li>Il sistema chiederà la selezione della cassa se non ancora assegnata</li>
+                        <li>Seleziona la cassa appropriata dall'elenco</li>
+                        <li>Il dispositivo è ora associato a quella cassa</li>
+                    </ol>
+                    
+                    <h3>Riassegnazione di un Dispositivo</h3>
+                    <p>Se hai bisogno di cambiare a quale cassa un dispositivo si connette:</p>
+                    <ol>
+                        <li>Effettua il login come amministratore</li>
+                        <li>Naviga alla sezione Casse</li>
+                        <li>Modifica la cassa e cancella l'assegnazione del dispositivo</li>
+                        <li>Il prossimo login su quel dispositivo chiederà la selezione della cassa</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-visibility">Impostazioni di Visibilità delle Casse</h2>
+                    <p>La visibilità delle casse è controllata attraverso le impostazioni delle categorie. Ogni categoria può specificare quali casse possono vedere i prodotti in quella categoria.</p>
+                    
+                    <h3>Configurazione della Visibilità delle Categorie</h3>
+                    <ol>
+                        <li>Vai alla sezione <strong>Categorie</strong> nel Pannello Amministratore</li>
+                        <li>Modifica una categoria</li>
+                        <li>Trova l'impostazione <strong>Casse Visibili</strong></li>
+                        <li>Seleziona quali casse devono visualizzare questa categoria</li>
+                        <li>Salva la categoria</li>
+                    </ol>
+                    
+                    <h3>Comportamento della Visibilità</h3>
+                    <ul>
+                        <li><strong>Tutte le Casse:</strong> Se nessuna cassa è selezionata, la categoria è visibile a tutte le casse</li>
+                        <li><strong>Casse Specifiche:</strong> Solo le casse selezionate mostreranno questa categoria</li>
+                        <li><strong>Aggiornamenti in Tempo Reale:</strong> Le modifiche hanno effetto immediato</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Category visibility settings with till selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128274;</div>
+                        <div class="image-placeholder-text">
+                            Impostazioni Visibilità Casse per Categoria<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="editing-tills">Modifica delle Casse</h2>
+                    <p>Per modificare una cassa:</p>
+                    
+                    <ol>
+                        <li>Individua la cassa nell'elenco casse</li>
+                        <li>Clicca il pulsante <strong>Modifica</strong></li>
+                        <li>Modifica il nome della cassa</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Nota:</strong> Cambiare il nome della cassa non influenza le assegnazioni dei dispositivi o i dati esistenti.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="deleting-tills">Eliminazione delle Casse</h2>
+                    <p>Per eliminare una cassa:</p>
+                    
+                    <ol>
+                        <li>Individua la cassa nell'elenco casse</li>
+                        <li>Clicca il pulsante <strong>Elimina</strong></li>
+                        <li>Conferma l'eliminazione</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Importante:</strong> Quando elimini una cassa:
+                        <ul>
+                            <li>La cassa viene rimossa da tutte le impostazioni di visibilità delle categorie</li>
+                            <li>Qualsiasi assegnazione di dispositivo viene cancellata</li>
+                            <li>I dati storici delle transazioni rimangono intatti</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-status">Monitoraggio Stato delle Casse</h2>
+                    <p>Puoi monitorare lo stato delle casse dalla Dashboard.</p>
+                    
+                    <h3>Indicatori di Stato delle Casse</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Stato</th>
+                                    <th>Descrizione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Attiva</strong></td>
+                                    <td>La cassa sta attualmente elaborando transazioni</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inattiva</strong></td>
+                                    <td>La cassa è loggata ma non sta attivamente elaborando</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Offline</strong></td>
+                                    <td>La cassa non è connessa o non configurata</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practice</h2>
+                    
+                    <h3>Configurazione delle Casse</h3>
+                    <ul>
+                        <li>Crea una cassa per ogni terminale POS fisico</li>
+                        <li>Usa nomi descrittivi che indichino la posizione (es. "Bar 1", "Terrazza 1")</li>
+                        <li>Configura la visibilità delle categorie basata su ciò che ogni terminale deve vendere</li>
+                    </ul>
+                    
+                    <h3>Gestione dei Dispositivi</h3>
+                    <ul>
+                        <li>Assegna i dispositivi alle casse durante la configurazione iniziale</li>
+                        <li>Documenta quali dispositivi sono assegnati a quali casse</li>
+                        <li>Riassegna i dispositivi quando l'hardware viene spostato o sostituito</li>
+                    </ul>
+                    
+                    <h3>Visibilità delle Categorie</h3>
+                    <ul>
+                        <li>Configura la visibilità delle categorie per corrispondere alle offerte di prodotti di ogni terminale</li>
+                        <li>Per esempio, i terminali del bar potrebbero mostrare solo categorie di bevande</li>
+                        <li>Testa la visibilità effettuando il login su ogni cassa dopo la configurazione</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Rivedi regolarmente lo stato delle casse dalla Dashboard per assicurarti che tutti i terminali funzionino correttamente.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

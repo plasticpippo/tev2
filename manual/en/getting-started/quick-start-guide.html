@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quick Start Guide - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Quick Start Guide</h1>
+                <p class="page-description">
+                    Get up and running with the POS system quickly. This guide walks you through the essential 
+                    steps to start taking orders and processing payments in minutes.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="checklist">Quick Start Checklist</h2>
+                    <p>Follow this checklist to get your POS operational:</p>
+                    
+                    <div class="card">
+                        <div class="card-content">
+                            <h3>Setup Tasks</h3>
+                            <ul>
+                                <li>[ ] Verify the system is running and accessible</li>
+                                <li>[ ] Log in with administrator credentials</li>
+                                <li>[ ] Change default admin password</li>
+                                <li>[ ] Verify or create your till</li>
+                                <li>[ ] Assign your device to a till</li>
+                            </ul>
+                            <h3>Configuration Tasks</h3>
+                            <ul>
+                                <li>[ ] Review default categories or create your own</li>
+                                <li>[ ] Add your first product with a variant</li>
+                                <li>[ ] Verify tax settings</li>
+                            </ul>
+                            <h3>Operations Tasks</h3>
+                            <ul>
+                                <li>[ ] Take your first test order</li>
+                                <li>[ ] Process a test payment</li>
+                                <li>[ ] Create a test tab (optional)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step1">Step 1: First Login</h2>
+                    <p>Access the POS application and log in for the first time:</p>
+                    
+                    <h3>Accessing the Application</h3>
+                    <ol>
+                        <li>Open your web browser (Chrome recommended)</li>
+                        <li>Navigate to the POS application URL (e.g., <code>http://192.168.1.241:80</code>)</li>
+                        <li>The login screen will appear</li>
+                    </ol>
+                    
+                    <h3>Logging In</h3>
+                    <ol>
+                        <li>In the <strong>Username</strong> field, enter: <code>admin</code></li>
+                        <li>In the <strong>Password</strong> field, enter: <code>admin123</code></li>
+                        <li>Click the <strong>Login</strong> button</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Login screen with username and password fields -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Login Screen<br>
+                            <em>Shows the login form with username, password fields, and the till name displayed</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Till Assignment (First Time Only)</h3>
+                    <p>If this is the first time accessing the POS on this device and no till is assigned:</p>
+                    <ul>
+                        <li><strong>As Administrator:</strong> You will see the Till Setup screen to select a till</li>
+                        <li><strong>As Cashier:</strong> You will see an error message - an admin must configure the till first</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Language Selection</div>
+                        <div class="callout-content">
+                            Use the language switcher (EN/IT) in the top-right corner of the login screen to change the interface language.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step2">Step 2: Understanding the Interface</h2>
+                    <p>After logging in, you'll see the main POS interface:</p>
+                    
+                    <h3>Interface Layout</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Area</th>
+                                    <th>Location</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Product Grid</td>
+                                    <td>Left/Main area</td>
+                                    <td>Visual grid of products organized by category</td>
+                                </tr>
+                                <tr>
+                                    <td>Category Tabs</td>
+                                    <td>Top of grid</td>
+                                    <td>Switch between product categories</td>
+                                </tr>
+                                <tr>
+                                    <td>Order Panel</td>
+                                    <td>Right side</td>
+                                    <td>Current order items, quantities, and total</td>
+                                </tr>
+                                <tr>
+                                    <td>Admin Button</td>
+                                    <td>Top right</td>
+                                    <td>Access admin panel (admins only)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Main POS interface with labeled areas -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Main POS Interface<br>
+                            <em>Shows the product grid on the left and order panel on the right, with category tabs at top</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Admin Panel Access</h3>
+                    <p>If you're logged in as an administrator, you'll see a purple <strong>Admin</strong> button in the top-right corner. Click this to access the administration panel for configuration.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="step3">Step 3: Create Your First Category</h2>
+                    <p>Categories organize your products in the POS interface. Create categories that match your menu structure:</p>
+                    
+                    <ol>
+                        <li>Click the <strong>Admin</strong> button (top right)</li>
+                        <li>In the admin panel, navigate to <strong>Categories</strong></li>
+                        <li>Click <strong>Add Category</strong></li>
+                        <li>Enter a category name (e.g., "Appetizers", "Main Courses", "Beverages")</li>
+                        <li>Select which tills should display this category:
+                            <ul>
+                                <li>Leave empty to show on all tills</li>
+                                <li>Select specific tills to limit visibility</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            The system comes with pre-seeded categories (Red Wine, Beer, Cocktails, Whiskey, Soft Drinks). You can edit or delete these to match your menu.
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Category management interface showing add category form -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Category Management<br>
+                            <em>Shows the category list and the add category form</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step4">Step 4: Add Your First Product</h2>
+                    <p>Products are the items you sell. Each product can have multiple variants (sizes, options):</p>
+                    
+                    <ol>
+                        <li>In the admin panel, navigate to <strong>Products</strong></li>
+                        <li>Click <strong>Add Product</strong></li>
+                        <li>Enter the product name (e.g., "Margherita Pizza")</li>
+                        <li>Select the category from the dropdown</li>
+                        <li>Add at least one variant:
+                            <ul>
+                                <li>Click <strong>Add Variant</strong></li>
+                                <li>Enter variant name (e.g., "Regular", "Large")</li>
+                                <li>Set the price</li>
+                                <li>Choose button colors (optional - helps with quick identification)</li>
+                                <li>Mark as "Favourite" to feature it prominently (optional)</li>
+                            </ul>
+                        </li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <h3>Understanding Variants</h3>
+                    <p>Variants represent different versions of the same product:</p>
+                    <ul>
+                        <li><strong>Size variations:</strong> Small, Medium, Large</li>
+                        <li><strong>Serving style:</strong> Glass, Bottle, Draft</li>
+                        <li><strong>Customization:</strong> Regular, Decaf, Extra Shot</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Favourites</div>
+                        <div class="callout-content">
+                            Mark frequently ordered variants as "Favourite" to display them in the Favourites category, making them quickly accessible during busy periods.
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Product edit form showing variant configuration -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Product Edit Form<br>
+                            <em>Shows the product form with name, category selection, and variant configuration</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step5">Step 5: Take Your First Order</h2>
+                    <p>Now you're ready to take an order. Return to the POS view:</p>
+                    
+                    <ol>
+                        <li>Click <strong>Back to POS</strong> or close the admin panel</li>
+                        <li>You'll see the product grid with your categories</li>
+                        <li>Click a category tab to view products in that category</li>
+                        <li>Click a product variant button to add it to the order</li>
+                        <li>The item appears in the Order Panel on the right</li>
+                    </ol>
+                    
+                    <h3>Adjusting Quantities</h3>
+                    <p>In the Order Panel, you can modify the current order:</p>
+                    <ul>
+                        <li><strong>Increase quantity:</strong> Click the <strong>+</strong> button next to an item</li>
+                        <li><strong>Decrease quantity:</strong> Click the <strong>-</strong> button (removes item at 0)</li>
+                        <li><strong>Remove item:</strong> Click the trash icon or reduce quantity to 0</li>
+                        <li><strong>Clear entire order:</strong> Click the <strong>Clear</strong> button (requires confirmation)</li>
+                    </ul>
+                    
+                    <h3>Viewing Order Total</h3>
+                    <p>The Order Panel shows:</p>
+                    <ul>
+                        <li>Subtotal (sum of all items)</li>
+                        <li>Tax amount (based on your tax settings)</li>
+                        <li>Total (subtotal + tax)</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Order panel with items and total -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Order Panel<br>
+                            <em>Shows items in the order with quantities, subtotal, tax, and total</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="step6">Step 6: Process Your First Payment</h2>
+                    <p>Complete the sale by processing payment:</p>
+                    
+                    <ol>
+                        <li>Review the order total in the Order Panel</li>
+                        <li>Click the <strong>Pay</strong> button</li>
+                        <li>The Payment Modal will appear</li>
+                        <li>Select the payment method:
+                            <ul>
+                                <li><strong>Cash</strong> - For cash payments</li>
+                                <li><strong>Card</strong> - For credit/debit card payments</li>
+                            </ul>
+                        </li>
+                        <li>Add a tip if applicable (use the tip buttons or enter custom amount)</li>
+                        <li>Click <strong>Complete Payment</strong></li>
+                        <li>The transaction is recorded and the order is cleared</li>
+                    </ol>
+                    
+                    <h3>Payment Modal Features</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Feature</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Order Summary</td>
+                                    <td>Shows all items being purchased</td>
+                                </tr>
+                                <tr>
+                                    <td>Subtotal/Tax/Total</td>
+                                    <td>Breakdown of the order cost</td>
+                                </tr>
+                                <tr>
+                                    <td>Tip Buttons</td>
+                                    <td>Quick tip percentages (10%, 15%, 20%) or custom amount</td>
+                                </tr>
+                                <tr>
+                                    <td>Payment Method</td>
+                                    <td>Cash or Card selection</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Payment modal with order summary and payment options -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Payment Modal<br>
+                            <em>Shows the payment interface with order summary, tip options, and payment method selection</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="additional-features">Additional Quick Features</h2>
+                    
+                    <h3>Assigning Orders to Tables</h3>
+                    <p>For table service, assign orders to specific tables:</p>
+                    <ol>
+                        <li>In the Order Panel, click the <strong>Table</strong> button</li>
+                        <li>Select the room from the dropdown</li>
+                        <li>Click on an available table</li>
+                        <li>The order is now associated with that table</li>
+                    </ol>
+                    
+                    <h3>Creating Tabs</h3>
+                    <p>Save orders for later payment (useful for bar tabs):</p>
+                    <ol>
+                        <li>Add items to the order</li>
+                        <li>Click <strong>Tabs</strong> in the Order Panel</li>
+                        <li>Click <strong>Create New Tab</strong></li>
+                        <li>Enter a name for the tab (e.g., customer name)</li>
+                        <li>The tab is saved and can be loaded later</li>
+                    </ol>
+                    
+                    <h3>Using the Virtual Keyboard</h3>
+                    <p>On touch devices, the virtual keyboard appears automatically when input fields are focused:</p>
+                    <ul>
+                        <li><strong>Numeric Keypad</strong> - For entering prices and quantities</li>
+                        <li><strong>Full Keyboard</strong> - For text entry (names, notes)</li>
+                        <li><strong>Done Button</strong> - Closes the keyboard</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="keyboard-shortcuts">Keyboard Shortcuts</h2>
+                    <p>Speed up your workflow with these keyboard shortcuts:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Shortcut</th>
+                                    <th>Action</th>
+                                    <th>Context</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><kbd>Ctrl+R</kbd></td>
+                                    <td>Refresh data</td>
+                                    <td>Table Management</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+L</kbd></td>
+                                    <td>Switch to Layout tab</td>
+                                    <td>Table Management</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+M</kbd></td>
+                                    <td>Switch to Rooms tab</td>
+                                    <td>Table Management</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+T</kbd></td>
+                                    <td>Switch to Tables tab</td>
+                                    <td>Table Management</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl++</kbd></td>
+                                    <td>Add new table/room</td>
+                                    <td>Table Management</td>
+                                </tr>
+                                <tr>
+                                    <td><kbd>Ctrl+D</kbd></td>
+                                    <td>Toggle layout mode</td>
+                                    <td>Table Management</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>For a complete list of shortcuts, see the <a href="../reference/keyboard-shortcuts.html">Keyboard Shortcuts Reference</a>.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="next-steps">Next Steps</h2>
+                    <p>Congratulations! You've completed the quick start guide. Now explore these topics to get the most from your POS system:</p>
+                    
+                    <h3>For Daily Operations</h3>
+                    <ul>
+                        <li><a href="../user-guide/taking-orders.html">Taking Orders</a> - Detailed order management</li>
+                        <li><a href="../user-guide/managing-tables.html">Managing Tables</a> - Table assignment and status</li>
+                        <li><a href="../user-guide/processing-payments.html">Processing Payments</a> - Payment options and tips</li>
+                        <li><a href="../user-guide/working-with-tabs.html">Working with Tabs</a> - Save and manage open tabs</li>
+                    </ul>
+                    
+                    <h3>For Configuration</h3>
+                    <ul>
+                        <li><a href="../admin-guide/product-management.html">Product Management</a> - Add and organize products</li>
+                        <li><a href="../admin-guide/user-management.html">User Management</a> - Create staff accounts</li>
+                        <li><a href="../admin-guide/table-management.html">Table Management</a> - Design your floor plan</li>
+                        <li><a href="../admin-guide/settings.html">Settings</a> - Tax and business day configuration</li>
+                    </ul>
+                    
+                    <h3>For Reporting</h3>
+                    <ul>
+                        <li><a href="../admin-guide/dashboard.html">Dashboard</a> - Sales overview</li>
+                        <li><a href="../admin-guide/analytics.html">Analytics</a> - Sales trends and reports</li>
+                        <li><a href="../admin-guide/daily-closing.html">Daily Closing</a> - End-of-day procedures</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

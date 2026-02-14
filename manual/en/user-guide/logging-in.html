@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logging In - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Logging In</h1>
+                <p class="page-description">
+                    Learn how to log in to the POS system, understand till assignment, and troubleshoot common login issues.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="login-screen">Login Screen Overview</h2>
+                    <p>The login screen is your entry point to the POS system. When you open the application, you will see:</p>
+                    <ul>
+                        <li><strong>Username field</strong> - Enter your assigned username</li>
+                        <li><strong>Password field</strong> - Enter your password (characters are hidden for security)</li>
+                        <li><strong>Login button</strong> - Click to authenticate and access the system</li>
+                        <li><strong>Language selector</strong> - Switch between English and Italian in the top-right corner</li>
+                        <li><strong>Till information</strong> - Displays the name of the till assigned to this device</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Login screen showing username field, password field, login button, language switcher, and till name display -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            Login Screen Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="entering-credentials">Entering Your Credentials</h2>
+                    <p>To log in to the POS system:</p>
+                    <ol>
+                        <li><strong>Enter your username</strong> - Tap or click on the username field and type your assigned username</li>
+                        <li><strong>Enter your password</strong> - Tap or click on the password field and type your password</li>
+                        <li><strong>Click Login</strong> - Press the Login button or tap Enter on the virtual keyboard</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Using the Virtual Keyboard</div>
+                        <div class="callout-content">
+                            On touchscreen devices, tapping an input field automatically opens the virtual keyboard. You can use either the virtual keyboard or a physical keyboard to enter your credentials. The keyboard provides a full QWERTY layout for text entry.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-assignment">Understanding Till Assignment</h2>
+                    <p>Each POS device must be assigned to a specific <strong>till</strong> (cash register). The till name is displayed on the login screen below the title.</p>
+                    
+                    <h3>Till Status Indicators</h3>
+                    <ul>
+                        <li><strong>White text</strong> - The till is properly configured and ready for use</li>
+                        <li><strong>Red text</strong> - No till is assigned to this device; only administrators can log in</li>
+                    </ul>
+                    
+                    <h3>For Administrators: Selecting a Till</h3>
+                    <p>If no till is assigned and you are an administrator, you will see the Till Setup screen after logging in:</p>
+                    <ol>
+                        <li>Review the list of available tills</li>
+                        <li>Click on the till name to select it</li>
+                        <li>The system will assign this device to the selected till</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Till setup screen showing grid of available tills to select from -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Till Selection Screen<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            If you are a cashier and see "Till not configured" in red, contact your administrator. You cannot log in until a till is assigned to the device.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="error-handling">Troubleshooting Login Errors</h2>
+                    <p>If you encounter problems logging in, check the following solutions:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Error Message</th>
+                                    <th>Cause</th>
+                                    <th>Solution</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Invalid credentials</td>
+                                    <td>Incorrect username or password</td>
+                                    <td>Check your credentials for typos. Ensure caps lock is off. Try again carefully.</td>
+                                </tr>
+                                <tr>
+                                    <td>Till not configured</td>
+                                    <td>No till assigned to this device</td>
+                                    <td>Contact your administrator to assign a till to this device before you can log in.</td>
+                                </tr>
+                                <tr>
+                                    <td>Missing credentials</td>
+                                    <td>Username or password field is empty</td>
+                                    <td>Fill in both the username and password fields before clicking Login.</td>
+                                </tr>
+                                <tr>
+                                    <td>Server error</td>
+                                    <td>Backend server is not responding</td>
+                                    <td>Check your network connection. Contact technical support if the problem persists.</td>
+                                </tr>
+                                <tr>
+                                    <td>Login failed</td>
+                                    <td>General authentication failure</td>
+                                    <td>Verify your credentials and try again. If the problem continues, contact your administrator.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="session-management">Session Management</h2>
+                    
+                    <h3>Staying Logged In</h3>
+                    <p>Once logged in, your session remains active until you explicitly log out. The system maintains your login state even if you refresh the page or temporarily lose network connectivity.</p>
+                    
+                    <h3>Logging Out</h3>
+                    <p>To log out of the POS system:</p>
+                    <ol>
+                        <li>Locate your username displayed in the order panel (right side of the screen)</li>
+                        <li>Click the <strong>Logout</strong> button next to your name</li>
+                        <li>You will be returned to the login screen</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Always log out when leaving the POS terminal unattended. This prevents unauthorized transactions and ensures proper accountability for all orders.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security">Security Best Practices</h2>
+                    <ul>
+                        <li><strong>Never share your password</strong> - Each staff member should have their own account</li>
+                        <li><strong>Log out when leaving</strong> - Always log out when stepping away from the terminal</li>
+                        <li><strong>Report suspicious activity</strong> - Tell your administrator immediately if you notice anything unusual</li>
+                        <li><strong>Change passwords regularly</strong> - Ask your administrator to update your password periodically</li>
+                        <li><strong>Check your username</strong> - Verify that your name appears in the order panel after logging in</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-roles">User Roles</h2>
+                    <p>The POS system has two types of users:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Description</th>
+                                    <th>Additional Features</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Admin</strong></td>
+                                    <td>Full system access for managers and supervisors</td>
+                                    <td>Admin Panel, User Management, Reports, Settings, Till Setup</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cashier</strong></td>
+                                    <td>Standard access for front-of-house staff</td>
+                                    <td>POS operations, taking orders, processing payments</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>Administrators will see an <strong>Admin</strong> button in the top-right corner of the main POS screen, which provides access to the management panel.</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

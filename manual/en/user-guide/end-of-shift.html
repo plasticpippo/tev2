@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>End of Shift - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">End of Shift</h1>
+                <p class="page-description">
+                    Learn how to properly log out, understand session persistence, and hand over to the next staff member.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="logging-out">Logging Out</h2>
+                    <p>To log out of the POS system:</p>
+                    <ol>
+                        <li>Locate your username in the <strong>order panel</strong> (right side of the screen)</li>
+                        <li>Click the <strong>Logout</strong> button next to your name</li>
+                        <li>You will be returned to the login screen</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Order panel showing user info and logout button -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128682;</div>
+                        <div class="image-placeholder-text">
+                            Order Panel with Logout Button<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            Always log out when leaving the POS terminal. This prevents unauthorized access and ensures proper accountability.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="session-persistence">Understanding Session Persistence</h2>
+                    <p>Important information about how data persists in the system:</p>
+                    
+                    <h3>What Persists After Logout</h3>
+                    <ul>
+                        <li><strong>Open Tabs</strong> - All saved tabs remain in the system</li>
+                        <li><strong>Table Status</strong> - Current table assignments remain</li>
+                        <li><strong>Order History</strong> - All completed transactions are saved</li>
+                    </ul>
+                    
+                    <h3>What Does NOT Persist</h3>
+                    <ul>
+                        <li><strong>Current Order</strong> - Unsaved orders are lost when you log out</li>
+                        <li><strong>Login State</strong> - The next user must log in with their credentials</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            Before logging out, check if there are any open tabs that need to be processed. Saved tabs will be available for the next staff member to access.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="handover-checklist">End of Shift Checklist</h2>
+                    <p>Before ending your shift, complete these steps:</p>
+                    
+                    <h3>1. Process Pending Orders</h3>
+                    <ul>
+                        <li>Check for any open tabs</li>
+                        <li>Process payments for orders that are ready</li>
+                        <li>Transfer items to other tabs if needed</li>
+                        <li>Close empty tabs</li>
+                    </ul>
+                    
+                    <h3>2. Verify Table Status</h3>
+                    <ul>
+                        <li>Check that tables are properly marked</li>
+                        <li>Ensure completed orders are paid</li>
+                    </ul>
+                    
+                    <h3>3. Complete Logout</h3>
+                    <ul>
+                        <li>Click Logout in the order panel</li>
+                        <li>Confirm logout if prompted</li>
+                        <li>Wait for the login screen to appear</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="handover">Handing Over to Next Staff</h2>
+                    <p>When handing over to the next staff member:</p>
+                    <ol>
+                        <li><strong>Process or transfer open tabs</strong> - Don't leave active orders unattended</li>
+                        <li><strong>Inform the next staff</strong> - Tell them about any pending orders</li>
+                        <li><strong>Log out completely</strong> - Don't leave your session active</li>
+                        <li><strong>Hand over verbally</strong> - Briefly explain any ongoing situations</li>
+                    </ol>
+                    
+                    <div class="callout callout-success">
+                        <div class="callout-title">Best Practice</div>
+                        <div class="callout-content">
+                            A good handoff includes: open tab names, table status, and any special instructions. This ensures continuity of service for customers.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="daily-closing">Daily Closing (Admin)</h2>
+                    <p>At the end of the business day, administrators should perform a <strong>Daily Closing</strong>:</p>
+                    <ol>
+                        <li>Ensure all transactions are complete</li>
+                        <li>Click the <strong>Admin</strong> button</li>
+                        <li>Go to <strong>Daily Closing</strong></li>
+                        <li>Review the closing summary</li>
+                        <li>Click <strong>Close Day</strong> to finalize</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            Daily closing is typically done by a manager or supervisor at the end of the business day. It generates reports and resets certain daily counters.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="reports-overview">Reports Overview</h2>
+                    <p>Administrators can access various reports:</p>
+                    
+                    <ul>
+                        <li><strong>Transaction History</strong> - View all completed sales</li>
+                        <li><strong>Daily Closing Summary</strong> - End-of-day financial report</li>
+                        <li><strong>Analytics</strong> - Sales trends and performance metrics</li>
+                        <li><strong>Itemised Consumption</strong> - Stock usage by product</li>
+                    </ul>
+                    
+                    <p>These reports help track business performance and can be accessed from the Admin Panel.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="security-reminder">Security Reminder</h2>
+                    <p>Remember these security practices at the end of every shift:</p>
+                    <ul>
+                        <li>Always log out - never leave your session active</li>
+                        <li>Don't share passwords - each user has their own account</li>
+                        <li>Secure the terminal - ensure no one else can access it</li>
+                        <li>Report issues - tell your administrator about any concerns</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

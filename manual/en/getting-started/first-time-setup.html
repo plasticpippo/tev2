@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>First-Time Setup - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">First-Time Setup</h1>
+                <p class="page-description">
+                    This guide walks you through the complete setup process for the POS system, from installation 
+                    to initial configuration. Follow these steps to get your POS ready for daily operations.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="installation">Installation Methods</h2>
+                    <p>The POS system can be deployed using Docker (recommended) or manually. Choose the method that best fits your infrastructure.</p>
+                    
+                    <h3>Docker Deployment (Recommended)</h3>
+                    <p>Docker provides the easiest and most consistent deployment experience:</p>
+                    <ol>
+                        <li>Ensure Docker and Docker Compose are installed on your server</li>
+                        <li>Clone or download the application source code</li>
+                        <li>Copy the example environment file:
+                            <pre><code>cp .env.example .env</code></pre>
+                        </li>
+                        <li>Edit the <code>.env</code> file with your configuration (see Database Configuration below)</li>
+                        <li>Start the application:
+                            <pre><code>docker compose up -d --build</code></pre>
+                        </li>
+                        <li>The application will be available at <code>http://your-server-ip:80</code></li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">First Run</div>
+                        <div class="callout-content">
+                            On first startup, the system automatically:
+                            <ul>
+                                <li>Runs database migrations</li>
+                                <li>Seeds essential data (default users, tills, settings)</li>
+                                <li>Creates default product categories</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <h3>Manual Deployment</h3>
+                    <p>For advanced users who prefer manual deployment:</p>
+                    <ol>
+                        <li>Install Node.js 18+ and PostgreSQL 13+</li>
+                        <li>Clone the application source code</li>
+                        <li>Install backend dependencies:
+                            <pre><code>cd backend && npm install</code></pre>
+                        </li>
+                        <li>Install frontend dependencies:
+                            <pre><code>cd frontend && npm install</code></pre>
+                        </li>
+                        <li>Configure environment variables in both <code>.env</code> files</li>
+                        <li>Run database migrations:
+                            <pre><code>cd backend && npx prisma migrate deploy</code></pre>
+                        </li>
+                        <li>Seed the database:
+                            <pre><code>npx prisma db seed</code></pre>
+                        </li>
+                        <li>Start the backend server:
+                            <pre><code>npm run dev</code></pre>
+                        </li>
+                        <li>Start the frontend server:
+                            <pre><code>cd frontend && npm run dev</code></pre>
+                        </li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="database-configuration">Database Configuration</h2>
+                    <p>The POS system uses PostgreSQL for data storage. Configure the database connection in the <code>.env</code> file:</p>
+                    
+                    <h3>Required Environment Variables</h3>
+                    <pre><code># Database Connection
+DATABASE_URL="postgresql://username:password@hostname:5432/database_name"
+
+# JWT Secret (IMPORTANT: Change this!)
+JWT_SECRET="your-secure-secret-key-minimum-32-characters"</code></pre>
+                    
+                    <h3>Example Configuration</h3>
+                    <pre><code># Example for local development
+DATABASE_URL="postgresql://totalevo_user:totalevo_password@localhost:5432/bar_pos"
+JWT_SECRET="my-super-secret-jwt-key-change-in-production-2024"</code></pre>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Security Warning</div>
+                        <div class="callout-content">
+                            <p><strong>Always change the JWT_SECRET in production!</strong></p>
+                            <p>Use a strong, unique secret key of at least 32 characters. A weak or default secret can compromise your system's security.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: .env file configuration example -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128451;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Environment Configuration<br>
+                            <em>Shows the .env file with DATABASE_URL and JWT_SECRET settings</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="default-credentials">Default Credentials</h2>
+                    <p>The system creates default user accounts during the initial seed. <strong>Change these passwords immediately after your first login!</strong></p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Role</th>
+                                    <th>Username</th>
+                                    <th>Default Password</th>
+                                    <th>Access Level</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Administrator</td>
+                                    <td><code>admin</code></td>
+                                    <td><code>admin123</code></td>
+                                    <td>Full admin panel + POS</td>
+                                </tr>
+                                <tr>
+                                    <td>Cashier</td>
+                                    <td><code>cashier</code></td>
+                                    <td><code>cashier123</code></td>
+                                    <td>POS interface only</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Critical Security Step</div>
+                        <div class="callout-content">
+                            <p>Failing to change default passwords is a major security risk. Change passwords immediately after installation:</p>
+                            <ol>
+                                <li>Log in as admin</li>
+                                <li>Go to Admin Panel > User Management</li>
+                                <li>Edit each user and set a strong password</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-setup">Setting Up Tills</h2>
+                    <p>Tills represent physical POS terminals in your establishment. Each device running the POS should be assigned to a specific till.</p>
+                    
+                    <h3>Default Tills</h3>
+                    <p>The system creates two default tills during seeding:</p>
+                    <ul>
+                        <li><strong>Main Bar</strong> - A sample till for the main service area</li>
+                        <li><strong>Patio</strong> - A sample till for outdoor service</li>
+                    </ul>
+                    
+                    <h3>Creating a New Till</h3>
+                    <ol>
+                        <li>Log in as an administrator</li>
+                        <li>Click the <strong>Admin</strong> button (top right)</li>
+                        <li>Navigate to <strong>Till Management</strong></li>
+                        <li>Click <strong>Add New Till</strong></li>
+                        <li>Enter a descriptive name (e.g., "Main Bar", "Terrace", "Kitchen")</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <h3>Assigning a Device to a Till</h3>
+                    <p>Each device (tablet, computer) must be assigned to a till:</p>
+                    <ol>
+                        <li>On first access, if no till is assigned, an admin will see the Till Setup screen</li>
+                        <li>Select the appropriate till from the list</li>
+                        <li>The assignment is stored in the browser's local storage</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Important</div>
+                        <div class="callout-content">
+                            <p><strong>Cashiers cannot log in until a till is configured!</strong></p>
+                            <p>Only administrators can log in on an unconfigured device to set up the till assignment. This is a security feature to prevent unauthorized access.</p>
+                        </div>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Till Setup Screen showing till selection -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128247;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot: Till Setup Screen<br>
+                            <em>Shows the till selection interface that appears for admins on unconfigured devices</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="category-configuration">Category Configuration</h2>
+                    <p>Categories organize your products in the POS interface. Default categories are created during seeding:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Category</th>
+                                    <th>Description</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>Red Wine</td><td>Wine selections</td></tr>
+                                <tr><td>Beer</td><td>Beer and ales</td></tr>
+                                <tr><td>Cocktails</td><td>Mixed drinks</td></tr>
+                                <tr><td>Whiskey</td><td>Whiskey and spirits</td></tr>
+                                <tr><td>Soft Drinks</td><td>Non-alcoholic beverages</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Category Visibility</h3>
+                    <p>Categories can be configured to show only on specific tills:</p>
+                    <ul>
+                        <li><strong>Visible on All Tills</strong> - Default setting, category appears everywhere</li>
+                        <li><strong>Specific Tills Only</strong> - Category only appears on selected terminals</li>
+                    </ul>
+                    <p>This is useful for establishments with different service areas (e.g., a bar terminal showing only drinks, a kitchen terminal showing only food).</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day-settings">Business Day Settings</h2>
+                    <p>Configure how the system tracks business days in Settings:</p>
+                    
+                    <h3>Accessing Settings</h3>
+                    <ol>
+                        <li>Log in as an administrator</li>
+                        <li>Open the Admin Panel</li>
+                        <li>Navigate to <strong>Settings</strong></li>
+                    </ol>
+                    
+                    <h3>Business Day Configuration</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Setting</th>
+                                    <th>Description</th>
+                                    <th>Default</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Auto Start Time</td>
+                                    <td>Time when a new business day automatically begins</td>
+                                    <td>06:00 (6:00 AM)</td>
+                                </tr>
+                                <tr>
+                                    <td>Manual Closing</td>
+                                    <td>Requires explicit daily closing action</td>
+                                    <td>Enabled</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p><strong>Business Day Concept:</strong> The business day determines when sales are recorded. For restaurants that operate past midnight, the business day continues until manually closed, ensuring all late-night sales are recorded on the correct day.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="tax-configuration">Tax Configuration</h2>
+                    <p>Configure how the system handles taxes in Settings:</p>
+                    
+                    <h3>Tax Modes</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Description</th>
+                                    <th>Use Case</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Tax Inclusive</strong></td>
+                                    <td>Prices entered include tax; system calculates the tax portion</td>
+                                    <td>Common in EU countries where displayed prices include VAT</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tax Exclusive</strong></td>
+                                    <td>Tax is added to the base price at checkout</td>
+                                    <td>Common in US where tax is added at register</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>No Tax</strong></td>
+                                    <td>No tax calculations performed</td>
+                                    <td>Tax-exempt establishments or testing</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            The default tax mode is <strong>Tax Exclusive</strong>. Change this in Settings to match your local tax regulations.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security-recommendations">Security Recommendations</h2>
+                    <p>Follow these security best practices after installation:</p>
+                    
+                    <h3>Immediate Actions</h3>
+                    <ul>
+                        <li><strong>Change Default Passwords</strong> - Update admin and cashier passwords immediately</li>
+                        <li><strong>Update JWT Secret</strong> - Use a strong, unique secret key</li>
+                        <li><strong>Enable HTTPS</strong> - Use SSL/TLS certificates in production</li>
+                        <li><strong>Restrict Database Access</strong> - Ensure PostgreSQL is not accessible from the internet</li>
+                    </ul>
+                    
+                    <h3>Ongoing Security</h3>
+                    <ul>
+                        <li><strong>Regular Password Updates</strong> - Require staff to change passwords periodically</li>
+                        <li><strong>Limit Admin Access</strong> - Only grant admin role to trusted managers</li>
+                        <li><strong>Monitor Logs</strong> - Review transaction and activity logs regularly</li>
+                        <li><strong>Backup Database</strong> - Implement regular database backups</li>
+                    </ul>
+                    
+                    <h3>Network Security</h3>
+                    <ul>
+                        <li>Place the POS system behind a firewall</li>
+                        <li>Use a VPN for remote administration</li>
+                        <li>Isolate the POS network from guest WiFi</li>
+                        <li>Restrict database port (5432) to internal access only</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="next-steps">Next Steps</h2>
+                    <p>After completing the initial setup, proceed to:</p>
+                    <ul>
+                        <li><a href="quick-start-guide.html">Quick Start Guide</a> - Learn to take your first order</li>
+                        <li><a href="../admin-guide/product-management.html">Product Management</a> - Add your products and variants</li>
+                        <li><a href="../admin-guide/user-management.html">User Management</a> - Create accounts for your staff</li>
+                        <li><a href="../admin-guide/table-management.html">Table Management</a> - Set up your floor plan</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

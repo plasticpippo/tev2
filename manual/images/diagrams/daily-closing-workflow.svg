@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 400" width="800" height="400">
+  <defs>
+    <marker id="arrow3" markerWidth="10" markerHeight="7" refX="9" refY="3.5" orient="auto">
+      <polygon points="0 0, 10 3.5, 0 7" fill="#64748b"/>
+    </marker>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="400" fill="#f8fafc"/>
+  
+  <!-- Title -->
+  <text x="400" y="30" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1e293b" text-anchor="middle">Daily Closing Workflow</text>
+  
+  <!-- Start -->
+  <ellipse cx="100" cy="80" rx="50" ry="25" fill="#22c55e" stroke="#16a34a" stroke-width="2"/>
+  <text x="100" y="85" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">Start</text>
+  
+  <!-- Arrow -->
+  <line x1="100" y1="105" x2="100" y2="130" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- View Daily Summary -->
+  <rect x="20" y="130" width="160" height="50" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="100" y="155" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">View Daily</text>
+  <text x="100" y="172" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">Summary</text>
+  
+  <!-- Arrow -->
+  <line x1="100" y1="180" x2="100" y2="210" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Review Transactions -->
+  <rect x="20" y="210" width="160" height="50" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="100" y="235" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">Review All</text>
+  <text x="100" y="252" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">Transactions</text>
+  
+  <!-- Arrow -->
+  <line x1="100" y1="260" x2="100" y2="290" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Verify -->
+  <rect x="20" y="290" width="160" height="50" rx="8" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+  <text x="100" y="315" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">Verify All</text>
+  <text x="100" y="332" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">Transactions</text>
+  
+  <!-- Arrow -->
+  <line x1="180" y1="315" x2="240" y2="315" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Arrow from summary to right side -->
+  <line x1="180" y1="155" x2="280" y2="155" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Right side - Breakdown -->
+  <rect x="280" y="120" width="200" height="50" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="380" y="145" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">Sales Breakdown</text>
+  <text x="380" y="162" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">(by payment method)</text>
+  
+  <!-- Arrow -->
+  <line x1="380" y1="170" x2="380" y2="200" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Tax Summary -->
+  <rect x="280" y="200" width="200" height="50" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="380" y="225" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">Tax Summary</text>
+  <text x="380" y="242" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Calculate taxes collected</text>
+  
+  <!-- Arrow -->
+  <line x1="380" y1="250" x2="380" y2="290" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Print Report -->
+  <rect x="280" y="290" width="200" height="50" rx="8" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+  <text x="380" y="315" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#1e293b" text-anchor="middle">Print/Export</text>
+  <text x="380" y="332" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">Daily Report</text>
+  
+  <!-- Arrow to Close Day -->
+  <line x1="480" y1="315" x2="550" y2="315" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- Close Day Button -->
+  <rect x="550" y="290" width="130" height="50" rx="8" fill="#2563eb"/>
+  <text x="615" y="310" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">Close Day</text>
+  <text x="615" y="327" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Finalize</text>
+  
+  <!-- Arrow -->
+  <line x1="615" y1="340" x2="615" y2="370" stroke="#64748b" stroke-width="2" marker-end="url(#arrow3)"/>
+  
+  <!-- End -->
+  <ellipse cx="615" cy="390" rx="50" ry="25" fill="#ef4444" stroke="#dc2626" stroke-width="2"/>
+  <text x="615" y="395" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#ffffff" text-anchor="middle">End</text>
+  
+  <!-- Legend -->
+  <g transform="translate(550, 120)">
+    <rect x="0" y="0" width="150" height="50" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="75" y="15" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#1e293b" text-anchor="middle">Legend</text>
+    <rect x="10" y="25" width="12" height="12" rx="2" fill="#ffffff" stroke="#2563eb" stroke-width="2"/>
+    <text x="30" y="35" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Process</text>
+    <rect x="80" y="25" width="12" height="12" rx="2" fill="#ffffff" stroke="#f59e0b" stroke-width="2"/>
+    <text x="100" y="35" font-family="Arial, sans-serif" font-size="9" fill="#64748b">Decision</text>
+  </g>
+</svg>

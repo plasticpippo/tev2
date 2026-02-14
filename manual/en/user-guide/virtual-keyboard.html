@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Keyboard - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Virtual Keyboard</h1>
+                <p class="page-description">
+                    Learn how to use the on-screen virtual keyboard for touchscreen devices.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="when-appears">When the Keyboard Appears</h2>
+                    <p>The virtual keyboard appears automatically when you tap on certain input fields:</p>
+                    <ul>
+                        <li><strong>Text input fields</strong> - Like username, password, or tab name</li>
+                        <li><strong>Number input fields</strong> - Like tip amounts or quantities</li>
+                        <li><strong>Any editable text area</strong> - Where text entry is needed</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Tip</div>
+                        <div class="callout-content">
+                            The keyboard appears when you tap an input field and disappears when you tap outside of it or press Done.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="keyboard-types">Keyboard Types</h2>
+                    <p>The POS uses two different keyboard layouts:</p>
+                    
+                    <h3>Numeric Keypad</h3>
+                    <p>For number-only input (like tip amounts), a simplified numeric keypad appears:</p>
+                    <ul>
+                        <li>Numbers 0-9</li>
+                        <li>Enter key</li>
+                        <li>Backspace (delete) key</li>
+                        <li>Done button to close keyboard</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Numeric keypad layout -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9000;</div>
+                        <div class="image-placeholder-text">
+                            Numeric Keypad Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <h3>Full Keyboard</h3>
+                    <p>For text input (like usernames or tab names), a full QWERTY keyboard appears:</p>
+                    <ul>
+                        <li>Numbers row (1-0)</li>
+                        <li>Letter keys (QWERTY layout)</li>
+                        <li>Space bar</li>
+                        <li>Enter key</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Full keyboard layout -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9000;</div>
+                        <div class="image-placeholder-text">
+                            Full Keyboard Layout Screenshot<br>
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="special-keys">Special Keys</h2>
+                    <p>The full keyboard includes several special keys:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Key</th>
+                                    <th>Symbol</th>
+                                    <th>Function</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Shift</strong></td>
+                                    <td>&#x2191; (up arrow)</td>
+                                    <td>Toggle capital letters for one keystroke</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Caps Lock</strong></td>
+                                    <td>&#x21EA; (up arrow with line)</td>
+                                    <td>Toggle all capital letters mode</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Backspace</strong></td>
+                                    <td>&#x232B; (delete symbol)</td>
+                                    <td>Delete the last character entered</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Space</strong></td>
+                                    <td>space</td>
+                                    <td>Insert a space between words</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Enter</strong></td>
+                                    <td>&#x21B5; (return arrow)</td>
+                                    <td>Confirm input or move to next field</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Done</strong></td>
+                                    <td>Done</td>
+                                    <td>Close the virtual keyboard</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="keyboard-position">Keyboard Positioning</h2>
+                    <p>The virtual keyboard automatically positions itself:</p>
+                    <ul>
+                        <li><strong>Below the input field</strong> - When there's enough space</li>
+                        <li><strong>Above the input field</strong> - When there's not enough space below</li>
+                        <li><strong>Centered horizontally</strong> - Aligns with the input field</li>
+                        <li><strong>Adapts to screen size</strong> - Works on various device sizes</li>
+                    </ul>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            The keyboard tries to avoid covering the input field, but you may need to scroll the page to see what you're typing if the field is near the bottom of the screen.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="using-keyboard">How to Use the Keyboard</h2>
+                    
+                    <h3>Typing Text</h3>
+                    <ol>
+                        <li>Tap on the input field where you want to type</li>
+                        <li>The virtual keyboard appears</li>
+                        <li>Tap letters to enter text</li>
+                        <li>Use Shift for capital letters</li>
+                        <li>Use Backspace to correct mistakes</li>
+                        <li>Press Done when finished</li>
+                    </ol>
+                    
+                    <h3>Typing Numbers</h3>
+                    <ol>
+                        <li>Tap on a number field</li>
+                        <li>The numeric keypad appears</li>
+                        <li>Tap numbers to enter values</li>
+                        <li>Use Backspace to delete</li>
+                        <li>Press Done or tap outside to close</li>
+                    </ol>
+                </div>
+
+                <div class="section">
+                    <h2 id="disabling-keyboard">Enabling/Disabling Virtual Keyboard</h2>
+                    <p>The virtual keyboard can be toggled on or off:</p>
+                    
+                    <h3>For Administrators</h3>
+                    <p>Administrators can control the virtual keyboard setting in the Admin Panel:</p>
+                    <ol>
+                        <li>Click the <strong>Admin</strong> button</li>
+                        <li>Go to <strong>Settings</strong></li>
+                        <li>Find the virtual keyboard option</li>
+                        <li>Enable or disable as needed</li>
+                    </ol>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Note</div>
+                        <div class="callout-content">
+                            The virtual keyboard is helpful for touchscreen devices but may not be needed when using a physical keyboard. Disabling it can free up screen space.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

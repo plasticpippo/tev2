@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glossario - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Glossario</h1>
+                <p class="page-description">
+                    Definizioni dei termini chiave utilizzati in tutto il sistema POS. Comprendere questi termini ti aiutera' a navigare e utilizzare l'applicazione in modo piu' efficace.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="a-b">A - B</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Amministratore</div>
+                        <div class="card-content">
+                            Abbreviazione di Amministratore. Un ruolo utente con accesso completo a tutte le funzionalita' del sistema, inclusa la gestione utenti, le impostazioni e i rapporti. Gli amministratori possono anche accedere all'interfaccia POS. Vedi anche: <a href="#cassiere">Cassiere</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Giornata Lavorativa</div>
+                        <div class="card-content">
+                            Il periodo operativo per un ristorante o locale. La giornata lavorativa determina quando le vendite vengono registrate e puo' essere configurata per avviarsi automaticamente a un'ora specifica o richiedere attivazione manuale. Ogni giornata lavorativa dovrebbe essere chiusa con un rapporto di <a href="#daily-closing">Chiusura Giornaliera</a>. Vedi anche: <a href="../admin-guide/settings.html">Impostazioni</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="c-d">C - D</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Cassiere</div>
+                        <div class="card-content">
+                            Un ruolo utente con accesso all'interfaccia POS per prendere ordini ed elaborare pagamenti. I cassieri non possono accedere alle funzionalita' di amministrazione come la gestione utenti o le impostazioni. Vedi anche: <a href="#admin">Amministratore</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Categoria</div>
+                        <div class="card-content">
+                            Un gruppo di prodotti correlati utilizzato per organizzare la griglia prodotti. Le categorie possono essere assegnate alla visibilita' di <a href="#till">Casse</a> specifiche, permettendo a diverse aree di un locale di mostrare i prodotti rilevanti. Esempi includono "Bevande", "Antipasti" e "Piatti Principali". Vedi anche: <a href="../admin-guide/categories.html">Gestione Categorie</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Chiusura Giornaliera</div>
+                        <div class="card-content">
+                            Un riepilogo finanziario di fine giornata che registra le vendite totali, la suddivisione dei metodi di pagamento (contanti vs carta), il conteggio delle transazioni e i totali specifici per <a href="#till">Cassa</a>. Le chiusure giornaliere sono registrazioni permanenti utilizzate per la contabilita' e la riconciliazione. Vedi anche: <a href="../admin-guide/daily-closing.html">Chiusura Giornaliera</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="f-i">F - I</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Preferito</div>
+                        <div class="card-content">
+                            Una variante di prodotto marcata per accesso rapido. I preferiti appaiono in evidenza nella griglia prodotti, rendendoli facili da trovare per articoli frequentemente ordinati. Qualsiasi variante di prodotto puo' essere marcata come preferito nella <a href="../admin-guide/products.html">Gestione Prodotti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Layout Griglia</div>
+                        <div class="card-content">
+                            La disposizione visiva dei bottoni dei prodotti nell'interfaccia POS. I layout della griglia possono essere personalizzati per <a href="#till">Cassa</a> e <a href="#category">Categoria</a>, permettendo agli amministratori di ottimizzare l'interfaccia per diverse aree di servizio. Vedi anche: <a href="../admin-guide/products.html">Gestione Prodotti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Ingrediente</div>
+                        <div class="card-content">
+                            Un tipo di <a href="#stock-item">Articolo di Magazzino</a> utilizzato nella preparazione dei prodotti ma non venduto direttamente. Gli ingredienti possono essere tracciati per scopi di inventario e collegati alle varianti di prodotto per la detrazione automatica del magazzino. Esempi includono farina, olio da cucina e spezie. Vedi anche: <a href="../admin-guide/stock-items.html">Gestione Articoli di Magazzino</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Inventario</div>
+                        <div class="card-content">
+                            Il sistema per tracciare i livelli di stock degli <a href="#stock-item">Articoli di Magazzino</a>. La gestione dell'inventario include la visualizzazione dei livelli di stock attuali, la effettuazione di aggiustamenti (aggiunte o detrazioni) e il monitoraggio degli avvisi di stock basso. Vedi anche: <a href="../admin-guide/inventory.html">Gestione Inventario</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Consumo Dettagliato</div>
+                        <div class="card-content">
+                            Un rapporto che mostra il consumo dettagliato degli <a href="#stock-item">Articoli di Magazzino</a> over un periodo selezionato. Questo rapporto aiuta a tracciare quali ingredienti e merci sono stati utilizzati, utile per la riconciliazione dell'inventario e l'analisi dei costi. Vedi anche: <a href="../admin-guide/itemised-consumption.html">Consumo Dettagliato</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="o-r">O - R</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Sessione d'Ordine</div>
+                        <div class="card-content">
+                            Una registrazione dello stato attivo dell'ordine di un utente durante il suo turno di lavoro. Le sessioni d'ordine persistono tra gli accessi, permettendo al personale di riprendere il lavoro se devono disconnettersi e riconnettersi. Le sessioni d'ordine sono gestite automaticamente dal sistema.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Prodotto</div>
+                        <div class="card-content">
+                            Un articolo disponibile per la vendita nel sistema POS. I prodotti appartengono a una <a href="#category">Categoria</a> e possono avere piu' <a href="#variant">Varianti</a> che rappresentano diverse dimensioni, colori o opzioni. Ogni variante di prodotto ha il proprio prezzo e puo' essere collegata a regole di consumo del magazzino. Vedi anche: <a href="../admin-guide/products.html">Gestione Prodotti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Sala</div>
+                        <div class="card-content">
+                            Un'area fisica all'interno di un locale che contiene <a href="#table">Tavoli</a>. Le sale aiutano a organizzare la gestione dei tavoli e possono rappresentare diverse aree dining come "Sala Principale", "Terrazza", "Area VIP" o "Bar". Vedi anche: <a href="../admin-guide/tables-rooms.html">Gestione Tavoli e Sale</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="s-t">S - T</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Merce Vendibile</div>
+                        <div class="card-content">
+                            Un tipo di <a href="#stock-item">Articolo di Magazzino</a> venduto direttamente ai clienti. A differenza degli <a href="#ingredient">Ingredienti</a>, le merci vendibili sono tracciate individualmente e possono essere vendute come articoli singoli. Esempi includono bevande in bottiglia, snack confezionati e merchandising. Vedi anche: <a href="../admin-guide/stock-items.html">Gestione Articoli di Magazzino</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Aggiustamento di Magazzino</div>
+                        <div class="card-content">
+                            Una registrazione di un cambiamento alla quantita' di un <a href="#stock-item">Articolo di Magazzino</a>. Gli aggiustamenti possono essere aggiunte (ricezione nuovo stock) o detrazioni (spreco, rottura o altre perdite). Tutti gli aggiustamenti sono registrati con timestamp e informazioni utente per scopi di audit. Vedi anche: <a href="../admin-guide/inventory.html">Gestione Inventario</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Articolo di Magazzino</div>
+                        <div class="card-content">
+                            Un articolo tracciato nell'inventario che puo' essere un <a href="#ingredient">Ingrediente</a> (usato nella preparazione) o una <a href="#sellable-good">Merce Vendibile</a> (venduta direttamente). Gli articoli di magazzino hanno unita' base per il tracciamento e possono avere unita' di acquisto per ricevere stock in quantita' diverse. Vedi anche: <a href="../admin-guide/stock-items.html">Gestione Articoli di Magazzino</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Conto Aperto</div>
+                        <div class="card-content">
+                            Un ordine aperto che puo' essere salvato e caricato successivamente. I conti aperti sono utili per tenere traccia di ordini in corso per clienti che potrebbero aggiungere articoli nel tempo, come avventori del bar o ospiti dell'albergo. I conti aperti possono essere assegnati ai <a href="#table">Tavoli</a> e trasferiti tra tavoli. Vedi anche: <a href="../user-guide/tabs.html">Lavorare con i Conti Aperti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Tavolo</div>
+                        <div class="card-content">
+                            Un tavolo fisico all'interno di una <a href="#room">Sala</a> a cui puo' essere assegnato un ordine. I tavoli hanno stati (Disponibile, Occupato, Riservato, Non Disponibile) e possono essere posizionati visivamente nell'editor di layout. I tavoli possono avere <a href="#tab">Conti Aperti</a> associati. Vedi anche: <a href="../admin-guide/tables-rooms.html">Gestione Tavoli e Sale</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Stato del Tavolo</div>
+                        <div class="card-content">
+                            Lo stato attuale di un <a href="#table">Tavolo</a>:
+                            <ul>
+                                <li><strong>Disponibile:</strong> Il tavolo e' libero e pronto per gli ospiti.</li>
+                                <li><strong>Occupato:</strong> Il tavolo ha ospiti e puo' avere un ordine aperto.</li>
+                                <li><strong>Riservato:</strong> Il tavolo e' riservato per ospiti futuri.</li>
+                                <li><strong>Non Disponibile:</strong> Il tavolo non e' disponibile per l'assegnazione (es. in manutenzione).</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cassa</div>
+                        <div class="card-content">
+                            Un terminale o dispositivo POS fisico. Ogni dispositivo deve essere assegnato a una cassa prima che gli utenti possano accedere ed elaborare ordini. Le casse sono utilizzate per tracciare le vendite per posizione e generare rapporti di <a href="#daily-closing">Chiusura Giornaliera</a>. Vedi anche: <a href="../admin-guide/tills.html">Gestione Casse</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Transazione</div>
+                        <div class="card-content">
+                            Una registrazione di pagamento completata. Le transazioni includono l'importo totale, il metodo di pagamento (contanti o carta), l'importo della mancia, gli articoli acquistati e l'utente e la cassa che hanno elaborato il pagamento. Le transazioni sono registrazioni permanenti utilizzate per rapporti e riconciliazione. Vedi anche: <a href="../admin-guide/transactions.html">Storico Transazioni</a>.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="u-v">U - V</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Utente</div>
+                        <div class="card-content">
+                            Una persona che puo' accedere al sistema POS. Gli utenti hanno un ruolo (Amministratore o Cassiere), nome utente e password. Gli utenti possono essere associati alle transazioni e all'attivita' degli ordini per il monitoraggio delle performance. Vedi anche: <a href="../admin-guide/users.html">Gestione Utenti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Variante</div>
+                        <div class="card-content">
+                            Una versione specifica di un <a href="#product">Prodotto</a>. Le varianti rappresentano diverse opzioni per lo stesso prodotto, come la dimensione (Piccolo, Medio, Grande) o lo stile di preparazione. Ogni variante ha il proprio prezzo, colore del bottone e regole opzionali di consumo del magazzino. Vedi anche: <a href="../admin-guide/products.html">Gestione Prodotti</a>.
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Tastiera Virtuale</div>
+                        <div class="card-content">

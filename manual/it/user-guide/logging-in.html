@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Accesso - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Accesso</h1>
+                <p class="page-description">
+                    Impara come accedere al sistema POS, comprende l'assegnazione delle casse e risolvi i problemi comuni di accesso.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="login-screen">Panoramica Schermata Accesso</h2>
+                    <p>La schermata di accesso è il punto di ingresso al sistema POS. Quando apri l'applicazione, vedrai:</p>
+                    <ul>
+                        <li><strong>Campo nome utente</strong> - Inserisci il tuo nome utente assegnato</li>
+                        <li><strong>Campo password</strong> - Inserisci la tua password (i caratteri sono nascosti per sicurezza)</li>
+                        <li><strong>Pulsante Accedi</strong> - Clicca per autenticarti e accedere al sistema</li>
+                        <li><strong>Selettore lingua</strong> - Passa tra Inglese e Italiano nell'angolo in alto a destra</li>
+                        <li><strong>Informazioni cassa</strong> - Visualizza il nome della cassa assegnata a questo dispositivo</li>
+                    </ul>
+                    
+                    <!-- SCREENSHOT: Login screen showing username field, password field, login button, language switcher, and till name display -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128100;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot Schermata Accesso<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="entering-credentials">Inserire le Tue Credenziali</h2>
+                    <p>Per accedere al sistema POS:</p>
+                    <ol>
+                        <li><strong>Inserisci il tuo nome utente</strong> - Tocca o clicca sul campo nome utente e digita il tuo nome utente assegnato</li>
+                        <li><strong>Inserisci la tua password</strong> - Tocca o clicca sul campo password e digita la tua password</li>
+                        <li><strong>Clicca Accedi</strong> - Premi il pulsante Accedi o premi Invio sulla tastiera virtuale</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Utilizzo della Tastiera Virtuale</div>
+                        <div class="callout-content">
+                            Sui dispositivi touchscreen, toccare un campo di input apre automaticamente la tastiera virtuale. Puoi usare sia la tastiera virtuale che una tastiera fisica per inserire le tue credenziali. La tastiera fornisce un layout QWERTY completo per l'inserimento di testo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="till-assignment">Comprensione dell'Assegnazione Cassa</h2>
+                    <p>Ogni dispositivo POS deve essere assegnato a una <strong>cassa</strong> specifica (registratore di cassa). Il nome della cassa viene visualizzato sulla schermata di accesso sotto il titolo.</p>
+                    
+                    <h3>Indicatori di Stato Cassa</h3>
+                    <ul>
+                        <li><strong>Testo bianco</strong> - La cassa è configurata correttamente e pronta per l'uso</li>
+                        <li><strong>Testo rosso</strong> - Nessuna cassa assegnata a questo dispositivo; solo gli amministratori possono accedere</li>
+                    </ul>
+                    
+                    <h3>Per Amministratori: Selezionare una Cassa</h3>
+                    <p>Se nessuna cassa è assegnata e sei un amministratore, vedrai la schermata Configurazione Cassa dopo l'accesso:</p>
+                    <ol>
+                        <li>Rivedi l'elenco delle casse disponibili</li>
+                        <li>Clicca sul nome della cassa per selezionarla</li>
+                        <li>Il sistema assegnerà questo dispositivo alla cassa selezionata</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Till setup screen showing grid of available tills to select from -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128187;</div>
+                        <div class="image-placeholder-text">
+                            Schermata Selezione Cassa<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            Se sei un cassiere e vedi "Cassa non configurata" in rosso, contatta il tuo amministratore. Non puoi accedere finché una cassa non viene assegnata al dispositivo.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="error-handling">Risoluzione Errori di Accesso</h2>
+                    <p>Se riscontri problemi nell'accesso, controlla le seguenti soluzioni:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Messaggio di Errore</th>
+                                    <th>Causa</th>
+                                    <th>Soluzione</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Credenziali non valide</td>
+                                    <td>Nome utente o password errati</td>
+                                    <td>Controlla le credenziali per errori di battitura. Assicurati che il blocco maiuscole sia disattivato. Riprova attentamente.</td>
+                                </tr>
+                                <tr>
+                                    <td>Cassa non configurata</td>
+                                    <td>Nessuna cassa assegnata a questo dispositivo</td>
+                                    <td>Contatta il tuo amministratore per assegnare una cassa a questo dispositivo prima di poter accedere.</td>
+                                </tr>
+                                <tr>
+                                    <td>Credenziali mancanti</td>
+                                    <td>Il campo nome utente o password è vuoto</td>
+                                    <td>Riempi entrambi i campi nome utente e password prima di cliccare Accedi.</td>
+                                </tr>
+                                <tr>
+                                    <td>Errore server</td>
+                                    <td>Il server backend non risponde</td>
+                                    <td>Controlla la tua connessione di rete. Contatta il supporto tecnico se il problema persiste.</td>
+                                </tr>
+                                <tr>
+                                    <td>Accesso non riuscito</td>
+                                    <td>Errore generale di autenticazione</td>
+                                    <td>Verifica le tue credenziali e riprova. Se il problema continua, contatta il tuo amministratore.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="session-management">Gestione Sessione</h2>
+                    
+                    <h3>Rimani Connesso</h3>
+                    <p>Una volta effettuato l'accesso, la tua sessione rimane attiva fino a quando non ti disconnetti esplicitamente. Il sistema mantiene il tuo stato di accesso anche se aggiorni la page o perdi temporaneamente la connettività di rete.</p>
+                    
+                    <h3>Disconnessione</h3>
+                    <p>Per disconnettersi dal sistema POS:</p>
+                    <ol>
+                        <li>Individua il tuo nome utente visualizzato nel pannello ordini (lato destro dello schermo)</li>
+                        <li>Clicca il pulsante <strong>Disconnetti</strong> accanto al tuo nome</li>
+                        <li>Verrai riportato alla schermata di accesso</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Disconnettiti sempre quando lasci il terminale POS incustodito. Questo previene transazioni non autorizzate e garantisce la corretta tracciabilità per tutti gli ordini.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="security">Best Practice di Sicurezza</h2>
+                    <ul>
+                        <li><strong>Non condividere mai la tua password</strong> - Ogni membro del personale dovrebbe avere il proprio account</li>
+                        <li><strong>Disconnettiti quando ti allontani</strong> - Disconnettiti sempre quando ti allontani dal terminale</li>
+                        <li><strong>Segnala attività sospette</strong> - Informi immediatamente il tuo amministratore se noti qualcosa di insolito</li>
+                        <li><strong>Cambia le password regolarmente</strong> - Chiedi al tuo amministratore di aggiornare la tua password periodicamente</li>
+                        <li><strong>Controlla il tuo nome utente</strong> - Verifica che il tuo nome appaia nel pannello ordini dopo l'accesso</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="user-roles">Ruoli Utente</h2>
+                    <p>Il sistema POS ha due tipi di utenti:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Ruolo</th>
+                                    <th>Descrizione</th>
+                                    <th>Funzionalità Aggiuntive</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Admin</strong></td>
+                                    <td>Accesso completo al sistema per manager e supervisori</td>
+                                    <td>Pannello Admin, Gestione Utenti, Report, Impostazioni, Configurazione Cassa</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Cassiere</strong></td>
+                                    <td>Accesso standard per il personale di sala</td>
+                                    <td>Operazioni POS, presa ordini, elaborazione pagamenti</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <p>Gli amministratori vedranno un pulsante <strong>Admin</strong> nell'angolo in alto a destra della schermata POS principale, che fornisce accesso al pannello di gestione.</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

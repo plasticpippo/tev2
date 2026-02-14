@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impostazioni - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Impostazioni</h1>
+                <p class="page-description">
+                    Configura le impostazioni di sistema incluse le opzioni delle tasse, la tempistica della giornata lavorativa e altre preferenze che influenzano come il sistema POS opera.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="tax-settings">Impostazioni Tasse</h2>
+                    <p>Configura come le tasse sono calcolate nel tuo sistema POS. L'impostazione delle tasse influenza tutti i calcoli dei prezzi.</p>
+                    
+                    <h3>Modalità delle Tasse</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Modalità</th>
+                                    <th>Descrizione</th>
+                                    <th>Esempio</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Tassa Inclusa</strong></td>
+                                    <td>I prezzi inseriti includono le tasse. Il sistema calcola il prezzo base.</td>
+                                    <td>10,00 € prezzo = 8,33 € base + 1,67 € tassa</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tassa Esclusa</strong></td>
+                                    <td>Le tasse sono aggiunte ai prezzi inseriti.</td>
+                                    <td>10,00 € base + 2,00 € tassa = 12,00 € totale</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Senza Tasse</strong></td>
+                                    <td>Le tasse sono disabilitate. I prezzi sono finali senza tasse aggiuntive.</td>
+                                    <td>10,00 € = 10,00 €</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Configurazione della Modalità delle Tasse</h3>
+                    <ol>
+                        <li>Naviga a <strong>Impostazioni</strong> nel Pannello Amministratore</li>
+                        <li>Trova la sezione <strong>Tasse</strong></li>
+                        <li>Seleziona la modalità delle tasse desiderata dal menu a discesa</li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Tax settings configuration -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128195;</div>
+                        <div class="image-placeholder-text">
+                            Impostazioni Tasse
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Importante:</strong> Cambiare la modalità delle tasse influenza tutti i calcoli dei prezzi futuri. Le transazioni passate non sono influenzate.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day-settings">Impostazioni Giornata Lavorativa</h2>
+                    <p>Configura come le giornate lavorative sono gestite nel sistema.</p>
+                    
+                    <h3>Orario Auto-Inizio</h3>
+                    <p>L'orario di auto-inizio determina quando una nuova giornata lavorativa inizia automaticamente:</p>
+                    <ul>
+                        <li>All'orario specificato, qualsiasi nuova transazione avvia una nuova giornata lavorativa</li>
+                        <li>I totali del giorno precedente sono finalizzati</li>
+                        <li>Predefinito: 6:00</li>
+                    </ul>
+                    
+                    <h3>Chiusura Manuale</h3>
+                    <p>La chiusura manuale richiede a un amministratore di chiudere esplicitamente la giornata lavorativa:</p>
+                    <ul>
+                        <li>Quando abilitata, i giorni devono essere chiusi manualmente</li>
+                        <li>Fornisce più controllo sui confini del giorno</li>
+                        <li>Utile per attività con esigenze specifiche di reportistica</li>
+                    </ul>
+                    
+                    <h3>Configurazione della Giornata Lavorativa</h3>
+                    <ol>
+                        <li>Naviga a <strong>Impostazioni</strong> nel Pannello Amministratore</li>
+                        <li>Trova la sezione <strong>Giornata Lavorativa</strong></li>
+                        <li>Imposta l'<strong>Orario Auto-Inizio</strong> (formato HH:MM)</li>
+                        <li>Abilita o disabilita la <strong>Chiusura Manuale</strong></li>
+                        <li>Clicca <strong>Salva</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Business day settings -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128197;</div>
+                        <div class="image-placeholder-text">
+                            Impostazioni Giornata Lavorativa
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="system-preferences">Preferenze di Sistema</h2>
+                    <p>Opzioni aggiuntive di configurazione del sistema:</p>
+                    
+                    <h3>Valuta e Localizzazione</h3>
+                    <ul>
+                        <li>Visualizzazione simbolo valuta</li>
+                        <li>Formattazione numeri (separatore decimale)</li>
+                        <li>Formato data e ora</li>
+                    </ul>
+                    
+                    <h3>Impostazioni Scontrino</h3>
+                    <ul>
+                        <li>Informazioni intestazione scontrino</li>
+                        <li>Nome attività sugli scontrini</li>
+                        <li>Messaggi a piè di pagina</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practice</h2>
+                    
+                    <h3>Configurazione Tasse</h3>
+                    <ul>
+                        <li>Imposta la modalità delle tasse durante la configurazione iniziale</li>
+                        <li>Testa con transazioni di esempio dopo aver cambiato</li>
+                        <li>Assicurati che il personale capisca come i prezzi sono visualizzati</li>
+                        <li>Consulta un commercialista per la conformità fiscale</li>
+                    </ul>
+                    
+                    <h3>Tempistica Giornata Lavorativa</h3>
+                    <ul>
+                        <li>Imposta l'orario di auto-inizio per corrispondere alla tua apertura più temprana</li>
+                        <li>Considera i periodi di reportistica quando scegli gli orari</li>
+                        <li>Assicurati che ci sia abbastanza tempo tra l'ultima transazione e il prossimo auto-inizio</li>
+                        <li>Comunica l'orario a tutto il personale</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Testa qualsiasi cambiamento alle impostazioni durante un periodo tranquillo per assicurarti che tutto funzioni come previsto.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

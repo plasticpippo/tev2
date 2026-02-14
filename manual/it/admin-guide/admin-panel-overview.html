@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panoramica Pannello Amministratore - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Panoramica Pannello Amministratore</h1>
+                <p class="page-description">
+                    Il Pannello Amministratore è il centro nevralgico per la gestione del sistema POS. Da qui, gli amministratori possono configurare prodotti, gestire utenti, visualizzare report e personalizzare le impostazioni di sistema.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="accessing-admin">Accesso al Pannello Amministratore</h2>
+                    <p>Il Pannello Amministratore è accessibile solo agli utenti con privilegi di amministratore. Per accedere al pannello amministratore:</p>
+                    <ol>
+                        <li>Accedi al sistema POS con un account amministratore</li>
+                        <li>Individua il pulsante <strong>Admin</strong> nell'angolo in alto a destra dell'intestazione</li>
+                        <li>Clicca il pulsante per aprire il Pannello Amministratore</li>
+                    </ol>
+                    
+                    <div class="callout callout-info">
+                        <strong>Permesso Richiesto:</strong> Solo gli utenti con ruolo <code>Admin</code> possono accedere al Pannello Amministratore. Gli account Cassiere non vedranno il pulsante Admin.
+                    </div>
+                    
+                    <!-- SCREENSHOT: Login screen showing the Admin button visible in the header for admin users -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9881;</div>
+                        <div class="image-placeholder-text">
+                            Posizione Pulsante Admin nell'Intestazione<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="navigation-structure">Struttura di Navigazione</h2>
+                    <p>Il Pannello Amministratore presenta una navigazione sidebar sul lato sinistro dello schermo. Ogni sezione fornisce accesso a diverse funzioni di gestione:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Sezione</th>
+                                    <th>Descrizione</th>
+                                    <th>Attività Comuni</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Dashboard</strong></td>
+                                    <td>Panoramica delle prestazioni aziendali</td>
+                                    <td>Visualizza totali vendite, controlla stato casse, gestisci giornata lavorativa</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Analisi</strong></td>
+                                    <td>Report vendite e trend</td>
+                                    <td>Visualizza grafici vendite orarie, prodotti top, prestazioni categorie</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Prodotti</strong></td>
+                                    <td>Gestione prodotti e varianti</td>
+                                    <td>Aggiungi prodotti, imposta prezzi, configura varianti</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Categorie</strong></td>
+                                    <td>Organizzazione categorie prodotti</td>
+                                    <td>Crea categorie, imposta visibilità casse</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Articoli Magazzino</strong></td>
+                                    <td>Gestione articoli inventario</td>
+                                    <td>Aggiungi ingredienti, configura unità, traccia quantità</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Inventario</strong></td>
+                                    <td>Gestione livelli magazzino</td>
+                                    <td>Esegui rettifiche, visualizza livelli magazzino, controlla storico</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Utenti</strong></td>
+                                    <td>Gestione account utente</td>
+                                    <td>Crea utenti, assegna ruoli, reimposta password</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Casse</strong></td>
+                                    <td>Gestione terminali POS</td>
+                                    <td>Crea casse, assegna dispositivi, configura visibilità</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tavoli</strong></td>
+                                    <td>Layout sale e tavoli</td>
+                                    <td>Crea sale, aggiungi tavoli, disponi layout</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Transazioni</strong></td>
+                                    <td>Storico transazioni</td>
+                                    <td>Visualizza vendite passate, filtra per data/cassa/utente</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Chiusura Giornaliera</strong></td>
+                                    <td>Procedure di fine giornata</td>
+                                    <td>Chiudi giornata lavorativa, visualizza storico chiusure</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Consumi Dettagliati</strong></td>
+                                    <td>Report consumi magazzino</td>
+                                    <td>Traccia utilizzo ingredienti, visualizza consumi per periodo</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Impostazioni</strong></td>
+                                    <td>Configurazione sistema</td>
+                                    <td>Configura tasse, orario giornata lavorativa</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <!-- SCREENSHOT: Full admin panel view with sidebar navigation visible -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#9881;</div>
+                        <div class="image-placeholder-text">
+                            Navigazione Sidebar Pannello Amministratore<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="switching-views">Passaggio tra Viste Admin e POS</h2>
+                    <p>Gli amministratori spesso hanno bisogno di passare tra il Pannello Amministratore e l'interfaccia POS. Il sistema fornisce una facile navigazione tra queste viste:</p>
+                    
+                    <h3>Ritorno alla Vista POS</h3>
+                    <ol>
+                        <li>Cerca il pulsante <strong>Torna a POS</strong> nell'intestazione</li>
+                        <li>Clicca per tornare all'interfaccia vendite principale</li>
+                        <li>Il tuo carrello ordini e la sessione saranno preservati</li>
+                    </ol>
+                    
+                    <h3>Ritorno al Pannello Amministratore</h3>
+                    <ol>
+                        <li>Dalla vista POS, clicca il pulsante <strong>Admin</strong></li>
+                        <li>Verrai riportato al Pannello Amministratore</li>
+                    </ol>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Suggerimento:</strong> Puoi passare rapidamente tra le viste senza perdere il tuo lavoro. Il sistema mantiene lo stato della sessione durante la navigazione tra le viste Admin e POS.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="permission-requirements">Requisiti di Permesso</h2>
+                    <p>Il Pannello Amministratore applica il controllo degli accessi basato sui ruoli. Sezioni diverse richiedono diversi livelli di permesso:</p>
+                    
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Azione</th>
+                                    <th>Ruolo Richiesto</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Visualizza Pannello Amministratore</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Visualizza Dashboard/Analisi</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Crea/Modifica/Elimina Prodotti</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Crea/Modifica/Elimina Utenti</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Gestisci Magazzino/Inventario</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Chiudi Giornata Lavorativa</td>
+                                    <td>Admin</td>
+                                </tr>
+                                <tr>
+                                    <td>Modifica Impostazioni</td>
+                                    <td>Admin</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Nota di Sicurezza:</strong> Gli account amministratore hanno accesso completo a tutte le funzioni di sistema. Assegna privilegi di amministratore solo a utenti fidati che necessitano di accesso completo al sistema.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="data-refresh">Comportamento Aggiornamento Dati</h2>
+                    <p>Il Pannello Amministratore visualizza dati in tempo reale nella maggior parte delle sezioni. Comprendere come si aggiornano i dati ti aiuta a lavorare più efficacemente:</p>
+                    
+                    <ul>
+                        <li><strong>Dashboard:</strong> I totali delle vendite si aggiornano automaticamente man mano che le transazioni avvengono</li>
+                        <li><strong>Liste Prodotti/Categorie:</strong> Si aggiornano quando si naviga nella sezione o dopo aver effettuato modifiche</li>
+                        <li><strong>Storico Transazioni:</strong> Mostra le transazioni fino al momento attuale</li>
+                        <li><strong>livelli Magazzino:</strong> Si aggiornano immediatamente quando vengono effettuate rettifiche o i prodotti vengono venduti</li>
+                    </ul>
+                    
+                    <p>Per aggiornare manualmente i dati in qualsiasi sezione, puoi navigare altrove e tornare, o ricaricare la pagina.</p>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

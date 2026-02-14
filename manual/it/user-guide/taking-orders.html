@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prendere Ordini - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Prendere Ordini</h1>
+                <p class="page-description">
+                    Impara come navigare i prodotti, aggiungere articoli al carrello, regolare le quantità e gestire gli ordini.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="browsing-products">Navigare i Prodotti per Categoria</h2>
+                    <p>I prodotti sono organizzati in categorie per una facile navigazione. Per navigare e selezionare i prodotti:</p>
+                    <ol>
+                        <li>Guarda le <strong>schede categoria</strong> sopra la griglia prodotti</li>
+                        <li>La prima scheda è <strong>Preferiti</strong> - mostra gli articoli ordinati frequentemente</li>
+                        <li>Clicca su qualsiasi scheda categoria per visualizzare i suoi prodotti</li>
+                        <li>I prodotti nella categoria selezionata appariranno nella griglia</li>
+                        <li>Scorri nella griglia se i prodotti non entrano in una schermata</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Category tabs with products displayed in the grid -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128194;</div>
+                        <div class="image-placeholder-text">
+                            Screenshot Schede Categorie<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Consiglio</div>
+                        <div class="callout-content">
+                            Configura Preferiti con i tuoi articoli più popolari per un'elaborazione ordini più veloce durante i periodi di lavoro intenso.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="adding-items">Aggiungere Articoli all'Ordine</h2>
+                    <p>Per aggiungere un prodotto all'ordine corrente:</p>
+                    <ol>
+                        <li>Naviga alla categoria appropriata usando le schede categoria</li>
+                        <li>Trova il prodotto desiderato nella griglia</li>
+                        <li><strong>Clicca sul pulsante prodotto</strong></li>
+                        <li>L'articolo appare immediatamente nel pannello ordini con quantità 1</li>
+                        <li>Clicca lo stesso prodotto ancora per aumentare la quantità</li>
+                    </ol>
+                    
+                    <h3>Aumento Rapido Quantità</h3>
+                    <p>Cliccare ripetutamente e rapidamente lo stesso pulsante prodotto aggiunge più quantità. Ogni clic aggiunge un altro articolo di quel tipo all'ordine.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="adjusting-quantities">Regolare le Quantità</h2>
+                    <p>Usa i controlli quantità nel pannello ordini per modificare le quantità degli articoli:</p>
+                    
+                    <h3>Aumentare la Quantità</h3>
+                    <ul>
+                        <li>Clicca il pulsante <strong>+</strong> (più) accanto a un articolo</li>
+                        <li>Oppure clicca il pulsante prodotto nella griglia ancora una volta</li>
+                    </ul>
+                    
+                    <h3>Diminuire la Quantità</h3>
+                    <ul>
+                        <li>Clicca il pulsante <strong>-</strong> (meno) accanto a un articolo</li>
+                        <li>Quando la quantità raggiunge 0, l'articolo viene rimosso dall'ordine</li>
+                    </ul>
+                    
+                    <div class="callout callout-warning">
+                        <div class="callout-title">Importante</div>
+                        <div class="callout-content">
+                            Diminuire la quantità a 0 rimuove l'articolo dall'ordine interamente. Questa azione non può essere annullata.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="viewing-subtotal">Visualizzare i Totali dell'Ordine</h2>
+                    <p>Il pannello ordini visualizza i totali progressivi mentre costruisci l'ordine:</p>
+                    <ul>
+                        <li><strong>Articoli Ordine</strong> - Ogni articolo mostra nome, prezzo unitario e quantità</li>
+                        <li><strong>Subtotale</strong> - La somma di tutti gli articoli prima delle tasse</li>
+                        <li><strong>Tasse</strong> - Calcolate automaticamente in base alle impostazioni delle tasse</li>
+                        <li><strong>Totale</strong> - L'importo finale incluse le tasse</li>
+                    </ul>
+                    
+                    <p>Il totale si aggiorna automaticamente mentre aggiungi, rimuovi o modifichi articoli.</p>
+                </div>
+
+                <div class="section">
+                    <h2 id="clearing-orders">Cancellare l'Ordine</h2>
+                    <p>Per rimuovere tutti gli articoli dall'ordine corrente:</p>
+                    <ol>
+                        <li>Clicca il pulsante <strong>Cancella Ordine</strong> nel pannello ordini</li>
+                        <li>Conferma l'azione quando richiesto</li>
+                        <li>Tutti gli articoli vengono rimossi e l'ordine ricomincia da capo</li>
+                    </ol>
+                    
+                    <div class="callout callout-danger">
+                        <div class="callout-title">Avviso</div>
+                        <div class="callout-content">
+                            Cancellare un ordine rimuove permanentemente tutti gli articoli. Questa azione non può essere annullata. Assicurati di voler cancellare tutti gli articoli prima di procedere.
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-info">
+                        <div class="callout-title">Alternativa</div>
+                        <div class="callout-content">
+                            Invece di cancellare, considera di salvare l'ordine come <strong>Conto</strong> se il cliente potrebbe tornare o volere pagare più tardi.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="order-workflow">Riepilogo Workflow Ordine</h2>
+                    <p>Ecco il workflow tipico per prendere un ordine:</p>
+                    <ol>
+                        <li><strong>Inizia un nuovo ordine</strong> - Il pannello ordini dovrebbe essere vuoto (o carica un conto esistente)</li>
+                        <li><strong>Seleziona categoria</strong> - Clicca la scheda categoria appropriata</li>
+                        <li><strong>Aggiungi articoli</strong> - Clicca i prodotti per aggiungerli all'ordine</li>
+                        <li><strong>Regola quantità</strong> - Usa i pulsanti +/- come necessario</li>
+                        <li><strong>Assegna tavolo</strong> (opzionale) - Clicca "Assegna Tavolo" per collegare l'ordine a un tavolo</li>
+                        <li><strong>Rivedi totali</strong> - Controlla subtotale, tasse e totale</li>
+                        <li><strong>Elabora pagamento</strong> - Clicca "Pagamento" quando pronto per il checkout</li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Order panel showing complete order with items -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128179;</div>
+                        <div class="image-placeholder-text">
+                            Esempio Ordine Completo<br>
+                            <em>(Placeholder - da aggiungere)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

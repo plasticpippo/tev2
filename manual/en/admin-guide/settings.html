@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - POS Manual</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">POS Manual</a>
+                <div class="sidebar-subtitle">English Documentation</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Search...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn active" data-lang="en">EN</button>
+                        <button class="language-btn" data-lang="it" onclick="Manual.switchLanguage('it')">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Settings</h1>
+                <p class="page-description">
+                    Configure system settings including tax options, business day timing, and other preferences that affect how the POS system operates.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="tax-settings">Tax Settings</h2>
+                    <p>Configure how tax is calculated in your POS system. The tax setting affects all price calculations.</p>
+                    
+                    <h3>Tax Modes</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Mode</th>
+                                    <th>Description</th>
+                                    <th>Example</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><strong>Tax Inclusive</strong></td>
+                                    <td>Prices entered include tax. The system calculates the base price.</td>
+                                    <td>$10.00 price = $8.33 base + $1.67 tax</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>Tax Exclusive</strong></td>
+                                    <td>Tax is added to entered prices.</td>
+                                    <td>$10.00 base + $2.00 tax = $12.00 total</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>No Tax</strong></td>
+                                    <td>Tax is disabled. Prices are final with no additional tax.</td>
+                                    <td>$10.00 = $10.00</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <h3>Configuring Tax Mode</h3>
+                    <ol>
+                        <li>Navigate to <strong>Settings</strong> in the Admin Panel</li>
+                        <li>Find the <strong>Tax</strong> section</li>
+                        <li>Select the desired tax mode from the dropdown</li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Tax settings configuration -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128195;</div>
+                        <div class="image-placeholder-text">
+                            Tax Settings
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                    
+                    <div class="callout callout-warning">
+                        <strong>Important:</strong> Changing tax mode affects all future price calculations. Past transactions are not affected.
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="business-day-settings">Business Day Settings</h2>
+                    <p>Configure how business days are managed in the system.</p>
+                    
+                    <h3>Auto Start Time</h3>
+                    <p>The auto start time determines when a new business day begins automatically:</p>
+                    <ul>
+                        <li>At the specified time, any new transaction starts a new business day</li>
+                        <li>Previous day's totals are finalized</li>
+                        <li>Default: 6:00 AM</li>
+                    </ul>
+                    
+                    <h3>Manual Closing</h3>
+                    <p>Manual closing requires an administrator to explicitly close the business day:</p>
+                    <ul>
+                        <li>When enabled, days must be closed manually</li>
+                        <li>Provides more control over day boundaries</li>
+                        <li>Useful for businesses with specific reporting needs</li>
+                    </ul>
+                    
+                    <h3>Configuring Business Day</h3>
+                    <ol>
+                        <li>Navigate to <strong>Settings</strong> in the Admin Panel</li>
+                        <li>Find the <strong>Business Day</strong> section</li>
+                        <li>Set the <strong>Auto Start Time</strong> (HH:MM format)</li>
+                        <li>Enable or disable <strong>Manual Closing</strong></li>
+                        <li>Click <strong>Save</strong></li>
+                    </ol>
+                    
+                    <!-- SCREENSHOT: Business day settings -->
+                    <div class="image-placeholder">
+                        <div class="image-placeholder-icon">&#128197;</div>
+                        <div class="image-placeholder-text">
+                            Business Day Settings
+                            <em>(Placeholder - to be added)</em>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="system-preferences">System Preferences</h2>
+                    <p>Additional system configuration options:</p>
+                    
+                    <h3>Currency and Localization</h3>
+                    <ul>
+                        <li>Currency symbol display</li>
+                        <li>Number formatting (decimal separator)</li>
+                        <li>Date and time format</li>
+                    </ul>
+                    
+                    <h3>Receipt Settings</h3>
+                    <ul>
+                        <li>Receipt header information</li>
+                        <li>Business name on receipts</li>
+                        <li>Footer messages</li>
+                    </ul>
+                </div>
+
+                <div class="section">
+                    <h2 id="best-practices">Best Practices</h2>
+                    
+                    <h3>Tax Configuration</h3>
+                    <ul>
+                        <li>Set tax mode during initial setup</li>
+                        <li>Test with sample transactions after changing</li>
+                        <li>Ensure staff understand how prices are displayed</li>
+                        <li>Consult with an accountant for tax compliance</li>
+                    </ul>
+                    
+                    <h3>Business Day Timing</h3>
+                    <ul>
+                        <li>Set auto-start time to match your earliest opening</li>
+                        <li>Consider reporting periods when choosing times</li>
+                        <li>Ensure enough time between last transaction and next auto-start</li>
+                        <li>Communicate schedule to all staff</li>
+                    </ul>
+                    
+                    <div class="callout callout-tip">
+                        <strong>Tip:</strong> Test any changes to settings during a quiet period to ensure everything works as expected.
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

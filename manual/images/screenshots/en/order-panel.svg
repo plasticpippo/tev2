@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 600" width="400" height="600">
+  <defs>
+    <linearGradient id="panelGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="600" fill="#f1f5f9"/>
+  
+  <!-- Order Panel Card -->
+  <rect x="10" y="10" width="380" height="580" rx="12" fill="url(#panelGradient)" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Panel Header -->
+  <text x="200" y="45" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1e293b" text-anchor="middle">Current Order</text>
+  <line x1="25" y1="65" x2="375" y2="65" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Order Info -->
+  <text x="30" y="90" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Table 5</text>
+  <text x="370" y="90" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="end">2 guests</text>
+  
+  <!-- Order Items -->
+  <g transform="translate(30, 110)">
+    <!-- Item 1 -->
+    <rect x="0" y="0" width="340" height="60" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="15" y="22" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Margherita Pizza</text>
+    <text x="15" y="42" font-family="Arial, sans-serif" font-size="12" fill="#64748b">$12.00 x 2</text>
+    
+    <!-- Quantity Controls -->
+    <rect x="260" y="12" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="275" y="28" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">-</text>
+    <text x="300" y="28" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">2</text>
+    <rect x="310" y="12" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="325" y="28" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">+</text>
+    <text x="325" y="48" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#2563eb" text-anchor="end">$24.00</text>
+    
+    <!-- Item 2 -->
+    <rect x="0" y="75" width="340" height="60" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="15" y="97" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Coca Cola</text>
+    <text x="15" y="117" font-family="Arial, sans-serif" font-size="12" fill="#64748b">$2.50 x 3</text>
+    
+    <rect x="260" y="87" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="275" y="103" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">-</text>
+    <text x="300" y="103" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">3</text>
+    <rect x="310" y="87" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="325" y="103" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">+</text>
+    <text x="325" y="123" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#2563eb" text-anchor="end">$7.50</text>
+    
+    <!-- Item 3 -->
+    <rect x="0" y="150" width="340" height="60" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="15" y="172" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b">Tiramisu</text>
+    <text x="15" y="192" font-family="Arial, sans-serif" font-size="12" fill="#64748b">$6.00 x 1</text>
+    
+    <rect x="260" y="162" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="275" y="178" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">-</text>
+    <text x="300" y="178" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">1</text>
+    <rect x="310" y="162" width="30" height="24" rx="4" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="325" y="178" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="middle">+</text>
+    <text x="325" y="198" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#2563eb" text-anchor="end">$6.00</text>
+  </g>
+  
+  <!-- Subtotal -->
+  <line x1="30" y1="390" x2="370" y2="390" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="30" y="415" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Subtotal</text>
+  <text x="370" y="415" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="end">$37.50</text>
+  
+  <text x="30" y="440" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Tax (10%)</text>
+  <text x="370" y="440" font-family="Arial, sans-serif" font-size="14" fill="#1e293b" text-anchor="end">$3.75</text>
+  
+  <line x1="30" y1="460" x2="370" y2="460" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Total -->
+  <text x="30" y="490" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#1e293b">Total</text>
+  <text x="370" y="490" font-family="Arial, sans-serif" font-size="18" font-weight="600" fill="#2563eb" text-anchor="end">$41.25</text>
+  
+  <!-- Action Buttons -->
+  <rect x="30" y="520" width="160" height="45" rx="8" fill="#ef4444"/>
+  <text x="110" y="547" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Cancel</text>
+  
+  <rect x="205" y="520" width="165" height="45" rx="8" fill="#22c55e"/>
+  <text x="287" y="547" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Pay</text>
+  
+  <!-- Footer Label -->
+  <text x="200" y="585" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Screenshot: Order Panel</text>
+</svg>
