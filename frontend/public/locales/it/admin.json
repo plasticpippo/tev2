@@ -221,7 +221,11 @@
     "confirmAssignmentTitle": "Conferma Assegnazione",
     "confirmAssignmentMessage": "Sei sicuro di voler riassegnare questo terminale a \"{{name}}\"? L'applicazione si riavviera per applicare la modifica.",
     "confirmAndRestart": "Conferma e Riavvia",
-    "unassigned": "Non Assegnato"
+    "unassigned": "Non Assegnato",
+    "validation": {
+      "nameRequired": "Il nome della cassa e obbligatorio",
+      "nameMaxLength": "Il nome della cassa deve essere di massimo 100 caratteri"
+    }
   },
   "tables": {
     "title": "Gestione Tavoli",
@@ -568,6 +572,7 @@
     "transfer": "Trasferisci",
     "loadTab": "Carica Conto",
     "table": "Tavolo",
+    "tableId": "Tavolo: {{tableId}}",
     "selectTabToLoad": "Seleziona un conto per caricarlo per la modifica o il pagamento.",
     "close": "Chiudi",
     "enterTabName": "Inserisci un nome per il conto"
@@ -591,7 +596,8 @@
     "noItemsRemoved": "Nessun articolo rimosso.",
     "detailedActivityLog": "Registro Attivita Dettagliato",
     "noActivityLogged": "Nessuna attivita registrata.",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "clearedOrderWith": "Ordine cancellato con {{count}} articoli"
   },
   "dailyClosing": {
     "title": "Riepilogo Chiusura Giornaliera",

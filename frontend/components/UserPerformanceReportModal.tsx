@@ -175,7 +175,7 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
                                             <p className="text-sm text-slate-300">
                                                 {/* Fix: Use a type guard to ensure `log.details` is treated as a string, resolving a TypeScript error where an array of objects could not be rendered. */}
                                                 {log.action === 'Order Cleared' 
-                                                    ? `Cleared order with ${Array.isArray(log.details) ? log.details.reduce((s,i)=>s+i.quantity,0) : '?'} items` 
+                                                    ? t('performanceReport.clearedOrderWith', { count: Array.isArray(log.details) ? log.details.reduce((s,i)=>s+i.quantity,0) : '?' }) 
                                                     : (typeof log.details === 'string' ? log.details : null)
                                                 }
                                             </p>

@@ -48,7 +48,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
         {orderItems.map(item => (
           <div key={item.id} className="bg-slate-800 p-3 rounded-md flex justify-between items-center">
             <div>
-              <p className="font-semibold">{item.name || `Item ${item.variantId}`}</p>
+              <p className="font-semibold">{item.name || t('pos:cart.itemVariant', { variantId: item.variantId })}</p>
               <p className="text-slate-400 text-sm">{formatCurrency(item.price)}</p>
             </div>
             <div className="flex items-center gap-3">
@@ -114,7 +114,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
                 : 'btn-secondary'
             }`}
           >
-            {assignedTable ? `TABLE: ${assignedTable.name}` : t('pos:table.assignTable').toUpperCase()}
+            {assignedTable ? t('pos:order.tableLabel', { name: assignedTable.name }).toUpperCase() : t('pos:table.assignTable').toUpperCase()}
           </button>
         )}
         

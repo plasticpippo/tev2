@@ -1,4 +1,5 @@
 import React, { createContext, useState, useContext, useRef, useCallback, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import useDeviceDetection from '../hooks/useDeviceDetection';
 
 type KeyboardType = 'numeric' | 'full' | null;
@@ -18,6 +19,7 @@ interface VirtualKeyboardContextType {
 const VirtualKeyboardContext = createContext<VirtualKeyboardContextType | undefined>(undefined);
 
 export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [keyboardType, setKeyboardType] = useState<KeyboardType>(null);
   const activeInputRef = useRef<HTMLInputElement | null>(null);
@@ -119,8 +121,9 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
 
 export const useVirtualKeyboard = () => {
   const context = useContext(VirtualKeyboardContext);
+  const { t } = useTranslation();
   if (context === undefined) {
-    throw new Error('useVirtualKeyboard must be used within a VirtualKeyboardProvider');
+    throw new Error(t('common.virtualKeyboard.contextError'));
   }
   return context;
 };

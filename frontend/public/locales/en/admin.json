@@ -221,7 +221,11 @@
     "confirmAssignmentTitle": "Confirm Assignment",
     "confirmAssignmentMessage": "Are you sure you want to re-assign this terminal to \"{{name}}\"? The application will restart to apply the change.",
     "confirmAndRestart": "Confirm & Restart",
-    "unassigned": "Unassigned"
+    "unassigned": "Unassigned",
+    "validation": {
+      "nameRequired": "Till name is required",
+      "nameMaxLength": "Till name must be 100 characters or less"
+    }
   },
   "tables": {
     "title": "Table Management",
@@ -568,6 +572,7 @@
     "transfer": "Transfer",
     "loadTab": "Load Tab",
     "table": "Table",
+    "tableId": "Table: {{tableId}}",
     "selectTabToLoad": "Select a tab to load it for editing or payment.",
     "close": "Close",
     "enterTabName": "Please enter a tab name"
@@ -591,7 +596,8 @@
     "noItemsRemoved": "No items removed.",
     "detailedActivityLog": "Detailed Activity Log",
     "noActivityLogged": "No activity logged.",
-    "close": "Close"
+    "close": "Close",
+    "clearedOrderWith": "Cleared order with {{count}} items"
   },
   "dailyClosing": {
     "title": "Daily Closing Summary",

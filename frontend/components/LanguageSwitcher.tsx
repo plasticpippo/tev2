@@ -8,7 +8,7 @@ const languageNames: Record<SupportedLanguage, { name: string; flag: string }> =
 };
 
 export const LanguageSwitcher: React.FC = () => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -37,7 +37,7 @@ export const LanguageSwitcher: React.FC = () => {
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-md transition-colors"
-        aria-label="Change language"
+        aria-label={t('common.languageSwitcher.changeLanguage')}
       >
         <span className="font-bold text-xs">{currentLangInfo.flag}</span>
         <svg

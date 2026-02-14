@@ -20,9 +20,9 @@ const TillModal: React.FC<TillModalProps> = ({ till, onClose, onSave }) => {
     const newErrors: Record<string, string> = {};
     
     if (!name.trim()) {
-      newErrors.name = 'Till name is required';
+      newErrors.name = t('tills.validation.nameRequired');
     } else if (name.trim().length > 100) {
-      newErrors.name = 'Till name must be 100 characters or less';
+      newErrors.name = t('tills.validation.nameMaxLength');
     }
     
     setErrors(newErrors);

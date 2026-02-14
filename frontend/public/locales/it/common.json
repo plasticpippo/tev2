@@ -481,7 +481,8 @@
     "shift": "Maiusc",
     "capsLock": "Bloc Maiusc",
     "enable": "Attiva tastiera virtuale",
-    "disable": "Disattiva tastiera virtuale"
+    "disable": "Disattiva tastiera virtuale",
+    "contextError": "useVirtualKeyboard deve essere utilizzato all'interno di un VirtualKeyboardProvider"
   },
   "tillSetupScreen": {
     "title": "Configurazione Terminale",
@@ -649,5 +650,8 @@
   },
   "loadingOverlay": {
     "defaultMessage": "Caricamento..."
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Cambia lingua"
   }
 }

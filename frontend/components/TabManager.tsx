@@ -122,7 +122,7 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
                   </div>
                   {tab.tableId && (
                     <div className="flex justify-between items-center text-xs mt-1">
-                      <span className="text-green-400">{t('tabs.table')}: {tab.tableId}</span>
+                      <span className="text-green-400">{t('tabs.tableId', { tableId: tab.tableId })}</span>
                     </div>
                   )}
                 </div>

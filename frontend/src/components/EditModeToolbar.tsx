@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLayout } from '../contexts/LayoutContext';
 import ConfirmationModal from '../../components/ConfirmationModal';
 
 export const EditModeToolbar: React.FC = () => {
+  const { t } = useTranslation();
   const { saveLayout, resetLayout, discardChanges, isDirty } = useLayout();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
 
@@ -36,27 +38,27 @@ export const EditModeToolbar: React.FC = () => {
       {/* Header */}
       <div className="mb-6">
         <h2 className="text-2xl font-bold text-yellow-500 mb-2">
-          EDIT MODE
+          {t('pos:layout.editModeTitle')}
         </h2>
         <p className="text-gray-400 text-sm">
-          Drag product buttons to reposition them in the grid
+          {t('pos:layout.editModeDescription')}
         </p>
         {isDirty && (
           <div className="mt-2 text-yellow-400 text-xs flex items-center">
             <span className="inline-block w-2 h-2 bg-yellow-400 rounded-full mr-2"></span>
-            Unsaved changes
+            {t('pos:layout.unsavedChanges')}
           </div>
         )}
       </div>
 
       {/* Instructions */}
       <div className="mb-6 bg-slate-700 rounded-lg p-4">
-        <h3 className="text-white font-semibold mb-2 text-sm">Instructions:</h3>
+        <h3 className="text-white font-semibold mb-2 text-sm">{t('pos:layout.instructions')}</h3>
         <ul className="text-gray-300 text-xs space-y-1">
-          <li>• Click and drag buttons to reposition</li>
-          <li>• Buttons snap to a 4-column grid</li>
-          <li>• Changes apply to current category only</li>
-          <li>• Click Save to keep your changes</li>
+          <li>{t('pos:layout.instructionDrag')}</li>
+          <li>{t('pos:layout.instructionGrid')}</li>
+          <li>{t('pos:layout.instructionCategory')}</li>
+          <li>{t('pos:layout.instructionSave')}</li>
         </ul>
       </div>
 
@@ -71,40 +73,40 @@ export const EditModeToolbar: React.FC = () => {
               : 'bg-gray-600 text-gray-400 cursor-not-allowed'
           }`}
         >
-          {isDirty ? 'SAVE Layout' : '✓ Saved'}
+          {isDirty ? t('pos:layout.saveButton') : t('pos:layout.savedButton')}
         </button>
 
         <button
           onClick={handleReset}
           className="w-full py-3 px-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold transition-colors"
         >
-          RESET to Default
+          {t('pos:layout.resetButton')}
         </button>
 
         <button
           onClick={handleCancel}
           className="w-full py-3 px-4 bg-red-600 hover:bg-red-700 text-white rounded-lg font-semibold transition-colors"
         >
-          CANCEL & Exit
+          {t('pos:layout.cancelButton')}
         </button>
       </div>
 
       {/* Footer Info */}
       <div className="mt-4 pt-4 border-t border-slate-700">
         <p className="text-gray-500 text-xs text-center">
-          Grid: 4 columns • Fixed button size
+          {t('pos:layout.gridInfo')}
         </p>
       </div>
 
       {/* Confirmation Modal */}
       <ConfirmationModal
         show={showConfirmModal}
-        title="Unsaved Changes"
-        message="You have unsaved changes. Discard changes and exit edit mode?"
+        title={t('pos:layout.confirmUnsavedTitle') as string}
+        message={t('pos:layout.confirmUnsavedMessage') as string}
         onConfirm={handleConfirmDiscard}
         onCancel={handleCancelDiscard}
-        confirmText="Discard Changes"
-        cancelText="Keep Editing"
+        confirmText={t('pos:layout.confirmDiscard') as string}
+        cancelText={t('pos:layout.keepEditing') as string}
         confirmButtonType="danger"
       />
     </div>

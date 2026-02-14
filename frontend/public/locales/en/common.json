@@ -481,7 +481,8 @@
     "shift": "Shift",
     "capsLock": "Caps Lock",
     "enable": "Enable virtual keyboard",
-    "disable": "Disable virtual keyboard"
+    "disable": "Disable virtual keyboard",
+    "contextError": "useVirtualKeyboard must be used within a VirtualKeyboardProvider"
   },
   "tillSetupScreen": {
     "title": "Terminal Setup",
@@ -649,5 +650,8 @@
   },
   "loadingOverlay": {
     "defaultMessage": "Loading..."
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change language"
   }
 }

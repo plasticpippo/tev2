@@ -37,7 +37,8 @@
     "items_one": "{{count}} item",
     "items_other": "{{count}} items",
     "payment": "Payment",
-    "saveTabStartNew": "Save Tab & Start New Order"
+    "saveTabStartNew": "Save Tab & Start New Order",
+    "itemVariant": "Item {{variantId}}"
   },
   "payment": {
     "title": "Complete Payment",
@@ -142,7 +143,24 @@
     "saved": "Layout saved",
     "editLayout": "Edit Layout",
     "saveLayout": "Save Layout",
-    "cancelEdit": "Cancel Edit"
+    "cancelEdit": "Cancel Edit",
+    "editModeTitle": "EDIT MODE",
+    "editModeDescription": "Drag product buttons to reposition them in the grid",
+    "unsavedChanges": "Unsaved changes",
+    "instructions": "Instructions:",
+    "instructionDrag": "Click and drag buttons to reposition",
+    "instructionGrid": "Buttons snap to a 4-column grid",
+    "instructionCategory": "Changes apply to current category only",
+    "instructionSave": "Click Save to keep your changes",
+    "saveButton": "SAVE Layout",
+    "savedButton": "✓ Saved",
+    "resetButton": "RESET to Default",
+    "cancelButton": "CANCEL & Exit",
+    "gridInfo": "Grid: 4 columns • Fixed button size",
+    "confirmUnsavedTitle": "Unsaved Changes",
+    "confirmUnsavedMessage": "You have unsaved changes. Discard changes and exit edit mode?",
+    "confirmDiscard": "Discard Changes",
+    "keepEditing": "Keep Editing"
   },
   "till": {
     "title": "Till",

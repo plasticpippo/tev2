@@ -37,7 +37,8 @@
     "items_one": "{{count}} articolo",
     "items_other": "{{count}} articoli",
     "payment": "Pagamento",
-    "saveTabStartNew": "Salva Conto & Nuovo Ordine"
+    "saveTabStartNew": "Salva Conto & Nuovo Ordine",
+    "itemVariant": "Articolo {{variantId}}"
   },
   "payment": {
     "title": "Completa Pagamento",
@@ -142,7 +143,24 @@
     "saved": "Layout salvato",
     "editLayout": "Modifica Layout",
     "saveLayout": "Salva Layout",
-    "cancelEdit": "Annulla Modifica"
+    "cancelEdit": "Annulla Modifica",
+    "editModeTitle": "MODALITA MODIFICA",
+    "editModeDescription": "Trascina i pulsanti dei prodotti per riposizionarli nella griglia",
+    "unsavedChanges": "Modifiche non salvate",
+    "instructions": "Istruzioni:",
+    "instructionDrag": "Clicca e trascina i pulsanti per riposizionarli",
+    "instructionGrid": "I pulsanti si allineano a una griglia a 4 colonne",
+    "instructionCategory": "Le modifiche si applicano solo alla categoria corrente",
+    "instructionSave": "Clicca Salva per salvare le modifiche",
+    "saveButton": "SALVA Layout",
+    "savedButton": "✓ Salvato",
+    "resetButton": "RIPRISTINA Default",
+    "cancelButton": "ANNULLA & Esci",
+    "gridInfo": "Griglia: 4 colonne • Dimensione pulsante fissa",
+    "confirmUnsavedTitle": "Modifiche Non Salvate",
+    "confirmUnsavedMessage": "Hai modifiche non salvate. Annullare le modifiche e uscire dalla modalita modifica?",
+    "confirmDiscard": "Annulla Modifiche",
+    "keepEditing": "Continua a Modificare"
   },
   "till": {
     "title": "Cassa",
