@@ -5,6 +5,9 @@
     "tokenExpired": "Il token e scaduto",
     "tokenInvalid": "Token non valido",
     "tokenMissing": "Il token di autorizzazione e obbligatorio",
+    "noTokenProvided": "Accesso negato. Nessun token fornito.",
+    "tokenRevoked": "Il token e stato revocato. Effettua nuovamente il login.",
+    "invalidOrExpiredToken": "Token non valido o scaduto.",
     "unauthorized": "Accesso non autorizzato",
     "forbidden": "Accesso vietato",
     "sessionExpired": "La sessione e scaduta",
@@ -12,6 +15,20 @@
     "userInactive": "L'account utente e inattivo",
     "passwordMismatch": "La password attuale non e corretta",
     "passwordTooWeak": "La nuova password non soddisfa i requisiti di sicurezza"
+  },
+  "authorization": {
+    "tableIdRequired": "L'ID del tavolo e obbligatorio",
+    "tableNotFound": "Tavolo non trovato",
+    "userNotAuthenticated": "Utente non autenticato",
+    "tableAccessDenied": "Accesso negato. Non sei il proprietario di questo tavolo.",
+    "verifyTableOwnershipFailed": "Impossibile verificare la proprieta del tavolo",
+    "layoutIdRequired": "L'ID del layout e obbligatorio",
+    "invalidLayoutId": "ID layout non valido",
+    "layoutNotFound": "Layout non trovato",
+    "layoutAccessDenied": "Accesso negato. Non sei il proprietario di questo layout.",
+    "verifyLayoutOwnershipFailed": "Impossibile verificare la proprieta del layout",
+    "adminPrivilegesRequired": "Accesso negato. Sono richiesti privilegi di amministratore.",
+    "verifyAdminPrivilegesFailed": "Impossibile verificare i privilegi di amministratore"
   },
   "validation": {
     "required": "Questo campo e obbligatorio",
@@ -305,5 +322,35 @@
   },
   "consumptionReports": {
     "fetchFailed": "Impossibile recuperare il report di consumo dettagliato. Riprova piu tardi."
+  },
+  "errorHandler": {
+    "authFailed": "Autenticazione non riuscita",
+    "accessDenied": "Accesso negato",
+    "resourceNotFound": "Risorsa non trovata",
+    "tooManyRequests": "Troppe richieste",
+    "internalServerError": "Errore interno del server",
+    "databaseError": "Errore database",
+    "externalServiceError": "Errore servizio esterno",
+    "badRequestDetailed": "Richiesta non valida. Controlla i dati e riprova.",
+    "unauthorizedDetailed": "Autenticazione richiesta. Accedi e riprova.",
+    "forbiddenDetailed": "Accesso negato. Non hai il permesso per eseguire questa azione.",
+    "notFoundDetailed": "La risorsa richiesta non e stata trovata.",
+    "conflictDetailed": "La richiesta non puo essere completata a causa di un conflitto.",
+    "tooManyRequestsDetailed": "Troppe richieste. Attendi e riprova piu tardi.",
+    "internalErrorDetailed": "Si e verificato un errore imprevisto. Riprova piu tardi.",
+    "errorOccurred": "Si e verificato un errore. Riprova.",
+    "routeNotFound": "Route {{method}} {{path}} non trovata"
+  },
+  "analytics": {
+    "productPerformance": {
+      "fetchFailed": "Impossibile recuperare i dati sulle prestazioni del prodotto. Riprova piu tardi."
+    },
+    "topPerformers": {
+      "fetchFailed": "Impossibile recuperare i dati sui migliori prodotti. Riprova piu tardi."
+    }
+  },
+  "rateLimiter": {
+    "writeLimitExceeded": "Troppe operazioni di scrittura, riprova piu tardi.",
+    "rateLimitExceeded": "Troppe richieste, riprova piu tardi."
   }
 }

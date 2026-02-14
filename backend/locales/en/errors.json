@@ -5,6 +5,9 @@
     "tokenExpired": "Token has expired",
     "tokenInvalid": "Invalid token",
     "tokenMissing": "Authorization token is required",
+    "noTokenProvided": "Access denied. No token provided.",
+    "tokenRevoked": "Token has been revoked. Please login again.",
+    "invalidOrExpiredToken": "Invalid or expired token.",
     "unauthorized": "Unauthorized access",
     "forbidden": "Access forbidden",
     "sessionExpired": "Session has expired",
@@ -12,6 +15,20 @@
     "userInactive": "User account is inactive",
     "passwordMismatch": "Current password is incorrect",
     "passwordTooWeak": "New password does not meet security requirements"
+  },
+  "authorization": {
+    "tableIdRequired": "Table ID is required",
+    "tableNotFound": "Table not found",
+    "userNotAuthenticated": "User not authenticated",
+    "tableAccessDenied": "Access denied. You do not own this table.",
+    "verifyTableOwnershipFailed": "Failed to verify table ownership",
+    "layoutIdRequired": "Layout ID is required",
+    "invalidLayoutId": "Invalid layout ID",
+    "layoutNotFound": "Layout not found",
+    "layoutAccessDenied": "Access denied. You do not own this layout.",
+    "verifyLayoutOwnershipFailed": "Failed to verify layout ownership",
+    "adminPrivilegesRequired": "Access denied. Admin privileges required.",
+    "verifyAdminPrivilegesFailed": "Failed to verify admin privileges"
   },
   "validation": {
     "required": "This field is required",
@@ -305,5 +322,35 @@
   },
   "consumptionReports": {
     "fetchFailed": "Failed to fetch itemised consumption report. Please try again later."
+  },
+  "errorHandler": {
+    "authFailed": "Authentication failed",
+    "accessDenied": "Access denied",
+    "resourceNotFound": "Resource not found",
+    "tooManyRequests": "Too many requests",
+    "internalServerError": "Internal server error",
+    "databaseError": "Database error",
+    "externalServiceError": "External service error",
+    "badRequestDetailed": "Invalid request. Please check your input and try again.",
+    "unauthorizedDetailed": "Authentication required. Please log in and try again.",
+    "forbiddenDetailed": "Access denied. You do not have permission to perform this action.",
+    "notFoundDetailed": "The requested resource was not found.",
+    "conflictDetailed": "The request could not be completed due to a conflict.",
+    "tooManyRequestsDetailed": "Too many requests. Please wait and try again later.",
+    "internalErrorDetailed": "An unexpected error occurred. Please try again later.",
+    "errorOccurred": "An error occurred. Please try again.",
+    "routeNotFound": "Route {{method}} {{path}} not found"
+  },
+  "analytics": {
+    "productPerformance": {
+      "fetchFailed": "Failed to fetch product performance data. Please try again later."
+    },
+    "topPerformers": {
+      "fetchFailed": "Failed to fetch top performers data. Please try again later."
+    }
+  },
+  "rateLimiter": {
+    "writeLimitExceeded": "Too many write operations, please try again later.",
+    "rateLimitExceeded": "Too many requests, please try again later."
   }
 }

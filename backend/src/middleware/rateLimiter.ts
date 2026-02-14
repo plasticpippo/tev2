@@ -1,4 +1,5 @@
 import { rateLimit, Options } from 'express-rate-limit';
+import i18n from '../i18n';
 
 /**
  * Stricter rate limiter for write operations (POST, PUT, DELETE)
@@ -8,7 +9,7 @@ import { rateLimit, Options } from 'express-rate-limit';
 export const writeLimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
   max: 30, // limit each IP to 30 write requests per windowMs
-  message: 'Too many write operations, please try again later.',
+  message: i18n.t('errors:rateLimiter.writeLimitExceeded'),
   standardHeaders: true,
   legacyHeaders: false,
 });
@@ -23,7 +24,7 @@ export const writeLimiter = rateLimit({
 export const createStrictLimiter = (
   windowMs: number,
   max: number,
-  message: string = 'Too many requests, please try again later.'
+  message: string = i18n.t('errors:rateLimiter.rateLimitExceeded')
 ) => {
   return rateLimit({
     windowMs,

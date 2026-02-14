@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Settings } from '../types';
 import { logError } from '../utils/logger';
+import i18n from '../i18n';
 
 export const settingsRouter = express.Router();
 
@@ -39,7 +40,7 @@ settingsRouter.get('/', async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching settings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch settings' });
+    res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
   }
 });
 
@@ -88,7 +89,7 @@ settingsRouter.put('/', async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error updating settings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update settings' });
+    res.status(500).json({ error: i18n.t('errors:settings.updateFailed') });
   }
 });
 

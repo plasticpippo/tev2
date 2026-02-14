@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import { validateAnalyticsParams } from '../utils/validation';
 import { aggregateProductPerformance } from '../services/analyticsService';
 import { logError } from '../utils/logger';
+import i18n from '../i18n';
 
 export const analyticsRouter = express.Router();
 
@@ -21,7 +22,7 @@ analyticsRouter.get('/product-performance', async (req: Request, res: Response) 
     logError(error instanceof Error ? error : 'Error fetching product performance', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch product performance data' });
+    res.status(500).json({ error: i18n.t('errors.analytics.productPerformance.fetchFailed') });
   }
 });
 
@@ -44,6 +45,6 @@ analyticsRouter.get('/top-performers', async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching top performers', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch top performers data' });
+    res.status(500).json({ error: i18n.t('errors.analytics.topPerformers.fetchFailed') });
   }
 });

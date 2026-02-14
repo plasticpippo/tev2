@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../prisma';
 import { VariantLayout, SharedLayout, Table } from '@prisma/client';
+import i18n from '../i18n';
 import '../types'; // Import types to extend Express Request interface
 
 // Define a union type for layouts that have ownerId
@@ -15,7 +16,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
     const tableId = req.params.id;
     
     if (!tableId) {
-      return res.status(400).json({ error: 'Table ID is required' });
+      return res.status(400).json({ error: i18n.t('errors.authorization.tableIdRequired') });
     }
 
     // Query the table to get ownerId
@@ -25,7 +26,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
 
     // Return 404 if table not found
     if (!table) {
-      return res.status(404).json({ error: 'Table not found' });
+      return res.status(404).json({ error: i18n.t('errors.authorization.tableNotFound') });
     }
 
     // Check if user owns the table or is admin
@@ -33,7 +34,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
     const userRole = req.user?.role;
 
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: i18n.t('errors.authorization.userNotAuthenticated') });
     }
 
     // Allow if user owns the table (ownerId matches) or user is admin
@@ -42,7 +43,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
     const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
 
     if (!isOwner && !isAdmin && table.ownerId !== null) {
-      return res.status(403).json({ error: 'Access denied. You do not own this table.' });
+      return res.status(403).json({ error: i18n.t('errors.authorization.tableAccessDenied') });
     }
 
     // Attach table to req.table for later use
@@ -51,7 +52,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
     next();
   } catch (error) {
     console.error('Error verifying table ownership:', error);
-    return res.status(500).json({ error: 'Failed to verify table ownership' });
+    return res.status(500).json({ error: i18n.t('errors.authorization.verifyTableOwnershipFailed') });
   }
 };
 
@@ -65,20 +66,20 @@ export const verifyLayoutOwnership = async (req: Request, res: Response, next: N
     const layoutId = req.params.id;
     
     if (!layoutId) {
-      return res.status(400).json({ error: 'Layout ID is required' });
+      return res.status(400).json({ error: i18n.t('errors.authorization.layoutIdRequired') });
     }
 
     const layoutIdNum = parseInt(layoutId, 10);
     
     if (isNaN(layoutIdNum)) {
-      return res.status(400).json({ error: 'Invalid layout ID' });
+      return res.status(400).json({ error: i18n.t('errors.authorization.invalidLayoutId') });
     }
 
     const userId = req.user?.id;
     const userRole = req.user?.role;
 
     if (!userId) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: i18n.t('errors.authorization.userNotAuthenticated') });
     }
 
     // Try VariantLayout first
@@ -93,7 +94,7 @@ export const verifyLayoutOwnership = async (req: Request, res: Response, next: N
       const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
 
       if (!isOwner && !isAdmin && variantLayout.ownerId !== null) {
-        return res.status(403).json({ error: 'Access denied. You do not own this layout.' });
+        return res.status(403).json({ error: i18n.t('errors.authorization.layoutAccessDenied') });
       }
 
       // Attach layout to req.layout for later use
@@ -113,7 +114,7 @@ export const verifyLayoutOwnership = async (req: Request, res: Response, next: N
       const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
 
       if (!isOwner && !isAdmin && sharedLayout.ownerId !== null) {
-        return res.status(403).json({ error: 'Access denied. You do not own this layout.' });
+        return res.status(403).json({ error: i18n.t('errors.authorization.layoutAccessDenied') });
       }
 
       // Attach layout to req.layout for later use
@@ -122,10 +123,10 @@ export const verifyLayoutOwnership = async (req: Request, res: Response, next: N
     }
 
     // Return 404 if layout not found in either table
-    return res.status(404).json({ error: 'Layout not found' });
+    return res.status(404).json({ error: i18n.t('errors.authorization.layoutNotFound') });
   } catch (error) {
     console.error('Error verifying layout ownership:', error);
-    return res.status(500).json({ error: 'Failed to verify layout ownership' });
+    return res.status(500).json({ error: i18n.t('errors.authorization.verifyLayoutOwnershipFailed') });
   }
 };
 
@@ -138,19 +139,19 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     const userRole = req.user?.role;
 
     if (!userRole) {
-      return res.status(401).json({ error: 'User not authenticated' });
+      return res.status(401).json({ error: i18n.t('errors.authorization.userNotAuthenticated') });
     }
 
     // Check if user is admin (support both 'ADMIN' and 'Admin' formats)
     const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
 
     if (!isAdmin) {
-      return res.status(403).json({ error: 'Access denied. Admin privileges required.' });
+      return res.status(403).json({ error: i18n.t('errors.authorization.adminPrivilegesRequired') });
     }
 
     next();
   } catch (error) {
     console.error('Error checking admin role:', error);
-    return res.status(500).json({ error: 'Failed to verify admin privileges' });
+    return res.status(500).json({ error: i18n.t('errors.authorization.verifyAdminPrivilegesFailed') });
   }
 };

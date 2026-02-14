@@ -13,6 +13,7 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { logError, logSecurityAlert } from '../utils/logger';
+import i18n from '../i18n';
 
 // ============================================================================
 // TYPES
@@ -119,7 +120,7 @@ export class ValidationError extends ApplicationError {
  * Authentication error (401)
  */
 export class AuthenticationError extends ApplicationError {
-  constructor(message: string = 'Authentication failed', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.authFailed'), details?: Record<string, any>) {
     super(
       message,
       401,
@@ -136,7 +137,7 @@ export class AuthenticationError extends ApplicationError {
  * Authorization error (403)
  */
 export class AuthorizationError extends ApplicationError {
-  constructor(message: string = 'Access denied', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.accessDenied'), details?: Record<string, any>) {
     super(
       message,
       403,
@@ -153,7 +154,7 @@ export class AuthorizationError extends ApplicationError {
  * Not found error (404)
  */
 export class NotFoundError extends ApplicationError {
-  constructor(message: string = 'Resource not found', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.resourceNotFound'), details?: Record<string, any>) {
     super(
       message,
       404,
@@ -187,7 +188,7 @@ export class ConflictError extends ApplicationError {
  * Rate limit error (429)
  */
 export class RateLimitError extends ApplicationError {
-  constructor(message: string = 'Too many requests', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.tooManyRequests'), details?: Record<string, any>) {
     super(
       message,
       429,
@@ -204,7 +205,7 @@ export class RateLimitError extends ApplicationError {
  * Internal server error (500)
  */
 export class InternalServerError extends ApplicationError {
-  constructor(message: string = 'Internal server error', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.internalServerError'), details?: Record<string, any>) {
     super(
       message,
       500,
@@ -221,7 +222,7 @@ export class InternalServerError extends ApplicationError {
  * Database error (500)
  */
 export class DatabaseError extends ApplicationError {
-  constructor(message: string = 'Database error', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.databaseError'), details?: Record<string, any>) {
     super(
       message,
       500,
@@ -238,7 +239,7 @@ export class DatabaseError extends ApplicationError {
  * External service error (502/503)
  */
 export class ExternalServiceError extends ApplicationError {
-  constructor(message: string = 'External service error', details?: Record<string, any>) {
+  constructor(message: string = i18n.t('errorHandler.externalServiceError'), details?: Record<string, any>) {
     super(
       message,
       502,
@@ -368,10 +369,19 @@ function getErrorSeverity(error: Error): ErrorSeverity {
  * Uses i18n for localized messages when available
  */
 function getUserMessage(error: Error, statusCode: number, req?: Request): string {
-  // Helper to get translation or fallback
+  // Helper to get translation from i18n or fallback
   const t = (key: string, fallback: string): string => {
+    // First try to use request-bound translation if available
     if (req && typeof (req as any).t === 'function') {
-      return (req as any).t(`errors:api.${key}`) || fallback;
+      const translated = (req as any).t(`errors:errorHandler.${key}`);
+      if (translated && translated !== `errors:errorHandler.${key}`) {
+        return translated;
+      }
+    }
+    // Fall back to global i18n
+    const globalTranslated = i18n.t(`errorHandler.${key}`);
+    if (globalTranslated && globalTranslated !== `errorHandler.${key}`) {
+      return globalTranslated;
     }
     return fallback;
   };
@@ -380,23 +390,23 @@ function getUserMessage(error: Error, statusCode: number, req?: Request): string
   if (isProduction()) {
     switch (statusCode) {
       case 400:
-        return t('badRequest', 'Invalid request. Please check your input and try again.');
+        return t('badRequestDetailed', 'Invalid request. Please check your input and try again.');
       case 401:
-        return t('unauthorized', 'Authentication required. Please log in and try again.');
+        return t('unauthorizedDetailed', 'Authentication required. Please log in and try again.');
       case 403:
-        return t('forbidden', 'Access denied. You do not have permission to perform this action.');
+        return t('forbiddenDetailed', 'Access denied. You do not have permission to perform this action.');
       case 404:
-        return t('notFound', 'The requested resource was not found.');
+        return t('notFoundDetailed', 'The requested resource was not found.');
       case 409:
-        return t('conflict', 'The request could not be completed due to a conflict.');
+        return t('conflictDetailed', 'The request could not be completed due to a conflict.');
       case 429:
-        return t('tooManyRequests', 'Too many requests. Please wait and try again later.');
+        return t('tooManyRequestsDetailed', 'Too many requests. Please wait and try again later.');
       case 500:
       case 502:
       case 503:
-        return t('internalError', 'An unexpected error occurred. Please try again later.');
+        return t('internalErrorDetailed', 'An unexpected error occurred. Please try again later.');
       default:
-        return t('internalError', 'An error occurred. Please try again.');
+        return t('errorOccurred', 'An error occurred. Please try again.');
     }
   }
   
@@ -591,8 +601,17 @@ export function notFoundHandler(req: Request, res: Response): void {
   
   // Get localized message or fallback
   const getNotFoundMessage = (): string => {
+    // First try to use request-bound translation if available
     if (typeof (req as any).t === 'function') {
-      return (req as any).t('errors:api.notFound') || 'The requested resource was not found.';
+      const translated = (req as any).t('errors:errorHandler.notFoundDetailed');
+      if (translated && translated !== 'errors:errorHandler.notFoundDetailed') {
+        return translated;
+      }
+    }
+    // Fall back to global i18n
+    const globalTranslated = i18n.t('errorHandler.notFoundDetailed');
+    if (globalTranslated && globalTranslated !== 'errorHandler.notFoundDetailed') {
+      return globalTranslated;
     }
     return 'The requested resource was not found.';
   };
@@ -600,7 +619,7 @@ export function notFoundHandler(req: Request, res: Response): void {
   // Build error response
   const isProd = isProduction();
   const response: Record<string, any> = {
-    error: isProd ? getNotFoundMessage() : `Route ${req.method} ${req.path} not found`,
+    error: isProd ? getNotFoundMessage() : i18n.t('errorHandler.routeNotFound', { method: req.method, path: req.path }),
     correlationId,
     statusCode: 404,
   };

@@ -504,12 +504,12 @@ Examples:
 | 082 | `frontend/components/OrderPanel.tsx` | Lower | 2 | [ ] Pending |
 | 083 | `frontend/components/TillManagement.tsx` | Lower | 2 | [ ] Pending |
 | 084 | `backend/src/handlers/consumptionReports.ts` | Lower | 5+ | [x] Completed |
-| 085 | `backend/src/handlers/settings.ts` | Lower | 4+ | [ ] Pending |
-| 086 | `backend/src/handlers/analytics.ts` | Lower | 3+ | [ ] Pending |
-| 087 | `backend/src/middleware/errorHandler.ts` | Lower | 15 | [ ] Pending |
-| 088 | `backend/src/middleware/auth.ts` | Lower | 8 | [ ] Pending |
-| 089 | `backend/src/middleware/authorization.ts` | Lower | 7 | [ ] Pending |
-| 090 | `backend/src/middleware/rateLimiter.ts` | Lower | 5 | [ ] Pending |
+| 085 | `backend/src/handlers/settings.ts` | Lower | 4+ | [x] Completed |
+| 086 | `backend/src/handlers/analytics.ts` | Lower | 3+ | [x] Completed |
+| 087 | `backend/src/middleware/errorHandler.ts` | Lower | 15 | [x] Completed |
+| 088 | `backend/src/middleware/auth.ts` | Lower | 8 | [x] Completed |
+| 089 | `backend/src/middleware/authorization.ts` | Lower | 7 | [x] Completed |
+| 090 | `backend/src/middleware/rateLimiter.ts` | Lower | 5 | [x] Completed |
 | 091 | `backend/src/middleware/responseSanitizer.ts` | Lower | 2 | [ ] Pending |
 | 092-098 | Additional utility/remaining files | Lower | 7+ | [ ] Pending |
 
