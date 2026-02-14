@@ -66,7 +66,21 @@
     "invalidData": "Invalid category data",
     "duplicateName": "Category with this name already exists",
     "deleteFailed": "Failed to delete category",
-    "hasProducts": "Cannot delete category with assigned products"
+    "hasProducts": "Cannot delete category with assigned products",
+    "fetchFailed": "Failed to fetch categories. Please try again later.",
+    "fetchOneFailed": "Failed to fetch category. Please try again later.",
+    "createFailed": "Failed to create category. Please check your data and try again.",
+    "updateFailed": "Failed to update category. Please check your data and try again.",
+    "deleteFailedInUse": "Failed to delete category. The category may have associated products or be in use elsewhere.",
+    "cannotDeleteWithProducts": "Cannot delete category with associated products. Please re-assign products first.",
+    "validationFailed": "Validation failed",
+    "log": {
+      "fetchError": "Error fetching categories",
+      "fetchOneError": "Error fetching category",
+      "createError": "Error creating category",
+      "updateError": "Error updating category",
+      "deleteError": "Error deleting category"
+    }
   },
   "stockItems": {
     "notFound": "Stock item not found",
@@ -114,7 +128,20 @@
     "notFound": "Till not found",
     "invalidData": "Invalid till data",
     "alreadyAssigned": "Device already assigned to another till",
-    "assignmentFailed": "Failed to assign device"
+    "assignmentFailed": "Failed to assign device",
+    "fetchFailed": "Failed to fetch tills",
+    "fetchOneFailed": "Failed to fetch till",
+    "createFailed": "Failed to create till",
+    "updateFailed": "Failed to update till",
+    "deleteFailed": "Failed to delete till",
+    "validationFailed": "Validation failed",
+    "log": {
+      "fetchError": "Error fetching tills",
+      "fetchOneError": "Error fetching till",
+      "createError": "Error creating till",
+      "updateError": "Error updating till",
+      "deleteError": "Error deleting till"
+    }
   },
   "tables": {
     "notFound": "Table not found",
@@ -136,13 +163,51 @@
     "notFound": "Tab not found",
     "invalidData": "Invalid tab data",
     "alreadyClosed": "Tab is already closed",
-    "closeFailed": "Failed to close tab"
+    "closeFailed": "Failed to close tab",
+    "fetchFailed": "Failed to fetch tabs",
+    "fetchOneFailed": "Failed to fetch tab",
+    "nameRequired": "Tab name is required and must be a non-empty string",
+    "nameNonEmpty": "Tab name must be a non-empty string",
+    "duplicateName": "A tab with this name already exists",
+    "itemNameRequired": "All items must have a valid name",
+    "itemInvalidProperties": "All items must have valid id, variantId, productId, price, and quantity",
+    "createFailed": "Failed to create tab",
+    "updateFailed": "Failed to update tab",
+    "deleteFailed": "Failed to delete tab",
+    "tableNotFound": "Table not found",
+    "log": {
+      "fetchError": "Error fetching tabs",
+      "fetchOneError": "Error fetching tab",
+      "createCalled": "POST /api/tabs called",
+      "nameValidationFailed": "Tab name validation failed",
+      "itemWithoutName": "Invalid item without name",
+      "itemInvalidProperties": "Invalid item properties",
+      "duplicateNameDetected": "Duplicate tab name detected",
+      "creating": "Creating new tab",
+      "created": "Tab created successfully",
+      "createError": "Error creating tab",
+      "updateError": "Error updating tab",
+      "deleteError": "Error deleting tab"
+    }
   },
   "transactions": {
     "notFound": "Transaction not found",
     "invalidData": "Invalid transaction data",
     "paymentFailed": "Payment processing failed",
-    "refundFailed": "Refund processing failed"
+    "refundFailed": "Refund processing failed",
+    "fetchFailed": "Failed to fetch transactions. Please try again later.",
+    "fetchOneFailed": "Failed to fetch transaction. Please try again later.",
+    "createFailed": "Failed to create transaction. Please check your data and try again.",
+    "itemsMustBeArray": "Items must be an array",
+    "itemNameRequired": "All items must have a valid name",
+    "itemInvalidProperties": "All items must have valid id, variantId, productId, price, and quantity",
+    "log": {
+      "fetchError": "Error fetching transactions",
+      "fetchOneError": "Error fetching transaction",
+      "itemWithoutName": "Invalid item without name",
+      "itemInvalidProperties": "Invalid item properties",
+      "createError": "Error creating transaction"
+    }
   },
   "orderSessions": {
     "notFound": "Order session not found",
@@ -225,5 +290,17 @@
     "orphanedReferencesRemoved": "Successfully removed {{count}} orphaned stock adjustment references",
     "dataIntegrityIssues": "Data integrity issues found",
     "dataIntegrityPassed": "Data integrity validation passed"
+  },
+  "orderActivityLogs": {
+    "notFound": "Order activity log not found",
+    "fetchFailed": "Failed to fetch order activity logs",
+    "fetchOneFailed": "Failed to fetch order activity log",
+    "createFailed": "Failed to create order activity log",
+    "log": {
+      "fetchError": "Error fetching order activity logs",
+      "fetchOneError": "Error fetching order activity log",
+      "createError": "Error creating order activity log",
+      "parseDetailsError": "Failed to parse details as JSON, returning as string"
+    }
   }
 }

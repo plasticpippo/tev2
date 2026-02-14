@@ -453,6 +453,9 @@
   "salesTrendChart": {
     "title": "{{dateRange}} Sales Trend"
   },
+  "hourlySalesChart": {
+    "title": "Hourly Sales Performance"
+  },
   "errorPage": {
     "title": "An Error Occurred",
     "description": "Something went wrong while processing your request.",
@@ -634,5 +637,14 @@
     "orderSessionAssignTabFailed": "Order session assign-tab status update failed or user not authenticated",
     "failedToUpdateOrderSessionStatus": "Failed to update order session status when assigning to tab",
     "contextError": "useTabManagementContext must be used within a TabManagementProvider"
+  },
+  "toastContext": {
+    "contextError": "useToast must be used within a ToastProvider"
+  },
+  "expandedTopSellingProducts": {
+    "title": "Detailed Product Performance"
+  },
+  "loadingOverlay": {
+    "defaultMessage": "Loading..."
   }
 }

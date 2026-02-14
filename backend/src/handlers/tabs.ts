@@ -5,6 +5,7 @@ import { logInfo, logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
+import i18n from '../i18n';
 
 export const tabsRouter = express.Router();
 
@@ -24,10 +25,10 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     }));
     res.json(tabsWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching tabs', {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch tabs' });
+    res.status(500).json({ error: i18n.t('tabs.fetchFailed') });
   }
 });
 
@@ -43,7 +44,7 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     });
     
     if (!tab) {
-      return res.status(404).json({ error: 'Tab not found' });
+      return res.status(404).json({ error: i18n.t('tabs.notFound') });
     }
     
     // Parse the items JSON string back to array
@@ -55,43 +56,43 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     
     res.json(tabWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching tab', {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch tab' });
+    res.status(500).json({ error: i18n.t('tabs.fetchOneFailed') });
   }
 });
 
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
- try {
-    logInfo('POST /api/tabs called', {
+  try {
+    logInfo(i18n.t('tabs.log.createCalled'), {
       correlationId: (req as any).correlationId,
     });
     const { name, items, tillId, tillName, tableId } = req.body;
     
     // Validate required fields
     if (!name || typeof name !== 'string' || name.trim() === '') {
-      logInfo('Tab name validation failed', {
+      logInfo(i18n.t('tabs.log.nameValidationFailed'), {
         correlationId: (req as any).correlationId,
       });
-      return res.status(400).json({ error: 'Tab name is required and must be a non-empty string' });
+      return res.status(400).json({ error: i18n.t('tabs.nameRequired') });
     }
     
     // Validate items array
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          logError('Invalid item without name', {
+          logError(i18n.t('tabs.log.itemWithoutName'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: 'All items must have a valid name' });
+          return res.status(400).json({ error: i18n.t('tabs.itemNameRequired') });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          logError('Invalid item properties', {
+          logError(i18n.t('tabs.log.itemInvalidProperties'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+          return res.status(400).json({ error: i18n.t('tabs.itemInvalidProperties') });
         }
       }
     }
@@ -102,10 +103,10 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
     
     if (existingTab) {
-      logInfo('Duplicate tab name detected', {
+      logInfo(i18n.t('tabs.log.duplicateNameDetected'), {
         correlationId: (req as any).correlationId,
       });
-      return res.status(409).json({ error: 'A tab with this name already exists' });
+      return res.status(409).json({ error: i18n.t('tabs.duplicateName') });
     }
     
     // If tableId is provided, verify that the table exists
@@ -115,11 +116,11 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       });
       
       if (!table) {
-        return res.status(404).json({ error: 'Table not found' });
+        return res.status(404).json({ error: i18n.t('tabs.tableNotFound') });
       }
     }
     
-    logInfo('Creating new tab', {
+    logInfo(i18n.t('tabs.log.creating'), {
       correlationId: (req as any).correlationId,
     });
     const tab = await prisma.tab.create({
@@ -133,15 +134,15 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       }
     });
     
-    logInfo('Tab created successfully', {
+    logInfo(i18n.t('tabs.log.created'), {
       correlationId: (req as any).correlationId,
     });
     res.status(201).json(tab);
- } catch (error) {
-    logError(error instanceof Error ? error : 'Error creating tab', {
+  } catch (error) {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create tab' });
+    res.status(500).json({ error: i18n.t('tabs.createFailed') });
   }
 });
 
@@ -154,7 +155,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     // Validate name if it's provided
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).json({ error: 'Tab name must be a non-empty string' });
+        return res.status(400).json({ error: i18n.t('tabs.nameNonEmpty') });
       }
       
       // Check if a tab with the same name already exists (excluding the current tab)
@@ -166,7 +167,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       });
       
       if (existingTab) {
-        return res.status(409).json({ error: 'A tab with this name already exists' });
+        return res.status(409).json({ error: i18n.t('tabs.duplicateName') });
       }
     }
     
@@ -174,16 +175,16 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     if (items !== undefined && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          logError('Invalid item without name', {
+          logError(i18n.t('tabs.log.itemWithoutName'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: 'All items must have a valid name' });
+          return res.status(400).json({ error: i18n.t('tabs.itemNameRequired') });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          logError('Invalid item properties', {
+          logError(i18n.t('tabs.log.itemInvalidProperties'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+          return res.status(400).json({ error: i18n.t('tabs.itemInvalidProperties') });
         }
       }
     }
@@ -195,7 +196,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       });
       
       if (!table) {
-        return res.status(404).json({ error: 'Table not found' });
+        return res.status(404).json({ error: i18n.t('tabs.tableNotFound') });
       }
     }
     
@@ -212,10 +213,10 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     
     res.json(tab);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error updating tab', {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.updateError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update tab' });
+    res.status(500).json({ error: i18n.t('tabs.updateFailed') });
   }
 });
 
@@ -230,10 +231,10 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
     
     res.status(204).send();
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error deleting tab', {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.deleteError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete tab' });
+    res.status(500).json({ error: i18n.t('tabs.deleteFailed') });
   }
 });
 

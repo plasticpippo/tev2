@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 
 export type ToastType = 'success' | 'error' | 'warning' | 'info';
 
@@ -62,9 +63,10 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
 };
 
 export const useToast = () => {
+  const { t } = useTranslation();
   const context = useContext(ToastContext);
   if (context === undefined) {
-    throw new Error('useToast must be used within a ToastProvider');
+    throw new Error(t('toastContext.contextError') as string);
   }
   return context;
 };

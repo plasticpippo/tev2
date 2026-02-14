@@ -1,16 +1,19 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface LoadingOverlayProps {
   message?: string;
 }
 
-export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message = 'Loading...' }) => {
+export const LoadingOverlay: React.FC<LoadingOverlayProps> = ({ message }) => {
+  const { t } = useTranslation();
+  
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-bg-primary p-spacing-xl rounded-lg shadow-xl border border-slate-700">
         <div className="flex flex-col items-center gap-spacing-lg">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-t-2 border-accent-primary"></div>
-          <p className="text-white font-medium">{message}</p>
+          <p className="text-white font-medium">{message || t('loadingOverlay.defaultMessage')}</p>
         </div>
       </div>
     </div>

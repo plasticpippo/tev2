@@ -5,6 +5,7 @@ import { validateTill, validateTillName } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import i18n from '../i18n';
 
 export const tillsRouter = express.Router();
 
@@ -14,11 +15,11 @@ tillsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     const tills = await prisma.till.findMany();
     res.json(tills);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching tills', {
+    logError(error instanceof Error ? error : i18n.t('tills.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch tills' });
- }
+    res.status(500).json({ error: i18n.t('tills.fetchFailed') });
+  }
 });
 
 // GET /api/tills/:id - Get a specific till
@@ -30,15 +31,15 @@ tillsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     });
     
     if (!till) {
-      return res.status(404).json({ error: 'Till not found' });
+      return res.status(404).json({ error: i18n.t('tills.notFound') });
     }
     
     res.json(till);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching till', {
+    logError(error instanceof Error ? error : i18n.t('tills.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch till' });
+    res.status(500).json({ error: i18n.t('tills.fetchOneFailed') });
   }
 });
 
@@ -50,7 +51,7 @@ tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     // Validate till data
     const validation = validateTill({ name });
     if (!validation.isValid) {
-      return res.status(400).json({ error: 'Validation failed', details: validation.errors });
+      return res.status(400).json({ error: i18n.t('tills.validationFailed'), details: validation.errors });
     }
     
     const till = await prisma.till.create({
@@ -61,10 +62,10 @@ tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     
     res.status(201).json(till);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error creating till', {
+    logError(error instanceof Error ? error : i18n.t('tills.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create till' });
+    res.status(500).json({ error: i18n.t('tills.createFailed') });
   }
 });
 
@@ -78,7 +79,7 @@ tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, re
     if (name !== undefined) {
       const nameError = validateTillName(name);
       if (nameError) {
-        return res.status(400).json({ error: 'Validation failed', details: [nameError] });
+        return res.status(400).json({ error: i18n.t('tills.validationFailed'), details: [nameError] });
       }
     }
     
@@ -91,10 +92,10 @@ tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, re
     
     res.json(till);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error updating till', {
+    logError(error instanceof Error ? error : i18n.t('tills.log.updateError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to update till' });
+    res.status(500).json({ error: i18n.t('tills.updateFailed') });
   }
 });
 
@@ -147,10 +148,10 @@ tillsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request,
     
     res.status(204).send();
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error deleting till', {
+    logError(error instanceof Error ? error : i18n.t('tills.log.deleteError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete till' });
+    res.status(500).json({ error: i18n.t('tills.deleteFailed') });
   }
 });
 

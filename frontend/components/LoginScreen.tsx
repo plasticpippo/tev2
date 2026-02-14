@@ -74,7 +74,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onLogin, assignedTillI
         
         <h2 className="text-center text-3xl font-bold text-amber-400 mb-2">{t('login.title')}</h2>
         <p className="text-center text-slate-400 mb-6">
-            Till: <span className={`font-bold ${assignedTillId ? 'text-white' : 'text-red-400'}`}>{currentTillName}</span>
+            {t('login.till')}: <span className={`font-bold ${assignedTillId ? 'text-white' : 'text-red-400'}`}>{currentTillName}</span>
         </p>
         <form onSubmit={handleLogin} className="space-y-4">
           <div>

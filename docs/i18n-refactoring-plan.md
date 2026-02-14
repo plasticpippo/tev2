@@ -481,19 +481,19 @@ Examples:
 | 060 | `frontend/contexts/OrderContext.tsx` | Medium | 6 | [x] Completed |
 | 061 | `frontend/contexts/TabManagementContext.tsx` | Medium | 5 | [x] Completed |
 | 062 | `frontend/contexts/AuthContext.tsx` | Medium | 3 | [x] N/A - File doesn't exist; authentication is handled by SessionContext.tsx |
-| 063 | `frontend/contexts/ToastContext.tsx` | Medium | 2 | [ ] Pending |
+| 063 | `frontend/contexts/ToastContext.tsx` | Medium | 2 | [x] Completed |
 | 064 | `frontend/contexts/ThemeContext.tsx` | Medium | 1 | [x] N/A - File doesn't exist |
 | 065 | `frontend/contexts/SettingsContext.tsx` | Medium | 1 | [x] N/A - File doesn't exist |
-| 066 | `backend/src/handlers/tabs.ts` | Medium | 10+ | [ ] Pending |
-| 067 | `backend/src/handlers/transactions.ts` | Medium | 8+ | [ ] Pending |
-| 068 | `backend/src/handlers/tills.ts` | Medium | 8+ | [ ] Pending |
-| 069 | `backend/src/handlers/orderActivityLogs.ts` | Medium | 6+ | [ ] Pending |
-| 070 | `backend/src/handlers/categories.ts` | Medium | 6+ | [ ] Pending |
+| 066 | `backend/src/handlers/tabs.ts` | Medium | 10+ | [x] Completed |
+| 067 | `backend/src/handlers/transactions.ts` | Medium | 8+ | [x] Completed |
+| 068 | `backend/src/handlers/tills.ts` | Medium | 8+ | [x] Completed |
+| 069 | `backend/src/handlers/orderActivityLogs.ts` | Medium | 6+ | [x] Completed |
+| 070 | `backend/src/handlers/categories.ts` | Medium | 6+ | [x] Completed |
 | **Phase 4 - Lower** |
-| 071 | `frontend/components/analytics/HourlySalesChart.tsx` | Lower | 1 | [ ] Pending |
-| 072 | `frontend/components/ExpandedTopSellingProducts.tsx` | Lower | 1 | [ ] Pending |
-| 073 | `frontend/components/LoadingOverlay.tsx` | Lower | 1 | [ ] Pending |
-| 074 | `frontend/components/LoginScreen.tsx` | Lower | 1 | [ ] Pending |
+| 071 | `frontend/components/analytics/HourlySalesChart.tsx` | Lower | 1 | [x] Completed |
+| 072 | `frontend/components/ExpandedTopSellingProducts.tsx` | Lower | 1 | [x] Completed |
+| 073 | `frontend/components/LoadingOverlay.tsx` | Lower | 1 | [x] Completed |
+| 074 | `frontend/components/LoginScreen.tsx` | Lower | 1 | [x] Completed |
 | 075 | `frontend/components/ProductGridItem.tsx` | Lower | 1 | [ ] Pending |
 | 076 | `frontend/components/PaymentModal.tsx` | Lower | 1 | [ ] Pending |
 | 077 | `frontend/components/Toast.tsx` | Lower | 1 | [ ] Pending |
@@ -523,11 +523,11 @@ Examples:
 |-------|-------------|-----------|-------------|-----------|------------|
 | Phase 1 (Critical) | 15 | 15 | 0 | 0 | 100% |
 | Phase 2 (High) | 25 | 24 | 0 | 1 | 96% |
-| Phase 3 (Medium) | 30 | 24 | 0 | 6 | 80% |
-| Phase 4 (Lower) | 28 | 0 | 0 | 28 | 0% |
-| **Total** | **98** | **63** | **0** | **35** | **64%** |
+| Phase 3 (Medium) | 30 | 30 | 0 | 0 | 100% |
+| Phase 4 (Lower) | 28 | 4 | 0 | 24 | 14% |
+| **Total** | **98** | **73** | **0** | **25** | **74%** |
 
-**Note:** Phase 1 completed. Phase 2 has 18 completed frontend components, 1 file not found (EditLayoutButton.tsx), and 6 completed backend handlers (layouts.ts, tables.ts, rooms.ts, users.ts, stockAdjustments.ts, dailyClosings.ts). Only 1 file remains pending in Phase 2. Phase 3 has started with EnhancedGridItem.tsx completed (2 hardcoded strings replaced: aria-label and locked indicator), ConfirmationModal.tsx completed (2 hardcoded strings replaced, used existing buttons.confirm and buttons.cancel keys), VirtualKeyboardToggle.tsx completed (2 hardcoded strings replaced, added virtualKeyboard.enable and virtualKeyboard.disable keys), CategoryTabs.tsx completed (already i18n-compliant - no changes needed), apiBase.ts completed (9 hardcoded strings replaced, added api.* namespace with 9 keys, used direct i18n import for non-React service), tableService.ts completed (14 hardcoded strings replaced, added tableService.* namespace with 9 keys, reused api.httpError key), inventoryService.ts completed (11 hardcoded strings replaced, added inventoryService.* namespace with 10 keys, reused api.httpError key), productService.ts completed (12 hardcoded strings replaced, added productService.* namespace with 8 keys, reused api.httpError key), orderService.ts completed (14 hardcoded strings replaced, added orderService.* namespace with 10 keys, reused api.httpError key), analyticsService.ts completed (no hardcoded strings found - file only contains type definitions and API calls that delegate error handling to apiBase.ts), tillService.ts completed (6 hardcoded strings replaced, added tillService.* namespace with 4 keys, reused api.httpError key), userService.ts completed (6 hardcoded strings replaced, added userService.* namespace with 6 keys, reused api.httpError key), categoryService.ts completed (N/A - file doesn't exist; category functions are in productService.ts which was completed in subtask 048), transactionService.ts completed (8 hardcoded strings replaced, added transactionService.* namespace with 5 keys, reused api.httpError key), settingService.ts completed (3 hardcoded strings replaced, added settingService.* namespace with 2 keys, reused api.httpError key), roomService.ts completed (N/A - file doesn't exist; room functions are in tableService.ts which was completed in subtask 046), layoutService.ts completed (10 hardcoded strings replaced, added layoutService.* namespace with 10 keys, used direct i18n import for non-React service), PaymentContext.tsx completed (10 hardcoded strings replaced, added paymentContext.* namespace with 10 keys, used useTranslation hook for React context), GlobalDataContext.tsx completed (8 hardcoded strings replaced, added globalDataContext.* namespace with 7 keys, used useTranslation hook for React context), OrderContext.tsx completed (6 hardcoded strings replaced, added orderContext.* namespace with 6 keys, used useTranslation hook for React context), TabManagementContext.tsx completed (5 hardcoded strings replaced, added tabManagementContext.* namespace with 5 keys, used useTranslation hook for React context), AuthContext.tsx completed (N/A - file doesn't exist; authentication is handled by SessionContext.tsx), ThemeContext.tsx completed (N/A - file doesn't exist), SettingsContext.tsx completed (N/A - file doesn't exist).
+**Note:** Phase 1 completed. Phase 2 has 18 completed frontend components, 1 file not found (EditLayoutButton.tsx), and 6 completed backend handlers (layouts.ts, tables.ts, rooms.ts, users.ts, stockAdjustments.ts, dailyClosings.ts). Only 1 file remains pending in Phase 2. Phase 3 has started with EnhancedGridItem.tsx completed (2 hardcoded strings replaced: aria-label and locked indicator), ConfirmationModal.tsx completed (2 hardcoded strings replaced, used existing buttons.confirm and buttons.cancel keys), VirtualKeyboardToggle.tsx completed (2 hardcoded strings replaced, added virtualKeyboard.enable and virtualKeyboard.disable keys), CategoryTabs.tsx completed (already i18n-compliant - no changes needed), apiBase.ts completed (9 hardcoded strings replaced, added api.* namespace with 9 keys, used direct i18n import for non-React service), tableService.ts completed (14 hardcoded strings replaced, added tableService.* namespace with 9 keys, reused api.httpError key), inventoryService.ts completed (11 hardcoded strings replaced, added inventoryService.* namespace with 10 keys, reused api.httpError key), productService.ts completed (12 hardcoded strings replaced, added productService.* namespace with 8 keys, reused api.httpError key), orderService.ts completed (14 hardcoded strings replaced, added orderService.* namespace with 10 keys, reused api.httpError key), analyticsService.ts completed (no hardcoded strings found - file only contains type definitions and API calls that delegate error handling to apiBase.ts), tillService.ts completed (6 hardcoded strings replaced, added tillService.* namespace with 4 keys, reused api.httpError key), userService.ts completed (6 hardcoded strings replaced, added userService.* namespace with 6 keys, reused api.httpError key), categoryService.ts completed (N/A - file doesn't exist; category functions are in productService.ts which was completed in subtask 048), transactionService.ts completed (8 hardcoded strings replaced, added transactionService.* namespace with 5 keys, reused api.httpError key), settingService.ts completed (3 hardcoded strings replaced, added settingService.* namespace with 2 keys, reused api.httpError key), roomService.ts completed (N/A - file doesn't exist; room functions are in tableService.ts which was completed in subtask 046), layoutService.ts completed (10 hardcoded strings replaced, added layoutService.* namespace with 10 keys, used direct i18n import for non-React service), PaymentContext.tsx completed (10 hardcoded strings replaced, added paymentContext.* namespace with 10 keys, used useTranslation hook for React context), GlobalDataContext.tsx completed (8 hardcoded strings replaced, added globalDataContext.* namespace with 7 keys, used useTranslation hook for React context), OrderContext.tsx completed (6 hardcoded strings replaced, added orderContext.* namespace with 6 keys, used useTranslation hook for React context), TabManagementContext.tsx completed (5 hardcoded strings replaced, added tabManagementContext.* namespace with 5 keys, used useTranslation hook for React context), AuthContext.tsx completed (N/A - file doesn't exist; authentication is handled by SessionContext.tsx), ToastContext.tsx completed (1 hardcoded string replaced, added toastContext.contextError key, used useTranslation hook for React context), ThemeContext.tsx completed (N/A - file doesn't exist), SettingsContext.tsx completed (N/A - file doesn't exist), tabs.ts completed (22 hardcoded strings replaced, added tabs.* namespace with 14 error keys and 11 log keys, used direct i18n import for backend handler), transactions.ts completed (12 hardcoded strings replaced, used existing transactions.* namespace keys including fetchFailed, notFound, fetchOneFailed, itemsMustBeArray, itemNameRequired, itemInvalidProperties, createFailed, and log keys for fetchError, fetchOneError, itemWithoutName, itemInvalidProperties, createError, used direct i18n import for backend handler), tills.ts completed (12 hardcoded strings replaced, expanded existing tills.* namespace with 6 new error keys (fetchFailed, fetchOneFailed, createFailed, updateFailed, deleteFailed, validationFailed) and 5 log keys (fetchError, fetchOneError, createError, updateError, deleteError), used direct i18n import for backend handler), orderActivityLogs.ts completed (10 hardcoded strings replaced, added orderActivityLogs.* namespace with 4 error keys (notFound, fetchFailed, fetchOneFailed, createFailed) and 4 log keys (fetchError, fetchOneError, createError, parseDetailsError), used direct i18n import for backend handler), categories.ts completed (12 hardcoded strings replaced, expanded existing categories.* namespace with 7 new error keys (fetchFailed, fetchOneFailed, createFailed, updateFailed, deleteFailedInUse, cannotDeleteWithProducts, validationFailed) and 5 log keys (fetchError, fetchOneError, createError, updateError, deleteError), used direct i18n import for backend handler).
 
 ### String Count Progress
 
@@ -535,10 +535,10 @@ Examples:
 |----------|---------------|-----------|-----------|------------|
 | Frontend Components | 350+ | 274+ | 76+ | 78% |
 | Frontend Services | 47 | 90 | 0 | 100% |
-| Frontend Contexts | 38 | 29 | 9 | 76% |
+| Frontend Contexts | 38 | 30 | 8 | 79% |
 | Backend Handlers | 200+ | 90+ | 110+ | 45% |
 | Backend Middleware | 37 | 0 | 37 | 0% |
-| **Total** | **600+** | **483+** | **151+** | **78%** |
+| **Total** | **600+** | **484+** | **150+** | **79%** |
 
 **Note:** Frontend Contexts shows 76% complete because AuthContext.tsx (3 strings), ThemeContext.tsx (1 string), and SettingsContext.tsx (1 string) do not exist as separate files. The authentication functionality is handled by SessionContext.tsx.
 
@@ -606,5 +606,5 @@ For each completed subtask, verify:
 ---
 
 *Document created: 2026-02-12*
-*Last updated: 2026-02-13*
-*Status: In Progress - Phase 1 Completed, Phase 2 at 96% (24/25 files completed), Phase 3 at 80% (24/30 files completed)*
+*Last updated: 2026-02-14*
+*Status: In Progress - Phase 1 Completed, Phase 2 at 96% (24/25 files completed), Phase 3 at 100% (30/30 files completed), Phase 4 at 14% (4/28 files completed)*

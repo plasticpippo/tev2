@@ -1,4 +1,5 @@
 import React, { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Transaction, Settings } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
 import { getBusinessDayStart } from '../../utils/time';
@@ -9,6 +10,7 @@ interface HourlySalesChartProps {
 }
 
 export const HourlySalesChart: React.FC<HourlySalesChartProps> = ({ transactions, settings }) => {
+    const { t } = useTranslation();
 
     const hourlyData = useMemo(() => {
         const businessDayStart = getBusinessDayStart(settings);
@@ -36,7 +38,7 @@ export const HourlySalesChart: React.FC<HourlySalesChartProps> = ({ transactions
 
     return (
         <div className="bg-slate-800 p-6 rounded-lg">
-            <h3 className="text-xl font-bold text-slate-300 mb-4">Hourly Sales Performance</h3>
+            <h3 className="text-xl font-bold text-slate-300 mb-4">{t('hourlySalesChart.title')}</h3>
             <div>
                 <div className="flex justify-between items-end h-64 space-x-1">
                     {hourlyData.map((hour, index) => (

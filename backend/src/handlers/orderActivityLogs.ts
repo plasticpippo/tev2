@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import type { OrderActivityLog } from '../types';
 import { logWarn, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
+import i18n from '../i18n';
 
 export const orderActivityLogsRouter = express.Router();
 
@@ -27,7 +28,7 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
             parsedDetails = JSON.parse(log.details);
           } catch (e) {
             // If it looks like JSON but parsing fails, return as string
-            logWarn('Failed to parse details as JSON, returning as string', {
+            logWarn(i18n.t('orderActivityLogs.log.parseDetailsError'), {
               correlationId: (req as any).correlationId,
             });
             parsedDetails = log.details;
@@ -45,10 +46,10 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
     });
     res.json(logsWithParsedDetails);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching order activity logs', {
+    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch order activity logs' });
+    res.status(500).json({ error: i18n.t('orderActivityLogs.fetchFailed') });
   }
 });
 
@@ -61,7 +62,7 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     });
     
     if (!orderActivityLog) {
-      return res.status(404).json({ error: 'Order activity log not found' });
+      return res.status(404).json({ error: i18n.t('orderActivityLogs.notFound') });
     }
     
     // Parse the details JSON string back to appropriate type
@@ -76,7 +77,7 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
             parsedDetails = JSON.parse(orderActivityLog.details);
           } catch (e) {
             // If it looks like JSON but parsing fails, return as string
-            logWarn('Failed to parse details as JSON, returning as string', {
+            logWarn(i18n.t('orderActivityLogs.log.parseDetailsError'), {
               correlationId: (req as any).correlationId,
             });
             parsedDetails = orderActivityLog.details;
@@ -94,8 +95,10 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(logWithParsedDetails);
   } catch (error) {
-    console.error('Error fetching order activity log:', error);
-    res.status(500).json({ error: 'Failed to fetch order activity log' });
+    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.fetchOneError'), {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('orderActivityLogs.fetchOneFailed') });
   }
 });
 
@@ -117,9 +120,11 @@ orderActivityLogsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(orderActivityLog);
   } catch (error) {
-    console.error('Error creating order activity log:', error);
-    res.status(500).json({ error: 'Failed to create order activity log' });
- }
+    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.createError'), {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('orderActivityLogs.createFailed') });
+  }
 });
 
 export default orderActivityLogsRouter;

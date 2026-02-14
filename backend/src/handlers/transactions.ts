@@ -5,6 +5,7 @@ import { logPaymentEvent, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
+import i18n from '../i18n';
 
 export const transactionsRouter = express.Router();
 
@@ -22,10 +23,10 @@ transactionsRouter.get('/', authenticateToken, async (req: Request, res: Respons
     }));
     res.json(transactionsWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching transactions', {
+    logError(error instanceof Error ? error : i18n.t('transactions.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch transactions. Please try again later.' });
+    res.status(500).json({ error: i18n.t('transactions.fetchFailed') });
   }
 });
 
@@ -38,7 +39,7 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     });
     
     if (!transaction) {
-      return res.status(404).json({ error: 'Transaction not found' });
+      return res.status(404).json({ error: i18n.t('transactions.notFound') });
     }
     
     // Parse the items JSON string back to array
@@ -50,10 +51,10 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     
     res.json(transactionWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching transaction', {
+    logError(error instanceof Error ? error : i18n.t('transactions.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch transaction. Please try again later.' });
+    res.status(500).json({ error: i18n.t('transactions.fetchOneFailed') });
   }
 });
 
@@ -67,21 +68,21 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     
     // Validate that all items have required properties, especially name
     if (!Array.isArray(items)) {
-      return res.status(400).json({ error: 'Items must be an array' });
+      return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
     }
     
     for (const item of items) {
       if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-        logError('Invalid item without name', {
+        logError(i18n.t('transactions.log.itemWithoutName'), {
           correlationId: (req as any).correlationId,
         });
-        return res.status(400).json({ error: 'All items must have a valid name' });
+        return res.status(400).json({ error: i18n.t('transactions.itemNameRequired') });
       }
       if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-        logError('Invalid item properties', {
+        logError(i18n.t('transactions.log.itemInvalidProperties'), {
           correlationId: (req as any).correlationId,
         });
-        return res.status(400).json({ error: 'All items must have valid id, variantId, productId, price, and quantity' });
+        return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
       }
     }
     
@@ -144,10 +145,10 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       }
     );
     
-    logError(error instanceof Error ? error : 'Error creating transaction', {
+    logError(error instanceof Error ? error : i18n.t('transactions.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to create transaction. Please check your data and try again.' });
+    res.status(500).json({ error: i18n.t('transactions.createFailed') });
   }
 });
 

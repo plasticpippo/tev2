@@ -453,6 +453,9 @@
   "salesTrendChart": {
     "title": "Trend Vendite {{dateRange}}"
   },
+  "hourlySalesChart": {
+    "title": "Prestazioni Vendite Orarie"
+  },
   "errorPage": {
     "title": "Si e Verificato un Errore",
     "description": "Si e verificato un problema durante l'elaborazione della richiesta.",
@@ -634,5 +637,14 @@
     "orderSessionAssignTabFailed": "Aggiornamento stato assegnazione-tab sessione ordine fallito o utente non autenticato",
     "failedToUpdateOrderSessionStatus": "Impossibile aggiornare lo stato della sessione ordine durante l'assegnazione al tab",
     "contextError": "useTabManagementContext deve essere utilizzato all'interno di un TabManagementProvider"
+  },
+  "toastContext": {
+    "contextError": "useToast deve essere utilizzato all'interno di un ToastProvider"
+  },
+  "expandedTopSellingProducts": {
+    "title": "Prestazioni Dettagliate Prodotti"
+  },
+  "loadingOverlay": {
+    "defaultMessage": "Caricamento..."
   }
 }

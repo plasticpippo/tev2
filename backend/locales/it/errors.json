@@ -66,7 +66,21 @@
     "invalidData": "Dati categoria non validi",
     "duplicateName": "Esiste gia una categoria con questo nome",
     "deleteFailed": "Eliminazione categoria non riuscita",
-    "hasProducts": "Impossibile eliminare una categoria con prodotti assegnati"
+    "hasProducts": "Impossibile eliminare una categoria con prodotti assegnati",
+    "fetchFailed": "Impossibile recuperare le categorie. Riprova piu tardi.",
+    "fetchOneFailed": "Impossibile recuperare la categoria. Riprova piu tardi.",
+    "createFailed": "Impossibile creare la categoria. Controlla i dati e riprova.",
+    "updateFailed": "Impossibile aggiornare la categoria. Controlla i dati e riprova.",
+    "deleteFailedInUse": "Impossibile eliminare la categoria. La categoria potrebbe avere prodotti associati o essere in uso altrove.",
+    "cannotDeleteWithProducts": "Impossibile eliminare la categoria con prodotti associati. Riassegna prima i prodotti.",
+    "validationFailed": "Validazione non riuscita",
+    "log": {
+      "fetchError": "Errore nel recupero delle categorie",
+      "fetchOneError": "Errore nel recupero della categoria",
+      "createError": "Errore nella creazione della categoria",
+      "updateError": "Errore nell'aggiornamento della categoria",
+      "deleteError": "Errore nell'eliminazione della categoria"
+    }
   },
   "stockItems": {
     "notFound": "Articolo magazzino non trovato",
@@ -114,7 +128,20 @@
     "notFound": "Cassa non trovata",
     "invalidData": "Dati cassa non validi",
     "alreadyAssigned": "Dispositivo gia assegnato a un'altra cassa",
-    "assignmentFailed": "Assegnazione dispositivo non riuscita"
+    "assignmentFailed": "Assegnazione dispositivo non riuscita",
+    "fetchFailed": "Impossibile recuperare le casse",
+    "fetchOneFailed": "Impossibile recuperare la cassa",
+    "createFailed": "Impossibile creare la cassa",
+    "updateFailed": "Impossibile aggiornare la cassa",
+    "deleteFailed": "Impossibile eliminare la cassa",
+    "validationFailed": "Validazione non riuscita",
+    "log": {
+      "fetchError": "Errore nel recupero delle casse",
+      "fetchOneError": "Errore nel recupero della cassa",
+      "createError": "Errore nella creazione della cassa",
+      "updateError": "Errore nell'aggiornamento della cassa",
+      "deleteError": "Errore nell'eliminazione della cassa"
+    }
   },
   "tables": {
     "notFound": "Tavolo non trovato",
@@ -136,13 +163,51 @@
     "notFound": "Conto non trovato",
     "invalidData": "Dati conto non validi",
     "alreadyClosed": "Il conto e gia chiuso",
-    "closeFailed": "Chiusura conto non riuscita"
+    "closeFailed": "Chiusura conto non riuscita",
+    "fetchFailed": "Impossibile recuperare i conti",
+    "fetchOneFailed": "Impossibile recuperare il conto",
+    "nameRequired": "Il nome del conto e obbligatorio e deve essere una stringa non vuota",
+    "nameNonEmpty": "Il nome del conto deve essere una stringa non vuota",
+    "duplicateName": "Esiste gia un conto con questo nome",
+    "itemNameRequired": "Tutti gli articoli devono avere un nome valido",
+    "itemInvalidProperties": "Tutti gli articoli devono avere id, variantId, productId, price e quantity validi",
+    "createFailed": "Impossibile creare il conto",
+    "updateFailed": "Impossibile aggiornare il conto",
+    "deleteFailed": "Impossibile eliminare il conto",
+    "tableNotFound": "Tavolo non trovato",
+    "log": {
+      "fetchError": "Errore nel recupero dei conti",
+      "fetchOneError": "Errore nel recupero del conto",
+      "createCalled": "POST /api/tabs chiamato",
+      "nameValidationFailed": "Validazione nome conto non riuscita",
+      "itemWithoutName": "Articolo non valido senza nome",
+      "itemInvalidProperties": "Proprieta articolo non valide",
+      "duplicateNameDetected": "Rilevato nome conto duplicato",
+      "creating": "Creazione nuovo conto",
+      "created": "Conto creato con successo",
+      "createError": "Errore nella creazione del conto",
+      "updateError": "Errore nell'aggiornamento del conto",
+      "deleteError": "Errore nell'eliminazione del conto"
+    }
   },
   "transactions": {
     "notFound": "Transazione non trovata",
     "invalidData": "Dati transazione non validi",
     "paymentFailed": "Elaborazione pagamento non riuscita",
-    "refundFailed": "Elaborazione rimborso non riuscita"
+    "refundFailed": "Elaborazione rimborso non riuscita",
+    "fetchFailed": "Impossibile recuperare le transazioni. Riprova piu tardi.",
+    "fetchOneFailed": "Impossibile recuperare la transazione. Riprova piu tardi.",
+    "createFailed": "Impossibile creare la transazione. Controlla i dati e riprova.",
+    "itemsMustBeArray": "Gli articoli devono essere un array",
+    "itemNameRequired": "Tutti gli articoli devono avere un nome valido",
+    "itemInvalidProperties": "Tutti gli articoli devono avere id, variantId, productId, price e quantity validi",
+    "log": {
+      "fetchError": "Errore nel recupero delle transazioni",
+      "fetchOneError": "Errore nel recupero della transazione",
+      "itemWithoutName": "Articolo non valido senza nome",
+      "itemInvalidProperties": "Proprieta articolo non valide",
+      "createError": "Errore nella creazione della transazione"
+    }
   },
   "orderSessions": {
     "notFound": "Sessione ordine non trovata",
@@ -225,5 +290,17 @@
     "orphanedReferencesRemoved": "Rimossi con successo {{count}} riferimenti orfani delle rettifiche magazzino",
     "dataIntegrityIssues": "Problemi di integrita dei dati rilevati",
     "dataIntegrityPassed": "Validazione integrita dei dati superata"
+  },
+  "orderActivityLogs": {
+    "notFound": "Registro attivita ordine non trovato",
+    "fetchFailed": "Impossibile recuperare i registri attivita ordini",
+    "fetchOneFailed": "Impossibile recuperare il registro attivita ordine",
+    "createFailed": "Impossibile creare il registro attivita ordine",
+    "log": {
+      "fetchError": "Errore nel recupero dei registri attivita ordini",
+      "fetchOneError": "Errore nel recupero del registro attivita ordine",
+      "createError": "Errore nella creazione del registro attivita ordine",
+      "parseDetailsError": "Impossibile analizzare i dettagli come JSON, restituito come stringa"
+    }
   }
 }
