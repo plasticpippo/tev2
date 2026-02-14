@@ -61,7 +61,8 @@
     "printReceipt": "Stampa Scontrino",
     "emailReceipt": "Invia Scontrino via Email",
     "noReceipt": "Nessuno Scontrino",
-    "tablePayment": "Pagamento per tavolo assegnato"
+    "tablePayment": "Pagamento per tavolo assegnato",
+    "close": "Chiudi"
   },
   "order": {
     "newOrder": "Nuovo Ordine",

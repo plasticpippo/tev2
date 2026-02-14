@@ -61,7 +61,8 @@
     "printReceipt": "Print Receipt",
     "emailReceipt": "Email Receipt",
     "noReceipt": "No Receipt",
-    "tablePayment": "Payment for assigned table"
+    "tablePayment": "Payment for assigned table",
+    "close": "Close"
   },
   "order": {
     "newOrder": "New Order",

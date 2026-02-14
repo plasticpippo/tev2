@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useToast } from '../contexts/ToastContext';
 
 interface ToastProps {
@@ -12,6 +13,7 @@ interface ToastProps {
 }
 
 const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
+  const { t } = useTranslation();
   const getToastStyle = () => {
     switch (toast.type) {
       case 'success':
@@ -41,7 +43,7 @@ const Toast: React.FC<ToastProps> = ({ toast, onClose }) => {
       <button 
         onClick={onClose}
         className="ml-4 text-white hover:text-gray-200 focus:outline-none"
-        aria-label="Close"
+        aria-label={t('common:toast.close')}
       >
         &times;
       </button>

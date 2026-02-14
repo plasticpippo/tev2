@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
+import i18n from '../i18n';
 
 export const consumptionReportsRouter = express.Router();
 
@@ -176,7 +177,7 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
     logError(error instanceof Error ? error : 'Error fetching itemised consumption report', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to fetch itemised consumption report. Please try again later.' });
+    res.status(500).json({ error: i18n.t('errors:consumptionReports.fetchFailed') });
   }
 });
 

@@ -302,5 +302,8 @@
       "createError": "Error creating order activity log",
       "parseDetailsError": "Failed to parse details as JSON, returning as string"
     }
+  },
+  "consumptionReports": {
+    "fetchFailed": "Failed to fetch itemised consumption report. Please try again later."
   }
 }

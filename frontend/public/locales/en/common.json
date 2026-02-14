@@ -641,6 +641,9 @@
   "toastContext": {
     "contextError": "useToast must be used within a ToastProvider"
   },
+  "toast": {
+    "close": "Close"
+  },
   "expandedTopSellingProducts": {
     "title": "Detailed Product Performance"
   },

@@ -302,5 +302,8 @@
       "createError": "Errore nella creazione del registro attivita ordine",
       "parseDetailsError": "Impossibile analizzare i dettagli come JSON, restituito come stringa"
     }
+  },
+  "consumptionReports": {
+    "fetchFailed": "Impossibile recuperare il report di consumo dettagliato. Riprova piu tardi."
   }
 }

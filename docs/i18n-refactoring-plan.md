@@ -494,16 +494,16 @@ Examples:
 | 072 | `frontend/components/ExpandedTopSellingProducts.tsx` | Lower | 1 | [x] Completed |
 | 073 | `frontend/components/LoadingOverlay.tsx` | Lower | 1 | [x] Completed |
 | 074 | `frontend/components/LoginScreen.tsx` | Lower | 1 | [x] Completed |
-| 075 | `frontend/components/ProductGridItem.tsx` | Lower | 1 | [ ] Pending |
-| 076 | `frontend/components/PaymentModal.tsx` | Lower | 1 | [ ] Pending |
-| 077 | `frontend/components/Toast.tsx` | Lower | 1 | [ ] Pending |
+| 075 | `frontend/components/ProductGridItem.tsx` | Lower | 1 | [x] Completed (already i18n-compliant - no changes needed) |
+| 076 | `frontend/components/PaymentModal.tsx` | Lower | 1 | [x] Completed |
+| 077 | `frontend/components/Toast.tsx` | Lower | 1 | [x] Completed |
 | 078 | `frontend/components/LanguageSwitcher.tsx` | Lower | 1 | [ ] Pending |
 | 079 | `frontend/components/VirtualKeyboardContext.tsx` | Lower | 1 | [ ] Pending |
 | 080 | `frontend/components/TabManager.tsx` | Lower | 1 | [ ] Pending |
 | 081 | `frontend/components/UserPerformanceReportModal.tsx` | Lower | 1 | [ ] Pending |
 | 082 | `frontend/components/OrderPanel.tsx` | Lower | 2 | [ ] Pending |
 | 083 | `frontend/components/TillManagement.tsx` | Lower | 2 | [ ] Pending |
-| 084 | `backend/src/handlers/consumptionReports.ts` | Lower | 5+ | [ ] Pending |
+| 084 | `backend/src/handlers/consumptionReports.ts` | Lower | 5+ | [x] Completed |
 | 085 | `backend/src/handlers/settings.ts` | Lower | 4+ | [ ] Pending |
 | 086 | `backend/src/handlers/analytics.ts` | Lower | 3+ | [ ] Pending |
 | 087 | `backend/src/middleware/errorHandler.ts` | Lower | 15 | [ ] Pending |

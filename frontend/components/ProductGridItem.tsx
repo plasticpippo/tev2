@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Product, ProductVariant } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 
@@ -27,6 +28,7 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
   useParentDimensions = false,
   gridHeight = 128
 }) => {
+  const { t } = useTranslation();
   // Calculate the height based on the heightSpan using configurable grid height
   const calculatedHeight = heightSpan * gridHeight; // Use configurable grid height per grid unit
 
@@ -58,7 +60,7 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
       {!isMakable && (
         <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
           <span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">
-            OUT OF STOCK
+            {t('productGrid.outOfStock')}
           </span>
         </div>
       )}
