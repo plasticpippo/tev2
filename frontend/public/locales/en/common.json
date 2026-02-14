@@ -575,5 +575,64 @@
     "failedDeleteUser": "Failed to delete user",
     "errorDuringLogin": "Error during login",
     "userLoggedOut": "User logged out and data cleared"
+  },
+  "transactionService": {
+    "errorFetchingTransactions": "Error fetching transactions",
+    "errorSavingTransaction": "Error saving transaction",
+    "errorFetchingTabs": "Error fetching tabs",
+    "errorSavingTab": "Error saving tab",
+    "errorDeletingTab": "Error deleting tab"
+  },
+  "settingService": {
+    "errorFetchingSettings": "Error fetching settings",
+    "errorSavingSettings": "Error saving settings"
+  },
+  "layoutService": {
+    "errorFetchingTillLayout": "Error fetching till layout",
+    "errorSavingTillLayout": "Error saving till layout",
+    "errorResettingTillLayout": "Error resetting till layout",
+    "errorFetchingSharedLayouts": "Error fetching shared layouts",
+    "errorFetchingSharedLayout": "Error fetching shared layout",
+    "errorCreatingSharedLayout": "Error creating shared layout",
+    "errorUpdatingSharedLayout": "Error updating shared layout",
+    "errorDeletingSharedLayout": "Error deleting shared layout",
+    "errorLoadingSharedLayoutToTill": "Error loading shared layout to till",
+    "invalidLayoutName": "Invalid layout name: {{message}}"
+  },
+  "paymentContext": {
+    "invalidItemNames": "Some items have invalid names, correcting them before saving transaction",
+    "itemFallbackName": "Item {{variantId}}",
+    "invalidStockItemReference": "Invalid stock item reference in variant {{variantId}}: {{stockItemId}}",
+    "invalidUuidFormat": " (Invalid UUID format)",
+    "stockItemNotExist": " (Stock item does not exist)",
+    "orderSessionCompleteFailed": "Order session complete status update failed or user not authenticated",
+    "orderSessionStatusUpdateFailed": "Failed to update order session status on payment completion",
+    "paymentProcessingFailed": "Payment processing failed",
+    "paymentProcessingFailedMessage": "Payment processing failed. Please try again or contact support.",
+    "contextError": "usePaymentContext must be used within a PaymentProvider"
+  },
+  "globalDataContext": {
+    "fetchDataNotAuthenticated": "fetchData: User not authenticated, skipping API calls",
+    "failedToFetchInitialData": "Failed to fetch initial data",
+    "authTokenTimeout": "Auth token failed to become ready within timeout period",
+    "variantInvalidStockRefs": "Variant {{variantId}} ({{productName}} - {{variantName}}) has invalid stock references:",
+    "tillNotConfigured": "Not Configured",
+    "unknownTill": "Unknown Till",
+    "contextError": "useGlobalDataContext must be used within a GlobalDataProvider"
+  },
+  "orderContext": {
+    "failedToLoadSession": "Failed to load order session",
+    "sessionSaveFailed": "Order session save failed or user not authenticated",
+    "emptySessionSaveFailed": "Empty order session save failed or user not authenticated",
+    "failedToSaveEmptySession": "Failed to save empty order session",
+    "itemFallbackName": "Item {{variantId}}",
+    "contextError": "useOrderContext must be used within an OrderProvider"
+  },
+  "tabManagementContext": {
+    "placeholderTillName": "Placeholder Till Name",
+    "itemFallbackName": "Item {{variantId}}",
+    "orderSessionAssignTabFailed": "Order session assign-tab status update failed or user not authenticated",
+    "failedToUpdateOrderSessionStatus": "Failed to update order session status when assigning to tab",
+    "contextError": "useTabManagementContext must be used within a TabManagementProvider"
   }
 }

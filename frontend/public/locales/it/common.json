@@ -575,5 +575,64 @@
     "failedDeleteUser": "Impossibile eliminare l'utente",
     "errorDuringLogin": "Errore durante l'accesso",
     "userLoggedOut": "Utente disconnesso e dati cancellati"
+  },
+  "transactionService": {
+    "errorFetchingTransactions": "Errore nel caricamento delle transazioni",
+    "errorSavingTransaction": "Errore nel salvataggio della transazione",
+    "errorFetchingTabs": "Errore nel caricamento dei tab",
+    "errorSavingTab": "Errore nel salvataggio del tab",
+    "errorDeletingTab": "Errore nell'eliminazione del tab"
+  },
+  "settingService": {
+    "errorFetchingSettings": "Errore nel caricamento delle impostazioni",
+    "errorSavingSettings": "Errore nel salvataggio delle impostazioni"
+  },
+  "layoutService": {
+    "errorFetchingTillLayout": "Errore nel caricamento del layout cassa",
+    "errorSavingTillLayout": "Errore nel salvataggio del layout cassa",
+    "errorResettingTillLayout": "Errore nel ripristino del layout cassa",
+    "errorFetchingSharedLayouts": "Errore nel caricamento dei layout condivisi",
+    "errorFetchingSharedLayout": "Errore nel caricamento del layout condiviso",
+    "errorCreatingSharedLayout": "Errore nella creazione del layout condiviso",
+    "errorUpdatingSharedLayout": "Errore nell'aggiornamento del layout condiviso",
+    "errorDeletingSharedLayout": "Errore nell'eliminazione del layout condiviso",
+    "errorLoadingSharedLayoutToTill": "Errore nel caricamento del layout condiviso sulla cassa",
+    "invalidLayoutName": "Nome layout non valido: {{message}}"
+  },
+  "paymentContext": {
+    "invalidItemNames": "Alcuni articoli hanno nomi non validi, correzione in corso prima del salvataggio della transazione",
+    "itemFallbackName": "Articolo {{variantId}}",
+    "invalidStockItemReference": "Riferimento articolo magazzino non valido nella variante {{variantId}}: {{stockItemId}}",
+    "invalidUuidFormat": " (Formato UUID non valido)",
+    "stockItemNotExist": " (Articolo magazzino inesistente)",
+    "orderSessionCompleteFailed": "Aggiornamento stato sessione ordine completato fallito o utente non autenticato",
+    "orderSessionStatusUpdateFailed": "Impossibile aggiornare lo stato della sessione ordine al completamento del pagamento",
+    "paymentProcessingFailed": "Elaborazione pagamento fallita",
+    "paymentProcessingFailedMessage": "Elaborazione pagamento fallita. Riprova o contatta l'assistenza.",
+    "contextError": "usePaymentContext deve essere utilizzato all'interno di un PaymentProvider"
+  },
+  "globalDataContext": {
+    "fetchDataNotAuthenticated": "fetchData: Utente non autenticato, salto chiamate API",
+    "failedToFetchInitialData": "Impossibile recuperare i dati iniziali",
+    "authTokenTimeout": "Il token di autenticazione non e diventato pronto entro il periodo di timeout",
+    "variantInvalidStockRefs": "La variante {{variantId}} ({{productName}} - {{variantName}}) ha riferimenti magazzino non validi:",
+    "tillNotConfigured": "Non Configurato",
+    "unknownTill": "Cassa Sconosciuta",
+    "contextError": "useGlobalDataContext deve essere utilizzato all'interno di un GlobalDataProvider"
+  },
+  "orderContext": {
+    "failedToLoadSession": "Impossibile caricare la sessione ordine",
+    "sessionSaveFailed": "Salvataggio sessione ordine fallito o utente non autenticato",
+    "emptySessionSaveFailed": "Salvataggio sessione ordine vuota fallito o utente non autenticato",
+    "failedToSaveEmptySession": "Impossibile salvare la sessione ordine vuota",
+    "itemFallbackName": "Articolo {{variantId}}",
+    "contextError": "useOrderContext deve essere utilizzato all'interno di un OrderProvider"
+  },
+  "tabManagementContext": {
+    "placeholderTillName": "Nome Cassa Segnaposto",
+    "itemFallbackName": "Articolo {{variantId}}",
+    "orderSessionAssignTabFailed": "Aggiornamento stato assegnazione-tab sessione ordine fallito o utente non autenticato",
+    "failedToUpdateOrderSessionStatus": "Impossibile aggiornare lo stato della sessione ordine durante l'assegnazione al tab",
+    "contextError": "useTabManagementContext deve essere utilizzato all'interno di un TabManagementProvider"
   }
 }

@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { OrderItem } from '../../shared/types';
 import * as api from '../services/apiService';
 import { useSessionContext } from './SessionContext';
@@ -18,6 +19,7 @@ interface PaymentProviderProps {
 }
 
 export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) => {
+  const { t } = useTranslation();
   const { currentUser, assignedTillId } = useSessionContext();
   const { orderItems, clearOrder, activeTab } = useOrderContext();
   const { appData, currentTillName } = useGlobalDataContext();
@@ -49,11 +51,11 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       // Validate that all items have names before saving transaction
       const validItems = orderItems.filter(item => item.name && item.name.trim() !== '');
       if (validItems.length !== orderItems.length) {
-        console.warn('Some items have invalid names, correcting them before saving transaction');
+        console.warn(t('paymentContext.invalidItemNames'));
         // Fix items without names
         const correctedItems = orderItems.map(item => ({
           ...item,
-          name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+          name: item.name && item.name.trim() !== '' ? item.name : t('paymentContext.itemFallbackName', { variantId: item.variantId })
         }));
         const transactionData = {
           items: correctedItems,
@@ -106,12 +108,12 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
               const currentQty = consumptions.get(sc.stockItemId) || 0;
               consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
             } else {
-              let warningMsg = `Invalid stock item reference in variant ${variant.id}: ${sc.stockItemId}`;
+              let warningMsg = t('paymentContext.invalidStockItemReference', { variantId: variant.id, stockItemId: sc.stockItemId });
               if (!isUUIDFormat) {
-                warningMsg += " (Invalid UUID format)";
+                warningMsg += t('paymentContext.invalidUuidFormat');
               }
               if (!stockItemExists) {
-                warningMsg += " (Stock item does not exist)";
+                warningMsg += t('paymentContext.stockItemNotExist');
               }
               console.warn(warningMsg);
             }
@@ -130,10 +132,10 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       try {
         const result = await api.updateOrderSessionStatus('complete');
         if (!result) {
-          console.warn('Order session complete status update failed or user not authenticated');
+          console.warn(t('paymentContext.orderSessionCompleteFailed'));
         }
       } catch (error) {
-        console.error('Failed to update order session status on payment completion:', error);
+        console.error(t('paymentContext.orderSessionStatusUpdateFailed'), error);
       }
       
       // Update table status to available after payment
@@ -145,8 +147,8 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       clearOrder(false);
       setIsPaymentModalOpen(false);
     } catch (error) {
-      console.error('Payment processing failed:', error);
-      alert(error instanceof Error ? error.message : 'Payment processing failed. Please try again or contact support.');
+      console.error(t('paymentContext.paymentProcessingFailed'), error);
+      alert(error instanceof Error ? error.message : t('paymentContext.paymentProcessingFailedMessage'));
       // Keep the modal open so the user can try again or cancel
     }
  };
@@ -163,9 +165,10 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
 };
 
 export const usePaymentContext = () => {
+  const { t } = useTranslation();
   const context = useContext(PaymentContext);
   if (context === undefined) {
-    throw new Error('usePaymentContext must be used within a PaymentProvider');
+    throw new Error(t('paymentContext.contextError'));
   }
   return context;
 };

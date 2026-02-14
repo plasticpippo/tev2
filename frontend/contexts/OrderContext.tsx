@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { v4 as uuidv4 } from 'uuid';
+import { useTranslation } from 'react-i18next';
 import type { OrderItem, Product, ProductVariant } from '../../shared/types';
 import * as api from '../services/apiService';
 import { useSessionContext } from './SessionContext';
@@ -24,6 +25,7 @@ interface OrderProviderProps {
 }
 
 export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
+  const { t } = useTranslation();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoadingOrderSession, setIsLoadingOrderSession] = useState(false);
   const [activeTab, setActiveTab] = useState<any>(null); // Using any temporarily
@@ -55,7 +57,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
             setOrderItems([]);
           }
         } catch (error) {
-          console.error('Failed to load order session:', error);
+          console.error(t('orderContext.failedToLoadSession'), error);
           lastLoadedSessionIdRef.current = null;
           setOrderItems([]);
         } finally {
@@ -92,7 +94,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
           // Update the last loaded session ID to match the saved session
           lastLoadedSessionIdRef.current = result.id;
         } else {
-          console.warn('Order session save failed or user not authenticated');
+          console.warn(t('orderContext.sessionSaveFailed'));
         }
       };
 
@@ -106,10 +108,10 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         if (result && result.id) {
           lastLoadedSessionIdRef.current = result.id;
         } else {
-          console.warn('Empty order session save failed or user not authenticated');
+          console.warn(t('orderContext.emptySessionSaveFailed'));
         }
       }).catch(error => {
-        console.error('Failed to save empty order session:', error);
+        console.error(t('orderContext.failedToSaveEmptySession'), error);
       });
     }
   }, [orderItems, currentUser, isLoadingOrderSession]);
@@ -130,7 +132,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
       };
       // Ensure the name is not empty or undefined
       if (!newOrderItem.name || newOrderItem.name.trim() === '') {
-        newOrderItem.name = `Item ${newOrderItem.variantId}`;
+        newOrderItem.name = t('orderContext.itemFallbackName', { variantId: newOrderItem.variantId });
       }
       setOrderItems([...orderItems, newOrderItem]);
     }
@@ -147,7 +149,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
       const quantityRemoved = oldQuantity - newQuantity;
       api.saveOrderActivityLog({
         action: 'Item Removed',
-        details: `${quantityRemoved} x ${itemToUpdate.name || `Item ${itemToUpdate.variantId}`}`,
+        details: `${quantityRemoved} x ${itemToUpdate.name || t('orderContext.itemFallbackName', { variantId: itemToUpdate.variantId })}`,
         userId: currentUser.id,
         userName: currentUser.name,
       });
@@ -168,7 +170,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
       // Fix items without names before logging
       const correctedItems = orderItems.map(item => ({
         ...item,
-        name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+        name: item.name && item.name.trim() !== '' ? item.name : t('orderContext.itemFallbackName', { variantId: item.variantId })
       }));
       api.saveOrderActivityLog({
         action: 'Order Cleared',
@@ -201,9 +203,10 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
 };
 
 export const useOrderContext = () => {
+  const { t } = useTranslation();
   const context = useContext(OrderContext);
   if (context === undefined) {
-    throw new Error('useOrderContext must be used within an OrderProvider');
+    throw new Error(t('orderContext.contextError'));
   }
   return context;
 };

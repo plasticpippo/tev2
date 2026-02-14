@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import type {
   User, Product, Category, Settings,
   Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog,
@@ -38,6 +39,7 @@ interface GlobalDataProviderProps {
 }
 
 export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children }) => {
+  const { t } = useTranslation();
   const [appData, setAppData] = useState<{
     products: Product[];
     categories: Category[];
@@ -86,7 +88,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     // Check if user is still authenticated before making API calls
     // This prevents API calls after logout (e.g., from in-flight operations that trigger notifyUpdates)
     if (!currentUser || !isAuthTokenReady()) {
-      console.log("fetchData: User not authenticated, skipping API calls");
+      console.log(t('globalDataContext.fetchDataNotAuthenticated'));
       setIsLoading(false);
       return;
     }
@@ -114,11 +116,11 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
         stockItems, stockAdjustments, orderActivityLogs, rooms, tables
       });
     } catch (error) {
-      console.error("Failed to fetch initial data", error);
+      console.error(t('globalDataContext.failedToFetchInitialData'), error);
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser]);
+  }, [currentUser, t]);
 
   // Debounced version of fetchData to prevent multiple rapid calls
   const debouncedFetchData = useCallback(debounce(fetchData, 300), [fetchData]);
@@ -152,7 +154,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
         clearInterval(checkTokenInterval);
         // If token still not ready after timeout, clear loading state to prevent indefinite hang
         if (!isAuthTokenReady()) {
-          console.error('Auth token failed to become ready within timeout period');
+          console.error(t('globalDataContext.authTokenTimeout'));
           setIsLoading(false);
           // Clear the invalid user session to force re-login
           handleLogout();
@@ -200,18 +202,18 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
           const invalidRefs = variant.stockConsumption.filter(
             ({ stockItemId }) => !uuidRegex.test(stockItemId) || !stockMap.has(stockItemId)
           );
-          console.warn(`Variant ${variant.id} (${product.name} - ${variant.name}) has invalid stock references:`,
+          console.warn(t('globalDataContext.variantInvalidStockRefs', { variantId: variant.id, productName: product.name, variantName: variant.name }),
                        invalidRefs.map(ref => ref.stockItemId));
         }
       });
     });
     return makableIds;
-  }, [appData.stockItems, appData.products]);
+  }, [appData.stockItems, appData.products, t]);
 
   const currentTillName = useMemo(() => {
-    if (!assignedTillId) return "Not Configured";
-    return appData.tills.find(t => t.id === assignedTillId)?.name || 'Unknown Till';
-  }, [assignedTillId, appData.tills]);
+    if (!assignedTillId) return t('globalDataContext.tillNotConfigured');
+    return appData.tills.find(t => t.id === assignedTillId)?.name || t('globalDataContext.unknownTill');
+  }, [assignedTillId, appData.tills, t]);
 
   const value: GlobalDataContextType = {
     appData,
@@ -231,9 +233,10 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
 };
 
 export const useGlobalDataContext = () => {
- const context = useContext(GlobalDataContext);
+  const { t } = useTranslation();
+  const context = useContext(GlobalDataContext);
   if (context === undefined) {
-    throw new Error('useGlobalDataContext must be used within a GlobalDataProvider');
+    throw new Error(t('globalDataContext.contextError'));
   }
   return context;
 };

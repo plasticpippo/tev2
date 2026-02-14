@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
+import i18n from '../src/i18n';
 
 // ============================================
 // TYPES
@@ -68,7 +69,7 @@ export const getTillLayout = async (
     if (error instanceof Error && error.name === 'AbortError') {
       throw error;
     }
-    console.error('Error fetching till layout:', error);
+    console.error(i18n.t('layoutService.errorFetchingTillLayout'), error);
     return [];
   }
 };
@@ -93,7 +94,7 @@ export const saveTillLayout = async (
     notifyUpdates();
     return result;
   } catch (error) {
-    console.error('Error saving till layout:', error);
+    console.error(i18n.t('layoutService.errorSavingTillLayout'), error);
     throw error;
   }
 };
@@ -115,7 +116,7 @@ export const resetTillLayout = async (
     );
     notifyUpdates();
   } catch (error) {
-    console.error('Error resetting till layout:', error);
+    console.error(i18n.t('layoutService.errorResettingTillLayout'), error);
     throw error;
   }
 };
@@ -142,7 +143,7 @@ export const getSharedLayouts = async (
     const result = await makeApiRequest(url, { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching shared layouts:', error);
+    console.error(i18n.t('layoutService.errorFetchingSharedLayouts'), error);
     return [];
   }
 };
@@ -160,7 +161,7 @@ export const getSharedLayout = async (id: number): Promise<SharedLayout | null> 
     );
     return result;
   } catch (error) {
-    console.error('Error fetching shared layout:', error);
+    console.error(i18n.t('layoutService.errorFetchingSharedLayout'), error);
     return null;
   }
 };
@@ -186,9 +187,9 @@ export const createSharedLayout = async (
     return result;
   } catch (error) {
     if (error instanceof SanitizationError) {
-      throw new Error(`Invalid layout name: ${error.message}`);
+      throw new Error(i18n.t('layoutService.invalidLayoutName', { message: error.message }) as string);
     }
-    console.error('Error creating shared layout:', error);
+    console.error(i18n.t('layoutService.errorCreatingSharedLayout'), error);
     throw error;
   }
 };
@@ -212,7 +213,7 @@ export const updateSharedLayout = async (
     notifyUpdates();
     return result;
   } catch (error) {
-    console.error('Error updating shared layout:', error);
+    console.error(i18n.t('layoutService.errorUpdatingSharedLayout'), error);
     throw error;
   }
 };
@@ -228,7 +229,7 @@ export const deleteSharedLayout = async (id: number): Promise<void> => {
     });
     notifyUpdates();
   } catch (error) {
-    console.error('Error deleting shared layout:', error);
+    console.error(i18n.t('layoutService.errorDeletingSharedLayout'), error);
     throw error;
   }
 };
@@ -252,7 +253,7 @@ export const loadSharedLayoutToTill = async (
     notifyUpdates();
     return result.layouts;
   } catch (error) {
-    console.error('Error loading shared layout to till:', error);
+    console.error(i18n.t('layoutService.errorLoadingSharedLayoutToTill'), error);
     throw error;
   }
 };

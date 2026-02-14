@@ -1,3 +1,4 @@
+import i18n from '../src/i18n';
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Settings } from '../../shared/types';
 
@@ -7,8 +8,8 @@ export const getSettings = async (): Promise<Settings> => {
   try {
     const result = await makeApiRequest(apiUrl('/api/settings'), undefined, cacheKey);
     return result;
- } catch (error) {
-    console.error('Error fetching settings:', error);
+  } catch (error) {
+    console.error(i18n.t('settingService.errorFetchingSettings'), error);
     // Return default settings on error
     return {
       tax: { mode: 'none' },
@@ -27,12 +28,12 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
   } catch (error) {
-    console.error('Error saving settings:', error);
+    console.error(i18n.t('settingService.errorSavingSettings'), error);
     throw error;
- }
+  }
 };

@@ -1,5 +1,6 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Transaction, Tab } from '../../shared/types';
+import i18n from '../src/i18n';
 
 // Transactions
 export const getTransactions = async (): Promise<Transaction[]> => {
@@ -8,7 +9,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
     const result = await makeApiRequest(apiUrl('/api/transactions'), undefined, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching transactions:', error);
+    console.error(i18n.t('transactionService.errorFetchingTransactions'), error);
     return [];
   }
 };
@@ -23,14 +24,14 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     const savedTransaction = await response.json();
     notifyUpdates();
     return savedTransaction;
   } catch (error) {
-    console.error('Error saving transaction:', error);
+    console.error(i18n.t('transactionService.errorSavingTransaction'), error);
     throw error;
   }
 };
@@ -42,7 +43,7 @@ export const getTabs = async (): Promise<Tab[]> => {
     const result = await makeApiRequest(apiUrl('/api/tabs'), undefined, cacheKey);
     return result;
   } catch (error) {
-    console.error('Error fetching tabs:', error);
+    console.error(i18n.t('transactionService.errorFetchingTabs'), error);
     return [];
   }
 };
@@ -63,7 +64,7 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       console.log('apiService: saveTab error response:', errorData);
       throw new Error(errorMessage);
     }
@@ -72,7 +73,7 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
     notifyUpdates();
     return savedTab;
   } catch (error) {
-    console.error('Error saving tab:', error);
+    console.error(i18n.t('transactionService.errorSavingTab'), error);
     throw error;
   }
 };
@@ -86,14 +87,14 @@ export const deleteTab = async (tabId: number): Promise<void> => {
     
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || `HTTP error! status: ${response.status}`;
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
     notifyUpdates();
   } catch (error) {
-    console.error('Error deleting tab:', error);
+    console.error(i18n.t('transactionService.errorDeletingTab'), error);
     throw error;
- }
+  }
 };
 
 export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => {

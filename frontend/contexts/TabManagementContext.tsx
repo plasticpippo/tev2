@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import type { OrderItem, Tab } from '../../shared/types';
 import * as api from '../services/apiService';
@@ -28,6 +29,7 @@ interface TabManagementProviderProps {
 }
 
 export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ children }) => {
+  const { t } = useTranslation();
   const { currentUser, assignedTillId } = useSessionContext();
   const { orderItems, setOrderItems, clearOrder, activeTab, setActiveTab } = useOrderContext();
   const { appData } = useGlobalDataContext();
@@ -40,7 +42,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
       name,
       items: [],
       tillId: assignedTillId,
-      tillName: "Placeholder Till Name", // This should come from GlobalDataContext
+      tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
       createdAt: new Date().toISOString(),
       tableId: assignedTable?.id
     });
@@ -52,7 +54,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     // Fix items without names when adding to a tab
     const correctedOrderItems = orderItems.map(item => ({
       ...item,
-      name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
     }));
     const updatedItems = [...tab.items];
     correctedOrderItems.forEach(orderItem => {
@@ -69,10 +71,10 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     try {
       const result = await api.updateOrderSessionStatus('assign-tab');
       if (!result) {
-        console.warn('Order session assign-tab status update failed or user not authenticated');
+        console.warn(t('tabManagementContext.orderSessionAssignTabFailed'));
       }
     } catch (error) {
-      console.error('Failed to update order session status when assigning to tab:', error);
+      console.error(t('tabManagementContext.failedToUpdateOrderSessionStatus'), error);
     }
     
     clearOrder(false);
@@ -85,7 +87,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
       // Fix items without names when loading a tab
       const correctedItems = tab.items.map(item => ({
         ...item,
-        name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+        name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
       }));
       setOrderItems(correctedItems);
       setActiveTab(tab);
@@ -98,11 +100,11 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     // Fix items without names when saving a tab
     const correctedItems = orderItems.map(item => ({
       ...item,
-      name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
     }));
     await api.saveTab({ ...activeTab, items: correctedItems, tableId: assignedTable?.id });
     clearOrder(false);
- };
+  };
   
   const handleCloseTab = async (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
@@ -131,7 +133,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     // Fix items without names before moving
     const correctedItemsToMove = itemsToMove.map(item => ({
       ...item,
-      name: item.name && item.name.trim() !== '' ? item.name : `Item ${item.variantId}`
+      name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
     }));
 
     let destTab: Tab;
@@ -140,7 +142,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
           name: destination.name,
           items: [],
           tillId: assignedTillId,
-          tillName: "Placeholder Till Name", // This should come from GlobalDataContext
+          tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
           createdAt: new Date().toISOString()
         });
     } else {
