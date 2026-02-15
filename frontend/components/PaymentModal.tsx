@@ -114,6 +114,22 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
                 {t('payment.maxDiscount', { max: formatCurrency(totalBeforeTip) })}
               </p>
             </div>
+            {/* Quick Add Buttons */}
+            <div className="mb-2">
+              <label className="block text-slate-400 text-sm mb-1">{t('payment.quickAdd')}</label>
+              <div className="flex gap-2">
+                {[10, 20, 50].map((amount) => (
+                  <button
+                    key={amount}
+                    onClick={() => handleDiscountChange(discount + amount)}
+                    className="flex-1 bg-purple-700 hover:bg-purple-600 text-white font-semibold py-2 px-3 rounded-md transition text-sm"
+                    aria-label={t('payment.quickAdd') + ` ${amount}`}
+                  >
+                    {amount}
+                  </button>
+                ))}
+              </div>
+            </div>
             <div>
               <label className="block text-slate-400 text-sm mb-1">{t('payment.discountReason')}</label>
               <input

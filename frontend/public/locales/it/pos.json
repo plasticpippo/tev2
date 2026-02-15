@@ -72,7 +72,8 @@
     "decreaseDiscount": "Diminuisci sconto",
     "maxDiscount": "Max: {{max}}",
     "finalTotal": "Totale Finale",
-    "complimentary": "Omaggio"
+    "complimentary": "Omaggio",
+    "quickAdd": "Aggiunta Rapida"
   },
   "order": {
     "newOrder": "Nuovo Ordine",

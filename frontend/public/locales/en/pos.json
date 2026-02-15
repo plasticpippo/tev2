@@ -72,7 +72,8 @@
     "decreaseDiscount": "Decrease discount",
     "maxDiscount": "Max: {{max}}",
     "finalTotal": "Final Total",
-    "complimentary": "Complimentary"
+    "complimentary": "Complimentary",
+    "quickAdd": "Quick Add"
   },
   "order": {
     "newOrder": "New Order",
