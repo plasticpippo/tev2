@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 500" width="600" height="500">
+  <defs>
+    <linearGradient id="overlayGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0f172a;stop-opacity:0.7" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:0.8" />
+    </linearGradient>
+    <linearGradient id="modalGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Overlay Background -->
+  <rect width="600" height="500" fill="url(#overlayGradient)"/>
+  
+  <!-- Modal -->
+  <rect x="75" y="50" width="450" height="400" rx="12" fill="url(#modalGradient)" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Modal Header -->
+  <text x="300" y="85" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="#1e293b" text-anchor="middle">Payment</text>
+  <rect x="495" y="70" width="20" height="20" rx="4" fill="transparent"/>
+  <text x="505" y="85" font-family="Arial, sans-serif" font-size="16" fill="#64748b">X</text>
+  
+  <line x1="90" y1="105" x2="510" y2="105" stroke="#e2e8f0" stroke-width="1"/>
+  
+  <!-- Total Amount -->
+  <text x="90" y="140" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Total Amount</text>
+  <text x="510" y="140" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#2563eb" text-anchor="end">$41.25</text>
+  
+  <!-- Payment Method -->
+  <text x="90" y="180" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Payment Method</text>
+  
+  <!-- Payment Options -->
+  <g transform="translate(90, 200)">
+    <!-- Cash -->
+    <rect x="0" y="0" width="130" height="60" rx="8" fill="#2563eb" stroke="#2563eb" stroke-width="2"/>
+    <text x="65" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Cash</text>
+    <text x="65" y="45" font-family="Arial, sans-serif" font-size="11" fill="#ffffff" text-anchor="middle">Physical payment</text>
+    
+    <!-- Card -->
+    <rect x="140" y="0" width="130" height="60" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="205" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Card</text>
+    <text x="205" y="45" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Credit/Debit</text>
+    
+    <!-- Split -->
+    <rect x="280" y="0" width="130" height="60" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="345" y="25" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Split</text>
+    <text x="345" y="45" font-family="Arial, sans-serif" font-size="11" fill="#64748b" text-anchor="middle">Multiple methods</text>
+  </g>
+  
+  <!-- Cash Tendered -->
+  <text x="90" y="300" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Cash Tendered</text>
+  <rect x="90" y="315" width="200" height="40" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="105" y="340" font-family="Arial, sans-serif" font-size="16" fill="#64748b">$50.00</text>
+  
+  <!-- Change -->
+  <text x="310" y="300" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Change</text>
+  <rect x="310" y="315" width="200" height="40" rx="6" fill="#f1f5f9" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="325" y="340" font-family="Arial, sans-serif" font-size="16" fill="#22c55e">$8.75</text>
+  
+  <!-- Quick Amount Buttons -->
+  <text x="90" y="385" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Quick amounts:</text>
+  <rect x="90" y="395" width="70" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="125" y="415" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">$20</text>
+  <rect x="170" y="395" width="70" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="205" y="415" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">$50</text>
+  <rect x="250" y="395" width="70" height="30" rx="4" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="285" y="415" font-family="Arial, sans-serif" font-size="12" fill="#1e293b" text-anchor="middle">$100</text>
+  
+  <!-- Action Buttons -->
+  <rect x="90" y="440" width="200" height="44" rx="8" fill="#ef4444"/>
+  <text x="190" y="468" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Cancel</text>
+  
+  <rect x="305" y="440" width="205" height="44" rx="8" fill="#22c55e"/>
+  <text x="407" y="468" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#ffffff" text-anchor="middle">Complete Payment</text>
+  
+  <!-- Footer Label -->
+  <text x="300" y="490" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Screenshot: Payment Modal</text>
+</svg>

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600">
+  <defs>
+    <linearGradient id="headerGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f8fafc;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="800" height="600" fill="#f8fafc"/>
+  
+  <!-- Header -->
+  <rect x="0" y="0" width="800" height="60" fill="url(#headerGradient)" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="20" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="#1e293b">Product Grid</text>
+  
+  <!-- Category Filter -->
+  <rect x="20" y="75" width="760" height="50" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="40" y="100" font-family="Arial, sans-serif" font-size="14" fill="#64748b">Filter:</text>
+  
+  <!-- Category Pills -->
+  <rect x="90" y="82" width="70" height="30" rx="15" fill="#2563eb"/>
+  <text x="125" y="102" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" text-anchor="middle">All</text>
+  
+  <rect x="170" y="82" width="70" height="30" rx="15" fill="#f1f5f9"/>
+  <text x="205" y="102" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Food</text>
+  
+  <rect x="250" y="82" width="70" height="30" rx="15" fill="#f1f5f9"/>
+  <text x="285" y="102" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Drinks</text>
+  
+  <rect x="330" y="82" width="80" height="30" rx="15" fill="#f1f5f9"/>
+  <text x="370" y="102" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Dessert</text>
+  
+  <!-- Search -->
+  <rect x="580" y="82" width="180" height="30" rx="15" fill="#f1f5f9"/>
+  <text x="670" y="102" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Search products...</text>
+  
+  <!-- Product Grid (4 columns x 3 rows) -->
+  <g transform="translate(20, 145)">
+    <!-- Row 1 -->
+    <rect x="0" y="0" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="20" y="15" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="90" y="50" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="90" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Margherita Pizza</text>
+    <text x="90" y="110" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$12.00</text>
+    
+    <rect x="195" y="0" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="215" y="15" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="285" y="50" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="285" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Classic Burger</text>
+    <text x="285" y="110" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$8.50</text>
+    
+    <rect x="390" y="0" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="410" y="15" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="480" y="50" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="480" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Pasta Carbonara</text>
+    <text x="480" y="110" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$10.00</text>
+    
+    <rect x="585" y="0" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="605" y="15" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="675" y="50" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="675" y="90" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Caesar Salad</text>
+    <text x="675" y="110" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$7.00</text>
+    
+    <!-- Row 2 -->
+    <rect x="0" y="145" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="20" y="160" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="90" y="195" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="90" y="235" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Coca Cola</text>
+    <text x="90" y="255" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$2.50</text>
+    
+    <rect x="195" y="145" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="215" y="160" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="285" y="195" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="285" y="235" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Espresso</text>
+    <text x="285" y="255" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$3.00</text>
+    
+    <rect x="390" y="145" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="410" y="160" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="480" y="195" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="480" y="235" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Orange Juice</text>
+    <text x="480" y="255" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$4.00</text>
+    
+    <rect x="585" y="145" width="180" height="130" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <rect x="605" y="160" width="140" height="60" rx="4" fill="#f1f5f9"/>
+    <text x="675" y="195" font-family="Arial, sans-serif" font-size="24" fill="#cbd5e1" text-anchor="middle">IMG</text>
+    <text x="675" y="235" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#1e293b" text-anchor="middle">Sparkling Water</text>
+    <text x="675" y="255" font-family="Arial, sans-serif" font-size="14" fill="#2563eb" text-anchor="middle">$2.00</text>
+  </g>
+  
+  <!-- Footer Label -->
+  <text x="400" y="585" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Screenshot: Product Grid</text>
+</svg>

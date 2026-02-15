@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FAQ - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Domande Frequenti</h1>
+                <p class="page-description">
+                    Trova le risposte alle domande piu' comuni sull'utilizzo del sistema POS. Le domande sono organizzate per argomento per aiutarti a trovare rapidamente quello che ti serve.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="getting-started">Primi Passi</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Come faccio ad accedere per la prima volta?</div>
+                        <div class="card-content">
+                            <p>Il tuo amministratore ti fornira' un nome utente e una password. Nella schermata di accesso, inserisci le tue credenziali e clicca sul pulsante Accedi. Se il tuo dispositivo non e' stato assegnato a una <a href="glossary.html#till">Cassa</a>, vedrai un messaggio di errore che ti chiede di contattare il tuo amministratore.</p>
+                            <p>Vedi anche: <a href="../user-guide/logging-in.html">Effettuare l'Accesso</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cosa fare se il mio dispositivo mostra "Cassa non configurata"?</div>
+                        <div class="card-content">
+                            <p>Questo significa che il tuo dispositivo non e' stato assegnato a una cassa. Contatta il tuo amministratore per assegnare il tuo dispositivo a una cassa nella sezione <a href="../admin-guide/tills.html">Gestione Casse</a>. Una volta assegnato, potrai accedere e utilizzare il POS.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come cambio la lingua?</div>
+                        <div class="card-content">
+                            <p>Clicca sul selettore di lingua nell'intestazione (EN/IT) per alternare tra inglese e italiano. La preferenza della lingua viene salvata per la tua sessione. Sia l'interfaccia che i messaggi di errore verranno visualizzati nella lingua selezionata.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="orders-payments">Ordini e Pagamenti</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Come aggiungo articoli a un ordine?</div>
+                        <div class="card-content">
+                            <p>Tocca sui bottoni dei prodotti nella griglia prodotti per aggiungere articoli al tuo ordine corrente. Ogni tocco aggiunge una unita' di quella variante del prodotto. Per aggiungere multiple unita' rapidamente, tocca il bottone piu' volte o usa i controlli della quantita' nel pannello ordini.</p>
+                            <p>Vedi anche: <a href="../user-guide/taking-orders.html">Prendere Ordini</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come rimuovo un articolo da un ordine?</div>
+                        <div class="card-content">
+                            <p>Nel pannello ordini, tocca il pulsante meno (-) accanto all'articolo per ridurne la quantita'. Quando la quantita' raggiunge zero, l'articolo viene rimosso. In alternativa, usa il pulsante Cancella per rimuovere tutti gli articoli dall'ordine.</p>
+                            <p><strong>Nota:</strong> Gli articoli rimossi vengono registrati nel Registro Attivita' Ordini per scopi di audit.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Posso annullare un articolo eliminato?</div>
+                        <div class="card-content">
+                            <p>No, una volta che un articolo e' stato rimosso da un ordine, non puo' essere ripristinato automaticamente. Dovrai re-inserire l'articolo toccando il bottone del prodotto again. La rimozione viene registrata nel Registro Attivita' Ordini.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come aggiungo una mancia a un pagamento?</div>
+                        <div class="card-content">
+                            <p>Nel modal di pagamento, usa i bottoni delle mance (0%, 5%, 10%, 15%, 20%) o inserisci un importo di mancia personalizzato. La mancia viene aggiunta al totale e registrata nella transazione. Le mance sono incluse nei totali della chiusura giornaliera.</p>
+                            <p>Vedi anche: <a href="../user-guide/payments.html">Elaborare Pagamenti</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Quali metodi di pagamento sono supportati?</div>
+                        <div class="card-content">
+                            <p>Il POS supporta due metodi di pagamento:</p>
+                            <ul>
+                                <li><strong>Contanti:</strong> Per i pagamenti in contanti, il sistema mostra l'importo dovuto e puo' calcolare il resto.</li>
+                                <li><strong>Carta:</strong> Per i pagamenti con carta, il sistema registra la transazione. L'elaborazione effettiva della carta e' gestita dal tuo terminale carta esterno.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="tables-tabs">Tavoli e Conti Aperti</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Come assegno un ordine a un tavolo?</div>
+                        <div class="card-content">
+                            <p>Tocca il pulsante Tavolo nel pannello ordini per aprire il modal di assegnazione tavolo. Seleziona una sala, poi tocca su un tavolo disponibile per assegnare l'ordine. Lo stato del tavolo si aggiornera' a "Occupato".</p>
+                            <p>Vedi anche: <a href="../user-guide/tables.html">Gestire i Tavoli</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come trasferisco un ordine a un altro tavolo?</div>
+                        <div class="card-content">
+                            <p>Apri il modal di assegnazione tavolo e seleziona un altro tavolo. L'ordine sara' riassegnato e entrambi gli stati dei tavoli si aggiorneranno di conseguenza. Se il tavolo di destinazione ha gia' un conto aperto, dovrai prima chiudere o trasferire quel conto.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cos'e' un conto aperto e quando dovrei usarne uno?</div>
+                        <div class="card-content">
+                            <p>Un <a href="glossary.html#tab">Conto Aperto</a> e' un ordine salvato che puo' essere caricato e modificato successivamente. Usa i conti aperti per:</p>
+                            <ul>
+                                <li>Clienti che potrebbero aggiungere altri articoli nel tempo (es. avventori del bar)</li>
+                                <li>Ordini che devono essere pagati successivamente</li>
+                                <li>Suddividere il conto su pagamenti multipli</li>
+                            </ul>
+                            <p>Vedi anche: <a href="../user-guide/tabs.html">Lavorare con i Conti Aperti</a></p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come trasferisco articoli tra conti aperti?</div>
+                        <div class="card-content">
+                            <p>Apri il Gestore Conti Aperti e seleziona il conto di origine. Usa l'opzione Trasferisci Articoli per spostare gli articoli selezionati su un altro conto aperto. Questo e' utile quando i clienti vogliono suddividere un conto o quando gli articoli sono stati aggiunti al conto sbagliato.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="account-security">Account e Sicurezza</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Come resetto una password dimenticata?</div>
+                        <div class="card-content">
+                            <p>Contatta il tuo amministratore per resettare la tua password. Gli utenti amministratore possono cambiare le passwords dalla sezione <a href="../admin-guide/users.html">Gestione Utenti</a>. Per ragioni di sicurezza, non c'e' un'opzione di self-service per il reset della password.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cosa fare se vedo "La sessione e' scaduta"?</div>
+                        <div class="card-content">
+                            <p>La tua sessione di accesso e' scaduta per motivi di sicurezza. Semplcemente accedi di nuovo con le tue credenziali. Il tuo ordine corrente viene salvato automaticamente e sara' ripristinato quando ti ricolleghi.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come effettuo la disconnessione?</div>
+                        <div class="card-content">
+                            <p>Tocca il pulsante di disconnessione nell'intestazione. Il tuo ordine corrente viene salvato e sara' disponibile quando tu (o un altro utente) effettuerai l'accesso successivo. Se hai un ordine attivo, sara' preservato nella tua sessione d'ordine.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="technical">Problemi Tecnici</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Cosa succede se la rete va giu'?</div>
+                        <div class="card-content">
+                            <p>Il sistema POS richiede una connessione di rete per funzionare. Se la rete va giu':</p>
+                            <ul>
+                                <li>Non potrai elaborare nuovi ordini o pagamenti</li>
+                                <li>I conti aperti salvati saranno disponibili una volta ripristinata la connettivita'</li>
+                                <li>I dati inseriti durante l'interruzione potrebbero non essere salvati</li>
+                            </ul>
+                            <p>Contatta il tuo supporto IT o amministratore per risolvere i problemi di rete.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Perche' il mio schermo non risponde al tocco?</div>
+                        <div class="card-content">
+                            <p>Se il touch screen non risponde:</p>
+                            <ul>
+                                <li>Controlla se la finestra del browser ha il focus (clicca ovunque sullo schermo)</li>
+                                <li>Prova ad aggiornare la pagina (premi F5 o Ctrl+R)</li>
+                                <li>Controlla se la tastiera virtuale sta bloccando gli eventi tocco</li>
+                                <li>Verifica che i driver del tuo touch screen siano installati correttamente</li>
+                            </ul>
+                            <p>Se i problemi persistono, contatta il tuo amministratore.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Perche' le mie modifiche non appaiono?</div>
+                        <div class="card-content">
+                            <p>Se le modifiche effettuate su un altro dispositivo non sono visibili:</p>
+                            <ul>
+                                <li>Aggiorna la pagina usando Ctrl+R o il pulsante di aggiornamento</li>
+                                <li>Disconnettiti e riconnettiti per forzare un aggiornamento dei dati</li>
+                                <li>Controlla la tua connessione di rete</li>
+                            </ul>
+                            <p>Alcuni dati potrebbero richiedere qualche secondo per sincronizzarsi tra i dispositivi.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Cosa significa "Troppe richieste"?</div>
+                        <div class="card-content">
+                            <p>Questo errore appare quando hai effettuato troppe azioni in poco tempo. Il sistema ha un rate limiting per prevenire abusi. Aspetta qualche secondo e riprova. Se il problema persiste, contatta il tuo amministratore.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="admin">Domande degli Amministratori</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Come aggiungo un nuovo utente?</div>
+                        <div class="card-content">
+                            <p>Vai a <a href="../admin-guide/users.html">Gestione Utenti</a> nel Pannello di Amministrazione. Clicca su "Aggiungi Utente" e compila le informazioni richieste (nome utente, password, ruolo). Scegli tra ruolo Amministratore (accesso completo) o Cassiere (solo POS).</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come configuro una nuova cassa?</div>
+                        <div class="card-content">
+                            <p>Vai a <a href="../admin-guide/tills.html">Gestione Casse</a> nel Pannello di Amministrazione. Clicca su "Aggiungi Cassa" e inserisci un nome per la cassa. Per assegnare un dispositivo, usa la funzione di assegnazione dispositivo o fai accedere l'utente da quel dispositivo.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come chiudo la giornata lavorativa?</div>
+                        <div class="card-content">
+                            <p>Vai a <a href="../admin-guide/daily-closing.html">Chiusura Giornaliera</a> nel Pannello di Amministrazione. Rivedi i totali della giornata corrente e clicca su "Chiudi Giornata" per generare il rapporto di chiusura. Questa azione e' permanente e non puo' essere annullata.</p>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">Come personalizzo il layout della griglia prodotti?</div>
+                        <div class="card-content">
+                            <p>I layout della griglia prodotti possono essere personalizzati nella <a href="../admin-guide/products.html">Gestione Prodotti</a>. Seleziona una categoria e una cassa, poi trascina e rilascia i prodotti per disporli. Le modifiche vengono salvate automaticamente.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

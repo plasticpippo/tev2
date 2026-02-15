@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="app-container">
+        <!-- Sidebar Navigation -->
         <aside class="sidebar">
             <div class="sidebar-header">
                 <a href="index.html" class="sidebar-logo">Manuale POS</a>
@@ -18,7 +19,9 @@
             </nav>
         </aside>
 
+        <!-- Main Content -->
         <main class="main-content">
+            <!-- Header -->
             <header class="header">
                 <div class="header-left">
                     <button id="mobile-nav-toggle" class="nav-toggle" aria-label="Toggle navigation">
@@ -40,20 +43,21 @@
                 </div>
             </header>
 
+            <!-- Page Content -->
             <div class="page-content" id="page-content">
-                <h1 class="page-title">Manuale Applicazione POS</h1>
+                <h1 class="page-title">Manuale dell'Applicazione POS</h1>
                 <p class="page-description">
-                    Benvenuti nel manuale completo per l'applicazione Point of Sale (POS). 
-                    Questa documentazione copre tutti gli aspetti del sistema, dalla configurazione base alle funzionalita' avanzate di amministrazione.
+                    Benvenuto nel manuale di istruzioni completo per l'applicazione Point of Sale (POS).
+                    Questa documentazione copre tutti gli aspetti del sistema dalla configurazione di base alle funzionalita' avanzate di amministrazione.
                 </p>
 
                 <div class="section-landing">
                     <div class="page-grid">
                         <a href="getting-started/introduction.html" class="page-card">
                             <div class="page-card-icon">&#128640;</div>
-                            <div class="page-card-title">Per Iniziare</div>
+                            <div class="page-card-title">Primi Passi</div>
                             <div class="page-card-description">
-                                Impara le basi del sistema POS, requisiti di sistema e guida alla configurazione iniziale.
+                                Impara le basi del sistema POS, i requisiti di sistema e la guida alla configurazione iniziale.
                             </div>
                         </a>
 
@@ -61,7 +65,7 @@
                             <div class="page-card-icon">&#128100;</div>
                             <div class="page-card-title">Guida Utente</div>
                             <div class="page-card-description">
-                                Guida completa per cassieri e personale sull'utilizzo dell'interfaccia POS.
+                                Guida completa per cassieri e personale sull'utilizzo dell'interfaccia POS, presa di ordini ed elaborazione dei pagamenti.
                             </div>
                         </a>
 
@@ -69,7 +73,7 @@
                             <div class="page-card-icon">&#9881;</div>
                             <div class="page-card-title">Guida Amministratore</div>
                             <div class="page-card-description">
-                                Tutto quello che gli amministratori devono sapere sulla gestione del sistema.
+                                Tutto quello che gli amministratori devono sapere sulla gestione di prodotti, utenti, inventario e impostazioni di sistema.
                             </div>
                         </a>
 
@@ -77,7 +81,7 @@
                             <div class="page-card-icon">&#9000;</div>
                             <div class="page-card-title">Riferimento</div>
                             <div class="page-card-description">
-                                Scorciatoie da tastiera, glossario, FAQ e guida alla risoluzione problemi.
+                                Scorciatoie da tastiera, glossario dei termini, domande frequenti e guida alla risoluzione dei problemi.
                             </div>
                         </a>
 
@@ -85,22 +89,44 @@
                             <div class="page-card-icon">&#128451;</div>
                             <div class="page-card-title">Appendice</div>
                             <div class="page-card-description">
-                                Schema del database, riferimento API e note di rilascio.
+                                Panoramica dello schema del database, riferimento endpoint API e note di rilascio.
                             </div>
                         </a>
                     </div>
                 </div>
 
+                <!-- Quick Links Section -->
                 <div class="section">
                     <h2 class="section-title">Link Rapidi</h2>
                     <div class="section-content">
                         <ul>
-                            <li><a href="user-guide/logging-in.html">Come effettuare l'accesso al POS</a></li>
-                            <li><a href="user-guide/taking-orders.html">Come effettuare un ordine</a></li>
+                            <li><a href="user-guide/logging-in.html">Come accedere al POS</a></li>
+                            <li><a href="user-guide/taking-orders.html">Come prendere un ordine</a></li>
                             <li><a href="user-guide/processing-payments.html">Come elaborare un pagamento</a></li>
                             <li><a href="admin-guide/product-management.html">Come aggiungere nuovi prodotti</a></li>
                             <li><a href="admin-guide/daily-closing.html">Come effettuare la chiusura giornaliera</a></li>
                         </ul>
+                    </div>
+                </div>
+
+                <!-- Target Audience -->
+                <div class="section">
+                    <h2 class="section-title">Per chi e' questo manuale?</h2>
+                    <div class="section-content">
+                        <div class="card">
+                            <div class="card-title">Utenti Finali (Cassieri/Personale)</div>
+                            <div class="card-content">
+                                Personale del ristorante che utilizza il POS quotidianamente per prendere ordini ed elaborare pagamenti.
+                                Inizia con la <a href="user-guide/logging-in.html">Guida Utente</a>.
+                            </div>
+                        </div>
+                        <div class="card">
+                            <div class="card-title">Amministratori</div>
+                            <div class="card-content">
+                                Amministratori di sistema che gestiscono prodotti, utenti, inventario e configurazione del sistema.
+                                Inizia con la guida alla <a href="getting-started/first-time-setup.html">Configurazione Iniziale</a>.
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

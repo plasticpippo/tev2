@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Risoluzione Problemi - Manuale POS</title>
+    <link rel="stylesheet" href="../../css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <a href="../index.html" class="sidebar-logo">Manuale POS</a>
+                <div class="sidebar-subtitle">Documentazione Italiana</div>
+            </div>
+            <nav class="sidebar-nav" id="sidebar-nav"></nav>
+        </aside>
+
+        <main class="main-content">
+            <header class="header">
+                <div class="header-left">
+                    <ol class="breadcrumb" id="breadcrumb"></ol>
+                </div>
+                <div class="header-right">
+                    <div class="search-box">
+                        <input type="text" id="search-input" class="search-input" placeholder="Cerca...">
+                    </div>
+                    <div class="language-switcher">
+                        <button class="language-btn" data-lang="en" onclick="Manual.switchLanguage('en')">EN</button>
+                        <button class="language-btn active" data-lang="it">IT</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="page-content" id="page-content">
+                <h1 class="page-title">Risoluzione Problemi</h1>
+                <p class="page-description">
+                    Soluzioni ai problemi comuni che potresti incontrare con il sistema POS. Se non riesci a risolvere un problema usando questa guida, contatta il tuo amministratore o il supporto tecnico.
+                </p>
+
+                <div id="page-toc"></div>
+
+                <div class="section">
+                    <h2 id="login-issues">Problemi di Accesso</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Nome utente o password non validi"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Le credenziali inserite non corrispondono a nessun account utente.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Controlla che il Blocco Maiuscole non sia attivato sulla tastiera</li>
+                                <li>Verifica che il nome utente sia scritto correttamente (i nomi utente sono case-sensitive)</li>
+                                <li>Reinserisci la tua password con attenzione, guardando eventuali errori di battitura</li>
+                                <li>Contatta il tuo amministratore per verificare che il tuo account esista e sia attivo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Cassa non configurata" o "Dispositivo non assegnato"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il dispositivo che stai usando non e' stato assegnato a una cassa.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Contatta il tuo amministratore per assegnare questo dispositivo a una cassa</li>
+                                <li>L'amministratore puo' farlo nella <a href="../admin-guide/tills.html">Gestione Casse</a></li>
+                                <li>Se sei un amministratore, accedi da un dispositivo gia' assegnato per configurare questo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"L'account utente e' disattivato"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il tuo account e' stato disattivato da un amministratore.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Contatta il tuo amministratore per riattivare il tuo account</li>
+                                <li>Gli amministratori possono cambiare lo stato dell'account nella <a href="../admin-guide/users.html">Gestione Utenti</a></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"La sessione e' scaduta"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> La tua sessione di accesso e' scaduta per inattivita' o policy di sicurezza.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Semplcemente accedi di nuovo con le tue credenziali</li>
+                                <li>Il tuo ordine corrente viene salvato automaticamente e sara' ripristinato</li>
+                                <li>Se questo succede frequentemente, chiedi al tuo amministratore delle impostazioni di timeout della sessione</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Il token e' stato revocato. Per favore accedi di nuovo."</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> La tua sessione e' stata invalidata, possibilmente perche' hai effettuato l'accesso da un altro dispositivo o un amministratore ha revocato i tuoi token.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Accedi di nuovo per creare una nuova sessione</li>
+                                <li>Se non hai effettuato l'accesso altrove, contatta il tuo amministratore per una verifica di sicurezza</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="payment-issues">Errori di Elaborazione Pagamenti</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"L'elaborazione del pagamento e' fallita"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> La transazione non puo' essere completata a causa di un problema di server o rete.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Controlla la tua connessione di rete</li>
+                                <li>Verifica che l'importo della transazione sia corretto</li>
+                                <li>Riprova la transazione</li>
+                                <li>Se usi il pagamento con carta, verifica che il terminale carta funzioni</li>
+                                <li>Contatta il tuo amministratore se il problema persiste</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Dati della transazione non validi"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> L'ordine contiene informazioni non valide o incomplete.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Cancella l'ordine e ricostruiscilo da zero</li>
+                                <li>Assicurati che tutti gli articoli abbiano prezzi validi</li>
+                                <li>Controlla che il totale dell'ordine sia maggiore di zero</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="network-issues">Problemi di Connettivita' di Rete</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Applicazione non si carica</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il server non e' raggiungibile o non risponde.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Controlla che il tuo dispositivo sia connesso alla rete</li>
+                                <li>Prova ad accedere ad altri siti web per verificare la connettivita' internet</li>
+                                <li>Aggiorna la pagina (premi F5 o Ctrl+R)</li>
+                                <li>Svuota la cache del browser e ricarica</li>
+                                <li>Contatta il tuo supporto IT per verificare che il server sia in funzione</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Errore di connessione al database"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il server non riesce a connettersi al database.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Questo e' un problema lato server - contatta il tuo amministratore immediatamente</li>
+                                <li>Non tentare di elaborare ordini fino a quando il problema non e' risolto</li>
+                                <li>I conti aperti saranno preservati nel database</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Servizio non disponibile"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il server e' temporaneamente impossibilitato a gestire le richieste.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Aspetta qualche momento e riprova</li>
+                                <li>Il server potrebbe essere in riavvio o sotto carico pesante</li>
+                                <li>Contatta il tuo amministratore se il problema persiste</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="data-issues">Problemi di Dati e Sincronizzazione</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">Le modifiche non appaiono sugli altri dispositivi</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> I dati non si sono ancora sincronizzati tra i dispositivi.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Aggiorna la pagina sul dispositivo che mostra dati obsoleti (Ctrl+R)</li>
+                                <li>Disconnettiti e riconnettiti per forzare un aggiornamento completo dei dati</li>
+                                <li>Controlla la connettivita' di rete su entrambi i dispositivi</li>
+                                <li>La maggior parte dei dati si sincronizza entro pochi secondi, ma potrebbe richiedere piu' tempo su reti lente</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Record non trovato" o "Risorsa non trovata"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> L'elemento che stai cercando di accedere e' stato eliminato o non esiste.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Aggiorna la pagina per aggiornare i tuoi dati</li>
+                                <li>L'elemento potrebbe essere stato eliminato da un altro utente</li>
+                                <li>Ritorna alla lista principale e seleziona un elemento diverso</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Questo valore esiste gia'" o errore "Duplicato"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Stai cercando di creare un elemento con un nome che esiste gia'.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Scegli un nome diverso per l'elemento</li>
+                                <li>Controlla se l'elemento esiste gia' nella lista</li>
+                                <li>I nomi devono essere unici all'interno della loro categoria (prodotti, categorie, sale, ecc.)</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="permission-issues">Problemi di Permessi e Accesso</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Accesso negato" o "Non autorizzato"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Non hai il permesso di eseguire questa azione.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Verifica di essere loggato con l'account corretto</li>
+                                <li>Alcune funzionalita' richiedono il ruolo Amministratore - controlla con il tuo amministratore</li>
+                                <li>Se hai cambiato ruolo recentemente, disconnettiti e riconnettiti</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Sono richiesti privilegi di amministratore"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> L'azione che stai cercando di eseguire richiede l'accesso amministratore.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Contatta un amministratore per eseguire questa azione</li>
+                                <li>Se sei un amministratore, verifica che il tuo account abbia il ruolo Amministratore</li>
+                                <li>Disconnettiti e riconnettiti per aggiornare i tuoi permessi</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Accesso negato. Non sei il proprietario di questo tavolo/layout."</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Stai cercando di accedere a una risorsa assegnata a un'altra cassa.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Ogni cassa ha i propri layout e assegnazioni di tavoli</li>
+                                <li>Passa alla cassa o dispositivo corretto</li>
+                                <li>Contatta il tuo amministratore se hai bisogno di accedere a questa risorsa</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="validation-issues">Errori di Convalida</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Questo campo e' richiesto"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Un campo obbligatorio e' stato lasciato vuoto.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Compila tutti i campi richiesti (marcati con asterischi o evidenziati)</li>
+                                <li>Controlla gli spazi vuoti che potrebbero sembrare campi vuoti</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Formato non valido" o "Valore non valido"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> I dati inseriti non corrispondono al formato previsto.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Per i campi numerici, inserisci solo numeri (nessuna lettera o carattere speciale)</li>
+                                <li>Per i prezzi, usa il formato decimale (es. 10.99)</li>
+                                <li>Per le date, usa il selettore data o il formato data previsto</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Il valore e' fuori dall'intervallo consentito"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il valore inserito e' troppo grande o troppo piccolo.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Controlla i valori minimi e massimi consentiti</li>
+                                <li>Per le quantita', assicurati che il valore sia positivo</li>
+                                <li>Per i prezzi, assicurati che il valore non sia negativo</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="rate-limiting">Limitazione di Frequenza</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Troppe richieste" o "Troppe operazioni di scrittura"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Hai effettuato troppe richieste in poco tempo. Il sistema limita la frequenza delle richieste per prevenire abusi e garantire la stabilita'.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Aspetta qualche secondo prima di riprovare</li>
+                                <li>Evita clic o tocchi rapidi e ripetuti</li>
+                                <li>Se usi strumenti automatizzati, riduci la frequenza delle richieste</li>
+                                <li>Contatta il tuo amministratore se colpisci costantemente i limiti durante l'uso normale</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="delete-issues">Problemi di Eliminazione</h2>
+                    
+                    <div class="card">
+                        <div class="card-title">"Impossibile eliminare la categoria con prodotti assegnati"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> La categoria ha ancora prodotti assegnati.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Riassegna i prodotti a una categoria diversa</li>
+                                <li>O elimina i prodotti se non sono piu' necessari</li>
+                                <li>Una volta che la categoria e' vuota, puoi eliminarla</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Impossibile eliminare il tavolo con conti aperti"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Il tavolo ha conti aperti associati.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Chiudi o regola tutti i conti aperti per questo tavolo</li>
+                                <li>O riassegna i conti aperti a un tavolo diverso</li>
+                                <li>Una volta che tutti i conti sono chiusi, puoi eliminare il tavolo</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Impossibile eliminare la sala con tavoli assegnati"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> La sala contiene ancora tavoli.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Elimina o riassegna tutti i tavoli in questa sala prima</li>
+                                <li>Una volta che la sala e' vuota, puoi eliminarla</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Impossibile eliminare l'articolo di magazzino. E' attualmente usato in una ricetta di prodotto."</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> L'articolo di magazzino e' collegato alle varianti di prodotto per il tracciamento del consumo del magazzino.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <ul>
+                                <li>Rimuovi l'articolo di magazzino da tutte le varianti di prodotto che lo usano</li>
+                                <li>Vai alla Gestione Prodotti e modifica ogni prodotto interessato</li>
+                                <li>Una volta scollegato da tutti i prodotti, puoi eliminare l'articolo di magazzino</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="card">
+                        <div class="card-title">"Impossibile eliminare il tuo stesso account"</div>
+                        <div class="card-content">
+                            <p><strong>Causa:</strong> Stai cercando di eliminare l'account con cui sei attualmente loggato.</p>
+                            <p><strong>Soluzioni:</strong></p>
+                            <li>Chiedi a un altro amministratore di eliminare il tuo account</li>
+                            <li>O crea un nuovo account amministratore prima, poi elimina questo</li>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h2 id="when-to-contact">Quando Contattare il Supporto</h2>
+                    
+                    <p>Se incontri una qualsiasi delle seguenti situazioni, contatta il tuo amministratore o il supporto tecnico immediatamente:</p>
+                    
+                    <ul>
+                        <li><strong>Errori del database:</strong> Qualsiasi messaggio che menzioni "errore di connessione al database" o "errore di query al database"</li>
+                        <li><strong>Errori interni del server:</strong> Messaggi che dicono "Errore interno del server" o "Si e' verificato un errore inatteso"</li>
+                        <li><strong>Problemi di sicurezza:</strong> Se sospetti accessi non autorizzati o vedi attivita' di accesso inaspettata</li>
+                        <li><strong>Perdita di dati:</strong> Se transazioni, conti o altri dati sembrano mancare</li>
+                        <li><strong>Problemi persistenti:</strong> Problemi che continuano dopo aver seguito i passaggi di risoluzione problemi sopra</li>
+                    </ul>
+                    
+                    <p>Quando contatti il supporto, fornire:</p>
+                    <ul>
+                        <li>Il messaggio di errore esatto che hai visto</li>
+                        <li>Cosa stavi cercando di fare quando e' successo l'errore</li>
+                        <li>L'ora in cui il problema e' iniziato</li>
+                        <li>Le informazioni sul tuo dispositivo e browser</li>
+                    </ul>
+                </div>
+
+                <div class="page-navigation" id="page-navigation"></div>
+            </div>
+        </main>
+    </div>
+
+    <script src="../../js/main.js"></script>
+</body>
+</html>

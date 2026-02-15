@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 600" width="900" height="600">
+  <defs>
+    <linearGradient id="sidebarGradient3" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#1e293b;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0f172a;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="900" height="600" fill="#f8fafc"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="220" height="600" fill="url(#sidebarGradient3)"/>
+  <text x="110" y="40" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">TotalEvo</text>
+  <text x="110" y="58" font-family="Arial, sans-serif" font-size="12" fill="#94a3b8" text-anchor="middle">Admin Panel</text>
+  
+  <!-- Sidebar Menu -->
+  <g transform="translate(10, 90)">
+    <rect x="0" y="0" width="200" height="40" rx="6" fill="#2563eb"/>
+    <text x="20" y="25" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Dashboard</text>
+    
+    <rect x="0" y="50" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="75" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Products</text>
+    
+    <rect x="0" y="100" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="125" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Categories</text>
+    
+    <rect x="0" y="150" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="175" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Users</text>
+    
+    <rect x="0" y="200" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="225" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Tables</text>
+    
+    <rect x="0" y="250" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="275" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Rooms</text>
+    
+    <rect x="0" y="300" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="325" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Tills</text>
+    
+    <rect x="0" y="350" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="375" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Layouts</text>
+    
+    <rect x="0" y="400" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="425" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Daily Closing</text>
+    
+    <rect x="0" y="450" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="475" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Reports</text>
+    
+    <rect x="0" y="500" width="200" height="40" rx="6" fill="transparent"/>
+    <text x="20" y="525" font-family="Arial, sans-serif" font-size="14" fill="#94a3b8">Settings</text>
+  </g>
+  
+  <!-- Main Content -->
+  <rect x="220" y="0" width="680" height="80" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="240" y="35" font-family="Arial, sans-serif" font-size="20" font-weight="600" fill="#1e293b">Admin Panel</text>
+  <text x="240" y="55" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Admin User</text>
+  
+  <!-- Quick Stats Cards -->
+  <g transform="translate(240, 100)">
+    <!-- Stats Card 1 -->
+    <rect x="0" y="0" width="150" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="15" y="25" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Today's Revenue</text>
+    <text x="15" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#22c55e">$1,245.00</text>
+    <text x="15" y="85" font-family="Arial, sans-serif" font-size="11" fill="#22c55e">+12% vs yesterday</text>
+    
+    <!-- Stats Card 2 -->
+    <rect x="170" y="0" width="150" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="185" y="25" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Orders Today</text>
+    <text x="185" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#2563eb">48</text>
+    <text x="185" y="85" font-family="Arial, sans-serif" font-size="11" fill="#22c55e">+8% vs yesterday</text>
+    
+    <!-- Stats Card 3 -->
+    <rect x="340" y="0" width="150" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="355" y="25" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Active Tables</text>
+    <text x="355" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#f59e0b">6/10</text>
+    <text x="355" y="85" font-family="Arial, sans-serif" font-size="11" fill="#64748b">60% occupancy</text>
+    
+    <!-- Stats Card 4 -->
+    <rect x="510" y="0" width="150" height="100" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="525" y="25" font-family="Arial, sans-serif" font-size="12" fill="#64748b">Products</text>
+    <text x="525" y="60" font-family="Arial, sans-serif" font-size="24" font-weight="700" fill="#1e293b">124</text>
+    <text x="525" y="85" font-family="Arial, sans-serif" font-size="11" fill="#64748b">Active items</text>
+  </g>
+  
+  <!-- Recent Activity Table -->
+  <rect x="240" y="220" width="640" height="300" rx="8" fill="#ffffff" stroke="#e2e8f0" stroke-width="1"/>
+  <text x="260" y="250" font-family="Arial, sans-serif" font-size="16" font-weight="600" fill="#1e293b">Recent Orders</text>
+  
+  <!-- Table Header -->
+  <rect x="240" y="265" width="640" height="35" fill="#f8fafc"/>
+  <text x="260" y="287" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Order ID</text>
+  <text x="380" y="287" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Table</text>
+  <text x="500" y="287" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Amount</text>
+  <text x="640" y="287" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Status</text>
+  <text x="780" y="287" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#64748b">Time</text>
+  
+  <!-- Table Rows -->
+  <g transform="translate(0, 310)">
+    <line x1="240" y1="0" x2="880" y2="0" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="260" y="20" font-family="Arial, sans-serif" font-size="13" fill="#2563eb">#ORD-001</text>
+    <text x="380" y="20" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">Table 5</text>
+    <text x="500" y="20" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">$45.00</text>
+    <rect x="640" y="5" width="60" height="22" rx="4" fill="#dcfce7"/>
+    <text x="670" y="21" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Paid</text>
+    <text x="780" y="20" font-family="Arial, sans-serif" font-size="13" fill="#64748b">14:32</text>
+    
+    <line x1="240" y1="35" x2="880" y2="35" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="260" y="55" font-family="Arial, sans-serif" font-size="13" fill="#2563eb">#ORD-002</text>
+    <text x="380" y="55" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">Table 2</text>
+    <text x="500" y="55" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">$28.50</text>
+    <rect x="640" y="40" width="60" height="22" rx="4" fill="#dcfce7"/>
+    <text x="670" y="56" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Paid</text>
+    <text x="780" y="55" font-family="Arial, sans-serif" font-size="13" fill="#64748b">14:28</text>
+    
+    <line x1="240" y1="70" x2="880" y2="70" stroke="#e2e8f0" stroke-width="1"/>
+    <text x="260" y="90" font-family="Arial, sans-serif" font-size="13" fill="#2563eb">#ORD-003</text>
+    <text x="380" y="90" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">Table 8</text>
+    <text x="500" y="90" font-family="Arial, sans-serif" font-size="13" fill="#1e293b">$15.00</text>
+    <rect x="640" y="75" width="60" height="22" rx="4" fill="#dcfce7"/>
+    <text x="670" y="91" font-family="Arial, sans-serif" font-size="11" fill="#22c55e" text-anchor="middle">Paid</text>
+    <text x="780" y="90" font-family="Arial, sans-serif" font-size="13" fill="#64748b">14:15</text>
+  </g>
+  
+  <!-- Footer Label -->
+  <text x="450" y="585" font-family="Arial, sans-serif" font-size="12" fill="#64748b" text-anchor="middle">Screenshot: Admin Panel</text>
+</svg>

@@ -200,9 +200,11 @@ function getCurrentPage() {
  */
 function buildUrl(language, section, page) {
     if (page === 'index') {
+        // For index pages, always use the language prefix
         return `${language}/index.html`;
     }
-    return `${language}/${section}/${page}.html`;
+    // For section pages, use relative path from language folder (no language prefix needed)
+    return `${section}/${page}.html`;
 }
 
 // ==========================================================================
@@ -261,14 +263,14 @@ function generateBreadcrumb() {
     
     let breadcrumbHtml = `
         <li class="breadcrumb-item">
-            <a href="${language}/index.html">${language === 'en' ? 'Home' : 'Home'}</a>
+            <a href="index.html">${language === 'en' ? 'Home' : 'Home'}</a>
         </li>
     `;
     
     if (currentSection && navData[currentSection]) {
         breadcrumbHtml += `
             <li class="breadcrumb-item">
-                <a href="${language}/index.html">${navData[currentSection].title}</a>
+                <a href="index.html">${navData[currentSection].title}</a>
             </li>
         `;
         
@@ -354,26 +356,40 @@ function switchLanguage(newLanguage) {
     
     if (newLanguage === currentLanguage) return;
     
-    // Build new URL
+    // Get the base path from the current URL
+    const pathParts = window.location.pathname.split('/');
+    let basePath = '';
+    
+    // Find where 'manual' is in the path and get everything up to and including it
+    for (let i = 0; i < pathParts.length; i++) {
+        if (pathParts[i] === 'manual') {
+            basePath = pathParts.slice(0, i + 1).join('/') + '/';
+            break;
+        }
+    }
+    
+    // Build new URL using absolute path from manual folder
     let newUrl;
     
     // Check if we're on the landing page
     if (window.location.pathname.includes('/manual/index.html') || 
         window.location.pathname === '/manual/' ||
-        window.location.pathname === '/manual') {
+        window.location.pathname === '/manual' ||
+        window.location.pathname.endsWith('/manual/index.html')) {
         // On landing page, go to language index
-        newUrl = `${newLanguage}/index.html`;
+        newUrl = `${basePath}${newLanguage}/index.html`;
     } else if (currentSection) {
         // Try to find corresponding page in new language
         const navData = NAVIGATION[newLanguage];
         if (navData && navData[currentSection] && navData[currentSection].pages[currentPage]) {
-            newUrl = buildUrl(newLanguage, currentSection, currentPage);
+            // Use the same section and page in the new language
+            newUrl = `${basePath}${newLanguage}/${currentSection}/${currentPage}.html`;
         } else {
             // Fall back to section index
-            newUrl = `${newLanguage}/index.html`;
+            newUrl = `${basePath}${newLanguage}/index.html`;
         }
     } else {
-        newUrl = `${newLanguage}/index.html`;
+        newUrl = `${basePath}${newLanguage}/index.html`;
     }
     
     window.location.href = newUrl;
