@@ -365,8 +365,12 @@
       "subtotal": "Subtotal",
       "tax": "Tax",
       "tip": "Tip",
+      "discount": "Discount",
+      "discountReason": "Discount Reason",
       "total": "Total",
-      "table": "Table: {{name}}"
+      "table": "Table: {{name}}",
+      "status": "Status",
+      "complimentary": "Complimentary"
     },
     "ariaLabels": {
       "filterBy": "Filter by {{label}}",

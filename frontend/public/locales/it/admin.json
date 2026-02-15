@@ -365,8 +365,12 @@
       "subtotal": "Subtotale",
       "tax": "Tassa",
       "tip": "Mancia",
+      "discount": "Sconto",
+      "discountReason": "Motivo Sconto",
       "total": "Totale",
-      "table": "Tavolo: {{name}}"
+      "table": "Tavolo: {{name}}",
+      "status": "Stato",
+      "complimentary": "Omaggio"
     },
     "ariaLabels": {
       "filterBy": "Filtra per {{label}}",

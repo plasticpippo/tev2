@@ -9,7 +9,7 @@ import { useTableAssignmentContext } from './TableAssignmentContext';
 import { useUIStateContext } from './UIStateContext';
 
 interface PaymentContextType {
-  handleConfirmPayment: (paymentMethod: string, tip: number) => Promise<void>;
+  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string) => Promise<void>;
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
@@ -26,7 +26,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   const { assignedTable, clearTableAssignment } = useTableAssignmentContext();
   const { setIsPaymentModalOpen } = useUIStateContext();
 
-  const handleConfirmPayment = async (paymentMethod: string, tip: number) => {
+  const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string) => {
     if (!currentUser || !assignedTillId || !appData.settings) return;
 
     try {
@@ -46,7 +46,11 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
           }
       });
 
-      const total = subtotal + tax + tip;
+      const totalBeforeDiscount = subtotal + tax;
+      const total = Math.max(0, totalBeforeDiscount - discount + tip);
+      
+      // Determine status: if total is 0 and discount was applied, it's complimentary
+      const status: 'completed' | 'complimentary' = total === 0 && discount > 0 ? 'complimentary' : 'completed';
       
       // Validate that all items have names before saving transaction
       const validItems = orderItems.filter(item => item.name && item.name.trim() !== '');
@@ -62,6 +66,9 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
           subtotal: subtotal,
           tax: tax,
           tip: tip,
+          discount: discount,
+          discountReason: discountReason || undefined,
+          status: status,
           total: total,
           paymentMethod: paymentMethod,
           userId: currentUser.id,
@@ -79,6 +86,9 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
           subtotal: subtotal,
           tax: tax,
           tip: tip,
+          discount: discount,
+          discountReason: discountReason || undefined,
+          status: status,
           total: total,
           paymentMethod: paymentMethod,
           userId: currentUser.id,
@@ -151,7 +161,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       alert(error instanceof Error ? error.message : t('paymentContext.paymentProcessingFailedMessage'));
       // Keep the modal open so the user can try again or cancel
     }
- };
+  };
 
   const value: PaymentContextType = {
     handleConfirmPayment

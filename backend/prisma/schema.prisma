@@ -100,6 +100,9 @@ model Transaction {
   tax           Float
   tip           Float
   total         Float
+  discount      Float    @default(0)
+  discountReason String?
+  status        String   @default("completed")
   paymentMethod String
   userId        Int
   userName      String

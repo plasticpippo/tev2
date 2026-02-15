@@ -218,6 +218,9 @@
     "itemsMustBeArray": "Gli articoli devono essere un array",
     "itemNameRequired": "Tutti gli articoli devono avere un nome valido",
     "itemInvalidProperties": "Tutti gli articoli devono avere id, variantId, productId, price e quantity validi",
+    "discountNegative": "Lo sconto non puo essere negativo",
+    "discountExceedsTotal": "Lo sconto non puo superare l'importo totale (subtotale + tasse + mancia)",
+    "discountRequiresAdmin": "L'applicazione di uno sconto richiede privilegi di amministratore",
     "log": {
       "fetchError": "Errore nel recupero delle transazioni",
       "fetchOneError": "Errore nel recupero della transazione",

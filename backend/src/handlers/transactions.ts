@@ -62,9 +62,9 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
 transactionsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const {
-      items, subtotal, tax, tip, total, paymentMethod,
-      userId, userName, tillId, tillName
-    } = req.body as Omit<Transaction, 'id' | 'createdAt'>;
+      items, subtotal, tax, tip, paymentMethod,
+      userId, userName, tillId, tillName, discount, discountReason
+    } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total'>;
     
     // Validate that all items have required properties, especially name
     if (!Array.isArray(items)) {
@@ -85,11 +85,43 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
         return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
       }
     }
+
+    // Validate discount if provided
+    const discountAmount = discount || 0;
+    const discountReasonText = discountReason || null;
+
+    // Discount must be non-negative
+    if (discountAmount < 0) {
+      return res.status(400).json({ error: i18n.t('transactions.discountNegative') });
+    }
+
+    // Calculate the pre-discount total
+    const preDiscountTotal = subtotal + tax + tip;
+
+    // Discount must not exceed the total
+    if (discountAmount > preDiscountTotal) {
+      return res.status(400).json({ error: i18n.t('transactions.discountExceedsTotal') });
+    }
+
+    // If discount > 0, check if user is admin
+    if (discountAmount > 0) {
+      const userRole = req.user?.role;
+      const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+      if (!isAdmin) {
+        return res.status(403).json({ error: i18n.t('transactions.discountRequiresAdmin') });
+      }
+    }
+
+    // Calculate the final total after discount
+    const finalTotal = preDiscountTotal - discountAmount;
+
+    // Determine status: 'complimentary' if total <= 0, otherwise 'completed'
+    const status = finalTotal <= 0 ? 'complimentary' : 'completed';
     
     // Log payment initiation
     logPaymentEvent(
       'PROCESSED',
-      total,
+      finalTotal,
       'EUR',
       true,
       {
@@ -106,12 +138,15 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
         subtotal,
         tax,
         tip,
-        total,
+        total: finalTotal,
         paymentMethod,
         userId,
         userName,
         tillId,
         tillName,
+        discount: discountAmount,
+        discountReason: discountReasonText,
+        status,
         createdAt: new Date()
       }
     });
@@ -119,7 +154,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     // Log payment success
     logPaymentEvent(
       'PROCESSED',
-      total,
+      finalTotal,
       'EUR',
       true,
       {

@@ -63,7 +63,16 @@
     "emailReceipt": "Email Receipt",
     "noReceipt": "No Receipt",
     "tablePayment": "Payment for assigned table",
-    "close": "Close"
+    "close": "Close",
+    "discount": "Discount",
+    "discountAmount": "Discount Amount",
+    "discountReason": "Reason (optional)",
+    "discountReasonPlaceholder": "Enter reason for discount...",
+    "increaseDiscount": "Increase discount",
+    "decreaseDiscount": "Decrease discount",
+    "maxDiscount": "Max: {{max}}",
+    "finalTotal": "Final Total",
+    "complimentary": "Complimentary"
   },
   "order": {
     "newOrder": "New Order",

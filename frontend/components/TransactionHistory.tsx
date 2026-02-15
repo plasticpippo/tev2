@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Transaction, User, Till, Settings } from '@shared/types';
+import type { Transaction, User, Till, Settings } from '../../shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
 
@@ -208,24 +208,29 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                     {filteredTransactions.length === 0 ? (
                         <p className="text-slate-500 text-center pt-8">{t('transactions.noTransactions')}</p>
                     ) : (
-                        filteredTransactions.map(t => (
-                            <div key={t.id} className="flex flex-col">
+                        filteredTransactions.map((tx) => (
+                            <div key={tx.id} className="flex flex-col">
                             <button
-                                onClick={() => setSelectedTransaction(t)}
-                                className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === t.id ? 'bg-amber-60 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
-                                aria-label={t('transactions.ariaLabels.transactionDetails', { id: t.id, total: formatCurrency(t.total), user: t.userName, till: t.tillName })}
+                                onClick={() => setSelectedTransaction(tx)}
+                                className={`w-full text-left p-3 rounded-md transition ${selectedTransaction?.id === tx.id ? 'bg-amber-60 text-white' : 'bg-slate-900 hover:bg-slate-700'}`}
+                                aria-label={t('transactions.ariaLabels.transactionDetails', { id: tx.id, total: formatCurrency(tx.total), user: tx.userName, till: tx.tillName })}
                             >
                                 <div className="flex justify-between items-center">
-                                    <span className="font-bold">{formatCurrency(t.total)}</span>
-                                    <span className="text-xs text-slate-400">{t.tillName}</span>
+                                    <span className="font-bold">{formatCurrency(tx.total)}</span>
+                                    <span className="text-xs text-slate-400">{tx.tillName}</span>
                                 </div>
                                 <div className="flex justify-between items-center text-sm">
-                                    <span className="text-slate-300">{t.userName} ({t.paymentMethod})</span>
-                                    <span className="text-slate-400">{formatDate(t.createdAt)}</span>
+                                    <span className="text-slate-300">{tx.userName} ({tx.paymentMethod})</span>
+                                    <span className="text-slate-400">{formatDate(tx.createdAt)}</span>
                                 </div>
-                                {t.tableName && (
+                                {tx.tableName && (
                                     <div className="flex justify-between items-center text-xs mt-1">
-                                        <span className="text-green-400">{t('transactions.details.table', { name: t.tableName })}</span>
+                                        <span className="text-green-400">{t('transactions.details.table', { name: tx.tableName })}</span>
+                                    </div>
+                                )}
+                                {tx.status === 'complimentary' && (
+                                    <div className="flex justify-between items-center text-xs mt-1">
+                                        <span className="text-purple-400">{t('transactions.details.complimentary')}</span>
                                     </div>
                                 )}
                             </button>
@@ -238,6 +243,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                         <div>
                             <h4 className="font-bold text-lg text-amber-400 mb-2">{t('transactions.receipt', { id: selectedTransaction.id })}</h4>
                             <p className="text-sm text-slate-400 mb-4">{formatDate(selectedTransaction.createdAt)}</p>
+                            {selectedTransaction.status === 'complimentary' && (
+                                <div className="mb-4 bg-purple-900/30 border border-purple-700/50 rounded-md p-2 text-center">
+                                    <span className="text-purple-400 font-semibold">{t('transactions.details.complimentary')}</span>
+                                </div>
+                            )}
                             <div className="space-y-2 mb-4">
                                 {selectedTransaction.items.map((item, index) => (
                                     <div key={index} className="flex justify-between text-sm">
@@ -249,6 +259,18 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                             <div className="border-t border-slate-700 pt-2 space-y-1 text-sm">
                                 <div className="flex justify-between"><span>{t('transactions.details.subtotal')}</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
                                 <div className="flex justify-between"><span>{t('transactions.details.tax')}</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>
+                                {selectedTransaction.discount > 0 && (
+                                    <div className="flex justify-between text-purple-400">
+                                        <span>{t('transactions.details.discount')}</span>
+                                        <span>-{formatCurrency(selectedTransaction.discount)}</span>
+                                    </div>
+                                )}
+                                {selectedTransaction.discountReason && (
+                                    <div className="flex justify-between text-xs text-slate-500 italic">
+                                        <span>{t('transactions.details.discountReason')}:</span>
+                                        <span>{selectedTransaction.discountReason}</span>
+                                    </div>
+                                )}
                                 <div className="flex justify-between"><span>{t('transactions.details.tip')}</span><span>{formatCurrency(selectedTransaction.tip)}</span></div>
                                 <div className="flex justify-between font-bold text-base mt-2"><span>{t('transactions.details.total')}</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
                             </div>

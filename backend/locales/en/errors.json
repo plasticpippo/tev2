@@ -218,6 +218,9 @@
     "itemsMustBeArray": "Items must be an array",
     "itemNameRequired": "All items must have a valid name",
     "itemInvalidProperties": "All items must have valid id, variantId, productId, price, and quantity",
+    "discountNegative": "Discount cannot be negative",
+    "discountExceedsTotal": "Discount cannot exceed the total amount (subtotal + tax + tip)",
+    "discountRequiresAdmin": "Applying a discount requires admin privileges",
     "log": {
       "fetchError": "Error fetching transactions",
       "fetchOneError": "Error fetching transaction",

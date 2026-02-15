@@ -83,6 +83,9 @@ export interface Transaction {
   userName: string;
   tillId: number;
   tillName: string;
+  discount: number;
+  discountReason?: string;
+  status: 'completed' | 'complimentary';
   createdAt: string;
 }
 

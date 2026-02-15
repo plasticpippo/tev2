@@ -63,7 +63,16 @@
     "emailReceipt": "Invia Scontrino via Email",
     "noReceipt": "Nessuno Scontrino",
     "tablePayment": "Pagamento per tavolo assegnato",
-    "close": "Chiudi"
+    "close": "Chiudi",
+    "discount": "Sconto",
+    "discountAmount": "Importo Sconto",
+    "discountReason": "Motivo (opzionale)",
+    "discountReasonPlaceholder": "Inserisci motivo dello sconto...",
+    "increaseDiscount": "Aumenta sconto",
+    "decreaseDiscount": "Diminuisci sconto",
+    "maxDiscount": "Max: {{max}}",
+    "finalTotal": "Totale Finale",
+    "complimentary": "Omaggio"
   },
   "order": {
     "newOrder": "Nuovo Ordine",

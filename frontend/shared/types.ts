@@ -48,8 +48,11 @@ export interface Transaction {
   subtotal: number;
   tax: number;
   tip: number;
+  discount: number;
+  discountReason?: string;
+  status?: 'completed' | 'complimentary';
   total: number;
- paymentMethod: string;
+  paymentMethod: string;
   userId: number;
   userName: string;
   tillId: number;
