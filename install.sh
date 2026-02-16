@@ -170,6 +170,291 @@ generate_jwt_secret() {
     openssl rand -hex 64
 }
 
+#===============================================================================
+# VERSION TRACKING FUNCTIONS
+#===============================================================================
+
+# Get current installed version
+get_installed_version() {
+    if [[ -f ".version" ]]; then
+        grep "VERSION=" .version | cut -d'=' -f2
+    else
+        echo "0.0.0"
+    fi
+}
+
+# Get new version from VERSION file
+get_new_version() {
+    if [[ -f "VERSION" ]]; then
+        grep "VERSION=" VERSION | cut -d'=' -f2
+    else
+        echo "unknown"
+    fi
+}
+
+# Compare versions (returns 0 if upgrade needed, 1 if same or newer installed)
+compare_versions() {
+    local current="$1"
+    local new="$2"
+    
+    # If current is 0.0.0, this is a fresh install
+    if [[ "$current" == "0.0.0" ]]; then
+        return 0
+    fi
+    
+    # Simple version comparison
+    if [[ "$(printf '%s\n' "$current" "$new" | sort -V | head -n1)" != "$new" ]]; then
+        return 0  # Upgrade needed
+    fi
+    return 1  # Same or newer installed
+}
+
+# Save installed version
+save_installed_version() {
+    local version="$1"
+    echo "VERSION=$version" > .version
+    echo "INSTALL_DATE=$(date -I)" >> .version
+    echo "INSTALL_TYPE=upgrade" >> .version
+}
+
+#===============================================================================
+# DATABASE BACKUP FUNCTIONS
+#===============================================================================
+
+# Backup database before upgrade
+backup_database() {
+    local backup_dir="./backups"
+    local timestamp=$(date +%Y%m%d_%H%M%S)
+    local backup_file="${backup_dir}/db_backup_${timestamp}.sql"
+    
+    mkdir -p "$backup_dir"
+    
+    print_info "Creating database backup..."
+    
+    # Run pg_dump inside the database container
+    if docker compose exec -T db pg_dump -U totalevo_user bar_pos > "$backup_file" 2>/dev/null; then
+        local size=$(du -h "$backup_file" | cut -f1)
+        print_success "Database backup created: $backup_file ($size)"
+        echo "$backup_file" > "${backup_dir}/.last_backup"
+        return 0
+    else
+        print_error "Database backup failed!"
+        return 1
+    fi
+}
+
+# Restore database from backup
+restore_database() {
+    local backup_file="$1"
+    
+    if [[ ! -f "$backup_file" ]]; then
+        print_error "Backup file not found: $backup_file"
+        return 1
+    fi
+    
+    print_info "Restoring database from: $backup_file"
+    
+    # Drop existing connections and restore
+    docker compose exec -T db psql -U totalevo_user -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'bar_pos' AND pid <> pg_backend_pid();" 2>/dev/null
+    docker compose exec -T db psql -U totalevo_user -d postgres -c "DROP DATABASE IF EXISTS bar_pos;" 2>/dev/null
+    docker compose exec -T db psql -U totalevo_user -d postgres -c "CREATE DATABASE bar_pos;" 2>/dev/null
+    
+    if cat "$backup_file" | docker compose exec -T db psql -U totalevo_user bar_pos > /dev/null 2>&1; then
+        print_success "Database restored successfully"
+        return 0
+    else
+        print_error "Database restore failed!"
+        return 1
+    fi
+}
+
+# Get last backup file
+get_last_backup() {
+    if [[ -f "./backups/.last_backup" ]]; then
+        cat "./backups/.last_backup"
+    else
+        echo ""
+    fi
+}
+
+#===============================================================================
+# ENVIRONMENT VARIABLE MERGE FUNCTIONS
+#===============================================================================
+
+# Merge new environment variables from .env.example
+merge_env_variables() {
+    local env_file=".env"
+    local example_file=".env.example"
+    
+    if [[ ! -f "$example_file" ]]; then
+        print_info "No .env.example found, skipping env merge"
+        return 0
+    fi
+    
+    if [[ ! -f "$env_file" ]]; then
+        print_info "No existing .env found, copying from example"
+        cp "$example_file" "$env_file"
+        return 0
+    fi
+    
+    print_info "Checking for new environment variables..."
+    
+    local new_vars=0
+    local temp_file=$(mktemp)
+    
+    # Read existing variables
+    declare -A existing_vars
+    while IFS='=' read -r key value; do
+        [[ -z "$key" || "$key" =~ ^# ]] && continue
+        existing_vars["$key"]=1
+    done < "$env_file"
+    
+    # Check for new variables in example
+    while IFS='=' read -r key value; do
+        [[ -z "$key" || "$key" =~ ^# ]] && continue
+        if [[ -z "${existing_vars[$key]}" ]]; then
+            echo "$key=$value" >> "$temp_file"
+            print_info "  Adding new variable: $key"
+            ((new_vars++))
+        fi
+    done < "$example_file"
+    
+    if [[ $new_vars -gt 0 ]]; then
+        echo "" >> "$env_file"
+        echo "# === Added during upgrade ($(date -I)) ===" >> "$env_file"
+        cat "$temp_file" >> "$env_file"
+        print_success "Added $new_vars new environment variables to .env"
+    else
+        print_info "No new environment variables to add"
+    fi
+    
+    rm -f "$temp_file"
+    return 0
+}
+
+#===============================================================================
+# POST-UPGRADE VALIDATION FUNCTIONS
+#===============================================================================
+
+# Validate upgrade was successful
+validate_upgrade() {
+    print_info "Validating upgrade..."
+    local errors=0
+    
+    # Check if containers are running
+    if ! docker compose ps | grep -q "backend.*running"; then
+        print_error "Backend container is not running"
+        ((errors++))
+    fi
+    
+    if ! docker compose ps | grep -q "frontend.*running"; then
+        print_error "Frontend container is not running"
+        ((errors++))
+    fi
+    
+    if ! docker compose ps | grep -q "db.*running"; then
+        print_error "Database container is not running"
+        ((errors++))
+    fi
+    
+    # Check database connectivity
+    if ! docker compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+        print_error "Database is not ready"
+        ((errors++))
+    fi
+    
+    # Check backend health endpoint
+    if command -v curl &> /dev/null; then
+        if ! curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
+            print_warning "Backend health check failed (may still be starting)"
+        fi
+    fi
+    
+    if [[ $errors -eq 0 ]]; then
+        print_success "Upgrade validation passed"
+        return 0
+    else
+        print_error "Upgrade validation failed with $errors errors"
+        return 1
+    fi
+}
+
+#===============================================================================
+# UPGRADE FLOW FUNCTIONS
+#===============================================================================
+
+# Main upgrade function
+perform_upgrade() {
+    local current_version=$(get_installed_version)
+    local new_version=$(get_new_version)
+    
+    print_header "UPGRADE MODE"
+    print_info "Current version: $current_version"
+    print_info "New version: $new_version"
+    
+    # 1. Backup database
+    if ! backup_database; then
+        print_error "Database backup failed. Aborting upgrade."
+        return 1
+    fi
+    
+    # 2. Stop containers
+    print_info "Stopping containers..."
+    docker compose down
+    
+    # 3. Merge environment variables
+    merge_env_variables
+    
+    # 4. Pull new images / rebuild
+    print_info "Building new containers..."
+    docker compose build --no-cache
+    
+    # 5. Start containers (migrations run automatically)
+    print_info "Starting containers..."
+    docker compose up -d
+    
+    # 6. Wait for containers to be ready
+    print_info "Waiting for containers to start..."
+    sleep 10
+    
+    # 7. Validate upgrade
+    if validate_upgrade; then
+        save_installed_version "$new_version"
+        print_success "=========================================="
+        print_success "UPGRADE COMPLETE: $current_version -> $new_version"
+        print_success "=========================================="
+        return 0
+    else
+        print_error "=========================================="
+        print_error "UPGRADE VALIDATION FAILED"
+        print_error "=========================================="
+        print_info "To rollback, run: ./install.sh --restore-backup"
+        return 1
+    fi
+}
+
+# Restore from backup option
+restore_from_backup() {
+    local backup_file=$(get_last_backup)
+    
+    if [[ -z "$backup_file" ]]; then
+        print_error "No backup found to restore"
+        return 1
+    fi
+    
+    print_info "This will restore the database from: $backup_file"
+    read -p "Continue? (y/N) " -n 1 -r
+    echo
+    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+        print_info "Restore cancelled"
+        return 1
+    fi
+    
+    docker compose up -d db
+    sleep 5
+    restore_database "$backup_file"
+}
+
 # Set up error trap after functions are defined
 trap 'print_error "Error on line $LINENO. Command: $BASH_COMMAND"' ERR
 
@@ -1106,6 +1391,7 @@ main() {
     # Parse command line arguments
     NON_INTERACTIVE=false
     SKIP_DOCKER=false
+    RESTORE_MODE=false
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -1118,6 +1404,10 @@ main() {
                 ;;
             --skip-docker)
                 SKIP_DOCKER=true
+                shift
+                ;;
+            --restore-backup)
+                RESTORE_MODE=true
                 shift
                 ;;
             --url)
@@ -1153,6 +1443,12 @@ main() {
         esac
     done
     
+    # Handle restore mode
+    if [[ "$RESTORE_MODE" == "true" ]]; then
+        restore_from_backup
+        exit $?
+    fi
+    
     # Print banner
     printf '\n'
     printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
@@ -1164,6 +1460,32 @@ main() {
     if [[ "$NON_INTERACTIVE" == "true" ]]; then
         print_info "Running in non-interactive mode"
     fi
+    
+    # Detect if this is an upgrade or fresh install
+    local current_version=$(get_installed_version)
+    local new_version=$(get_new_version)
+    
+    if [[ "$current_version" != "0.0.0" ]]; then
+        # Existing installation detected
+        if compare_versions "$current_version" "$new_version"; then
+            print_info "Existing installation detected (version: $current_version)"
+            print_info "New version available: $new_version"
+            if confirm "Do you want to upgrade?" "y"; then
+                perform_upgrade
+                exit $?
+            else
+                print_info "Upgrade cancelled. Use 'docker compose up -d --build' to rebuild without version change"
+                exit 0
+            fi
+        else
+            print_info "Installed version ($current_version) is same or newer than target ($new_version)"
+            print_info "Use 'docker compose up -d --build' to rebuild without version change"
+            exit 0
+        fi
+    fi
+    
+    # Fresh installation
+    print_info "Performing fresh installation..."
     
     # Execute installation steps
     check_prerequisites
@@ -1177,6 +1499,9 @@ main() {
     
     configure_environment
     build_and_run
+    
+    # Save installed version after successful installation
+    save_installed_version "$new_version"
     
     print_success "Installation completed successfully!"
 }

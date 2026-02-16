@@ -1,32 +1,62 @@
 #!/bin/sh
 set -e
 
-# Check if we're in a production environment
-# NODE_ENV is passed via docker-compose.yml environment variables
-# - development: Seeds database with default data for testing
-# - production: Only runs migrations, no seeding (preserves existing data)
-if [ "$NODE_ENV" = "production" ]; then
-    echo "Running in production mode"
+# Colors for output
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m' # No Color
+
+log() { echo "${GREEN}[INFO]${NC} $1"; }
+log_warn() { echo "${YELLOW}[WARN]${NC} $1"; }
+log_error() { echo "${RED}[ERROR]${NC} $1"; }
+
+# Function to run migrations with proper error handling
+run_migrations() {
+    log "Running database migrations..."
     
-    # Run pending migrations only once
-    echo "Checking for pending database migrations..."
-    npx prisma migrate deploy || echo "Migration completed or failed (this is expected if migrations have already been applied)"
+    # Run migrations
+    npx prisma migrate deploy 2>&1
     
-    # Only seed essential data in production (won't overwrite existing data)
-    echo "Checking for essential data in production..."
-    npx prisma db seed || echo "Essential data check completed or failed"
-else
-    echo "Running in development mode"
+    local exit_code=$?
+    if [[ $exit_code -ne 0 ]]; then
+        log_error "Migration failed with exit code: $exit_code"
+        return $exit_code
+    fi
     
-    # Run pending migrations only once
-    echo "Checking for pending database migrations..."
-    npx prisma migrate deploy || echo "Migration completed or failed (this is expected if migrations have already been applied)"
-    
-    # Seed the database with default data in development
-    echo "Seeding the database with default data for development..."
-    npx prisma db seed || echo "Database seeding completed or failed"
+    log "Migrations completed successfully"
+    return 0
+}
+
+# Main entrypoint logic
+log "Starting backend container..."
+
+# Wait for database to be ready
+log "Waiting for database..."
+max_attempts=60
+attempt=0
+while [[ $attempt -lt $max_attempts ]]; do
+    if echo "SELECT 1" | npx prisma db execute --stdin > /dev/null 2>&1; then
+        log "Database is ready"
+        break
+    fi
+    attempt=$((attempt + 1))
+    log "Database not ready, waiting... (attempt $attempt/$max_attempts)"
+    sleep 2
+done
+
+if [[ $attempt -ge $max_attempts ]]; then
+    log_error "Database did not become ready in time"
+    exit 1
+fi
+
+# Run migrations
+if ! run_migrations; then
+    log_error "Migration failed! Container will not start."
+    log_error "Please check the logs and restore from backup if needed."
+    exit 1
 fi
 
 # Start the application
-echo "Starting the application..."
-exec npm start
+log "Starting application..."
+exec node dist/index.js
