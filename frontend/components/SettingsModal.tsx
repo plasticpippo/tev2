@@ -2,6 +2,7 @@
 
 import React from 'react';
 import type { Settings } from '@shared/types';
+import { LanguageSettings } from './LanguageSettings';
 import { TaxSettings } from './TaxSettings';
 import { BusinessDaySettings } from './BusinessDaySettings';
 
@@ -32,6 +33,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
 
     return (
         <div className="space-y-8">
+            <LanguageSettings />
             <TaxSettings settings={settings.tax} onUpdate={handleTaxUpdate} />
             <BusinessDaySettings settings={settings.businessDay} onUpdate={handleBusinessDayUpdate} />
         </div>

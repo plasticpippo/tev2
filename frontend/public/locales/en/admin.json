@@ -443,6 +443,8 @@
   "settings": {
     "title": "Settings",
     "general": "General",
+    "language": "Language",
+    "languageDescription": "Select your preferred language for the admin panel.",
     "tax": "Tax Settings",
     "taxMode": "Tax Mode",
     "taxRate": "Tax Rate",

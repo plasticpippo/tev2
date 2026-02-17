@@ -443,6 +443,8 @@
   "settings": {
     "title": "Impostazioni",
     "general": "Generale",
+    "language": "Lingua",
+    "languageDescription": "Seleziona la lingua preferita per il pannello admin.",
     "tax": "Impostazioni Tasse",
     "taxMode": "Modalita Tassa",
     "taxRate": "Aliquota Tassa",
