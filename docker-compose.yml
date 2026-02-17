@@ -2,6 +2,11 @@
 services:
   # Database service - internal only, not exposed to external network
   # Port exposure is controlled by docker-compose.override.yml for development
+  #
+  # Memory Allocation Strategy (4GB VM Total):
+  # - Limit: 1GB - PostgreSQL can use significant memory for connections and caching
+  # - Reservation: 512MB - Minimum guaranteed memory for PostgreSQL
+  # - Total with limits: ~2.3GB leaves ~1.7GB for system overhead
   db:
     image: postgres:15
     container_name: bar_pos_backend_db
@@ -15,6 +20,12 @@ services:
     networks:
       - internal-network
       - external-network
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+        reservations:
+          memory: 512M
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-totalevo_user} -d ${POSTGRES_DB:-bar_pos}"]
       interval: 10s
@@ -22,13 +33,18 @@ services:
       retries: 5
 
   # Backend API service - internal only, not exposed to external network
+  #
+  # Memory Allocation Strategy (4GB VM Total):
+  # - Limit: 768MB - Node.js process memory limit
+  # - Reservation: 384MB - Minimum guaranteed memory
+  # - NODE_OPTIONS: --max-old-space-size=640 limits heap to ~640MB (leaves buffer for native code)
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     container_name: bar_pos_backend
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}?connection_limit=5&pool_timeout=10
       - PORT=3001
       - HOST=0.0.0.0
       # Environment: development (detailed errors) or production (generic errors)
@@ -36,13 +52,22 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - CORS_ORIGIN=${URL},${URL}:${NGINX_PORT}
       - JWT_SECRET=${JWT_SECRET}
+      # Limit Node.js heap to 640MB - prevents heap from consuming all container memory
+      - NODE_OPTIONS=--max-old-space-size=640
     depends_on:
       db:
         condition: service_healthy
     restart: unless-stopped
     networks:
       - internal-network
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+        reservations:
+          memory: 384M
     healthcheck:
+      # Use wget to check health endpoint - accepts both 200 (healthy) and 503 (unhealthy but server running)
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://0.0.0.0:3001/health"]
       interval: 10s
       timeout: 5s
@@ -50,6 +75,10 @@ services:
 
   # Frontend service - internal only, accessed via nginx reverse proxy
   # Port exposure is controlled by docker-compose.override.yml for development
+  #
+  # Memory Allocation Strategy (4GB VM Total):
+  # - Limit: 384MB - React/Vite app typically uses moderate memory
+  # - Reservation: 192MB - Minimum guaranteed memory
   frontend:
     build:
       context: .
@@ -69,6 +98,12 @@ services:
     restart: unless-stopped
     networks:
       - internal-network
+    deploy:
+      resources:
+        limits:
+          memory: 384M
+        reservations:
+          memory: 192M
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
       interval: 10s
@@ -76,6 +111,10 @@ services:
       retries: 5
 
   # Nginx reverse proxy - bridges internal and external networks
+  #
+  # Memory Allocation Strategy (4GB VM Total):
+  # - Limit: 128MB - Nginx is lightweight and doesn't need much memory
+  # - Reservation: 64MB - Minimum guaranteed memory
   nginx:
     image: nginx:alpine
     container_name: bar_pos_nginx
@@ -97,6 +136,12 @@ services:
       - internal-network
       - external-network
     command: ["/bin/sh", "/docker-entrypoint.sh"]
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
     healthcheck:
       test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
       interval: 10s

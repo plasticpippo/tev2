@@ -13,7 +13,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install system dependencies for Prisma
-RUN apk add --no-cache openssl libssl3 libc6-compat
+RUN apk add --no-cache openssl libssl3 libc6-compat wget
 
 # Install all dependencies (including dev dependencies for build)
 RUN npm install

@@ -4,7 +4,7 @@ import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import i18nextMiddleware from 'i18next-http-middleware';
 import { router } from './router';
-import { initPrisma } from './prisma';
+import { initPrisma, checkDatabaseHealth } from './prisma';
 import { validateJwtSecret } from './utils/jwtSecretValidation';
 import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
@@ -30,7 +30,7 @@ const corsOptions: cors.CorsOptions = {
 // Rate limiting configuration for different endpoints
 const generalRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 500, // limit each IP to 500 requests per windowMs (increased for POS system)
+  max: 2000, // limit each IP to 2000 requests per windowMs (increased for multi-user POS environments)
   message: 'Too many requests from this IP, please try again later.',
   standardHeaders: true,
   legacyHeaders: false,
@@ -73,9 +73,39 @@ app.use(i18nextMiddleware.handle(i18n));
 // API routes
 app.use('/api', router);
 
-// Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date().toISOString() });
+// Health check endpoint - comprehensive check including database connectivity
+app.get('/health', async (req: Request, res: Response) => {
+  const timestamp = new Date().toISOString();
+  
+  // Check database connectivity
+  const dbHealth = await checkDatabaseHealth();
+  
+  // Check memory usage (percentage of available heap used)
+  const memUsage = process.memoryUsage();
+  const heapUsedPercent = Math.round((memUsage.heapUsed / memUsage.heapTotal) * 100);
+  const memoryStatus = heapUsedPercent < 90 ? 'OK' : 'WARNING';
+  
+  const checks = {
+    server: { status: 'OK' },
+    database: { 
+      status: dbHealth.status,
+      ...(dbHealth.responseTimeMs !== undefined && { responseTimeMs: dbHealth.responseTimeMs }),
+      ...(dbHealth.error && { error: dbHealth.error })
+    },
+    memory: {
+      status: memoryStatus,
+      heapUsedPercent
+    }
+  };
+  
+  // Determine overall status
+  const isHealthy = dbHealth.status === 'OK';
+  
+  res.status(isHealthy ? 200 : 503).json({
+    status: isHealthy ? 'OK' : 'UNHEALTHY',
+    timestamp,
+    checks
+  });
 });
 
 // 404 handler - MUST be before error handler
