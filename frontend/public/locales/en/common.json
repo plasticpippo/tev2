@@ -442,6 +442,8 @@
     "description": "A log of items removed from orders and cleared orders before payment.",
     "noActivity": "No order activity has been logged.",
     "orderCleared": "Order with {{count}} item(s) cleared.",
+    "orderClearedAction": "Order Cleared",
+    "itemRemovedAction": "Item Removed",
     "by": "by"
   },
   "tableErrorBoundary": {

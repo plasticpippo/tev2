@@ -26,7 +26,13 @@ export const OrderActivityHistory: React.FC<{ logs: OrderActivityLog[] }> = ({ l
                         <div key={log.id} className="bg-slate-800 p-4 rounded-md">
                             <div className="flex justify-between items-start">
                                 <div>
-                                    <p className="font-semibold text-red-400">{log.action}</p>
+                                    <p className="font-semibold text-red-400">
+                                        {log.action === 'Order Cleared' 
+                                            ? t('orderActivityHistory.orderClearedAction') 
+                                            : log.action === 'Item Removed' 
+                                                ? t('orderActivityHistory.itemRemovedAction')
+                                                : log.action}
+                                    </p>
                                     {renderLogDetails(log.details)}
                                 </div>
                                 <div className="text-right text-sm text-slate-400 flex-shrink-0 ml-4">
