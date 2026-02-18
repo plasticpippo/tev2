@@ -131,6 +131,7 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
     switch (status) {
       case 'available': return 'bg-green-500 border-green-600';
       case 'occupied': return 'bg-red-500 border-red-600';
+      case 'bill_requested': return 'bg-yellow-500 border-yellow-600';
       case 'reserved': return 'bg-yellow-500 border-yellow-600';
       case 'unavailable': return 'bg-gray-500 border-gray-600';
       default: return 'bg-gray-500 border-gray-600';
@@ -142,6 +143,7 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
     switch (status) {
       case 'available': return t('tableLayoutEditor.statusAvailable');
       case 'occupied': return t('tableLayoutEditor.statusOccupied');
+      case 'bill_requested': return t('tableLayoutEditor.statusBillRequested');
       case 'reserved': return t('tableLayoutEditor.statusReserved');
       case 'unavailable': return t('tableLayoutEditor.statusUnavailable');
       default: return status;
@@ -241,7 +243,7 @@ const TableLayoutEditorComponent: React.FC<TableLayoutEditorProps> = ({ selected
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-                <span className="text-slate-400">{t('tableLayoutEditor.statusReserved')}</span>
+                <span className="text-slate-400">{t('tableLayoutEditor.statusBillRequested')}</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full bg-gray-500"></div>

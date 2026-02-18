@@ -101,6 +101,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     switch (status) {
       case 'available': return 'bg-green-500 border-green-600';
       case 'occupied': return 'bg-red-500 border-red-600';
+      case 'bill_requested': return 'bg-yellow-500 border-yellow-600';
       case 'reserved': return 'bg-yellow-500 border-yellow-600';
       case 'unavailable': return 'bg-gray-500 border-gray-600';
       default: return 'bg-gray-500 border-gray-600';
@@ -111,6 +112,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     switch (status) {
       case 'available': return 'text-green-400';
       case 'occupied': return 'text-red-400';
+      case 'bill_requested': return 'text-yellow-400';
       case 'reserved': return 'text-yellow-400';
       case 'unavailable': return 'text-gray-400';
       default: return 'text-gray-400';
@@ -121,6 +123,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
     switch (status) {
       case 'available': return t('tableAssignmentModal.statusLabelAvailable');
       case 'occupied': return t('tableAssignmentModal.statusLabelOccupied');
+      case 'bill_requested': return t('tableAssignmentModal.statusLabelBillRequested');
       case 'reserved': return t('tableAssignmentModal.statusLabelReserved');
       case 'unavailable': return t('tableAssignmentModal.statusLabelUnavailable');
       default: return status;
@@ -238,7 +241,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                           left: `${table.x - canvasBounds.minX}px`,
                           top: `${table.y - canvasBounds.minY}px`
                         }}
-                        disabled={table.status === 'occupied' || table.status === 'unavailable' || isAssigning}
+                        disabled={table.status === 'occupied' || table.status === 'unavailable' || table.status === 'bill_requested' || isAssigning}
                         title={`${table.name} - ${getStatusLabel(table.status)}`}
                       >
                         <span className="text-sm font-bold select-none">{table.name}</span>
@@ -335,7 +338,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <span className="text-slate-400">{t('tableAssignmentModal.statusReserved')}</span>
+              <span className="text-slate-400">{t('tableAssignmentModal.statusBillRequested')}</span>
             </div>
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full bg-gray-500"></div>

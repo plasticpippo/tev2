@@ -171,6 +171,7 @@
     "tableStatusLegend": "Table Status Legend:",
     "statusAvailable": "Available",
     "statusOccupied": "Occupied (cannot assign)",
+    "statusBillRequested": "Bill Requested (cannot assign)",
     "statusReserved": "Reserved",
     "statusUnavailable": "Unavailable (cannot assign)",
     "orderAssignedTo": "Order assigned to {{tableName}}",
@@ -179,6 +180,7 @@
     "failedToClearTableAssignment": "Failed to clear table assignment",
     "statusLabelAvailable": "Available",
     "statusLabelOccupied": "Occupied",
+    "statusLabelBillRequested": "Bill Requested",
     "statusLabelReserved": "Reserved",
     "statusLabelUnavailable": "Unavailable"
   },
@@ -193,6 +195,7 @@
     "tableStatus": "Table Status",
     "statusAvailable": "Available",
     "statusOccupied": "Occupied",
+    "statusBillRequested": "Bill Requested",
     "statusReserved": "Reserved",
     "statusUnavailable": "Unavailable",
     "building": "BUILDING",
@@ -532,7 +535,8 @@
     "errorSavingTable": "Error saving table",
     "errorDeletingTable": "Error deleting table",
     "failedDeleteTable": "Failed to delete table",
-    "errorUpdatingTablePosition": "Error updating table position"
+    "errorUpdatingTablePosition": "Error updating table position",
+    "errorUpdatingTableStatus": "Error updating table status"
   },
   "inventoryService": {
     "errorFetchingStockItems": "Error fetching stock items",

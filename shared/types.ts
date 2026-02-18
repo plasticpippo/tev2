@@ -147,7 +147,7 @@ export interface Table {
     y: number;
     width: number;
     height: number;
-    status: 'available' | 'occupied' | 'reserved' | 'unavailable';
+    status: 'available' | 'occupied' | 'bill_requested' | 'reserved' | 'unavailable';
     roomId: string;
     items?: any[]; // Added for storing order items directly on tables
     createdAt: string;

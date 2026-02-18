@@ -171,6 +171,7 @@
     "tableStatusLegend": "Legenda Stato Tavoli:",
     "statusAvailable": "Disponibile",
     "statusOccupied": "Occupato (non assegnabile)",
+    "statusBillRequested": "Richiesta conto (non assegnabile)",
     "statusReserved": "Prenotato",
     "statusUnavailable": "Non disponibile (non assegnabile)",
     "orderAssignedTo": "Ordine assegnato a {{tableName}}",
@@ -179,6 +180,7 @@
     "failedToClearTableAssignment": "Impossibile rimuovere l'assegnazione del tavolo",
     "statusLabelAvailable": "Disponibile",
     "statusLabelOccupied": "Occupato",
+    "statusLabelBillRequested": "Richiesta Conto",
     "statusLabelReserved": "Prenotato",
     "statusLabelUnavailable": "Non disponibile"
   },
@@ -193,6 +195,7 @@
     "tableStatus": "Stato Tavolo",
     "statusAvailable": "Disponibile",
     "statusOccupied": "Occupato",
+    "statusBillRequested": "Richiesta conto",
     "statusReserved": "Prenotato",
     "statusUnavailable": "Non disponibile",
     "building": "EDIFICIO",
@@ -532,7 +535,8 @@
     "errorSavingTable": "Errore nel salvataggio del tavolo",
     "errorDeletingTable": "Errore nell'eliminazione del tavolo",
     "failedDeleteTable": "Impossibile eliminare il tavolo",
-    "errorUpdatingTablePosition": "Errore nell'aggiornamento della posizione del tavolo"
+    "errorUpdatingTablePosition": "Errore nell'aggiornamento della posizione del tavolo",
+    "errorUpdatingTableStatus": "Errore nell'aggiornamento dello stato del tavolo"
   },
   "inventoryService": {
     "errorFetchingStockItems": "Errore nel caricamento degli articoli di magazzino",

@@ -7,6 +7,39 @@ import { requireAdmin } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
 import i18n from '../i18n';
 
+// Table status constants
+const TABLE_STATUS = {
+  AVAILABLE: 'available',
+  OCCUPIED: 'occupied',
+  BILL_REQUESTED: 'bill_requested'
+} as const;
+
+// Helper function to update table status
+async function updateTableStatus(tableId: string | null, status: string): Promise<void> {
+  if (!tableId) return;
+  
+  try {
+    await prisma.table.update({
+      where: { id: tableId },
+      data: { status }
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error updating table status', {
+      correlationId: undefined,
+    });
+  }
+}
+
+// Helper function to check if table has other active tabs
+async function tableHasOtherTabs(tableId: string, excludeTabId?: number): Promise<boolean> {
+  const where: any = { tableId };
+  if (excludeTabId) {
+    where.id = { not: excludeTabId };
+  }
+  const count = await prisma.tab.count({ where });
+  return count > 0;
+}
+
 export const tabsRouter = express.Router();
 
 // GET /api/tabs - Get all tabs
@@ -134,6 +167,11 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       }
     });
     
+    // Update table status to occupied if tableId is provided
+    if (tableId) {
+      await updateTableStatus(tableId, TABLE_STATUS.OCCUPIED);
+    }
+    
     logInfo(i18n.t('tabs.log.created'), {
       correlationId: (req as any).correlationId,
     });
@@ -200,6 +238,11 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       }
     }
     
+    // Get the existing tab to check for table assignment changes
+    const existingTab = await prisma.tab.findUnique({
+      where: { id: Number(id) }
+    });
+
     const tab = await prisma.tab.update({
       where: { id: Number(id) },
       data: {
@@ -210,6 +253,21 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
         tableId: tableId || null
       }
     });
+    
+    // Handle table status changes
+    if (existingTab?.tableId !== tableId) {
+      // If table was unassigned, check if it has other tabs
+      if (existingTab?.tableId) {
+        const hasOtherTabs = await tableHasOtherTabs(existingTab.tableId, Number(id));
+        if (!hasOtherTabs) {
+          await updateTableStatus(existingTab.tableId, TABLE_STATUS.AVAILABLE);
+        }
+      }
+      // If new table assigned, set to occupied
+      if (tableId) {
+        await updateTableStatus(tableId, TABLE_STATUS.OCCUPIED);
+      }
+    }
     
     res.json(tab);
   } catch (error) {
@@ -225,9 +283,22 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
   try {
     const { id } = req.params;
     
+    // Get the tab before deleting to check table assignment
+    const tab = await prisma.tab.findUnique({
+      where: { id: Number(id) }
+    });
+
     await prisma.tab.delete({
       where: { id: Number(id) }
     });
+    
+    // Update table status if this was the last tab for the table
+    if (tab?.tableId) {
+      const hasOtherTabs = await tableHasOtherTabs(tab.tableId);
+      if (!hasOtherTabs) {
+        await updateTableStatus(tab.tableId, TABLE_STATUS.AVAILABLE);
+      }
+    }
     
     res.status(204).send();
   } catch (error) {

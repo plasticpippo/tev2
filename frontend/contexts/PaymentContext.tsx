@@ -150,7 +150,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       
       // Update table status to available after payment
       if (assignedTable) {
-        await api.saveTable({ ...assignedTable, status: 'available' });
+        await api.updateTableStatus(assignedTable.id, 'available');
         clearTableAssignment(); // This clears the table assignment using the TableAssignmentContext method
       }
       

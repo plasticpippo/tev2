@@ -5,6 +5,7 @@ import { useSessionContext } from './SessionContext';
 import { useOrderContext } from './OrderContext';
 import { useGlobalDataContext } from './GlobalDataContext';
 import { useUIStateContext } from './UIStateContext';
+import { useToast } from './ToastContext';
 
 interface TableAssignmentContextType {
   assignedTable: Table | null;
@@ -28,6 +29,7 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
   const { activeTab } = useOrderContext();
   const { assignedTillId } = useSessionContext();
   const { appData } = useGlobalDataContext();
+  const { addToast } = useToast();
 
   const handleTableAssign = async (tableId: string) => {
     try {
@@ -36,14 +38,40 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
         const table = appData.tables.find(t => t.id === tableId);
         if (!table) {
           console.error(`Table with ID ${tableId} not found`);
+          addToast(`Table with ID ${tableId} not found`, 'error');
+          return;
+        }
+        
+        // Check if table is available before allowing assignment
+        if (table.status !== 'available') {
+          const statusMessage = table.status === 'occupied' 
+            ? 'This table is currently occupied. Please select another table.'
+            : `This table is currently ${table.status.replace('_', ' ')}. Please select another table.`;
+          console.warn(`Table ${table.name} is ${table.status}`);
+          addToast(statusMessage, 'error');
           return;
         }
         
         setAssignedTable(table);
         
+        // Get the till name for the new tab
+        const tillName = appData.tills.find(t => t.id === assignedTillId)?.name || 'Unknown';
+        
         // If there's an active tab, update it with the new table assignment
         if (activeTab && assignedTillId) {
           await api.saveTab({ ...activeTab, tableId });
+        } else if (!activeTab && assignedTillId) {
+          // If there's no active tab, create a new tab with the tableId
+          // This ensures the backend receives the tableId and updates table status to 'occupied'
+          const newTab = {
+            name: `Table ${table.name}`,
+            items: [],
+            createdAt: new Date().toISOString(),
+            tillId: assignedTillId,
+            tillName: tillName,
+            tableId
+          };
+          await api.saveTab(newTab);
         }
       } else {
         // Clear table assignment
@@ -54,10 +82,9 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
       }
     } catch (error) {
       console.error('Error handling table assignment:', error);
-      // Optionally, you could throw the error or handle it differently
-      // For example, you could show an error message to the user
+      addToast('Failed to assign table. Please try again.', 'error');
     }
- };
+  };
 
   const handleTableUnassign = async () => {
     try {

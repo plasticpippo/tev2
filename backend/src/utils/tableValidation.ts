@@ -45,7 +45,7 @@ export const validateTableData = (data: {
   }
 
   if (data.status !== undefined) {
-    const validStatuses = ['available', 'occupied', 'reserved', 'unavailable'];
+    const validStatuses = ['available', 'occupied', 'reserved', 'unavailable', 'bill_requested'];
     if (!validStatuses.includes(data.status)) {
       errors.push(`status must be one of: ${validStatuses.join(', ')}`);
     }
@@ -63,3 +63,38 @@ export const validateTableData = (data: {
     errors
   };
 };
+
+// Valid table status transitions
+export const TABLE_STATUS_TRANSITIONS: Record<string, string[]> = {
+  'available': ['occupied', 'reserved', 'unavailable'],
+  'occupied': ['available', 'bill_requested'],
+  'bill_requested': ['available', 'occupied'],
+  'reserved': ['occupied', 'available'],
+  'unavailable': ['available']
+};
+
+export function isValidStatusTransition(
+  currentStatus: string,
+  newStatus: string
+): boolean {
+  const allowedTransitions = TABLE_STATUS_TRANSITIONS[currentStatus];
+  return allowedTransitions?.includes(newStatus) ?? false;
+}
+
+export function validateTableStatusUpdate(
+  currentStatus: string,
+  newStatus: string
+): { isValid: boolean; error?: string } {
+  if (currentStatus === newStatus) {
+    return { isValid: true }; // No change needed
+  }
+  
+  if (!isValidStatusTransition(currentStatus, newStatus)) {
+    return {
+      isValid: false,
+      error: `Invalid status transition from '${currentStatus}' to '${newStatus}'`
+    };
+  }
+  
+  return { isValid: true };
+}

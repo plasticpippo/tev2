@@ -2,7 +2,7 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
 import { verifyTableOwnership } from '../middleware/authorization';
-import { validateTableData } from '../utils/tableValidation';
+import { validateTableData, validateTableStatusUpdate } from '../utils/tableValidation';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
 import i18n from '../i18n';
@@ -279,6 +279,54 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:tables.positionUpdateFailed') });
+  }
+});
+
+// PUT /api/tables/:id/status - Update only table status
+router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    if (!status) {
+      return res.status(400).json({ error: 'Status is required' });
+    }
+
+    // Validate status value
+    const validStatuses = ['available', 'occupied', 'reserved', 'unavailable', 'bill_requested'];
+    if (!validStatuses.includes(status)) {
+      return res.status(400).json({ 
+        error: 'Invalid status value',
+        validValues: validStatuses
+      });
+    }
+
+    const table = await prisma.table.findUnique({
+      where: { id },
+    });
+
+    if (!table) {
+      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+    }
+
+    // Validate status transition
+    const validation = validateTableStatusUpdate(table.status, status);
+    if (!validation.isValid) {
+      return res.status(400).json({ error: validation.error });
+    }
+
+    const updatedTable = await prisma.table.update({
+      where: { id },
+      data: { status },
+      include: { room: true },
+    });
+
+    res.json(updatedTable);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error updating table status', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors:tables.statusUpdateFailed') });
   }
 });
 

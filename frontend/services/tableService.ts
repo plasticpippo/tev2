@@ -138,3 +138,29 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
     throw error;
   }
 };
+
+// Function to update table status specifically
+export const updateTableStatus = async (tableId: string, status: string): Promise<Table> => {
+  try {
+    const response = await fetch(apiUrl(`/api/tables/${tableId}/status`), {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        ...getAuthHeaders()
+      },
+      body: JSON.stringify({ status })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+      throw new Error(errorMessage);
+    }
+    const updatedTable = await response.json();
+    notifyUpdates();
+    return updatedTable;
+  } catch (error) {
+    console.error(i18n.t('tableService.errorUpdatingTableStatus'), error);
+    throw error;
+  }
+};

@@ -90,7 +90,8 @@ export {
   getTables,
   saveTable,
   deleteTable,
-  updateTablePosition
+  updateTablePosition,
+  updateTableStatus
 } from './tableService';
 
 
