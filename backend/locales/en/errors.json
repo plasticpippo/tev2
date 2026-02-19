@@ -350,6 +350,14 @@
     },
     "topPerformers": {
       "fetchFailed": "Failed to fetch top performers data. Please try again later."
+    },
+    "hourlySales": {
+      "dateRequired": "Date parameter is required",
+      "fetchFailed": "Failed to fetch hourly sales data. Please try again later."
+    },
+    "compare": {
+      "datesRequired": "Both date1 and date2 parameters are required",
+      "fetchFailed": "Failed to fetch comparison data. Please try again later."
     }
   },
   "rateLimiter": {

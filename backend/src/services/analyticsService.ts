@@ -1,6 +1,7 @@
 import { prisma } from '../prisma';
 import { AnalyticsParams } from '../utils/validation';
 import { OrderItem } from '../types';
+import { getBusinessDayRange, parseTimeString, getHoursInBusinessDay } from '../utils/businessDay';
 
 interface ProductPerformance {
   id: number;
@@ -224,6 +225,208 @@ export const aggregateProductPerformance = async (
       totalRevenue,
       totalUnitsSold,
       topProduct,
+    },
+  };
+};
+
+// ============================================================================
+// HOURLY SALES AGGREGATION
+// ============================================================================
+
+export interface HourlyDataPoint {
+  hour: string;           // Format: "HH:00"
+  total: number;
+  transactionCount: number;
+  averageTransaction: number;
+}
+
+export interface HourlySalesResult {
+  date: string;
+  businessDayStart: Date;
+  businessDayEnd: Date;
+  hourlyData: HourlyDataPoint[];
+  summary: {
+    totalSales: number;
+    totalTransactions: number;
+    peakHour: string;
+    peakHourTotal: number;
+    averageHourly: number;
+  };
+}
+
+export interface ComparisonResult {
+  period1: HourlySalesResult;
+  period2: HourlySalesResult;
+  comparison: {
+    hourlyDifferences: {
+      hour: string;
+      difference: number;
+      percentChange: number;
+    }[];
+    summaryDifference: {
+      totalSalesDifference: number;
+      totalSalesPercentChange: number;
+      transactionCountDifference: number;
+      transactionCountPercentChange: number;
+    };
+  };
+}
+
+interface SettingsConfig {
+  autoStartTime: string;
+  businessDayEndHour?: string;
+}
+
+/**
+ * Aggregates hourly sales data for a specific business day
+ */
+export const aggregateHourlySales = async (
+  date: string,  // ISO date string "YYYY-MM-DD"
+  settings: SettingsConfig
+): Promise<HourlySalesResult> => {
+  // Get business day range
+  const targetDate = new Date(date);
+  const { start, end } = getBusinessDayRange(targetDate, {
+    autoStartTime: settings.autoStartTime,
+    businessDayEndHour: settings.businessDayEndHour,
+  });
+  
+  // Fetch transactions within the business day
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      createdAt: {
+        gte: start,
+        lte: end,
+      },
+    },
+  });
+  
+  // Get start hour and calculate hours in business day
+  const { hours: startHours, minutes: startMinutes } = parseTimeString(settings.autoStartTime);
+  const hoursInDay = getHoursInBusinessDay(
+    settings.autoStartTime, 
+    settings.businessDayEndHour
+  );
+  
+  // Initialize hourly buckets
+  const hourlyBuckets: Map<string, { total: number; count: number }> = new Map();
+  for (let i = 0; i < hoursInDay; i++) {
+    const hour = (startHours + i) % 24;
+    const label = `${hour.toString().padStart(2, '0')}:00`;
+    hourlyBuckets.set(label, { total: 0, count: 0 });
+  }
+  
+  // Aggregate transactions into hourly buckets
+  let totalSales = 0;
+  let totalTransactions = 0;
+  
+  for (const transaction of transactions) {
+    const transactionDate = new Date(transaction.createdAt);
+    const transactionHour = transactionDate.getHours();
+    
+    // Calculate which hour bucket this belongs to
+    let hoursSinceStart = transactionHour - startHours;
+    if (hoursSinceStart < 0) {
+      hoursSinceStart += 24; // Crosses midnight
+    }
+    
+    const bucketHour = (startHours + hoursSinceStart) % 24;
+    const label = `${bucketHour.toString().padStart(2, '0')}:00`;
+    
+    const bucket = hourlyBuckets.get(label);
+    if (bucket) {
+      bucket.total += transaction.total;
+      bucket.count += 1;
+    }
+    
+    totalSales += transaction.total;
+    totalTransactions += 1;
+  }
+  
+  // Convert to array and calculate summary
+  const hourlyData: HourlyDataPoint[] = [];
+  let peakHour = '';
+  let peakHourTotal = 0;
+  
+  for (const [hour, data] of hourlyBuckets) {
+    hourlyData.push({
+      hour,
+      total: data.total,
+      transactionCount: data.count,
+      averageTransaction: data.count > 0 ? data.total / data.count : 0,
+    });
+    
+    if (data.total > peakHourTotal) {
+      peakHour = hour;
+      peakHourTotal = data.total;
+    }
+  }
+  
+  return {
+    date,
+    businessDayStart: start,
+    businessDayEnd: end,
+    hourlyData,
+    summary: {
+      totalSales,
+      totalTransactions,
+      peakHour,
+      peakHourTotal,
+      averageHourly: totalSales / hoursInDay,
+    },
+  };
+};
+
+/**
+ * Compares hourly sales between two business days
+ */
+export const compareHourlySales = async (
+  date1: string,
+  date2: string,
+  settings: SettingsConfig
+): Promise<ComparisonResult> => {
+  const [period1, period2] = await Promise.all([
+    aggregateHourlySales(date1, settings),
+    aggregateHourlySales(date2, settings),
+  ]);
+  
+  // Calculate hourly differences
+  const hourlyDifferences = period1.hourlyData.map((hour1, index) => {
+    const hour2 = period2.hourlyData[index];
+    const difference = hour1.total - hour2.total;
+    const percentChange = hour2.total > 0 
+      ? ((hour1.total - hour2.total) / hour2.total) * 100 
+      : (hour1.total > 0 ? 100 : 0);
+    
+    return {
+      hour: hour1.hour,
+      difference,
+      percentChange,
+    };
+  });
+  
+  // Calculate summary differences
+  const totalSalesDifference = period1.summary.totalSales - period2.summary.totalSales;
+  const totalSalesPercentChange = period2.summary.totalSales > 0
+    ? ((period1.summary.totalSales - period2.summary.totalSales) / period2.summary.totalSales) * 100
+    : (period1.summary.totalSales > 0 ? 100 : 0);
+  
+  const transactionCountDifference = period1.summary.totalTransactions - period2.summary.totalTransactions;
+  const transactionCountPercentChange = period2.summary.totalTransactions > 0
+    ? ((period1.summary.totalTransactions - period2.summary.totalTransactions) / period2.summary.totalTransactions) * 100
+    : (period1.summary.totalTransactions > 0 ? 100 : 0);
+  
+  return {
+    period1,
+    period2,
+    comparison: {
+      hourlyDifferences,
+      summaryDifference: {
+        totalSalesDifference,
+        totalSalesPercentChange,
+        transactionCountDifference,
+        transactionCountPercentChange,
+      },
     },
   };
 };

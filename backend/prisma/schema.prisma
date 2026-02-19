@@ -211,10 +211,11 @@ model OrderActivityLog {
 }
 
 model Settings {
-  id              Int       @id @default(autoincrement())
-  taxMode         String
-  autoStartTime   String
-  lastManualClose DateTime?
+  id                  Int       @id @default(autoincrement())
+  taxMode             String
+  autoStartTime       String
+  businessDayEndHour  String    @default("06:00") // Format: "HH:MM" - when business day ends (for midnight-crossing)
+  lastManualClose     DateTime?
 
   @@map("settings")
 }

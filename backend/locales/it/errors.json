@@ -350,6 +350,14 @@
     },
     "topPerformers": {
       "fetchFailed": "Impossibile recuperare i dati sui migliori prodotti. Riprova piu tardi."
+    },
+    "hourlySales": {
+      "dateRequired": "Il parametro data e obbligatorio",
+      "fetchFailed": "Impossibile recuperare i dati di vendita oraria. Riprova piu tardi."
+    },
+    "compare": {
+      "datesRequired": "Entrambi i parametri date1 e date2 sono obbligatori",
+      "fetchFailed": "Impossibile recuperare i dati di confronto. Riprova piu tardi."
     }
   },
   "rateLimiter": {
