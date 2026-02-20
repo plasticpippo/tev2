@@ -182,13 +182,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         <div className="pt-4 border-t border-slate-700 flex-shrink-0">
           <div className="flex gap-3">
             <button
-              onClick={() => onConfirmPayment('CASH', tip, discount, discountReason)}
+              onClick={() => onConfirmPayment('Cash', tip, discount, discountReason)}
               className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-4 text-lg rounded-md transition"
             >
               {t('payment.payWithCash')}
             </button>
             <button
-              onClick={() => onConfirmPayment('CARD', tip, discount, discountReason)}
+              onClick={() => onConfirmPayment('Card', tip, discount, discountReason)}
               className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 text-lg rounded-md transition"
             >
               {t('payment.payWithCard')}

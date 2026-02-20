@@ -15,10 +15,15 @@ interface UserPerformanceReportModalProps {
 
 export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProps> = ({ isOpen, onClose, user, transactions, orderActivityLogs, settings }) => {
     const { t } = useTranslation('admin');
-    const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'all'>('today');
+    const [dateRange, setDateRange] = useState<'today' | 'week' | 'month' | 'all' | 'custom'>('today');
+    const [customStartDate, setCustomStartDate] = useState<string>('');
+    const [customEndDate, setCustomEndDate] = useState<string>('');
+    const [paymentMethodFilter, setPaymentMethodFilter] = useState<string>('all');
+    const [tillIdFilter, setTillIdFilter] = useState<string>('all');
+    const [statusFilter, setStatusFilter] = useState<string>('all');
     const [expandedLogId, setExpandedLogId] = useState<number | null>(null);
 
-    const isWithinDateRange = (dateString: string, range: 'today' | 'week' | 'month' | 'all') => {
+    const isWithinDateRange = (dateString: string, range: 'today' | 'week' | 'month' | 'all' | 'custom') => {
         const date = new Date(dateString);
         const now = new Date();
         
@@ -40,12 +45,90 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
             oneMonthAgo.setMonth(now.getMonth() - 1);
             return date >= oneMonthAgo;
         }
+
+        if (range === 'custom' && customStartDate && customEndDate) {
+            const startDate = new Date(customStartDate);
+            startDate.setHours(0, 0, 0, 0);
+            const endDate = new Date(customEndDate);
+            endDate.setHours(23, 59, 59, 999);
+            return date >= startDate && date <= endDate;
+        }
+
+        if (range === 'custom' && customStartDate) {
+            const startDate = new Date(customStartDate);
+            startDate.setHours(0, 0, 0, 0);
+            return date >= startDate;
+        }
+
+        if (range === 'custom' && customEndDate) {
+            const endDate = new Date(customEndDate);
+            endDate.setHours(23, 59, 59, 999);
+            return date <= endDate;
+        }
+        
         return false;
     };
 
+    // Extract unique payment methods from transactions
+    const availablePaymentMethods = useMemo(() => {
+        const methods = new Set<string>();
+        transactions.forEach(t => {
+            if (t.paymentMethod) {
+                methods.add(t.paymentMethod);
+            }
+        });
+        return Array.from(methods).sort();
+    }, [transactions]);
+
+    // Extract unique tills from transactions
+    const availableTills = useMemo(() => {
+        const tills = new Map<number, string>();
+        transactions.forEach(t => {
+            if (t.tillId) {
+                tills.set(t.tillId, t.tillName || `Till ${t.tillId}`);
+            }
+        });
+        return Array.from(tills.entries()).sort((a, b) => a[0] - b[0]);
+    }, [transactions]);
+
     const userStats = useMemo(() => {
-        const userTransactions = transactions.filter(t => t.userId === user.id && isWithinDateRange(t.createdAt, dateRange));
-        const userLogs = orderActivityLogs.filter(log => log.userId === user.id && isWithinDateRange(log.createdAt, dateRange));
+        const filteredByDateTransactions = transactions.filter(t => t.userId === user.id && isWithinDateRange(t.createdAt, dateRange));
+        const filteredByDateLogs = orderActivityLogs.filter(log => log.userId === user.id && isWithinDateRange(log.createdAt, dateRange));
+
+        // Apply additional filters
+        const userTransactions = filteredByDateTransactions.filter(t => {
+            // Payment method filter
+            if (paymentMethodFilter !== 'all' && t.paymentMethod !== paymentMethodFilter) {
+                return false;
+            }
+            // Till filter
+            if (tillIdFilter !== 'all' && String(t.tillId) !== tillIdFilter) {
+                return false;
+            }
+            // Status filter
+            if (statusFilter !== 'all' && t.status !== statusFilter) {
+                return false;
+            }
+            return true;
+        });
+
+        const userLogs = filteredByDateLogs.filter(log => {
+            // Payment method filter - need to check transaction's payment method
+            if (paymentMethodFilter !== 'all' || tillIdFilter !== 'all' || statusFilter !== 'all') {
+                // Find the associated transaction
+                const associatedTransaction = transactions.find(t => t.id === log.transactionId);
+                if (paymentMethodFilter !== 'all' && associatedTransaction?.paymentMethod !== paymentMethodFilter) {
+                    return false;
+                }
+                if (tillIdFilter !== 'all' && String(associatedTransaction?.tillId) !== tillIdFilter) {
+                    return false;
+                }
+                if (statusFilter !== 'all' && associatedTransaction?.status !== statusFilter) {
+                    return false;
+                }
+            }
+            return true;
+        });
 
         const totalRevenue = userTransactions.reduce((sum, t) => sum + t.total, 0);
         const totalTips = userTransactions.reduce((sum, t) => sum + t.tip, 0);
@@ -95,7 +178,7 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
             itemsRemovedCount: removedItemsData.count, ordersClearedCount, topRemovedItems,
             filteredLogs: userLogs.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()),
         };
-    }, [user, transactions, orderActivityLogs, dateRange, settings]);
+    }, [user, transactions, orderActivityLogs, dateRange, settings, paymentMethodFilter, tillIdFilter, statusFilter, customStartDate, customEndDate]);
 
     if (!isOpen) return null;
 
@@ -107,23 +190,97 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
     );
     
     const DateRangeButton: React.FC<{range: typeof dateRange, label: string}> = ({range, label}) => (
-        <button onClick={() => setDateRange(range)} className={`px-3 py-1 text-sm rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>{label}</button>
+        <button onClick={() => { setDateRange(range); if (range !== 'custom') { setCustomStartDate(''); setCustomEndDate(''); } }} className={`px-3 py-1 text-sm rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>{label}</button>
+    );
+
+    const FilterDropdown: React.FC<{
+        label: string;
+        value: string;
+        onChange: (value: string) => void;
+        options: { value: string; label: string }[];
+    }> = ({ label, value, onChange, options }) => (
+        <div className="flex items-center gap-2">
+            <label className="text-sm text-slate-400 whitespace-nowrap">{label}</label>
+            <select
+                value={value}
+                onChange={(e) => onChange(e.target.value)}
+                className="bg-slate-700 text-white text-sm rounded-md px-2 py-1 border border-slate-600 focus:outline-none focus:border-amber-500"
+            >
+                {options.map(opt => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                ))}
+            </select>
+        </div>
     );
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
             <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
-                <div className="p-6 pb-4 border-b border-slate-700 flex justify-between items-start">
-                    <div>
-                        <h2 className="text-2xl font-bold text-amber-400">{t('performanceReport.title')}</h2>
-                        <p className="text-slate-400">{t('performanceReport.forUser')} <span className="font-semibold text-white">{user.name}</span></p>
+                <div className="p-6 pb-4 border-b border-slate-700">
+                    <div className="flex justify-between items-start mb-4">
+                        <div>
+                            <h2 className="text-2xl font-bold text-amber-400">{t('performanceReport.title')}</h2>
+                            <p className="text-slate-400">{t('performanceReport.forUser')} <span className="font-semibold text-white">{user.name}</span></p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                             <DateRangeButton range="today" label={t('performanceReport.today')} />
+                             <DateRangeButton range="week" label={t('performanceReport.thisWeek')} />
+                             <DateRangeButton range="month" label={t('performanceReport.thisMonth')} />
+                             <DateRangeButton range="all" label={t('performanceReport.allTime')} />
+                             <DateRangeButton range="custom" label={t('performanceReport.custom')} />
+                             <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition ml-4">&times;</button>
+                        </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                         <DateRangeButton range="today" label={t('performanceReport.today')} />
-                         <DateRangeButton range="week" label={t('performanceReport.thisWeek')} />
-                         <DateRangeButton range="month" label={t('performanceReport.thisMonth')} />
-                         <DateRangeButton range="all" label={t('performanceReport.allTime')} />
-                         <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition ml-4">&times;</button>
+
+                    {/* Custom Date Range Picker */}
+                    {dateRange === 'custom' && (
+                        <div className="flex items-center gap-4 mb-4 bg-slate-800 p-3 rounded-lg">
+                            <div className="flex items-center gap-2">
+                                <label className="text-sm text-slate-400">{t('performanceReport.startDate')}</label>
+                                <input
+                                    type="date"
+                                    value={customStartDate}
+                                    onChange={(e) => setCustomStartDate(e.target.value)}
+                                    className="bg-slate-700 text-white text-sm rounded-md px-2 py-1 border border-slate-600 focus:outline-none focus:border-amber-500"
+                                />
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <label className="text-sm text-slate-400">{t('performanceReport.endDate')}</label>
+                                <input
+                                    type="date"
+                                    value={customEndDate}
+                                    onChange={(e) => setCustomEndDate(e.target.value)}
+                                    className="bg-slate-700 text-white text-sm rounded-md px-2 py-1 border border-slate-600 focus:outline-none focus:border-amber-500"
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Filters Row */}
+                    <div className="flex flex-wrap items-center gap-4">
+                        <FilterDropdown
+                            label={t('performanceReport.paymentMethod')}
+                            value={paymentMethodFilter}
+                            onChange={setPaymentMethodFilter}
+                            options={[{ value: 'all', label: t('performanceReport.allMethods') }, ...availablePaymentMethods.map(pm => ({ value: pm, label: pm }))]}
+                        />
+                        <FilterDropdown
+                            label={t('performanceReport.till')}
+                            value={tillIdFilter}
+                            onChange={setTillIdFilter}
+                            options={[{ value: 'all', label: t('performanceReport.allTills') }, ...availableTills.map(([id, name]) => ({ value: String(id), label: name }))]}
+                        />
+                        <FilterDropdown
+                            label={t('performanceReport.status')}
+                            value={statusFilter}
+                            onChange={setStatusFilter}
+                            options={[
+                                { value: 'all', label: t('performanceReport.allStatuses') },
+                                { value: 'completed', label: t('performanceReport.statusCompleted') },
+                                { value: 'complimentary', label: t('performanceReport.statusComplimentary') },
+                                { value: 'voided', label: t('performanceReport.statusVoided') }
+                            ]}
+                        />
                     </div>
                 </div>
 

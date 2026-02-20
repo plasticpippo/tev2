@@ -620,7 +620,19 @@
     "detailedActivityLog": "Detailed Activity Log",
     "noActivityLogged": "No activity logged.",
     "close": "Close",
-    "clearedOrderWith": "Cleared order with {{count}} items"
+    "clearedOrderWith": "Cleared order with {{count}} items",
+    "custom": "Custom",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "allMethods": "All Methods",
+    "allTills": "All Tills",
+    "allStatuses": "All Statuses",
+    "statusCompleted": "Completed",
+    "statusComplimentary": "Complimentary",
+    "statusVoided": "Voided",
+    "paymentMethod": "Payment Method",
+    "till": "Till",
+    "status": "Status"
   },
   "dailyClosing": {
     "title": "Daily Closing Summary",

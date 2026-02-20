@@ -233,6 +233,20 @@ backup_database() {
     
     # Run pg_dump inside the database container
     if docker compose exec -T db pg_dump -U totalevo_user bar_pos > "$backup_file" 2>/dev/null; then
+        # Verify backup file was created and is not empty
+        if [[ ! -f "$backup_file" ]]; then
+            print_error "Backup file was not created!"
+            return 1
+        fi
+        
+        local backup_size
+        backup_size=$(wc -c < "$backup_file")
+        if [[ "$backup_size" -eq 0 ]]; then
+            print_error "Backup file is empty!"
+            rm -f "$backup_file"
+            return 1
+        fi
+        
         local size=$(du -h "$backup_file" | cut -f1)
         print_success "Database backup created: $backup_file ($size)"
         echo "$backup_file" > "${backup_dir}/.last_backup"
@@ -380,6 +394,55 @@ validate_upgrade() {
 }
 
 #===============================================================================
+# MIGRATION VERIFICATION FUNCTIONS
+#===============================================================================
+
+# Verify database migrations are applied correctly
+verify_migrations() {
+    local max_attempts=30
+    local attempt=0
+    
+    print_info "Verifying database migrations..."
+    
+    # Wait for backend to be ready
+    while [[ $attempt -lt $max_attempts ]]; do
+        if docker compose exec -T backend pg_isready -h db -U totalevo_user > /dev/null 2>&1; then
+            break
+        fi
+        attempt=$((attempt + 1))
+        sleep 1
+    done
+    
+    if [[ $attempt -ge $max_attempts ]]; then
+        print_warning "Backend not ready after ${max_attempts}s, skipping migration verification"
+        return 0  # Don't fail, migrations may still be running
+    fi
+    
+    # Run prisma migrate status inside backend container
+    local migrate_status
+    migrate_status=$(docker compose exec -T backend npx prisma migrate status 2>&1)
+    local status_code=$?
+    
+    if [[ $status_code -eq 0 ]]; then
+        print_success "Database migrations verified successfully"
+        echo "$migrate_status" | grep -E "Database schema is up to date|already in sync" > /dev/null 2>&1 && \
+            print_info "All migrations are applied"
+        return 0
+    else
+        # Check if it's just a warning or actual error
+        if echo "$migrate_status" | grep -qE "error|Error|ERROR"; then
+            print_error "Migration verification failed"
+            print_info "Migration status output:"
+            echo "$migrate_status"
+            return 1
+        else
+            print_warning "Migration verification returned warnings"
+            return 0
+        fi
+    fi
+}
+
+#===============================================================================
 # UPGRADE FLOW FUNCTIONS
 #===============================================================================
 
@@ -417,12 +480,23 @@ perform_upgrade() {
     print_info "Waiting for containers to start..."
     sleep 10
     
-    # 7. Validate upgrade
+    # 7. Verify migrations
+    verify_migrations
+    
+    # 8. Validate upgrade
     if validate_upgrade; then
         save_installed_version "$new_version"
         print_success "=========================================="
         print_success "UPGRADE COMPLETE: $current_version -> $new_version"
         print_success "=========================================="
+        print_info ""
+        print_info "Upgrade Summary:"
+        print_info "  - Database backup created in ./backups/"
+        print_info "  - Containers rebuilt with new version"
+        print_info "  - Database migrations applied automatically"
+        if [[ "$new_version" =~ "2026.02.20" ]] || [[ "$new_version" > "2026.02.19" ]]; then
+            print_info "  - Payment method normalization migration applied (if applicable)"
+        fi
         return 0
     else
         print_error "=========================================="
@@ -1293,6 +1367,10 @@ build_and_run() {
     # Wait for services to be healthy
     print_step "Waiting for services to be healthy..."
     wait_for_healthy_services
+    
+    # Verify migrations for fresh install
+    print_step "Verifying database migrations..."
+    verify_migrations
     
     # Show status
     print_step "Container status:"

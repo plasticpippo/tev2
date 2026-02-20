@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# Version tracking (local installation info)
+.version
+
 # Docker Compose override (local development settings)
 docker-compose.override.yml
 

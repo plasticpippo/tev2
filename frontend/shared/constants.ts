@@ -1,10 +1,6 @@
 export const PAYMENT_METHODS = [
   'Cash',
   'Card',
-  'Bank Transfer',
-  'Check',
-  'Gift Card',
-  'Other'
 ];
 
 export const DEFAULT_TAX_RATE = 0.19; // 19% default tax rate

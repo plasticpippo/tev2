@@ -620,7 +620,19 @@
     "detailedActivityLog": "Registro Attività Dettagliato",
     "noActivityLogged": "Nessuna attività registrata.",
     "close": "Chiudi",
-    "clearedOrderWith": "Ordine cancellato con {{count}} articoli"
+    "clearedOrderWith": "Ordine cancellato con {{count}} articoli",
+    "custom": "Personalizzato",
+    "startDate": "Data Inizio",
+    "endDate": "Data Fine",
+    "allMethods": "Tutti i Metodi",
+    "allTills": "Tutti i Terminali",
+    "allStatuses": "Tutti gli Stati",
+    "statusCompleted": "Completato",
+    "statusComplimentary": "Omaggio",
+    "statusVoided": "Annullato",
+    "paymentMethod": "Metodo di Pagamento",
+    "till": "Cassa",
+    "status": "Stato"
   },
   "dailyClosing": {
     "title": "Riepilogo Chiusura Giornaliera",
