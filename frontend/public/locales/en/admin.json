@@ -479,7 +479,20 @@
       "before": "Before Amount",
       "after": "After Amount"
     },
-    "saved": "Settings saved successfully"
+    "saved": "Settings saved successfully",
+    "businessDayEndHourLabel": "Business Day End Hour",
+    "businessDayEndHourDescription": "Set when the business day ends. For overnight business (e.g., 10 PM to 4 AM), select the end time like 04:00.",
+    "autoCloseEnabledLabel": "Automatic Business Day Closing",
+    "autoCloseEnabledDescription": "Automatically close the business day at the specified end time. The system will create a daily closing record.",
+    "currentBusinessDayStatus": "Current Business Day Status",
+    "schedulerRunning": "Scheduler is active",
+    "schedulerNotRunning": "Scheduler is inactive",
+    "closingInProgress": "Closing in progress...",
+    "lastCloseTime": "Last close",
+    "nextScheduledClose": "Next scheduled close",
+    "loading": "Loading...",
+    "statusUnavailable": "Status unavailable",
+    "never": "Never"
   },
   "itemisedConsumption": {
     "title": "Itemised Consumption",

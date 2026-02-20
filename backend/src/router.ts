@@ -16,6 +16,7 @@ import { dailyClosingsRouter } from './handlers/dailyClosings';
 import { consumptionReportsRouter } from './handlers/consumptionReports';
 import { analyticsRouter } from './handlers/analytics';
 import { layoutsRouter } from './handlers/layouts';
+import { taxRatesRouter } from './handlers/taxRates';
 
 export const router = express.Router();
 
@@ -37,6 +38,7 @@ router.use('/daily-closings', dailyClosingsRouter);
 router.use('/consumption-reports', consumptionReportsRouter);
 router.use('/analytics', analyticsRouter);
 router.use('/layouts', layoutsRouter);
+router.use('/tax-rates', taxRatesRouter);
 
 // Health check for the API
 router.get('/health', (req, res) => {

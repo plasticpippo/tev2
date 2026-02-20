@@ -9,6 +9,7 @@ import { validateJwtSecret } from './utils/jwtSecretValidation';
 import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import i18n, { initI18n } from './i18n';
+import { initializeScheduler, stopScheduler } from './services/businessDayScheduler';
 import dotenv from 'dotenv';
 
 // Load environment variables from .env file
@@ -125,6 +126,9 @@ const startServer = async () => {
     // Initialize Prisma client
     await initPrisma();
     
+    // Initialize business day scheduler for automatic closing
+    initializeScheduler();
+    
     const HOST = process.env.HOST || '0.0.0.0';
     
     app.listen(PORT, HOST, () => {
@@ -138,6 +142,17 @@ const startServer = async () => {
     process.exit(1);
   }
 };
+
+// Graceful shutdown handling
+const gracefulShutdown = () => {
+  logInfo('Received shutdown signal, stopping scheduler...');
+  stopScheduler();
+  logInfo('Scheduler stopped, exiting...');
+  process.exit(0);
+};
+
+process.on('SIGTERM', gracefulShutdown);
+process.on('SIGINT', gracefulShutdown);
 
 if (require.main === module) {
   startServer();

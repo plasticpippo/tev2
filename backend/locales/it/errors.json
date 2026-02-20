@@ -76,7 +76,9 @@
     "validationFailed": "Validazione non riuscita",
     "invalidCategoryId": "ID categoria non valido: {{categoryId}}",
     "invalidStockItemReferences": "Riferimenti ad articoli magazzino non validi: {{ids}}",
-    "variantError": "Variante {{index}}: {{error}}"
+    "variantError": "Variante {{index}}: {{error}}",
+    "invalidTaxRateReferences": "ID aliquote IVA non validi: {{ids}}",
+    "cannotUseInactiveTaxRate": "Impossibile utilizzare aliquote IVA inattive"
   },
   "categories": {
     "notFound": "Categoria non trovata",
@@ -272,7 +274,9 @@
     "notFound": "Impostazioni non trovate",
     "invalidData": "Dati impostazioni non validi",
     "updateFailed": "Aggiornamento impostazioni non riuscito",
-    "fetchFailed": "Impossibile recuperare le impostazioni"
+    "fetchFailed": "Impossibile recuperare le impostazioni",
+    "invalidDefaultTaxRate": "ID aliquota IVA predefinita non valido",
+    "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita"
   },
   "dailyClosings": {
     "notFound": "Chiusura giornaliera non trovata",
@@ -363,5 +367,24 @@
   "rateLimiter": {
     "writeLimitExceeded": "Troppe operazioni di scrittura, riprova piu tardi.",
     "rateLimitExceeded": "Troppe richieste, riprova piu tardi."
+  },
+  "taxRates": {
+    "fetchFailed": "Impossibile recuperare le aliquote IVA",
+    "fetchOneFailed": "Impossibile recuperare l'aliquota IVA",
+    "notFound": "Aliquota IVA non trovata",
+    "validationFailed": "Validazione aliquota IVA fallita",
+    "nameRequired": "Il nome dell'aliquota IVA e obbligatorio",
+    "nameInvalid": "Il nome dell'aliquota IVA deve essere una stringa non vuota",
+    "nameTooLong": "Il nome dell'aliquota IVA deve essere di massimo 100 caratteri",
+    "nameExists": "Esiste gia un'aliquota IVA con questo nome",
+    "rateRequired": "L'aliquota IVA e obbligatoria",
+    "rateInvalid": "L'aliquota IVA deve essere un numero valido",
+    "rateOutOfRange": "L'aliquota IVA deve essere compresa tra 0% e 100%",
+    "createFailed": "Impossibile creare l'aliquota IVA",
+    "updateFailed": "Impossibile aggiornare l'aliquota IVA",
+    "deleteFailed": "Impossibile disattivare l'aliquota IVA",
+    "cannotDeleteDefault": "Impossibile disattivare l'aliquota IVA predefinita",
+    "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita",
+    "setDefaultFailed": "Impossibile impostare l'aliquota IVA predefinita"
   }
 }

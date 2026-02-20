@@ -62,11 +62,14 @@ model ProductVariant {
   isFavourite      Boolean?           @default(false)
   backgroundColor  String
   textColor        String
+  taxRateId        Int?
   product          Product            @relation(fields: [productId], references: [id])
+  taxRate          TaxRate?           @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
   stockConsumption StockConsumption[]
   variantLayouts   VariantLayout[]
   sharedLayoutPositions SharedLayoutPosition[]
 
+  @@index([taxRateId])
   @@map("product_variants")
 }
 
@@ -215,9 +218,31 @@ model Settings {
   taxMode             String
   autoStartTime       String
   businessDayEndHour  String    @default("06:00") // Format: "HH:MM" - when business day ends (for midnight-crossing)
+  autoCloseEnabled    Boolean   @default(false) // Enable automatic business day closing
   lastManualClose     DateTime?
+  defaultTaxRateId    Int?
+  defaultTaxRate      TaxRate?  @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
 
+  @@index([defaultTaxRateId])
   @@map("settings")
+}
+
+model TaxRate {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  rate        Decimal  @db.Decimal(5, 4)
+  description String?
+  isDefault   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  productVariants ProductVariant[]
+  settings        Settings[]
+
+  @@index([isDefault, isActive])
+  @@map("tax_rates")
 }
 
 model DailyClosing {

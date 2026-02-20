@@ -69,9 +69,11 @@ export interface TaxSettings {
 export interface Settings {
   tax: TaxSettings;
   businessDay: {
-    autoStartTime: string; // e.g., "06:00"
-    lastManualClose: string | null; // ISO string
- };
+    autoStartTime: string;
+    businessDayEndHour: string;
+    lastManualClose: string | null;
+    autoCloseEnabled: boolean;
+  };
 }
 
 export interface Till {
@@ -148,11 +150,11 @@ export interface Table {
     height: number;
     status: 'available' | 'occupied' | 'reserved' | 'unavailable';
     roomId: string;
-    items?: any[]; // Added for storing order items directly on tables
+    items?: any[];
     createdAt: string;
     updatedAt: string;
     room: Room;
-    tabs: any[]; // Can be refined later based on actual tab type
+    tabs: any[];
 }
 
 export interface Tab {

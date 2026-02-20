@@ -1,21 +1,105 @@
-import express, { Request, Response } from 'express';
-import { prisma } from '../prisma';
-import type { Product, ProductVariant } from '../types';
-import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
-import { logError } from '../utils/logger';
-import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
+# Products Integration Plan
 
-export const productsRouter = express.Router();
+## Objective
 
+Enable tax rate assignment to product variants, allowing administrators to specify which tax rate applies to each product variant. Products without an explicit tax rate will use the default tax rate.
+
+**Phase:** 4 of 8  
+**Dependencies:** Phase 1 (Database Schema), Phase 2 (Tax Rates API), Phase 3 (Settings Integration)  
+**Estimated Subtasks:** 9
+
+---
+
+## Current State
+
+### Prerequisites
+
+Before starting this phase, verify:
+- [ ] Phase 1 (Database Schema) is complete - `taxRateId` field exists in ProductVariant model
+- [ ] Phase 2 (Tax Rates API) is complete - Tax rates CRUD endpoints work
+- [ ] Phase 3 (Settings Integration) is complete - Default tax rate can be configured
+
+### Products Handler ([`backend/src/handlers/products.ts`](backend/src/handlers/products.ts))
+
+**Current variant fields:**
+- `name`
+- `price`
+- `isFavourite`
+- `backgroundColor`
+- `textColor`
+- `stockConsumption`
+
+**Missing:** `taxRateId` field
+
+### ProductVariant Type ([`backend/src/types.ts`](backend/src/types.ts))
+
+```typescript
+export interface ProductVariant {
+  id: number;
+  productId: number;
+  name: string;
+  price: number;
+  isFavourite?: boolean;
+  stockConsumption: { stockItemId: string; quantity: number; }[];
+  backgroundColor: string;
+  textColor: string;
+  // Missing: taxRateId, taxRate
+}
+```
+
+---
+
+## Changes Required
+
+### 1. Update ProductVariant Type
+
+Add `taxRateId` and `taxRate` to the type definition.
+
+### 2. Update Products Handler
+
+- Include `taxRate` in Prisma queries
+- Accept `taxRateId` in create/update operations
+- Validate `taxRateId` references an active tax rate
+- Format tax rate in responses
+
+---
+
+## Implementation Details
+
+### File: [`backend/src/types.ts`](backend/src/types.ts)
+
+```typescript
+export interface ProductVariant {
+  id: number;
+  productId: number;
+  name: string;
+  price: number;
+  isFavourite?: boolean;
+  stockConsumption: { stockItemId: string; quantity: number; }[];
+  backgroundColor: string;
+  textColor: string;
+  taxRateId: number | null;  // Added
+  taxRate: TaxRate | null;   // Added - included in responses
+}
+```
+
+> **Note:** The `TaxRate` interface is defined in Phase 2 (Types and DTOs) of the implementation plan. Import it from the types file:
+> ```typescript
+> import { TaxRate } from '../types';
+> ```
+
+### File: [`backend/src/handlers/products.ts`](backend/src/handlers/products.ts)
+
+#### Helper Function: Format Product Variant
+
+```typescript
 // Helper: Format product variant for API response
 function formatProductVariant(variant: any) {
   return {
     id: variant.id,
     productId: variant.productId,
     name: variant.name,
-    price: variant.price.toString(),
+    price: variant.price,
     isFavourite: variant.isFavourite,
     backgroundColor: variant.backgroundColor,
     textColor: variant.textColor,
@@ -34,7 +118,13 @@ function formatProductVariant(variant: any) {
     } : null
   };
 }
+```
 
+> **Note:** The `taxRate` object in the response includes a computed `ratePercent` field. Use `TaxRateResponseDTO` from the implementation plan for the response type, which includes this field.
+
+#### GET /api/products - Updated
+
+```typescript
 // GET /api/products - Get all products
 productsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -43,7 +133,7 @@ productsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
         variants: {
           include: {
             stockConsumption: true,
-            taxRate: true
+            taxRate: true  // Added
           }
         }
       }
@@ -63,7 +153,11 @@ productsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
     res.status(500).json({ error: i18n.t('errors:products.fetchFailed') });
   }
 });
+```
 
+#### GET /api/products/:id - Updated
+
+```typescript
 // GET /api/products/:id - Get a specific product
 productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   try {
@@ -74,7 +168,7 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
         variants: {
           include: {
             stockConsumption: true,
-            taxRate: true
+            taxRate: true  // Added
           }
         }
       }
@@ -98,7 +192,11 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
     res.status(500).json({ error: i18n.t('errors:products.fetchOneFailed') });
   }
 });
+```
 
+#### POST /api/products - Updated
+
+```typescript
 // POST /api/products - Create a new product
 productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
@@ -122,7 +220,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     // Validate tax rate IDs if provided
     if (variants && variants.length > 0) {
       const taxRateIds = variants
-        .map(v => (v as any).taxRateId)
+        .map(v => v.taxRateId)
         .filter((id): id is number => id !== undefined && id !== null);
       
       if (taxRateIds.length > 0) {
@@ -148,9 +246,8 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
       }
     }
     
-    // If variants have stock consumption, validate stock item references
+    // Validate stock items (existing logic)
     if (variants && variants.length > 0) {
-      // Collect all stock item IDs from all variants
       const allStockItemIds: string[] = [];
       variants.forEach(v => {
         if (v.stockConsumption && Array.isArray(v.stockConsumption)) {
@@ -162,7 +259,6 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         }
       });
       
-      // Check if all referenced stock items exist
       if (allStockItemIds.length > 0) {
         const existingStockItems = await prisma.stockItem.findMany({
           where: { id: { in: allStockItemIds } },
@@ -191,7 +287,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
             isFavourite: v.isFavourite || false,
             backgroundColor: v.backgroundColor,
             textColor: v.textColor,
-            taxRateId: (v as any).taxRateId || null,
+            taxRateId: v.taxRateId || null,  // Added
             stockConsumption: {
               create: v.stockConsumption.map((sc: { stockItemId: string; quantity: number }) => ({
                 stockItemId: sc.stockItemId,
@@ -205,7 +301,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         variants: {
           include: {
             stockConsumption: true,
-            taxRate: true
+            taxRate: true  // Added
           }
         }
       }
@@ -219,20 +315,24 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     
     res.status(201).json(formattedProduct);
   } catch (error) {
-   logError(error instanceof Error ? error : 'Error creating product', {
-     correlationId: (req as any).correlationId,
-   });
-   res.status(500).json({ error: i18n.t('errors:products.createFailed') });
+    logError(error instanceof Error ? error : 'Error creating product', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors:products.createFailed') });
   }
 });
+```
 
+#### PUT /api/products/:id - Updated
+
+```typescript
 // PUT /api/products/:id - Update a product
 productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
     
-    // Validate product data if provided
+    // Validate product data if provided (existing validation logic)
     if (name !== undefined || categoryId !== undefined || variants !== undefined) {
       const productToValidate = {
         name: name !== undefined ? name : '',
@@ -240,7 +340,6 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         variants: variants !== undefined ? variants : []
       };
       
-      // Only validate fields that are provided
       const validationErrors = [];
       
       if (name !== undefined) {
@@ -268,7 +367,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       }
     }
     
-    // If categoryId is provided, validate that it exists
+    // Validate category if provided
     if (categoryId !== undefined) {
       const category = await prisma.category.findUnique({
         where: { id: categoryId }
@@ -282,7 +381,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
     // Validate tax rate IDs if provided
     if (variants && Array.isArray(variants) && variants.length > 0) {
       const taxRateIds = variants
-        .map(v => (v as any).taxRateId)
+        .map(v => v.taxRateId)
         .filter((id): id is number => id !== undefined && id !== null);
       
       if (taxRateIds.length > 0) {
@@ -308,9 +407,8 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       }
     }
     
-    // If variants are provided with stock consumption, validate stock item references
+    // Validate stock items (existing logic)
     if (variants && Array.isArray(variants) && variants.length > 0) {
-      // Collect all stock item IDs from all variants
       const allStockItemIds: string[] = [];
       variants.forEach(v => {
         if (v.stockConsumption && Array.isArray(v.stockConsumption)) {
@@ -322,7 +420,6 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         }
       });
       
-      // Check if all referenced stock items exist
       if (allStockItemIds.length > 0) {
         const existingStockItems = await prisma.stockItem.findMany({
           where: { id: { in: allStockItemIds } },
@@ -353,7 +450,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           variants: {
             include: {
               stockConsumption: true,
-              taxRate: true
+              taxRate: true  // Added
             }
           }
         }
@@ -361,7 +458,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       
       // If variants are provided, update them as well
       if (variants && Array.isArray(variants) && variants.length > 0) {
-        // First, delete existing stock consumption records for this product's variants
+        // First, delete existing stock consumption records
         await tx.stockConsumption.deleteMany({
           where: {
             variant: {
@@ -370,7 +467,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           }
         });
         
-        // Then delete existing variants for this product
+        // Then delete existing variants
         await tx.productVariant.deleteMany({
           where: { productId: Number(id) }
         });
@@ -386,7 +483,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
                 isFavourite: v.isFavourite || false,
                 backgroundColor: v.backgroundColor,
                 textColor: v.textColor,
-                taxRateId: (v as any).taxRateId || null,
+                taxRateId: v.taxRateId || null,  // Added
                 stockConsumption: {
                   create: v.stockConsumption.map((sc) => ({
                     stockItemId: sc.stockItemId,
@@ -400,7 +497,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
             variants: {
               include: {
                 stockConsumption: true,
-                taxRate: true
+                taxRate: true  // Added
               }
             }
           }
@@ -426,41 +523,241 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
     res.status(500).json({ error: i18n.t('errors:products.updateFailed') });
   }
 });
+```
 
-// DELETE /api/products/:id - Delete a product
-productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params;
-    
-    // Start a transaction to ensure data consistency
-    await prisma.$transaction(async (tx) => {
-      // First, delete stock consumption records for this product's variants
-      await tx.stockConsumption.deleteMany({
-        where: {
-          variant: {
-            productId: Number(id)
-          }
-        }
-      });
-      
-      // Then delete the variants
-      await tx.productVariant.deleteMany({
-        where: { productId: Number(id) }
-      });
-      
-      // Finally delete the product
-      await tx.product.delete({
-        where: { id: Number(id) }
-      });
-    });
-    
-    res.status(204).send();
-  } catch (error) {
-    logError(error instanceof Error ? error : 'Error deleting product', {
-      correlationId: (req as any).correlationId,
-    });
-    res.status(500).json({ error: i18n.t('errors:products.deleteFailedInUse') });
+> **Note:** The DELETE endpoint (`DELETE /api/products/:id`) is unaffected by tax rate changes and requires no modifications.
+
+---
+
+## i18n Translations
+
+### File: [`backend/locales/en/errors.json`](backend/locales/en/errors.json)
+
+Add product tax rate error messages:
+
+```json
+{
+  "products": {
+    "invalidTaxRateReferences": "Invalid tax rate IDs: {{ids}}",
+    "cannotUseInactiveTaxRate": "Cannot use inactive tax rates"
   }
-});
+}
+```
 
-export default productsRouter;
+### File: [`backend/locales/it/errors.json`](backend/locales/it/errors.json)
+
+Add Italian translations:
+
+```json
+{
+  "products": {
+    "invalidTaxRateReferences": "ID aliquote IVA non validi: {{ids}}",
+    "cannotUseInactiveTaxRate": "Impossibile utilizzare aliquote IVA inattive"
+  }
+}
+```
+
+> **Note:** Ensure `cannotUseInactiveTaxRate` is added to the products i18n keys in the implementation plan.
+
+---
+
+## Implementation Subtasks
+
+### Subtask 4.1: Update Types
+- [ ] Add `taxRateId` and `taxRate` to `ProductVariant` interface in [`backend/src/types.ts`](backend/src/types.ts)
+
+### Subtask 4.2: Add Helper Function
+- [ ] Add `formatProductVariant` helper function to [`products.ts`](backend/src/handlers/products.ts)
+
+### Subtask 4.3: Update GET All Products
+- [ ] Include `taxRate` in Prisma query
+- [ ] Format variants with tax rate info
+
+### Subtask 4.4: Update GET Single Product
+- [ ] Include `taxRate` in Prisma query
+- [ ] Format variant with tax rate info
+
+### Subtask 4.5: Update POST Create Product
+- [ ] Accept `taxRateId` in variant input
+- [ ] Validate tax rate exists and is active
+- [ ] Include `taxRateId` in variant creation
+
+### Subtask 4.6: Update PUT Update Product
+- [ ] Accept `taxRateId` in variant input
+- [ ] Validate tax rate exists and is active
+- [ ] Include `taxRateId` in variant update
+
+### Subtask 4.7: Update Validation Function
+
+Update the `validateProductVariant` function in [`backend/src/utils/validation.ts`](backend/src/utils/validation.ts) to validate the `taxRateId` field:
+
+```typescript
+// Add to validateProductVariant function
+if (variant.taxRateId !== undefined && variant.taxRateId !== null) {
+  if (typeof variant.taxRateId !== 'number' || !Number.isInteger(variant.taxRateId)) {
+    errors.push('taxRateId must be a valid integer');
+  }
+}
+```
+
+### Subtask 4.8: Add i18n Translations
+- [ ] Add English error messages
+- [ ] Add Italian error messages
+
+### Subtask 4.9: Test Endpoints
+- [ ] Test GET returns tax rate info
+- [ ] Test POST creates variant with tax rate
+- [ ] Test PUT updates variant tax rate
+- [ ] Test validation for invalid tax rate IDs
+- [ ] Test validation for inactive tax rates
+
+---
+
+## API Response Examples
+
+### GET /api/products
+
+```json
+[
+  {
+    "id": 1,
+    "name": "Espresso",
+    "categoryId": 1,
+    "variants": [
+      {
+        "id": 1,
+        "productId": 1,
+        "name": "Single",
+        "price": 1.50,
+        "isFavourite": false,
+        "backgroundColor": "#4CAF50",
+        "textColor": "#FFFFFF",
+        "stockConsumption": [],
+        "taxRateId": 1,
+        "taxRate": {
+          "id": 1,
+          "name": "Standard Rate",
+          "rate": "0.1900",
+          "ratePercent": "19.00%",
+          "description": "Standard VAT rate (19%)",
+          "isDefault": true,
+          "isActive": true,
+          "createdAt": "2026-02-20T10:00:00.000Z",
+          "updatedAt": "2026-02-20T10:00:00.000Z"
+        }
+      }
+    ]
+  }
+]
+```
+
+### POST /api/products
+
+Request:
+```json
+{
+  "name": "Cappuccino",
+  "categoryId": 1,
+  "variants": [
+    {
+      "name": "Regular",
+      "price": 2.50,
+      "backgroundColor": "#8B4513",
+      "textColor": "#FFFFFF",
+      "stockConsumption": [],
+      "taxRateId": 1
+    }
+  ]
+}
+```
+
+Response (201):
+```json
+{
+  "id": 2,
+  "name": "Cappuccino",
+  "categoryId": 1,
+  "variants": [
+    {
+      "id": 2,
+      "productId": 2,
+      "name": "Regular",
+      "price": 2.50,
+      "isFavourite": false,
+      "backgroundColor": "#8B4513",
+      "textColor": "#FFFFFF",
+      "stockConsumption": [],
+      "taxRateId": 1,
+      "taxRate": {
+        "id": 1,
+        "name": "Standard Rate",
+        "rate": "0.1900",
+        "ratePercent": "19.00%",
+        "description": "Standard VAT rate (19%)",
+        "isDefault": true,
+        "isActive": true,
+        "createdAt": "2026-02-20T10:00:00.000Z",
+        "updatedAt": "2026-02-20T10:00:00.000Z"
+      }
+    }
+  ]
+}
+```
+
+### Variant with No Tax Rate (Uses Default)
+
+```json
+{
+  "id": 3,
+  "productId": 2,
+  "name": "Large",
+  "price": 3.00,
+  "isFavourite": false,
+  "backgroundColor": "#8B4513",
+  "textColor": "#FFFFFF",
+  "stockConsumption": [],
+  "taxRateId": null,
+  "taxRate": null
+}
+```
+
+---
+
+## Files to Modify
+
+| File | Changes |
+|------|---------|
+| [`backend/src/types.ts`](backend/src/types.ts) | Add `taxRateId` and `taxRate` to ProductVariant |
+| [`backend/src/handlers/products.ts`](backend/src/handlers/products.ts) | Update all endpoints for tax rate support |
+| [`backend/locales/en/errors.json`](backend/locales/en/errors.json) | Add product tax rate error messages |
+| [`backend/locales/it/errors.json`](backend/locales/it/errors.json) | Add Italian translations |
+
+---
+
+## Rollback Strategy
+
+1. Revert changes to [`products.ts`](backend/src/handlers/products.ts)
+2. Revert type changes in [`types.ts`](backend/src/types.ts)
+3. Remove i18n translations
+4. No database impact (handled in Phase 1)
+
+---
+
+## Testing Considerations
+
+### Unit Tests
+- Test variant formatting with tax rate
+- Test variant formatting without tax rate
+- Test tax rate validation
+
+### Integration Tests
+- Test GET products includes tax rate
+- Test POST creates variant with tax rate
+- Test PUT updates variant tax rate
+- Test validation errors for invalid tax rates
+
+### Manual Testing
+- Create product with tax rate
+- Update product variant tax rate
+- Verify tax rate is included in responses
+- Test with null tax rate (should use default)

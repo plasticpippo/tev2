@@ -76,7 +76,9 @@
     "validationFailed": "Validation failed",
     "invalidCategoryId": "Invalid category ID: {{categoryId}}",
     "invalidStockItemReferences": "Invalid stock item references: {{ids}}",
-    "variantError": "Variant {{index}}: {{error}}"
+    "variantError": "Variant {{index}}: {{error}}",
+    "invalidTaxRateReferences": "Invalid tax rate IDs: {{ids}}",
+    "cannotUseInactiveTaxRate": "Cannot use inactive tax rates"
   },
   "categories": {
     "notFound": "Category not found",
@@ -272,7 +274,9 @@
     "notFound": "Settings not found",
     "invalidData": "Invalid settings data",
     "updateFailed": "Failed to update settings",
-    "fetchFailed": "Failed to fetch settings"
+    "fetchFailed": "Failed to fetch settings",
+    "invalidDefaultTaxRate": "Invalid default tax rate ID",
+    "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default"
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",
@@ -363,5 +367,24 @@
   "rateLimiter": {
     "writeLimitExceeded": "Too many write operations, please try again later.",
     "rateLimitExceeded": "Too many requests, please try again later."
+  },
+  "taxRates": {
+    "fetchFailed": "Failed to fetch tax rates",
+    "fetchOneFailed": "Failed to fetch tax rate",
+    "notFound": "Tax rate not found",
+    "validationFailed": "Tax rate validation failed",
+    "nameRequired": "Tax rate name is required",
+    "nameInvalid": "Tax rate name must be a non-empty string",
+    "nameTooLong": "Tax rate name must be 100 characters or less",
+    "nameExists": "A tax rate with this name already exists",
+    "rateRequired": "Tax rate is required",
+    "rateInvalid": "Tax rate must be a valid number",
+    "rateOutOfRange": "Tax rate must be between 0% and 100%",
+    "createFailed": "Failed to create tax rate",
+    "updateFailed": "Failed to update tax rate",
+    "deleteFailed": "Failed to deactivate tax rate",
+    "cannotDeleteDefault": "Cannot deactivate the default tax rate",
+    "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
+    "setDefaultFailed": "Failed to set default tax rate"
   }
 }

@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient, Decimal } from '@prisma/client';
 import { User } from '../src/types';
 import { hashPassword } from '../src/utils/password';
 
@@ -8,6 +8,30 @@ const INITIAL_USERS: Array<Omit<User, 'id'> & { password: string }> = [
   { name: 'Admin User', username: 'admin', password: 'admin123', role: 'Admin' },
   { name: 'Cashier User', username: 'cashier', password: 'cashier123', role: 'Cashier' },
 ];
+
+async function seedTaxRates() {
+  console.log('Seeding tax rates...');
+  
+  const taxRates = [
+    { name: 'Zero Rate', rate: new Decimal(0.0000), description: '0% tax rate', isDefault: false, isActive: true },
+    { name: 'Reduced Rate', rate: new Decimal(0.1000), description: '10% tax rate', isDefault: false, isActive: true },
+    { name: 'Standard Rate', rate: new Decimal(0.1900), description: '19% tax rate', isDefault: true, isActive: true },
+    { name: 'Luxury Rate', rate: new Decimal(0.2200), description: '22% tax rate', isDefault: false, isActive: true },
+  ];
+
+  for (const taxRate of taxRates) {
+    await prisma.taxRate.upsert({
+      where: { name: taxRate.name },
+      update: taxRate,
+      create: taxRate,
+    });
+  }
+  
+  console.log('Created/updated tax rates:', taxRates.length);
+  
+  // Return the default tax rate for use in settings
+  return prisma.taxRate.findFirst({ where: { isDefault: true } });
+}
 
 async function seedDatabase() {
   try {
@@ -19,6 +43,7 @@ async function seedDatabase() {
     const categoryCount = await prisma.category.count();
     const settingsCount = await prisma.settings.count();
     const productCount = await prisma.product.count();
+    const taxRateCount = await prisma.taxRate.count();
 
     // Only seed essential data if none exists
     if (userCount === 0) {
@@ -112,15 +137,24 @@ async function seedDatabase() {
       console.log(`Categories already exist (${categoryCount}), skipping category seeding`);
     }
 
+    // Seed tax rates
+    let defaultTaxRate = await prisma.taxRate.findFirst({ where: { isDefault: true } });
+    if (taxRateCount === 0) {
+      defaultTaxRate = await seedTaxRates();
+    } else {
+      console.log(`Tax rates already exist (${taxRateCount}), skipping tax rate seeding`);
+    }
+
     if (settingsCount === 0) {
       console.log('Seeding settings...');
       
-      // Create settings
+      // Create settings with reference to default tax rate
       await prisma.settings.create({
         data: {
           taxMode: 'exclusive',
           autoStartTime: '06:00',
           lastManualClose: null,
+          defaultTaxRateId: defaultTaxRate?.id ?? null,
         },
       });
       console.log('Created settings');

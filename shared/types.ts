@@ -71,8 +71,10 @@ export interface Settings {
   tax: TaxSettings;
   businessDay: {
     autoStartTime: string; // e.g., "06:00"
+    businessDayEndHour: string; // e.g., "04:00" - when business day ends (for overnight business days)
     lastManualClose: string | null; // ISO string
- };
+    autoCloseEnabled: boolean; // Enable automatic business day closing
+  };
 }
 
 export interface Till {

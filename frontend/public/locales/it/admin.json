@@ -479,7 +479,20 @@
       "before": "Prima dell'Importo",
       "after": "Dopo l'Importo"
     },
-    "saved": "Impostazioni salvate con successo"
+    "saved": "Impostazioni salvate con successo",
+    "businessDayEndHourLabel": "Ora Fine Giornata Lavorativa",
+    "businessDayEndHourDescription": "Imposta quando termina la giornata lavorativa. Per attivita notturne (es., 22:00 alle 04:00), seleziona l'ora di fine come 04:00.",
+    "autoCloseEnabledLabel": "Chiusura Automatica Giornata Lavorativa",
+    "autoCloseEnabledDescription": "Chiudi automaticamente la giornata lavorativa all'ora specificata. Il sistema creera un record di chiusura giornaliera.",
+    "currentBusinessDayStatus": "Stato Giornata Lavorativa Corrente",
+    "schedulerRunning": "Scheduler attivo",
+    "schedulerNotRunning": "Scheduler inattivo",
+    "closingInProgress": "Chiusura in corso...",
+    "lastCloseTime": "Ultima chiusura",
+    "nextScheduledClose": "Prossima chiusura programmata",
+    "loading": "Caricamento...",
+    "statusUnavailable": "Stato non disponibile",
+    "never": "Mai"
   },
   "itemisedConsumption": {
     "title": "Consumo Dettagliato",
