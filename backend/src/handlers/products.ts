@@ -15,7 +15,7 @@ function formatProductVariant(variant: any) {
     id: variant.id,
     productId: variant.productId,
     name: variant.name,
-    price: variant.price.toString(),
+    price: Number(variant.price),
     isFavourite: variant.isFavourite,
     backgroundColor: variant.backgroundColor,
     textColor: variant.textColor,
