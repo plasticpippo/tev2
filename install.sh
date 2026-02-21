@@ -397,6 +397,48 @@ validate_upgrade() {
 # MIGRATION VERIFICATION FUNCTIONS
 #===============================================================================
 
+# Resolve failed migrations in the database
+resolve_failed_migrations() {
+    print_info "Checking for failed migrations..."
+    
+    # Check if the database container is running
+    if ! docker compose ps | grep -q "db.*running"; then
+        print_warning "Database container is not running, skipping migration check"
+        return 0
+    fi
+    
+    # Check for failed migrations in _prisma_migrations table
+    local failed_count
+    failed_count=$(docker compose exec -T db psql -U totalevo_user -d bar_pos -t -c \
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
+    
+    if [[ -z "$failed_count" ]]; then
+        # Table might not exist yet (fresh install)
+        print_info "Migration table not found (likely fresh install)"
+        return 0
+    fi
+    
+    if [[ "$failed_count" -gt 0 ]]; then
+        print_warning "Found $failed_count failed migration(s)"
+        
+        # Get list of failed migrations
+        print_info "Failed migrations:"
+        docker compose exec -T db psql -U totalevo_user -d bar_pos -c \
+            "SELECT migration_name, started_at FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
+        
+        # Delete failed migration records to allow retry
+        print_info "Marking failed migrations as rolled back..."
+        docker compose exec -T db psql -U totalevo_user -d bar_pos -c \
+            "DELETE FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
+        
+        print_success "Failed migrations have been cleared"
+    else
+        print_info "No failed migrations found"
+    fi
+    
+    return 0
+}
+
 # Verify database migrations are applied correctly
 verify_migrations() {
     local max_attempts=30
@@ -472,18 +514,42 @@ perform_upgrade() {
     print_info "Building new containers..."
     docker compose build --no-cache
     
-    # 5. Start containers (migrations run automatically)
+    # 5. Start database container first
+    print_info "Starting database container..."
+    docker compose up -d db
+    
+    # Wait for database to be ready
+    print_info "Waiting for database to be ready..."
+    local db_attempts=0
+    while [[ $db_attempts -lt 30 ]]; do
+        if docker compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+            print_success "Database is ready"
+            break
+        fi
+        db_attempts=$((db_attempts + 1))
+        sleep 1
+    done
+    
+    if [[ $db_attempts -ge 30 ]]; then
+        print_error "Database failed to start"
+        return 1
+    fi
+    
+    # 6. Resolve any failed migrations before starting backend
+    resolve_failed_migrations
+    
+    # 7. Start remaining containers (migrations run automatically)
     print_info "Starting containers..."
     docker compose up -d
     
-    # 6. Wait for containers to be ready
+    # 8. Wait for containers to be ready
     print_info "Waiting for containers to start..."
     sleep 10
     
-    # 7. Verify migrations
+    # 9. Verify migrations
     verify_migrations
     
-    # 8. Validate upgrade
+    # 10. Validate upgrade
     if validate_upgrade; then
         save_installed_version "$new_version"
         print_success "=========================================="
@@ -546,6 +612,7 @@ Options:
   -h, --help            Show this help message and exit
   -n, --non-interactive Run in non-interactive mode with default values
   --skip-docker         Skip Docker installation (use if Docker is already installed)
+  --reset-db            Reset the database volume (WARNING: deletes all data!)
   --url URL             Set application URL (for non-interactive mode)
   --nginx-port PORT     Set Nginx port (for non-interactive mode)
   --db-user USER        Set database username (for non-interactive mode)
@@ -558,6 +625,7 @@ Examples:
   ./install.sh --non-interactive  # Non-interactive with defaults
   ./install.sh --skip-docker      # Skip Docker installation
   ./install.sh --url http://192.168.1.100 --nginx-port 8080
+  ./install.sh --reset-db         # Reset database and start fresh
 
 EOF
     exit 0
@@ -615,10 +683,12 @@ install_basic_tools() {
         detect_distro
     fi
     
+    print_info "Installing basic tools (curl, wget, openssl, gawk, hostname)..."
+    
     case "$DISTRO_FAMILY" in
         debian)
-            $SUDO apt-get update -q
-            $SUDO apt-get install -y -q curl wget openssl gawk hostname
+            $SUDO apt-get update -qq
+            DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl wget openssl gawk hostname
             ;;
         redhat)
             $SUDO dnf install -y -q curl wget openssl gawk hostname 2>/dev/null || $SUDO yum install -y -q curl wget openssl gawk hostname
@@ -633,6 +703,21 @@ install_basic_tools() {
             $SUDO apk add --no-cache curl wget openssl gawk hostname
             ;;
     esac
+    
+    # Verify installation
+    local failed=()
+    for cmd in curl wget openssl gawk hostname; do
+        if ! command -v "$cmd" &> /dev/null; then
+            failed+=("$cmd")
+        fi
+    done
+    
+    if [[ ${#failed[@]} -gt 0 ]]; then
+        print_error "Failed to install the following tools: ${failed[*]}"
+        return 1
+    fi
+    
+    print_success "Basic tools installed successfully"
 }
 
 #===============================================================================
@@ -1371,13 +1456,50 @@ build_and_run() {
         fi
     fi
     
-    # Stop existing containers if running
+    # Handle database reset if requested
+    if [[ "$RESET_DB" == "true" ]]; then
+        print_warning "Database reset requested - this will DELETE ALL DATA!"
+        if confirm "Are you sure you want to reset the database?" "n"; then
+            print_info "Stopping containers and removing volumes..."
+            $DOCKER_CMD compose down -v
+            print_success "Database volume removed"
+        else
+            print_info "Database reset cancelled"
+            RESET_DB="false"
+        fi
+    fi
+    
+    # Stop existing containers if running (but preserve volumes unless reset requested)
     if $DOCKER_CMD compose ps -q 2>/dev/null | grep -q .; then
         print_info "Stopping existing containers..."
         $DOCKER_CMD compose down
     fi
     
-    # Build and start containers
+    # Start database container first to resolve any failed migrations
+    print_info "Starting database container..."
+    $DOCKER_CMD compose up -d db
+    
+    # Wait for database to be ready
+    print_info "Waiting for database to be ready..."
+    local db_attempts=0
+    while [[ $db_attempts -lt 30 ]]; do
+        if $DOCKER_CMD compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+            print_success "Database is ready"
+            break
+        fi
+        db_attempts=$((db_attempts + 1))
+        sleep 1
+    done
+    
+    if [[ $db_attempts -ge 30 ]]; then
+        print_error "Database failed to start"
+        exit 1
+    fi
+    
+    # Resolve any failed migrations before starting backend
+    resolve_failed_migrations
+    
+    # Build and start remaining containers
     print_step "Building containers (this may take a few minutes)..."
     
     if $DOCKER_CMD compose up -d --build 2>&1 | tee /tmp/docker-build.log; then
@@ -1493,6 +1615,7 @@ main() {
     NON_INTERACTIVE=false
     SKIP_DOCKER=false
     RESTORE_MODE=false
+    RESET_DB=false
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -1505,6 +1628,10 @@ main() {
                 ;;
             --skip-docker)
                 SKIP_DOCKER=true
+                shift
+                ;;
+            --reset-db)
+                RESET_DB=true
                 shift
                 ;;
             --restore-backup)
