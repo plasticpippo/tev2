@@ -193,3 +193,30 @@ export interface ConsumptionReportResponse {
     details: ConsumptionReportItem[];
     totals: ConsumptionReportTotal[];
 }
+
+export interface TaxRate {
+  id: number;
+  name: string;
+  rate: number;  // Frontend expects number
+  ratePercent: string;
+  description: string | null;
+  isDefault: boolean;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTaxRateInput {
+  name: string;
+  rate: number;
+  description?: string | null;
+  isDefault?: boolean;
+}
+
+export interface UpdateTaxRateInput {
+  name?: string;
+  rate?: number;
+  description?: string | null;
+  isDefault?: boolean;
+  isActive?: boolean;
+}

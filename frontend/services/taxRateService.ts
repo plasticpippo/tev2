@@ -7,7 +7,11 @@ export const getTaxRates = async (): Promise<TaxRate[]> => {
   const cacheKey = 'getTaxRates';
   try {
     const result = await makeApiRequest(apiUrl('/api/tax-rates'), undefined, cacheKey);
-    return result;
+    // Convert rate from string to number
+    return result.map((tr: TaxRate) => ({
+      ...tr,
+      rate: Number(tr.rate),
+    }));
   } catch (error) {
     console.error(i18n.t('taxRateService.errorFetchingTaxRates'), error);
     return [];
@@ -18,7 +22,11 @@ export const getTaxRates = async (): Promise<TaxRate[]> => {
 export const getTaxRate = async (id: number): Promise<TaxRate | null> => {
   try {
     const result = await makeApiRequest(apiUrl(`/api/tax-rates/${id}`));
-    return result;
+    // Convert rate from string to number
+    return result ? {
+      ...result,
+      rate: Number(result.rate),
+    } : null;
   } catch (error) {
     console.error(i18n.t('taxRateService.errorFetchingTaxRate'), error);
     return null;

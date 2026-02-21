@@ -60,7 +60,13 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
           if (session && session.items) {
             // Store the session ID to track which session we loaded
             lastLoadedSessionIdRef.current = session.id || null;
-            setOrderItems(session.items);
+            const sanitizedItems = session.items.map(item => ({
+              ...item,
+              price: Number(item.price),
+              quantity: Number(item.quantity),
+              effectiveTaxRate: Number(item.effectiveTaxRate),
+            }));
+            setOrderItems(sanitizedItems);
           } else {
             // No session found, clear the ref
             lastLoadedSessionIdRef.current = null;
@@ -136,7 +142,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         variantId: variant.id,
         productId: product.id,
         name: `${product.name} - ${variant.name}`,
-        price: variant.price,
+        price: Number(variant.price),
         quantity: 1,
         effectiveTaxRate: resolveEffectiveTaxRate(variant),
       };
