@@ -110,14 +110,14 @@ export interface Settings {
 // Add input types for API operations
 export interface CreateTaxRateInput {
   name: string;
-  rate: number | string;
+  rate: number | string;  // Decimal format (0-1), e.g., 0.19 for 19%. NOT percentage (0-100)!
   description?: string;
   isDefault?: boolean;
 }
 
 export interface UpdateTaxRateInput {
   name?: string;
-  rate?: number | string;
+  rate?: number | string;  // Decimal format (0-1), e.g., 0.19 for 19%. NOT percentage (0-100)!
   description?: string | null;
   isDefault?: boolean;
   isActive?: boolean;

@@ -81,7 +81,7 @@ Create a new tax rate (admin only).
  */
 export interface CreateTaxRateData {
   name: string;
-  rate: string;        // Decimal string e.g., "0.1900"
+  rate: string;        // Decimal string e.g., "0.1900" for 19%. Backend validates 0-1, NOT 0-100!
   description?: string;
   isDefault?: boolean;
 }

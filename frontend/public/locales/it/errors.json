@@ -88,6 +88,14 @@
       "notFound": "Sessione ordine non trovata.",
       "alreadyCompleted": "Questa sessione ordine e gia stata completata.",
       "accessDenied": "Non hai accesso a questa sessione ordine."
+    },
+    "taxRates": {
+      "notFound": "Aliquota non trovata",
+      "createFailed": "Impossibile creare l'aliquota",
+      "updateFailed": "Impossibile aggiornare l'aliquota",
+      "deleteFailed": "Impossibile eliminare l'aliquota",
+      "deleteDefault": "Impossibile eliminare l'aliquota predefinita",
+      "fetchFailed": "Impossibile caricare le aliquote"
     }
   },
   "boundary": {

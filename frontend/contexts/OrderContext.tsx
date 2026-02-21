@@ -5,6 +5,7 @@ import type { OrderItem, Product, ProductVariant } from '../../shared/types';
 import * as api from '../services/apiService';
 import { useSessionContext } from './SessionContext';
 import { useGlobalDataContext } from './GlobalDataContext';
+import { getEffectiveTaxRate } from '../utils/taxRateUtils';
 
 interface OrderContextType {
   orderItems: OrderItem[];
@@ -37,6 +38,15 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
 
   const { currentUser } = useSessionContext();
   const { appData } = useGlobalDataContext();
+
+  // Helper function to resolve the effective tax rate for a variant
+  // Priority: variant.taxRate → settings.defaultTaxRate → 0
+  const resolveEffectiveTaxRate = (variant: ProductVariant): number => {
+    return getEffectiveTaxRate(
+      variant.taxRate,
+      appData.settings?.tax?.defaultTaxRate
+    );
+  };
 
   // Load order session when user logs in
   useEffect(() => {
@@ -128,7 +138,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         name: `${product.name} - ${variant.name}`,
         price: variant.price,
         quantity: 1,
-        effectiveTaxRate: 0.19, // Example tax rate, would be better to store this per product
+        effectiveTaxRate: resolveEffectiveTaxRate(variant),
       };
       // Ensure the name is not empty or undefined
       if (!newOrderItem.name || newOrderItem.name.trim() === '') {

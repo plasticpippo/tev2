@@ -308,6 +308,8 @@ const TaxRateCard: React.FC<TaxRateCardProps> = ({
 
 ### Validation Rules
 
+**IMPORTANT:** The UI accepts percentage values (0-100) for user convenience, but must convert to decimal format (0-1) before sending to the API. The backend validates rate as decimal (0-1), NOT percentage (0-100).
+
 ```typescript
 const validateForm = (): boolean => {
   const newErrors: Record<string, string> = {};
@@ -319,7 +321,7 @@ const validateForm = (): boolean => {
     newErrors.name = t('taxRates.validation.nameMaxLength');
   }
   
-  // Rate validation
+  // Rate validation (UI shows percentage 0-100, but API expects decimal 0-1)
   const rateNum = parseFloat(rate);
   if (isNaN(rateNum)) {
     newErrors.rate = t('taxRates.validation.rateRequired');
@@ -335,6 +337,14 @@ const validateForm = (): boolean => {
   setErrors(newErrors);
   return Object.keys(newErrors).length === 0;
 };
+
+// Convert percentage to decimal before sending to API
+const convertPercentageToDecimal = (percentage: number): number => {
+  return percentage / 100;
+};
+
+// Example: User enters "19" → API receives 0.19
+// Example: User enters "7.5" → API receives 0.075
 ```
 
 ---

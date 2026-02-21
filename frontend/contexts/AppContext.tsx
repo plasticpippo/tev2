@@ -2,7 +2,7 @@ import React, { createContext, useContext } from 'react';
 import type {
   User, Product, Category, OrderItem, ProductVariant, Settings,
   Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog,
-  Room, Table
+  Room, Table, TaxRate
 } from '../../shared/types';
 import { useSessionContext } from './SessionContext';
 import { useGlobalDataContext } from './GlobalDataContext';
@@ -15,7 +15,7 @@ import { useTabManagementContext } from './TabManagementContext';
 // Combined AppContext interface that brings together all the separate contexts
 interface AppContextType {
   // Global App Data
- appData: {
+  appData: {
     products: Product[];
     categories: Category[];
     users: User[];
@@ -28,9 +28,10 @@ interface AppContextType {
     orderActivityLogs: OrderActivityLog[];
     rooms: Room[];
     tables: Table[];
+    taxRates: TaxRate[];
   };
   isLoading: boolean;
- setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
+  setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
 
   // Session State
   currentUser: User | null;

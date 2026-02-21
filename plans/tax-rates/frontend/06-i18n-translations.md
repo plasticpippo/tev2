@@ -49,7 +49,8 @@ Add the following keys under the `settings` object:
         "rateRequired": "Tax rate is required",
         "rateMin": "Rate must be 0 or greater",
         "rateMax": "Rate must be 100 or less",
-        "rateInvalid": "Please enter a valid number"
+        "rateInvalid": "Please enter a valid number",
+        "_note": "UI accepts percentage (0-100), but API expects decimal (0-1). Conversion: percentage / 100"
       }
     }
   }
@@ -143,7 +144,8 @@ Add the following keys under the `settings` object:
         "rateRequired": "L'aliquota e obbligatoria",
         "rateMin": "L'aliquota deve essere 0 o superiore",
         "rateMax": "L'aliquota deve essere 100 o inferiore",
-        "rateInvalid": "Inserisci un numero valido"
+        "rateInvalid": "Inserisci un numero valido",
+        "_note": "L'interfaccia accetta percentuali (0-100), ma l'API richiede decimali (0-1). Conversione: percentuale / 100"
       }
     }
   }

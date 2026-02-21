@@ -8,6 +8,29 @@ export interface OrderItem {
   effectiveTaxRate: number;
 }
 
+export interface TaxRate {
+  id: number;
+  name: string;
+  rate: number; // Decimal value (0-1), e.g., 0.19 for 19%
+  description?: string | null;
+  isDefault: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Input types for CRUD operations
+export interface CreateTaxRateInput {
+  name: string;
+  rate: number;
+  description?: string;
+}
+
+export interface UpdateTaxRateInput {
+  name?: string;
+  rate?: number;
+  description?: string | null;
+}
+
 export interface ProductVariant {
   id: number;
   productId: number;
@@ -19,7 +42,9 @@ export interface ProductVariant {
       quantity: number;
   }[];
   backgroundColor: string;
-  textColor: string; 
+  textColor: string;
+  taxRateId?: number | null;
+  taxRate?: TaxRate | null;
 }
 
 export interface Product {
@@ -65,6 +90,8 @@ export interface Transaction {
 
 export interface TaxSettings {
   mode: 'inclusive' | 'exclusive' | 'none';
+  defaultTaxRateId?: number | null;
+  defaultTaxRate?: TaxRate | null;
 }
 
 export interface Settings {

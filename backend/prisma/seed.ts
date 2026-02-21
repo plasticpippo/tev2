@@ -1,4 +1,4 @@
-import { PrismaClient, Decimal } from '@prisma/client';
+import { PrismaClient, Prisma } from '@prisma/client';
 import { User } from '../src/types';
 import { hashPassword } from '../src/utils/password';
 
@@ -13,10 +13,10 @@ async function seedTaxRates() {
   console.log('Seeding tax rates...');
   
   const taxRates = [
-    { name: 'Zero Rate', rate: new Decimal(0.0000), description: '0% tax rate', isDefault: false, isActive: true },
-    { name: 'Reduced Rate', rate: new Decimal(0.1000), description: '10% tax rate', isDefault: false, isActive: true },
-    { name: 'Standard Rate', rate: new Decimal(0.1900), description: '19% tax rate', isDefault: true, isActive: true },
-    { name: 'Luxury Rate', rate: new Decimal(0.2200), description: '22% tax rate', isDefault: false, isActive: true },
+    { name: 'Zero Rate', rate: new Prisma.Decimal(0.0000), description: '0% tax rate', isDefault: false, isActive: true },
+    { name: 'Reduced Rate', rate: new Prisma.Decimal(0.1000), description: '10% tax rate', isDefault: false, isActive: true },
+    { name: 'Standard Rate', rate: new Prisma.Decimal(0.1900), description: '19% tax rate', isDefault: true, isActive: true },
+    { name: 'Luxury Rate', rate: new Prisma.Decimal(0.2200), description: '22% tax rate', isDefault: false, isActive: true },
   ];
 
   for (const taxRate of taxRates) {

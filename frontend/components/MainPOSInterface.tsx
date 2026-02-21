@@ -94,6 +94,7 @@ export const MainPOSInterface: React.FC = () => {
           orderActivityLogs={appData.orderActivityLogs}
           rooms={appData.rooms}
           tables={appData.tables}
+          taxRates={appData.taxRates}
           onDataUpdate={debouncedFetchData}
           assignedTillId={assignedTillId}
           onAssignDevice={handleAssignDevice}

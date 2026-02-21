@@ -88,6 +88,14 @@
       "notFound": "Order session not found.",
       "alreadyCompleted": "This order session has already been completed.",
       "accessDenied": "You do not have access to this order session."
+    },
+    "taxRates": {
+      "notFound": "Tax rate not found",
+      "createFailed": "Failed to create tax rate",
+      "updateFailed": "Failed to update tax rate",
+      "deleteFailed": "Failed to delete tax rate",
+      "deleteDefault": "Cannot delete the default tax rate",
+      "fetchFailed": "Failed to load tax rates"
     }
   },
   "boundary": {

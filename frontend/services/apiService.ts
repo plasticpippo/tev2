@@ -105,3 +105,13 @@ export {
 export {
   getConsumptionReport
 } from './consumptionService';
+
+// Export tax rate service functions
+export {
+  getTaxRates,
+  getTaxRate,
+  createTaxRate,
+  updateTaxRate,
+  setDefaultTaxRate,
+  deleteTaxRate
+} from './taxRateService';

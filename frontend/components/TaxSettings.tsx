@@ -1,6 +1,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Settings } from '@shared/types';
+import TaxRateManagement from './TaxRateManagement';
 
 interface TaxSettingsProps {
   settings: Settings['tax'];
@@ -64,6 +65,11 @@ export const TaxSettings: React.FC<TaxSettingsProps> = ({ settings, onUpdate }) 
                 </label>
             </div>
         </div>
+        {settings.mode !== 'none' && (
+            <div className="mt-8">
+                <TaxRateManagement />
+            </div>
+        )}
     </div>
   );
 };

@@ -52,6 +52,8 @@
     "price": "Price",
     "pricePlaceholder": "e.g., 25.00",
     "markAsFavourite": "Mark as Favourite",
+    "taxRate": "Tax Rate",
+    "taxRateDefault": "None (use default)",
     "buttonColor": "Button Color",
     "preview": "Preview",
     "stockConsumption": "Stock Consumption (Recipe)",
@@ -706,5 +708,32 @@
       "failedToFetch": "Failed to fetch daily closing data"
     },
     "fallbackTill": "Till {{id}}"
-  }
+  },
+  "taxRates": {
+    "title": "Tax Rates",
+    "addTaxRate": "Add Tax Rate",
+    "editTaxRate": "Edit Tax Rate",
+    "name": "Name",
+    "namePlaceholder": "e.g., VAT Standard",
+    "rate": "Rate (%)",
+    "ratePlaceholder": "e.g., 19",
+    "description": "Description",
+    "descriptionPlaceholder": "Optional description",
+    "default": "Default",
+    "setDefault": "Set as Default",
+    "edit": "Edit",
+    "delete": "Delete",
+    "confirmDelete": "Are you sure you want to delete this tax rate?",
+    "noTaxRates": "No tax rates configured. Add your first tax rate to get started.",
+    "saving": "Saving...",
+    "loading": "Loading tax rates...",
+    "errors": {
+      "nameRequired": "Name is required",
+      "nameTooLong": "Name must be 100 characters or less",
+      "rateRequired": "Rate is required",
+      "rateInvalid": "Rate must be between 0 and 100"
+    }
+  },
+  "taxRate": "Tax Rate",
+  "taxRateDefault": "None (use default)"
 }

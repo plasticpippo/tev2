@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Product, ProductVariant, Category, StockItem } from '../../shared/types';
+import type { Product, ProductVariant, Category, StockItem, TaxRate } from '../../shared/types';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
 import { VKeyboardInput } from './VKeyboardInput';
@@ -8,6 +8,7 @@ import ConfirmationModal from './ConfirmationModal';
 import ErrorMessage from './ErrorMessage';
 import { availableColors, getContrastingTextColor } from '../utils/color';
 import { formatCurrency } from '../utils/formatting';
+import { getTaxRateLabel } from '../utils/taxRateUtils';
 import { v4 as uuidv4 } from 'uuid';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 
@@ -16,9 +17,10 @@ interface VariantFormProps {
     onUpdate: (variant: Partial<ProductVariant>) => void;
     onRemove: () => void;
     stockItems: StockItem[];
+    taxRates?: TaxRate[];
 }
 
-const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, stockItems }) => {
+const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, stockItems, taxRates = [] }) => {
     const { t } = useTranslation('admin');
     
     const handleAddConsumption = () => {
@@ -57,6 +59,19 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                      <VKeyboardInput k-type="numeric" type="number" placeholder={t('products.pricePlaceholder')} value={variant.price ?? ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
                   </div>
              </div>
+              <div>
+                <label className="block text-sm font-medium text-slate-400 mb-1">{t('products.taxRate')}</label>
+                <select
+                    value={variant.taxRateId || ''}
+                    onChange={e => onUpdate({ ...variant, taxRateId: e.target.value ? Number(e.target.value) : null })}
+                    className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md"
+                >
+                    <option value="">{t('products.taxRateDefault')}</option>
+                    {taxRates.map(tr => (
+                        <option key={tr.id} value={tr.id}>{getTaxRateLabel(tr)}</option>
+                    ))}
+                </select>
+            </div>
              <div>
                 <label className="flex items-center gap-2 cursor-pointer">
                     <input
@@ -109,11 +124,12 @@ interface ProductModalProps {
   product?: Product;
   categories: Category[];
   stockItems: StockItem[];
+  taxRates?: TaxRate[];
   onClose: () => void;
   onSave: () => void;
 }
 
-const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockItems, onClose, onSave }) => {
+const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockItems, taxRates = [], onClose, onSave }) => {
   const { t } = useTranslation('admin');
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
@@ -291,6 +307,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
                       onUpdate={(uv) => handleUpdateVariant(index, uv)}
                       onRemove={() => handleRemoveVariant(index)}
                       stockItems={stockItems}
+                      taxRates={taxRates}
                     />
                 ))}
             </div>
@@ -319,10 +336,11 @@ interface ProductManagementProps {
     products: Product[];
     categories: Category[];
     stockItems: StockItem[];
+    taxRates?: TaxRate[];
     onDataUpdate: () => void;
 }
 
-export const ProductManagement: React.FC<ProductManagementProps> = ({ products, categories, stockItems, onDataUpdate }) => {
+export const ProductManagement: React.FC<ProductManagementProps> = ({ products, categories, stockItems, taxRates = [], onDataUpdate }) => {
   const { t } = useTranslation('admin');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
@@ -420,6 +438,7 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
           product={editingProduct}
           categories={categories}
           stockItems={stockItems}
+          taxRates={taxRates}
           onClose={() => { setIsModalOpen(false); setEditingProduct(undefined); }}
           onSave={handleSave}
         />

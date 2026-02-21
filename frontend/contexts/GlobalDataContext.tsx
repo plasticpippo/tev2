@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type {
   User, Product, Category, Settings,
   Transaction, Tab, Till, StockItem, StockAdjustment, OrderActivityLog,
-  Room, Table, ProductVariant
+  Room, Table, ProductVariant, TaxRate
 } from '../../shared/types';
 import * as api from '../services/apiService';
 import { subscribeToUpdates, isAuthTokenReady } from '../services/apiBase';
@@ -23,6 +23,7 @@ interface GlobalDataContextType {
     orderActivityLogs: OrderActivityLog[];
     rooms: Room[];
     tables: Table[];
+    taxRates: TaxRate[];
   };
   isLoading: boolean;
   setIsLoading: React.Dispatch<React.SetStateAction<boolean>>;
@@ -53,10 +54,11 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     orderActivityLogs: OrderActivityLog[];
     rooms: Room[];
     tables: Table[];
+    taxRates: TaxRate[];
   }>({
     products: [], categories: [], users: [], tills: [], settings: null,
     transactions: [], tabs: [], stockItems: [], stockAdjustments: [], orderActivityLogs: [],
-    rooms: [], tables: []
+    rooms: [], tables: [], taxRates: []
  });
   const [isLoading, setIsLoading] = useState(true);
   
@@ -96,7 +98,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     try {
       const [
         products, categories, users, tills, settings, transactions, tabs,
-        stockItems, stockAdjustments, orderActivityLogs, rooms, tables
+        stockItems, stockAdjustments, orderActivityLogs, rooms, tables, taxRates
       ] = await Promise.all([
         api.getProducts(),
         api.getCategories(),
@@ -109,11 +111,12 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
         api.getStockAdjustments(),
         api.getOrderActivityLogs(),
         api.getRooms(),
-        api.getTables()
+        api.getTables(),
+        api.getTaxRates()
       ]);
       setAppData({
         products, categories, users, tills, settings, transactions, tabs,
-        stockItems, stockAdjustments, orderActivityLogs, rooms, tables
+        stockItems, stockAdjustments, orderActivityLogs, rooms, tables, taxRates
       });
     } catch (error) {
       console.error(t('globalDataContext.failedToFetchInitialData'), error);

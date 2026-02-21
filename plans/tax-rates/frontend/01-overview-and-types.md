@@ -46,7 +46,8 @@ Add to [`shared/types.ts`](../../shared/types.ts):
 export interface TaxRate {
   id: number;
   name: string;           // e.g., "Standard Rate", "Reduced Rate"
-  rate: string;           // Decimal as string (e.g., "0.1900" for 19%)
+  rate: string;           // Decimal as string (e.g., "0.1900" for 19%). Backend validates 0-1, NOT 0-100!
+  ratePercent: string;    // Convenience field for display (e.g., "19.00%")
   description: string | null;
   isDefault: boolean;
   isActive: boolean;
@@ -54,6 +55,8 @@ export interface TaxRate {
   updatedAt: string;
 }
 ```
+
+**Important:** The backend stores rate as `Decimal(5,4)` with values 0.0000 to 1.0000. The `rate` field is the decimal value (0-1), while `ratePercent` is a computed field for display purposes.
 
 ### Updated ProductVariant Interface
 

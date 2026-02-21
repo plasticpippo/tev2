@@ -52,6 +52,8 @@
     "price": "Prezzo",
     "pricePlaceholder": "es., 25,00",
     "markAsFavourite": "Segna come Preferito",
+    "taxRate": "Aliquota Tassa",
+    "taxRateDefault": "Nessuno (usa predefinito)",
     "buttonColor": "Colore Pulsante",
     "preview": "Anteprima",
     "stockConsumption": "Consumo Magazzino (Ricetta)",
@@ -706,5 +708,32 @@
       "failedToFetch": "Impossibile recuperare i dati di chiusura giornaliera"
     },
     "fallbackTill": "Cassa {{id}}"
-  }
+  },
+  "taxRates": {
+    "title": "Aliquote IVA",
+    "addTaxRate": "Aggiungi Aliquota",
+    "editTaxRate": "Modifica Aliquota",
+    "name": "Nome",
+    "namePlaceholder": "es., IVA Standard",
+    "rate": "Aliquota (%)",
+    "ratePlaceholder": "es., 22",
+    "description": "Descrizione",
+    "descriptionPlaceholder": "Descrizione opzionale",
+    "default": "Predefinito",
+    "setDefault": "Imposta come Predefinito",
+    "edit": "Modifica",
+    "delete": "Elimina",
+    "confirmDelete": "Sei sicuro di voler eliminare questa aliquota?",
+    "noTaxRates": "Nessuna aliquota configurata. Aggiungi la prima aliquota per iniziare.",
+    "saving": "Salvataggio...",
+    "loading": "Caricamento aliquote...",
+    "errors": {
+      "nameRequired": "Il nome e obbligatorio",
+      "nameTooLong": "Il nome deve essere di 100 caratteri o meno",
+      "rateRequired": "L'aliquota e obbligatoria",
+      "rateInvalid": "L'aliquota deve essere compresa tra 0 e 100"
+    }
+  },
+  "taxRate": "Aliquota IVA",
+  "taxRateDefault": "Nessuna (usa predefinita)"
 }

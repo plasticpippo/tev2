@@ -99,7 +99,11 @@
     "networkError": "Errore di rete. Verifica la connessione.",
     "serverError": "Errore del server. Riprova piu tardi.",
     "sessionExpired": "La sessione e scaduta. Accedi nuovamente.",
-    "unauthorized": "Non sei autorizzato a eseguire questa azione."
+    "unauthorized": "Non sei autorizzato a eseguire questa azione.",
+    "taxRateCreated": "Aliquota creata con successo",
+    "taxRateUpdated": "Aliquota aggiornata con successo",
+    "taxRateDeleted": "Aliquota eliminata con successo",
+    "taxRateSetDefault": "Aliquota impostata come predefinita"
   },
   "pagination": {
     "previous": "Precedente",

@@ -591,7 +591,7 @@ check_prerequisites() {
     fi
     
     # Check for required commands
-    local required_commands=("curl" "wget")
+    local required_commands=("curl" "wget" "openssl" "gawk" "hostname")
     local missing_commands=()
     
     for cmd in "${required_commands[@]}"; do
@@ -617,20 +617,20 @@ install_basic_tools() {
     
     case "$DISTRO_FAMILY" in
         debian)
-            $SUDO apt-get update -qq
-            $SUDO apt-get install -y -qq curl wget
+            $SUDO apt-get update -q
+            $SUDO apt-get install -y -q curl wget openssl gawk hostname
             ;;
         redhat)
-            $SUDO dnf install -y -q curl wget 2>/dev/null || $SUDO yum install -y -q curl wget
+            $SUDO dnf install -y -q curl wget openssl gawk hostname 2>/dev/null || $SUDO yum install -y -q curl wget openssl gawk hostname
             ;;
         arch)
-            $SUDO pacman -S --noconfirm --needed curl wget
+            $SUDO pacman -S --noconfirm --needed curl wget openssl gawk inetutils
             ;;
         suse)
-            $SUDO zypper --non-interactive install -y curl wget
+            $SUDO zypper --non-interactive install -y curl wget openssl gawk hostname
             ;;
         alpine)
-            $SUDO apk add --no-cache curl wget
+            $SUDO apk add --no-cache curl wget openssl gawk hostname
             ;;
     esac
 }
@@ -786,13 +786,23 @@ install_docker_debian() {
             ;;
     esac
     
-    curl -fsSL "https://download.docker.com/linux/${docker_distro}/gpg" | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>/dev/null
+    # Add Docker's official GPG key with proper error handling
+    if ! curl -fsSL "https://download.docker.com/linux/${docker_distro}/gpg" | $SUDO gpg --dearmor -o "$keyring_dir/docker.gpg" 2>&1; then
+        print_error "Failed to import Docker GPG key"
+        print_info "This could be a network issue or the keyring directory is not accessible"
+        exit 1
+    fi
     
     # Set up repository
     local arch
     local codename
     arch=$(dpkg --print-architecture)
     codename=$(. /etc/os-release && echo "$VERSION_CODENAME")
+    
+    # Fallback if VERSION_CODENAME is empty (minimal/custom Debian builds)
+    if [[ -z "$codename" ]]; then
+        codename=$(lsb_release -cs 2>/dev/null || grep -oP 'VERSION_CODENAME=\K\w+' /etc/os-release 2>/dev/null || true)
+    fi
     
     # Handle derivatives that might not have a Docker repo
     if [[ -z "$codename" ]] || ! curl -fsSL "https://download.docker.com/linux/$docker_distro/dists/$codename/" &>/dev/null; then
@@ -1015,7 +1025,9 @@ install_docker() {
         if ! groups "$current_user" | grep -q docker; then
             print_info "Adding user '$current_user' to docker group..."
             $SUDO usermod -aG docker "$current_user"
-            print_warning "You may need to log out and log back in for group changes to take effect"
+            print_warning "User added to docker group, but group membership requires re-login to take effect."
+            print_info "The script will use sudo for docker commands for the remainder of this session."
+            print_info "After logging out and back in, docker commands will work without sudo."
         fi
     fi
     
@@ -1037,8 +1049,19 @@ start_docker_service() {
         $SUDO rc-update add docker default 2>/dev/null || true
         print_success "Docker service started"
     else
+        # Fallback: start dockerd directly in background
+        print_info "Starting dockerd directly (no systemctl/service available)..."
         $SUDO dockerd &
-        print_success "Docker daemon started"
+        local dockerd_pid=$!
+        sleep 2  # Give dockerd a moment to start
+        
+        # Verify dockerd is running
+        if ! kill -0 "$dockerd_pid" 2>/dev/null; then
+            print_error "Docker daemon failed to start"
+            print_info "Try running 'dockerd' manually to see error messages"
+            exit 1
+        fi
+        print_success "Docker daemon started (PID: $dockerd_pid)"
     fi
     
     # Wait for Docker to be ready
@@ -1416,7 +1439,7 @@ wait_for_healthy_services() {
             running=$(printf '%s' "$running" | tr -cd '0-9')
             running=${running:-0}
             
-            expected=$(grep -c '^\s*[a-z]' docker-compose.yml 2>/dev/null) || expected=3
+            expected=$($docker_cmd compose config --services 2>/dev/null | wc -l)
             expected=$(printf '%s' "$expected" | tr -cd '0-9')
             expected=${expected:-3}
             

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table } from '../../shared/types';
+import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table, TaxRate } from '../../shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
 import { UserManagement } from './UserManagement';
@@ -26,6 +26,7 @@ import * as transactionApi from '../services/transactionService';
 import * as orderApi from '../services/orderService';
 import * as tableApi from '../services/tableService';
 import * as dailyClosingApi from '../services/dailyClosingService';
+import { getTaxRates } from '../services/apiService';
 
 interface AdminPanelProps {
   currentUser: User;
@@ -44,6 +45,7 @@ interface AdminPanelProps {
   orderActivityLogs: OrderActivityLog[];
   rooms: Room[];
   tables: Table[];
+  taxRates: TaxRate[];
  assignedTillId: number | null;
   onSwitchToPos: () => void;
 }
@@ -55,7 +57,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     currentUser, onLogout, onAssignDevice, assignedTillId, onSwitchToPos,
     onDataUpdate, products, categories, users, tills, settings,
     transactions, tabs, stockItems, stockAdjustments, orderActivityLogs,
-    rooms, tables
+    rooms, tables, taxRates
   } = props;
   
   const { t } = useTranslation('admin');
@@ -82,7 +84,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
       case 'analytics':
         return <AnalyticsPanel transactions={transactions} products={products} categories={categories} settings={settings} />;
       case 'products':
-        return <ProductManagement products={products} categories={categories} stockItems={stockItems} onDataUpdate={onDataUpdate} />;
+        return <ProductManagement products={products} categories={categories} stockItems={stockItems} taxRates={taxRates} onDataUpdate={onDataUpdate} />;
       case 'categories':
         return <CategoryManagement categories={categories} tills={tills} onDataUpdate={onDataUpdate} />;
       case 'stockItems':
