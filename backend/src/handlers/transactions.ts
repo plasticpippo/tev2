@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Transaction } from '../types';
-import { logPaymentEvent, logError } from '../utils/logger';
+import { logPaymentEvent, logError, logInfo } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
@@ -71,16 +71,35 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
     }
     
+    // Diagnostic logging: capture the items array being received
+    logInfo('Transaction items received', {
+      correlationId: (req as any).correlationId,
+      itemCount: items.length,
+      items: JSON.stringify(items)
+    });
+    
     for (const item of items) {
       if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
         logError(i18n.t('transactions.log.itemWithoutName'), {
           correlationId: (req as any).correlationId,
+          item: JSON.stringify(item),
+          missingProperties: {
+            name: !item.name || typeof item.name !== 'string' || item.name.trim() === ''
+          }
         });
         return res.status(400).json({ error: i18n.t('transactions.itemNameRequired') });
       }
       if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
         logError(i18n.t('transactions.log.itemInvalidProperties'), {
           correlationId: (req as any).correlationId,
+          item: JSON.stringify(item),
+          missingProperties: {
+            id: !item.id,
+            variantId: !item.variantId,
+            productId: !item.productId,
+            price: typeof item.price !== 'number',
+            quantity: typeof item.quantity !== 'number'
+          }
         });
         return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
       }
