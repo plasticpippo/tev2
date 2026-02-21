@@ -96,6 +96,15 @@ if ! run_migrations; then
     exit 1
 fi
 
+# Run database seeding
+log "Running database seed..."
+node dist/prisma/seed.js 2>&1
+if [ $? -ne 0 ]; then
+    log_warn "Seed failed (this is OK if data already exists)"
+else
+    log "Seed completed successfully"
+fi
+
 # Start the application
 log "Starting application..."
 exec node dist/index.js
