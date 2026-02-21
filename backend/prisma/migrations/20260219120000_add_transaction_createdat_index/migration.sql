@@ -1,2 +1,2 @@
 -- CreateIndex
-CREATE INDEX "Transaction_createdAt_idx" ON "Transaction"("createdAt");
+CREATE INDEX "Transaction_createdAt_idx" ON "transactions"("createdAt");
