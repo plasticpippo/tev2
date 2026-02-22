@@ -23,11 +23,12 @@
 
     /* Linting */
     "strict": true,
+    "esModuleInterop": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
   },
-  "include": ["src", "shared"],
+  "include": ["src", "shared", "utils"],
   "exclude": ["src/__tests__", "src/test", "src/mocks"],
   "references": [{"path": "./tsconfig.node.json"}]
 }

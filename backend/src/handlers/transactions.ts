@@ -5,6 +5,7 @@ import { logPaymentEvent, logError, logInfo } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
+import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney } from '../utils/money';
 import i18n from '../i18n';
 
 export const transactionsRouter = express.Router();
@@ -66,6 +67,28 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       userId, userName, tillId, tillName, discount, discountReason
     } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total'>;
     
+    // Validate monetary values are valid numbers
+    if (!isMoneyValid(subtotal)) {
+      return res.status(400).json({ error: 'Invalid subtotal value' });
+    }
+    if (!isMoneyValid(tax)) {
+      return res.status(400).json({ error: 'Invalid tax value' });
+    }
+    if (!isMoneyValid(tip)) {
+      return res.status(400).json({ error: 'Invalid tip value' });
+    }
+
+    // Validate non-negative values
+    if (subtotal < 0) {
+      return res.status(400).json({ error: 'Subtotal cannot be negative' });
+    }
+    if (tax < 0) {
+      return res.status(400).json({ error: 'Tax cannot be negative' });
+    }
+    if (tip < 0) {
+      return res.status(400).json({ error: 'Tip cannot be negative' });
+    }
+    
     // Validate that all items have required properties, especially name
     if (!Array.isArray(items)) {
       return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
@@ -103,7 +126,60 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
         });
         return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
       }
+
+      // Validate item price
+      if (!isMoneyValid(item.price)) {
+        return res.status(400).json({ error: `Invalid price value for item: ${item.name}` });
+      }
+      if (item.price < 0) {
+        return res.status(400).json({ error: `Price cannot be negative for item: ${item.name}` });
+      }
+
+      // Validate item quantity
+      if (!isMoneyValid(item.quantity)) {
+        return res.status(400).json({ error: `Invalid quantity value for item: ${item.name}` });
+      }
+      if (item.quantity <= 0) {
+        return res.status(400).json({ error: `Quantity must be positive for item: ${item.name}` });
+      }
     }
+
+    // Calculate expected subtotal from items
+    let calculatedSubtotal = 0;
+    for (const item of items) {
+      calculatedSubtotal = addMoney(calculatedSubtotal, multiplyMoney(item.price, item.quantity));
+    }
+
+    // Validate subtotal matches calculated value (with 1 cent tolerance)
+    const subtotalDifference = Math.abs(subtotal - calculatedSubtotal);
+    if (subtotalDifference > 0.01) {
+      return res.status(400).json({ 
+        error: `Subtotal mismatch. Expected: ${formatMoney(calculatedSubtotal)}, Received: ${formatMoney(subtotal)}` 
+      });
+    }
+
+    // Use calculated subtotal for consistency
+    const validatedSubtotal = calculatedSubtotal;
+
+    // Calculate expected tax from items
+    let calculatedTax = 0;
+    for (const item of items) {
+      // Use effectiveTaxRate if available, otherwise default to 0
+      const taxRate = item.effectiveTaxRate ?? 0;
+      const itemTax = multiplyMoney(multiplyMoney(item.price, item.quantity), taxRate / 100);
+      calculatedTax = addMoney(calculatedTax, itemTax);
+    }
+
+    // Validate tax matches calculated value (with 1 cent tolerance)
+    const taxDifference = Math.abs(tax - calculatedTax);
+    if (taxDifference > 0.01) {
+      return res.status(400).json({ 
+        error: `Tax mismatch. Expected: ${formatMoney(calculatedTax)}, Received: ${formatMoney(tax)}` 
+      });
+    }
+
+    // Use calculated tax for consistency
+    const validatedTax = calculatedTax;
 
     // Validate discount if provided
     const discountAmount = discount || 0;
@@ -115,7 +191,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     }
 
     // Calculate the pre-discount total
-    const preDiscountTotal = subtotal + tax + tip;
+    const preDiscountTotal = validatedSubtotal + validatedTax + tip;
 
     // Discount must not exceed the total
     if (discountAmount > preDiscountTotal) {
@@ -154,8 +230,8 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     const transaction = await prisma.transaction.create({
       data: {
         items: JSON.stringify(items),
-        subtotal,
-        tax,
+        subtotal: validatedSubtotal,
+        tax: validatedTax,
         tip,
         total: finalTotal,
         paymentMethod,

@@ -1,6 +1,6 @@
 
 
-import type { Settings } from '../../shared/types';
+import type { Settings } from '@shared/types';
 
 /**
  * Calculates the exact start time of the current business day.

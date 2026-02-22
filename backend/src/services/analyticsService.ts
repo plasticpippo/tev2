@@ -2,6 +2,7 @@ import { prisma } from '../prisma';
 import { AnalyticsParams } from '../utils/validation';
 import { OrderItem } from '../types';
 import { getBusinessDayRange, parseTimeString, getHoursInBusinessDay } from '../utils/businessDay';
+import { addMoney, roundMoney, divideMoney, multiplyMoney } from '../utils/money';
 
 interface ProductPerformance {
   id: number;
@@ -142,7 +143,7 @@ export const aggregateProductPerformance = async (
 
       const productMetrics = productMetricsMap.get(prodId)!;
       productMetrics.totalQuantity += item.quantity;
-      productMetrics.totalRevenue += item.price * item.quantity; // Use price * quantity for revenue
+      productMetrics.totalRevenue = addMoney(productMetrics.totalRevenue, item.price * item.quantity); // Use price * quantity for revenue
       productMetrics.transactionCount += 1;
     }
   }
@@ -161,7 +162,7 @@ export const aggregateProductPerformance = async (
   // Calculate average price for each product
   productMetricsArray.forEach(product => {
     if (product.totalQuantity > 0) {
-      product.averagePrice = product.totalRevenue / product.totalQuantity;
+      product.averagePrice = roundMoney(divideMoney(product.totalRevenue, product.totalQuantity));
     }
   });
 
@@ -186,11 +187,11 @@ export const aggregateProductPerformance = async (
   });
 
   // Calculate totals for summary
-  const totalRevenue = productMetricsArray.reduce((sum, product) => sum + product.totalRevenue, 0);
+  const totalRevenue = roundMoney(productMetricsArray.reduce((sum, product) => addMoney(sum, product.totalRevenue), 0));
   const totalUnitsSold = productMetricsArray.reduce((sum, product) => sum + product.totalQuantity, 0);
   
-  // Find top product
-  const topProduct = productMetricsArray.length > 0
+  // Find top product (with bounds checking)
+  const topProduct = productMetricsArray.length > 0 && productMetricsArray[0]
     ? {
         name: productMetricsArray[0].name,
         revenue: productMetricsArray[0].totalRevenue,
@@ -278,6 +279,16 @@ interface SettingsConfig {
 }
 
 /**
+ * Safely calculates percentage change with guards against division by zero and invalid values
+ */
+function safePercentage(value: number, total: number): number {
+  if (total === 0 || !isFinite(total) || !isFinite(value)) {
+    return value > 0 ? 100 : 0;
+  }
+  return roundMoney(multiplyMoney(divideMoney(value, total), 100));
+}
+
+/**
  * Aggregates hourly sales data for a specific business day
  */
 export const aggregateHourlySales = async (
@@ -335,11 +346,11 @@ export const aggregateHourlySales = async (
     
     const bucket = hourlyBuckets.get(label);
     if (bucket) {
-      bucket.total += transaction.total;
+      bucket.total = addMoney(bucket.total, transaction.total);
       bucket.count += 1;
     }
     
-    totalSales += transaction.total;
+    totalSales = addMoney(totalSales, transaction.total);
     totalTransactions += 1;
   }
   
@@ -351,9 +362,9 @@ export const aggregateHourlySales = async (
   for (const [hour, data] of hourlyBuckets) {
     hourlyData.push({
       hour,
-      total: data.total,
+      total: roundMoney(data.total),
       transactionCount: data.count,
-      averageTransaction: data.count > 0 ? data.total / data.count : 0,
+      averageTransaction: data.count > 0 ? roundMoney(divideMoney(data.total, data.count)) : 0,
     });
     
     if (data.total > peakHourTotal) {
@@ -368,11 +379,11 @@ export const aggregateHourlySales = async (
     businessDayEnd: end,
     hourlyData,
     summary: {
-      totalSales,
+      totalSales: roundMoney(totalSales),
       totalTransactions,
       peakHour,
       peakHourTotal,
-      averageHourly: totalSales / hoursInDay,
+      averageHourly: roundMoney(divideMoney(totalSales, hoursInDay)),
     },
   };
 };
@@ -392,29 +403,36 @@ export const compareHourlySales = async (
   
   // Calculate hourly differences
   const hourlyDifferences = period1.hourlyData.map((hour1, index) => {
-    const hour2 = period2.hourlyData[index];
+    const hour2 = period2.hourlyData?.[index];
+    if (!hour2) {
+      return {
+        hour: hour1.hour,
+        difference: hour1.total,
+        percentChange: hour1.total > 0 ? 100 : 0,
+      };
+    }
     const difference = hour1.total - hour2.total;
-    const percentChange = hour2.total > 0 
-      ? ((hour1.total - hour2.total) / hour2.total) * 100 
-      : (hour1.total > 0 ? 100 : 0);
+    const percentChange = safePercentage(hour1.total - hour2.total, hour2.total);
     
     return {
       hour: hour1.hour,
-      difference,
+      difference: roundMoney(difference),
       percentChange,
     };
   });
   
   // Calculate summary differences
-  const totalSalesDifference = period1.summary.totalSales - period2.summary.totalSales;
-  const totalSalesPercentChange = period2.summary.totalSales > 0
-    ? ((period1.summary.totalSales - period2.summary.totalSales) / period2.summary.totalSales) * 100
-    : (period1.summary.totalSales > 0 ? 100 : 0);
-  
+  const totalSalesDifference = roundMoney(period1.summary.totalSales - period2.summary.totalSales);
+  const totalSalesPercentChange = safePercentage(
+    period1.summary.totalSales - period2.summary.totalSales,
+    period2.summary.totalSales
+  );
+
   const transactionCountDifference = period1.summary.totalTransactions - period2.summary.totalTransactions;
-  const transactionCountPercentChange = period2.summary.totalTransactions > 0
-    ? ((period1.summary.totalTransactions - period2.summary.totalTransactions) / period2.summary.totalTransactions) * 100
-    : (period1.summary.totalTransactions > 0 ? 100 : 0);
+  const transactionCountPercentChange = safePercentage(
+    period1.summary.totalTransactions - period2.summary.totalTransactions,
+    period2.summary.totalTransactions
+  );
   
   return {
     period1,

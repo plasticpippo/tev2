@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { OrderItem, TaxSettings } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 import { useSessionContext } from '../contexts/SessionContext';
+import { isMoneyValid, roundMoney, addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -26,20 +27,28 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
     let subtotal = 0;
     let tax = 0;
     
+    // Filter out invalid items (Issue #24)
+    const validItems = orderItems.filter(item => 
+        item.price >= 0 && item.quantity > 0 && isMoneyValid(item.price) && isMoneyValid(item.quantity)
+    );
+    
     if (taxSettings.mode === 'none') {
-        subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+        subtotal = validItems.reduce((sum, item) => addMoney(sum, multiplyMoney(item.price, item.quantity)), 0);
         return { subtotal, tax: 0 };
     }
 
-    orderItems.forEach(item => {
-        const itemTotal = item.price * item.quantity;
+    validItems.forEach(item => {
+        // Validate effectiveTaxRate (Issue #8)
+        const taxRate = isMoneyValid(item.effectiveTaxRate) && item.effectiveTaxRate >= 0 ? item.effectiveTaxRate : 0;
+        
+        const itemTotal = multiplyMoney(item.price, item.quantity);
         if (taxSettings.mode === 'inclusive') {
-            const itemSubtotal = itemTotal / (1 + item.effectiveTaxRate);
-            subtotal += itemSubtotal;
-            tax += itemTotal - itemSubtotal;
+            const itemSubtotal = divideMoney(itemTotal, addMoney(1, taxRate));
+            subtotal = addMoney(subtotal, itemSubtotal);
+            tax = addMoney(tax, subtractMoney(itemTotal, itemSubtotal));
         } else { // exclusive
-            subtotal += itemTotal;
-            tax += itemTotal * item.effectiveTaxRate;
+            subtotal = addMoney(subtotal, itemTotal);
+            tax = addMoney(tax, multiplyMoney(itemTotal, taxRate));
         }
     });
 
@@ -48,9 +57,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
 
   if (!isOpen) return null;
 
-  const totalBeforeTip = subtotal + tax;
-  const totalAfterDiscount = totalBeforeTip - discount;
-  const finalTotal = Math.max(0, totalAfterDiscount + tip);
+  const totalBeforeTip = addMoney(subtotal, tax);
+  const totalAfterDiscount = subtractMoney(totalBeforeTip, discount);
+  const finalTotal = roundMoney(Math.max(0, addMoney(totalAfterDiscount, tip)));
   
   const handleDiscountChange = (value: number) => {
     // Validate: discount cannot exceed totalBeforeTip

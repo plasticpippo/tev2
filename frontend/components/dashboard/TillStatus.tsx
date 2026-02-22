@@ -3,7 +3,7 @@
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Transaction, User, Till, Settings } from '../@shared/types';
-import { formatCurrency } from '../../utils/formatting';
+import { addMoney, roundMoney, formatMoney, getSafe } from '../../utils/money';
 import { getBusinessDayStart, isWithinBusinessDay } from '../../utils/time';
 
 export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], users: User[], settings: Settings }> = ({ tills, transactions, users, settings }) => {
@@ -15,27 +15,30 @@ export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], 
 
         return tills.map(till => {
             const tillTransactions = todaysTransactions.filter(t => t.tillId === till.id);
-            const totalSales = tillTransactions.reduce((sum, t) => sum + t.total, 0);
+            const totalSales = tillTransactions.reduce((sum, t) => addMoney(sum, (t.total ?? 0)), 0);
             
             const { totalCash, totalCard } = tillTransactions.reduce((acc, t) => {
-                if (t.paymentMethod === 'Cash') {
-                    acc.totalCash += t.total;
-                } else if (t.paymentMethod === 'Card') {
-                    acc.totalCard += t.total;
+                const paymentMethod = t.paymentMethod ?? '';
+                const total = t.total ?? 0;
+                if (paymentMethod === 'Cash') {
+                    acc.totalCash = addMoney(acc.totalCash, total);
+                } else if (paymentMethod === 'Card') {
+                    acc.totalCard = addMoney(acc.totalCard, total);
                 }
                 return acc;
             }, { totalCash: 0, totalCard: 0 });
             
-            // Find the user from the most recent transaction for this till
-            const lastTransaction = tillTransactions.sort((a,b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0];
+            // Find the user from the most recent transaction for this till - use spread to avoid mutating original array
+            const sortedTransactions = [...tillTransactions].sort((a,b) => new Date(getSafe(b, 'createdAt', '1970-01-01')).getTime() - new Date(getSafe(a, 'createdAt', '1970-01-01')).getTime());
+            const lastTransaction = sortedTransactions[0];
             const currentUser = lastTransaction ? users.find(u => u.id === lastTransaction.userId) : null;
 
             return {
                 ...till,
-                totalSales,
-                totalCash,
-                totalCard,
-                currentUser: currentUser?.name || t('dashboard.noActivity'),
+                totalSales: roundMoney(totalSales),
+                totalCash: roundMoney(totalCash),
+                totalCard: roundMoney(totalCard),
+                currentUser: getSafe(currentUser, 'name', '') || t('dashboard.noActivity'),
                 status: lastTransaction ? t('dashboard.active') : t('dashboard.idle')
             };
         });
@@ -58,15 +61,15 @@ export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], 
                         </div>
                         <div className="mt-4 pt-2 border-t border-slate-700">
                              <p className="text-sm text-slate-400">{t('dashboard.currentDaySales')}</p>
-                            <p className="font-bold text-2xl text-green-400">{formatCurrency(till.totalSales)}</p>
+                            <p className="font-bold text-2xl text-green-400">{formatMoney(getSafe(till, 'totalSales', 0))}</p>
                             <div className="text-sm text-slate-300 mt-2 space-y-1">
                                 <div className="flex justify-between">
                                     <span>{t('dashboard.cash')}:</span>
-                                    <span className="font-semibold">{formatCurrency(till.totalCash)}</span>
+                                    <span className="font-semibold">{formatMoney(getSafe(till, 'totalCash', 0))}</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>{t('dashboard.card')}:</span>
-                                    <span className="font-semibold">{formatCurrency(till.totalCard)}</span>
+                                    <span className="font-semibold">{formatMoney(getSafe(till, 'totalCard', 0))}</span>
                                 </div>
                             </div>
                         </div>

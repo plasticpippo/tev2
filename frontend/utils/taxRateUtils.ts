@@ -1,4 +1,4 @@
-import { TaxRate } from '../../shared/types';
+import { TaxRate } from '@shared/types';
 
 /**
  * Resolves the effective tax rate for a variant
