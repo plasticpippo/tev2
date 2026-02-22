@@ -24,7 +24,7 @@ function formatProductVariant(variant: any) {
     taxRate: variant.taxRate ? {
       id: variant.taxRate.id,
       name: variant.taxRate.name,
-      rate: variant.taxRate.rate.toString(),
+      rate: Number(variant.taxRate.rate),
       ratePercent: (Number(variant.taxRate.rate) * 100).toFixed(2) + '%',
       description: variant.taxRate.description,
       isDefault: variant.taxRate.isDefault,

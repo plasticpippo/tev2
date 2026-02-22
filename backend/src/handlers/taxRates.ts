@@ -16,7 +16,7 @@ function formatTaxRate(taxRate: any) {
   return {
     id: taxRate.id,
     name: taxRate.name,
-    rate: taxRate.rate.toString(),
+    rate: Number(taxRate.rate),
     ratePercent: `${(Number(taxRate.rate) * 100).toFixed(2)}%`,
     description: taxRate.description,
     isDefault: taxRate.isDefault,

@@ -92,7 +92,7 @@ export interface Transaction {
 export interface TaxRate {
   id: number;
   name: string;
-  rate: string;
+  rate: number;
   ratePercent: string;
   description: string | null;
   isDefault: boolean;
