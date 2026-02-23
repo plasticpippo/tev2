@@ -60,10 +60,23 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
 };
 
 // Categories
+// Default: excludes system categories (id <= 0) for admin panel
 export const getCategories = async (): Promise<Category[]> => {
   const cacheKey = 'getCategories';
   try {
     const result = await makeApiRequest(apiUrl('/api/categories'), undefined, cacheKey);
+    return result;
+  } catch (error) {
+    console.error(i18n.t('productService.errorFetchingCategories'), error);
+    return [];
+  }
+};
+
+// Fetch categories including system categories (for POS view)
+export const getCategoriesWithSystem = async (): Promise<Category[]> => {
+  const cacheKey = 'getCategoriesWithSystem';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/categories?includeSystem=true'), undefined, cacheKey);
     return result;
   } catch (error) {
     console.error(i18n.t('productService.errorFetchingCategories'), error);

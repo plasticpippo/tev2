@@ -35,6 +35,7 @@ export {
   saveProduct,
   deleteProduct,
   getCategories,
+  getCategoriesWithSystem,
   saveCategory,
   deleteCategory
 } from './productService';

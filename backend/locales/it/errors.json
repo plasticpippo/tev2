@@ -92,6 +92,8 @@
     "updateFailed": "Impossibile aggiornare la categoria. Controlla i dati e riprova.",
     "deleteFailedInUse": "Impossibile eliminare la categoria. La categoria potrebbe avere prodotti associati o essere in uso altrove.",
     "cannotDeleteWithProducts": "Impossibile eliminare la categoria con prodotti associati. Riassegna prima i prodotti.",
+    "cannotDeleteSystemCategory": "Impossibile eliminare la categoria di sistema (Preferiti, Tutti i prodotti). Queste categorie sono necessarie per il corretto funzionamento del sistema POS.",
+    "cannotModifySystemCategory": "Impossibile modificare la categoria di sistema (Preferiti, Tutti i prodotti). Queste categorie sono necessarie per il corretto funzionamento del sistema POS.",
     "validationFailed": "Validazione non riuscita",
     "log": {
       "fetchError": "Errore nel recupero delle categorie",

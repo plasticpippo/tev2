@@ -10,9 +10,18 @@ import i18n from '../i18n';
 export const categoriesRouter = express.Router();
 
 // GET /api/categories - Get all categories
+// Query params:
+// - includeSystem: boolean - If true, includes system categories (id <= 0) for POS view
 categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
+    const includeSystem = req.query.includeSystem === 'true';
+    
+    // Filter out system categories (id <= 0) from admin panel by default
+    // Use ?includeSystem=true to include them for POS view
+    const where = includeSystem ? {} : { id: { gt: 0 } };
+    
     const categories = await prisma.category.findMany({
+      where,
       select: {
         id: true,
         name: true,
@@ -92,6 +101,13 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     const { id } = req.params;
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
     
+    // System categories (id <= 0) cannot be modified
+    if (Number(id) <= 0) {
+      return res.status(400).json({ 
+        error: i18n.t('errors:categories.cannotModifySystemCategory')
+      });
+    }
+    
     // Validate category data if name is provided
     if (name !== undefined) {
       const nameError = validateCategoryName(name);
@@ -126,6 +142,13 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
 categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    
+    // System categories (id <= 0) cannot be deleted
+    if (Number(id) <= 0) {
+      return res.status(400).json({ 
+        error: i18n.t('errors:categories.cannotDeleteSystemCategory')
+      });
+    }
     
     // Check if category has associated products
     const products = await prisma.product.count({
