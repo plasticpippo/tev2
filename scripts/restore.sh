@@ -77,9 +77,10 @@ Description:
     If no backup file is specified, restores from the last backup.
 
 Options:
-    -h, --help      Show this help message and exit
-    -f, --force     Skip confirmation prompt before restore
-    -l, --list      List available backups and exit
+    -h, --help           Show this help message and exit
+    -f, --force          Skip confirmation prompt before restore
+    -l, --list           List available backups and exit
+    --skip-migrations    Skip automatic migration handling after restore
 
 Arguments:
     BACKUP_FILE     Path to the backup file to restore from
@@ -448,6 +449,155 @@ confirm_restore() {
 }
 
 #===============================================================================
+# MIGRATION HANDLING FUNCTIONS
+#===============================================================================
+
+# Get list of migrations in the codebase
+get_codebase_migrations() {
+    local migrations_dir="$PROJECT_ROOT/backend/prisma/migrations"
+    local migrations=()
+    
+    if [[ -d "$migrations_dir" ]]; then
+        while IFS= read -r -d '' dir; do
+            migrations+=("$(basename "$dir")")
+        done < <(find "$migrations_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
+    fi
+    
+    printf '%s\n' "${migrations[@]}"}
+}
+
+# Get list of migrations recorded in the database
+get_database_migrations() {
+    docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations ORDER BY finished_at;" 2>/dev/null || echo ""
+}
+
+# Find orphaned migrations (in DB but not in codebase)
+find_orphaned_migrations() {
+    local db_migrations
+    db_migrations=$(get_database_migrations)
+    
+    if [[ -z "$db_migrations" ]]; then
+        return 0
+    fi
+    
+    local codebase_migrations
+    codebase_migrations=$(get_codebase_migrations)
+    
+    local orphaned=""
+    while IFS= read -r db_migration; do
+        [[ -z "$db_migration" ]] && continue
+        local found=0
+        while IFS= read -r codebase_migration; do
+            [[ -z "$codebase_migration" ]] && continue
+            if [[ "$db_migration" == "$codebase_migration" ]]; then
+                found=1
+                break
+            fi
+        done <<< "$codebase_migrations"
+        
+        if [[ $found -eq 0 ]]; then
+            orphaned="$orphaned$db_migration\n"
+        fi
+    done <<< "$db_migrations"
+    
+    if [[ -n "$orphaned" ]]; then
+        printf '%s' "$orphaned"
+        return 1
+    fi
+    return 0
+}
+
+# Remove orphaned migration entries from the database
+remove_orphaned_migrations() {
+    local orphaned_migrations
+    orphaned_migrations=$(find_orphaned_migrations) || true
+    
+    if [[ -z "$orphaned_migrations" ]]; then
+        print_info "No orphaned migrations found"
+        return 0
+    fi
+    
+    print_warning "Found orphaned migrations (in database but not in codebase):"
+    echo "$orphaned_migrations" | while IFS= read -r migration; do
+        [[ -z "$migration" ]] && continue
+        printf '  - %s\n' "$migration"
+    done
+    
+    print_info "Removing orphaned migration entries..."
+    
+    while IFS= read -r migration; do
+        [[ -z "$migration" ]] && continue
+        local escaped_migration
+        escaped_migration=$(echo "$migration" | sed "s/'/\\'/g")
+        
+        if docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
+            "DELETE FROM _prisma_migrations WHERE migration_name = '$escaped_migration';" \
+            > /dev/null 2>&1; then
+            print_info "Removed: $migration"
+        else
+            print_warning "Failed to remove: $migration"
+        fi
+    done <<< "$orphaned_migrations"
+    
+    print_success "Orphaned migrations cleaned up"
+    return 0
+}
+
+# Run Prisma migrations to bring database up to date
+run_prisma_migrations() {
+    print_info "Running Prisma migrations..."
+    
+    # Check if backend container is running
+    if ! docker compose ps backend 2>/dev/null | grep -q "running\|Up"; then
+        print_warning "Backend container is not running"
+        print_info "Starting backend container..."
+        docker compose up -d backend
+        
+        # Wait for backend to be ready
+        print_info "Waiting for backend to be ready..."
+        local max_attempts=30
+        local attempt=0
+        while [[ $attempt -lt $max_attempts ]]; do
+            if docker compose exec -T backend node -e "require('./prisma')" > /dev/null 2>&1; then
+                break
+            fi
+            sleep 2
+            attempt=$((attempt + 1))
+        done
+    fi
+    
+    # Run Prisma migrate deploy
+    if docker compose exec -T backend npx prisma migrate deploy 2>&1; then
+        print_success "Prisma migrations applied successfully"
+        return 0
+    else
+        print_error "Prisma migration failed!"
+        print_info "Check the error messages above"
+        return 1
+    fi
+}
+
+# Verify migration status
+verify_migration_status() {
+    print_info "Verifying migration status..."
+    
+    local status_output
+    status_output=$(docker compose exec -T backend npx prisma migrate status 2>&1 || true)
+    
+    if echo "$status_output" | grep -q "No pending migrations"; then
+        print_success "Database is up to date with migrations"
+        return 0
+    elif echo "$status_output" | grep -q "Error"; then
+        print_warning "Migration status check had issues, but this may be normal"
+        return 0
+    else
+        print_info "Migration status:\n$status_output"
+        return 0
+    fi
+}
+
+#===============================================================================
 # MAIN EXECUTION
 #===============================================================================
 
@@ -455,6 +605,7 @@ main() {
     # Parse command line arguments
     local force="false"
     local list_only="false"
+    local skip_migrations="false"
     local backup_file=""
     
     while [[ $# -gt 0 ]]; do
@@ -468,6 +619,10 @@ main() {
                 ;;
             -l|--list)
                 list_only="true"
+                shift
+                ;;
+            --skip-migrations)
+                skip_migrations="true"
                 shift
                 ;;
             -*)
@@ -542,8 +697,32 @@ main() {
     
     if perform_restore "$backup_file"; then
         print_header "RESTORE COMPLETE"
-        print_info "Database has been successfully restored from:"
+        print_success "Database has been successfully restored from:"
         print_info "  $backup_file"
+        print_info ""
+        
+        # Handle migrations unless skipped
+        if [[ "$skip_migrations" == "true" ]]; then
+            print_warning "Skipping migration handling (--skip-migrations flag)"
+            print_info "To apply migrations manually, run:"
+            print_info "  docker compose exec backend npx prisma migrate deploy"
+        else
+            print_header "HANDLING MIGRATIONS"
+            
+            # Remove orphaned migrations
+            remove_orphaned_migrations || true
+            
+            # Run Prisma migrations
+            if run_prisma_migrations; then
+                verify_migration_status
+            else
+                print_warning "Migration application had issues"
+                print_info "Try running manually: docker compose exec backend npx prisma migrate deploy"
+            fi
+        fi
+        
+        print_header "RESTORE FINISHED"
+        print_success "Database restore completed successfully!"
         exit 0
     else
         print_header "RESTORE FAILED"
