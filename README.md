@@ -9,9 +9,9 @@ Point-of-sale system for bars and restaurants
 
 - **Product Management** - Products with variants, colors, favorites, per-variant tax rates
 - **Order Processing** - Transactions with discounts, tips, multiple payment methods
-- **Table/Floor Management** - Rooms, tables with drag-drop positioning, status tracking, capacity
+- **Table/Floor Management (partially implemented)** - Rooms, tables with drag-drop positioning, status tracking, capacity
 - **Inventory/Stock** - Automatic consumption tracking, manual adjustments, consumption reports
-- **Daily Closings** - End-of-day financial summaries
+- **Daily Closings (also automated)** - End-of-day financial summaries
 - **Analytics** - Product performance, top sellers, hourly breakdown
 - **Multi-Tax Rates** - Inclusive/exclusive/none modes, per-product assignment
 - **Custom Layouts** - Customizable product grids per till, shared layouts
@@ -44,7 +44,7 @@ sudo ./install.sh
 
 ### Access
 
-- URL: http://localhost
+- URL: http://localhost or as defined in  environment variable
 - Admin credentials: admin / admin123
 
 ## Managing
@@ -62,7 +62,7 @@ sudo ./install.sh
 - **Nginx** - Reverse proxy
 
 ```
-Internet -> Nginx -> Backend -> Database
+Internet -> Nginx -> Frontend -> Backend -> Database
 ```
 
 ## Configuration
