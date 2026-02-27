@@ -28,3 +28,7 @@ docker-compose.override.yml
 *.njsproj
 *.sln
 *.sw?
+
+
+# Local .env file
+.env
