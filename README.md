@@ -9,7 +9,7 @@ Point-of-sale system for bars and restaurants
 
 - **Product Management** - Products with variants, colors, favorites, per-variant tax rates
 - **Order Processing** - Transactions with discounts, tips, multiple payment methods
-- **Table/Floor Management (partially implemented)** - Rooms, tables with drag-drop positioning, status tracking, capacity
+- **Table/Floor Management (NOT WORKING - use the Tabs feature instead)** - Rooms, tables with drag-drop positioning, status tracking, capacity
 - **Inventory/Stock** - Automatic consumption tracking, manual adjustments, consumption reports
 - **Daily Closings (also automated)** - End-of-day financial summaries
 - **Analytics** - Product performance, top sellers, hourly breakdown
