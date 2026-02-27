@@ -157,7 +157,18 @@ categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     if (products > 0) {
       return res.status(400).json({ 
-        error: i18n.t('categories.cannotDeleteWithProducts')
+        error: i18n.t('errors:categories.cannotDeleteWithProducts')
+      });
+    }
+    
+    // Check if category has associated shared layouts
+    const sharedLayouts = await prisma.sharedLayout.count({
+      where: { categoryId: Number(id) }
+    });
+    
+    if (sharedLayouts > 0) {
+      return res.status(400).json({ 
+        error: i18n.t('errors:categories.cannotDeleteWithSharedLayouts')
       });
     }
     

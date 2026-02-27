@@ -92,6 +92,7 @@
     "updateFailed": "Failed to update category. Please check your data and try again.",
     "deleteFailedInUse": "Failed to delete category. The category may have associated products or be in use elsewhere.",
     "cannotDeleteWithProducts": "Cannot delete category with associated products. Please re-assign products first.",
+    "cannotDeleteWithSharedLayouts": "Cannot delete category with associated shared layouts. Please delete the shared layouts first.",
     "cannotDeleteSystemCategory": "Cannot delete system category (Favorites, All Products). These categories are required for the POS system to function properly.",
     "cannotModifySystemCategory": "Cannot modify system category (Favorites, All Products). These categories are required for the POS system to function properly.",
     "validationFailed": "Validation failed",

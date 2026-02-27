@@ -127,14 +127,13 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
 
   const confirmDelete = async () => {
     if (deletingCategory) {
-      try {
-        await productApi.deleteCategory(deletingCategory.id);
-        setDeletingCategory(null);
-        onDataUpdate();
-      } catch (error) {
-        console.error('Error deleting category:', error);
-        alert(error instanceof Error ? error.message : t('categories.errors.failedToDelete'));
+      const result = await productApi.deleteCategory(deletingCategory.id);
+      if (!result.success) {
+        alert(result.message || t('categories.errors.failedToDelete'));
+        return;
       }
+      setDeletingCategory(null);
+      onDataUpdate();
     }
   };
 
