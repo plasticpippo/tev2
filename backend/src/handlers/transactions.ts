@@ -5,7 +5,7 @@ import { logPaymentEvent, logError, logInfo } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
-import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney } from '../utils/money';
+import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney } from '../utils/money';
 import i18n from '../i18n';
 
 export const transactionsRouter = express.Router();
@@ -62,6 +62,19 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
 // POST /api/transactions - Create a new transaction
 transactionsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   try {
+    // Get settings to determine tax mode
+    let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
+    try {
+      const settings = await prisma.settings.findFirst();
+      taxMode = (settings?.taxMode || 'exclusive') as 'inclusive' | 'exclusive' | 'none';
+    } catch (settingsError) {
+      logError('Failed to fetch settings for tax mode', {
+        correlationId: (req as any).correlationId,
+        error: settingsError instanceof Error ? settingsError.message : 'Unknown error'
+      });
+      // Fall back to default 'exclusive' mode
+    }
+    
     const {
       items, subtotal, tax, tip, paymentMethod,
       userId, userName, tillId, tillName, discount, discountReason
@@ -144,10 +157,35 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       }
     }
 
-    // Calculate expected subtotal from items
+    // Calculate expected subtotal and tax from items in a single pass
     let calculatedSubtotal = 0;
+    let calculatedTax = 0;
     for (const item of items) {
-      calculatedSubtotal = addMoney(calculatedSubtotal, multiplyMoney(item.price, item.quantity));
+      const itemPrice = item.price;
+      const itemQuantity = item.quantity;
+      const taxRate = item.effectiveTaxRate ?? 0;
+      
+      let itemSubtotal: number;
+      let itemTax: number = 0;
+      
+      if (taxMode === 'inclusive' && taxRate > 0) {
+        // In inclusive mode, the price already includes tax
+        // Extract the pre-tax price: price / (1 + taxRate)
+        const preTaxPrice = divideMoney(itemPrice, 1 + taxRate);
+        itemSubtotal = multiplyMoney(preTaxPrice, itemQuantity);
+        // Extract the tax from the inclusive price: price - (price / (1 + taxRate))
+        itemTax = multiplyMoney(subtractMoney(itemPrice, preTaxPrice), itemQuantity);
+      } else if (taxMode === 'exclusive' && taxRate > 0) {
+        // In exclusive mode, calculate tax on top of the price
+        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
+        itemTax = multiplyMoney(itemSubtotal, taxRate);
+      } else {
+        // In 'none' mode or taxRate = 0, use price as-is with no tax
+        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
+      }
+      
+      calculatedSubtotal = addMoney(calculatedSubtotal, itemSubtotal);
+      calculatedTax = addMoney(calculatedTax, itemTax);
     }
 
     // Validate subtotal matches calculated value (with 1 cent tolerance)
@@ -160,16 +198,6 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
 
     // Use calculated subtotal for consistency
     const validatedSubtotal = calculatedSubtotal;
-
-    // Calculate expected tax from items
-    let calculatedTax = 0;
-    for (const item of items) {
-      // Use effectiveTaxRate if available, otherwise default to 0
-      const taxRate = item.effectiveTaxRate ?? 0;
-      // Tax rate is already in decimal format (e.g., 0.19 for 19%)
-      const itemTax = multiplyMoney(multiplyMoney(item.price, item.quantity), taxRate);
-      calculatedTax = addMoney(calculatedTax, itemTax);
-    }
 
     // Validate tax matches calculated value (with 1 cent tolerance)
     // Skip validation if frontend sends tax = 0 (handles 'no tax' mode)
