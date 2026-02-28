@@ -166,7 +166,8 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     for (const item of items) {
       // Use effectiveTaxRate if available, otherwise default to 0
       const taxRate = item.effectiveTaxRate ?? 0;
-      const itemTax = multiplyMoney(multiplyMoney(item.price, item.quantity), taxRate / 100);
+      // Tax rate is already in decimal format (e.g., 0.19 for 19%)
+      const itemTax = multiplyMoney(multiplyMoney(item.price, item.quantity), taxRate);
       calculatedTax = addMoney(calculatedTax, itemTax);
     }
 
