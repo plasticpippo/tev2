@@ -172,15 +172,20 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     }
 
     // Validate tax matches calculated value (with 1 cent tolerance)
+    // Skip validation if frontend sends tax = 0 (handles 'no tax' mode)
     const taxDifference = Math.abs(tax - calculatedTax);
-    if (taxDifference > 0.01) {
+    let validatedTax: number;
+    if (tax === 0) {
+      // Accept frontend's tax = 0 (no tax mode) without forcing calculation from items
+      validatedTax = 0;
+    } else if (taxDifference > 0.01) {
       return res.status(400).json({ 
         error: `Tax mismatch. Expected: ${formatMoney(calculatedTax)}, Received: ${formatMoney(tax)}` 
       });
+    } else {
+      // Use the validated tax value from frontend when it matches calculation
+      validatedTax = tax;
     }
-
-    // Use calculated tax for consistency
-    const validatedTax = calculatedTax;
 
     // Validate discount if provided
     const discountAmount = discount || 0;

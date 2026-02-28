@@ -7,15 +7,13 @@
 ### Config is:
 
 - postgres on port 5432 in a docker container
-POSTGRES_USER=totalevo_user
-POSTGRES_PASSWORD=totalevo_password
-POSTGRES_DB=bar_pos
+check .env file for username and password and other important details
 
 - app credentials
 admin user: admin
 admin password: admin123
 
-app is available at http://192.168.1.241:80
+app is available at http://192.168.1.70:80
 
 
 ## General Behaviour
