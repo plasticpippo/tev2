@@ -2,6 +2,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OrderItem, User, Tab, Table } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
+import { addMoney, multiplyMoney } from '../utils/money';
 import { EditLayoutButton } from '../src/components/EditLayoutButton';
 import { EditModeOverlay } from '../src/components/EditModeOverlay';
 import { useLayout } from '../src/contexts/LayoutContext';
@@ -33,7 +34,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
     layoutContext = null;
   }
 
-  const subtotal = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  const subtotal = orderItems.reduce((sum, item) => sum + multiplyMoney(item.price, item.quantity), 0);
 
   /**
    * Renders individual order items with quantity controls

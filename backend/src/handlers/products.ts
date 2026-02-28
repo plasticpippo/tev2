@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import type { Product, ProductVariant } from '../types';
 import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
 import { logError } from '../utils/logger';
+import { multiplyMoney } from '../utils/money';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import i18n from '../i18n';
@@ -25,7 +26,7 @@ function formatProductVariant(variant: any) {
       id: variant.taxRate.id,
       name: variant.taxRate.name,
       rate: Number(variant.taxRate.rate),
-      ratePercent: (Number(variant.taxRate.rate) * 100).toFixed(2) + '%',
+      ratePercent: multiplyMoney(Number(variant.taxRate.rate), 100).toFixed(2) + '%',
       description: variant.taxRate.description,
       isDefault: variant.taxRate.isDefault,
       isActive: variant.taxRate.isActive,

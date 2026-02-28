@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useCallback } from 'react';
+import { addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
 import { useTranslation } from 'react-i18next';
 import type { OrderItem } from '../../shared/types';
 import * as api from '../services/apiService';
@@ -33,21 +34,21 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       let subtotal = 0;
       let tax = 0;
       orderItems.forEach(item => {
-          const itemTotal = item.price * item.quantity;
+          const itemTotal = multiplyMoney(item.price, item.quantity);
           if (appData.settings!.tax.mode === 'inclusive') {
-              const itemSubtotal = itemTotal / (1 + item.effectiveTaxRate);
+              const itemSubtotal = divideMoney(itemTotal, 1 + item.effectiveTaxRate);
               subtotal += itemSubtotal;
-              tax += itemTotal - itemSubtotal;
+              tax += subtractMoney(itemTotal, itemSubtotal);
           } else if (appData.settings!.tax.mode === 'exclusive') {
               subtotal += itemTotal;
-              tax += itemTotal * item.effectiveTaxRate;
+              tax += multiplyMoney(itemTotal, item.effectiveTaxRate);
           } else { // 'none'
               subtotal += itemTotal;
           }
       });
 
-      const totalBeforeDiscount = subtotal + tax;
-      const total = Math.max(0, totalBeforeDiscount - discount + tip);
+      const totalBeforeDiscount = addMoney(subtotal, tax);
+      const total = Math.max(0, addMoney(subtractMoney(totalBeforeDiscount, discount), tip));
       
       // Determine status: if total is 0 and discount was applied, it's complimentary
       const status: 'completed' | 'complimentary' = total === 0 && discount > 0 ? 'complimentary' : 'completed';

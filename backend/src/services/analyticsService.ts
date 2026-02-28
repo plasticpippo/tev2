@@ -2,7 +2,7 @@ import { prisma } from '../prisma';
 import { AnalyticsParams } from '../utils/validation';
 import { OrderItem } from '../types';
 import { getBusinessDayRange, parseTimeString, getHoursInBusinessDay } from '../utils/businessDay';
-import { addMoney, roundMoney, divideMoney, multiplyMoney } from '../utils/money';
+import { addMoney, roundMoney, divideMoney, multiplyMoney, subtractMoney } from '../utils/money';
 
 interface ProductPerformance {
   id: number;
@@ -143,7 +143,7 @@ export const aggregateProductPerformance = async (
 
       const productMetrics = productMetricsMap.get(prodId)!;
       productMetrics.totalQuantity += item.quantity;
-      productMetrics.totalRevenue = addMoney(productMetrics.totalRevenue, item.price * item.quantity); // Use price * quantity for revenue
+      productMetrics.totalRevenue = addMoney(productMetrics.totalRevenue, multiplyMoney(item.price, item.quantity)); // Use price * quantity for revenue
       productMetrics.transactionCount += 1;
     }
   }
@@ -411,8 +411,8 @@ export const compareHourlySales = async (
         percentChange: hour1.total > 0 ? 100 : 0,
       };
     }
-    const difference = hour1.total - hour2.total;
-    const percentChange = safePercentage(hour1.total - hour2.total, hour2.total);
+    const difference = subtractMoney(hour1.total, hour2.total);
+    const percentChange = safePercentage(subtractMoney(hour1.total, hour2.total), hour2.total);
     
     return {
       hour: hour1.hour,
@@ -422,9 +422,9 @@ export const compareHourlySales = async (
   });
   
   // Calculate summary differences
-  const totalSalesDifference = roundMoney(period1.summary.totalSales - period2.summary.totalSales);
+  const totalSalesDifference = roundMoney(subtractMoney(period1.summary.totalSales, period2.summary.totalSales));
   const totalSalesPercentChange = safePercentage(
-    period1.summary.totalSales - period2.summary.totalSales,
+    subtractMoney(period1.summary.totalSales, period2.summary.totalSales),
     period2.summary.totalSales
   );
 

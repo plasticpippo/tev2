@@ -189,7 +189,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     }
 
     // Validate subtotal matches calculated value (with 1 cent tolerance)
-    const subtotalDifference = Math.abs(subtotal - calculatedSubtotal);
+    const subtotalDifference = Math.abs(subtractMoney(subtotal, calculatedSubtotal));
     if (subtotalDifference > 0.01) {
       return res.status(400).json({ 
         error: `Subtotal mismatch. Expected: ${formatMoney(calculatedSubtotal)}, Received: ${formatMoney(subtotal)}` 
@@ -201,7 +201,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
 
     // Validate tax matches calculated value (with 1 cent tolerance)
     // Skip validation if frontend sends tax = 0 (handles 'no tax' mode)
-    const taxDifference = Math.abs(tax - calculatedTax);
+    const taxDifference = Math.abs(subtractMoney(tax, calculatedTax));
     let validatedTax: number;
     if (tax === 0) {
       // Accept frontend's tax = 0 (no tax mode) without forcing calculation from items
@@ -225,7 +225,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     }
 
     // Calculate the pre-discount total
-    const preDiscountTotal = validatedSubtotal + validatedTax + tip;
+    const preDiscountTotal = addMoney(addMoney(validatedSubtotal, validatedTax), tip);
 
     // Discount must not exceed the total
     if (discountAmount > preDiscountTotal) {
@@ -242,7 +242,7 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     }
 
     // Calculate the final total after discount
-    const finalTotal = preDiscountTotal - discountAmount;
+    const finalTotal = subtractMoney(preDiscountTotal, discountAmount);
 
     // Determine status: 'complimentary' if total <= 0, otherwise 'completed'
     const status = finalTotal <= 0 ? 'complimentary' : 'completed';
