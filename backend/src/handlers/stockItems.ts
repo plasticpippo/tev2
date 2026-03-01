@@ -4,7 +4,7 @@ import type { StockItem } from '../types';
 import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requireAdmin, requireRole } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
 import i18n from '../i18n';
 
@@ -87,7 +87,7 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
 });
 
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
-stockItemsRouter.put('/update-levels', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
   try {
     const { consumptions } = req.body as { consumptions: { stockItemId: string, quantity: number }[] };
     

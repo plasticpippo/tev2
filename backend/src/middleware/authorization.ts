@@ -155,3 +155,43 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
     return res.status(500).json({ error: i18n.t('errors.authorization.verifyAdminPrivilegesFailed') });
   }
 };
+
+/**
+ * Middleware to require specific roles
+ * @param allowedRoles - Array of allowed role strings (e.g., ['ADMIN', 'CASHIER'])
+ * Returns 403 if user role is not in the allowed list
+ * 
+ * @example
+ * // Allow both admin and cashier roles
+ * requireRole(['ADMIN', 'CASHIER'])
+ * 
+ * // Allow only admin roles
+ * requireRole(['ADMIN', 'Admin'])
+ */
+export const requireRole = (allowedRoles: string[]) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const userRole = req.user?.role;
+
+      if (!userRole) {
+        return res.status(401).json({ error: i18n.t('errors.authorization.userNotAuthenticated') });
+      }
+
+      // Check if user's role is in the allowed list (case-insensitive comparison)
+      const isAllowed = allowedRoles.some(
+        allowedRole => userRole.toUpperCase() === allowedRole.toUpperCase()
+      );
+
+      if (!isAllowed) {
+        return res.status(403).json({ 
+          error: i18n.t('errors.authorization.adminPrivilegesRequired') 
+        });
+      }
+
+      next();
+    } catch (error) {
+      console.error('Error checking user role:', error);
+      return res.status(500).json({ error: i18n.t('errors.authorization.verifyAdminPrivilegesFailed') });
+    }
+  };
+};
