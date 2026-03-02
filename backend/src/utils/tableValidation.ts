@@ -1,3 +1,7 @@
+import { TABLE_STATUS, TableStatus, TABLE_STATUS_TRANSITIONS, isValidStatusTransition } from './tableStatus';
+
+export { TABLE_STATUS, TableStatus, TABLE_STATUS_TRANSITIONS, isValidStatusTransition };
+
 export const validateTableData = (data: {
   name?: string;
   roomId?: string;
@@ -63,23 +67,6 @@ export const validateTableData = (data: {
     errors
   };
 };
-
-// Valid table status transitions
-export const TABLE_STATUS_TRANSITIONS: Record<string, string[]> = {
-  'available': ['occupied', 'reserved', 'unavailable'],
-  'occupied': ['available', 'bill_requested'],
-  'bill_requested': ['available', 'occupied'],
-  'reserved': ['occupied', 'available'],
-  'unavailable': ['available']
-};
-
-export function isValidStatusTransition(
-  currentStatus: string,
-  newStatus: string
-): boolean {
-  const allowedTransitions = TABLE_STATUS_TRANSITIONS[currentStatus];
-  return allowedTransitions?.includes(newStatus) ?? false;
-}
 
 export function validateTableStatusUpdate(
   currentStatus: string,

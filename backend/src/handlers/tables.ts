@@ -2,8 +2,9 @@ import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
 import { verifyTableOwnership } from '../middleware/authorization';
-import { validateTableData, validateTableStatusUpdate } from '../utils/tableValidation';
+import { validateTableData, validateTableStatusUpdate, TABLE_STATUS } from '../utils/tableValidation';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
+import { safeJsonParse } from '../utils/jsonParser';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
 import i18n from '../i18n';
 
@@ -20,7 +21,21 @@ router.use((req, res, next) => {
 // GET /api/tables - Retrieve all tables with room information
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+
+    // Build where clause based on ownership
+    // Admin users can see all tables, regular users only see their own or unowned tables
+    const where = isAdmin ? {} : {
+      OR: [
+        { ownerId: userId },
+        { ownerId: null }
+      ]
+    };
+
     const tables = await prisma.table.findMany({
+      where,
       include: {
         room: true,
       },
@@ -29,7 +44,13 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
       },
     });
 
-    res.json(tables);
+    // Parse items JSON for each table
+    const tablesWithParsedItems = tables.map((table: any) => ({
+      ...table,
+      items: safeJsonParse(table.items, [], { id: table.id, field: 'items' })
+    }));
+
+    res.json(tablesWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching tables', {
       correlationId: (req as any).correlationId,
@@ -39,7 +60,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // GET /api/tables/:id - Retrieve specific table
-router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const table = await prisma.table.findUnique({
@@ -53,7 +74,13 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
       return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
     }
 
-    res.json(table);
+    // Parse items JSON
+    const tableWithParsedItems = {
+      ...table,
+      items: safeJsonParse(table.items, [], { id: table.id, field: 'items' })
+    };
+
+    res.json(tableWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching table', {
       correlationId: (req as any).correlationId,
@@ -177,6 +204,14 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       });
     }
 
+    // Validate status transition if status is being updated
+    if (status !== undefined) {
+      const statusValidation = validateTableStatusUpdate(table.status, status);
+      if (!statusValidation.isValid) {
+        return res.status(400).json({ error: statusValidation.error });
+      }
+    }
+
     const updatedTable = await prisma.table.update({
       where: { id },
       data: {
@@ -195,7 +230,13 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       },
     });
 
-    res.json(updatedTable);
+    // Parse items JSON for response consistency
+    const updatedTableWithParsedItems = {
+      ...updatedTable,
+      items: safeJsonParse(updatedTable.items, [], { id: updatedTable.id, field: 'items' })
+    };
+
+    res.json(updatedTableWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating table', {
       correlationId: (req as any).correlationId,
@@ -292,8 +333,8 @@ router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: R
       return res.status(400).json({ error: 'Status is required' });
     }
 
-    // Validate status value
-    const validStatuses = ['available', 'occupied', 'reserved', 'unavailable', 'bill_requested'];
+    // Validate status value using consolidated constants
+    const validStatuses = Object.values(TABLE_STATUS);
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ 
         error: 'Invalid status value',

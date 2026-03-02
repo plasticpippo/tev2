@@ -5,28 +5,24 @@ import { logInfo, logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
+import { TABLE_STATUS } from '../utils/tableStatus';
 import i18n from '../i18n';
 
-// Table status constants
-const TABLE_STATUS = {
-  AVAILABLE: 'available',
-  OCCUPIED: 'occupied',
-  BILL_REQUESTED: 'bill_requested'
-} as const;
-
 // Helper function to update table status
-async function updateTableStatus(tableId: string | null, status: string): Promise<void> {
-  if (!tableId) return;
+async function updateTableStatus(tableId: string | null, status: string): Promise<boolean> {
+  if (!tableId) return true;
   
   try {
     await prisma.table.update({
       where: { id: tableId },
       data: { status }
     });
+    return true;
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating table status', {
       correlationId: undefined,
     });
+    return false;
   }
 }
 
@@ -51,7 +47,8 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
       }
     });
     // Parse the items JSON string back to array
-    const tabsWithParsedItems = tabs.map(tab => ({
+    type TabWithRawItems = Tab & { items: string | null; createdAt: Date };
+    const tabsWithParsedItems = tabs.map((tab: TabWithRawItems) => ({
       ...tab,
       items: safeJsonParse(tab.items, [], { id: String(tab.id), field: 'items' }),
       createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
@@ -306,6 +303,59 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('tabs.deleteFailed') });
+  }
+});
+
+// PUT /api/tabs/:id/request-bill - Request bill for a tab (sets table to bill_requested)
+tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+    const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+    
+    // Get the tab to check if it exists and has a table
+    const tab = await prisma.tab.findUnique({
+      where: { id: Number(id) },
+      include: { table: true }
+    });
+    
+    if (!tab) {
+      return res.status(404).json({ error: i18n.t('tabs.notFound') });
+    }
+    
+    if (!tab.tableId) {
+      return res.status(400).json({ error: i18n.t('tabs.noTableAssigned') });
+    }
+    
+    // Authorization check: user must own the table or be admin
+    // Tab ownership is through the associated table's ownerId
+    if (tab.table && tab.table.ownerId !== null && tab.table.ownerId !== undefined) {
+      const isOwner = tab.table.ownerId === userId;
+      if (!isOwner && !isAdmin) {
+        return res.status(403).json({ error: i18n.t('errors.authorization.tableAccessDenied') });
+      }
+    }
+    
+    // Update table status to bill_requested
+    const success = await updateTableStatus(tab.tableId, TABLE_STATUS.BILL_REQUESTED);
+    
+    if (!success) {
+      return res.status(500).json({ error: i18n.t('tabs.billRequestFailed') });
+    }
+    
+    logInfo(i18n.t('tabs.log.billRequested'), {
+      correlationId: (req as any).correlationId,
+      tabId: id,
+      tableId: tab.tableId
+    });
+    
+    res.json({ message: i18n.t('tabs.billRequested'), tableId: tab.tableId });
+  } catch (error) {
+    logError(error instanceof Error ? error : i18n.t('tabs.log.billRequestError'), {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('tabs.billRequestFailed') });
   }
 });
 
