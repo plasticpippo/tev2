@@ -47,12 +47,15 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
       }
     });
     // Parse the items JSON string back to array
-    type TabWithRawItems = Tab & { items: string | null; createdAt: Date };
-    const tabsWithParsedItems = tabs.map((tab: TabWithRawItems) => ({
-      ...tab,
-      items: safeJsonParse(tab.items, [], { id: String(tab.id), field: 'items' }),
-      createdAt: tab.createdAt.toISOString() // Ensure createdAt is in string format
-    }));
+    // Use type assertion to handle the raw JSON string from database
+    const tabsWithParsedItems = tabs.map((tab: typeof tabs[number]) => {
+      const tabWithItems = tab as unknown as { items: string | null; createdAt: Date };
+      return {
+        ...tab,
+        items: safeJsonParse(tabWithItems.items, [], { id: String(tab.id), field: 'items' }),
+        createdAt: tabWithItems.createdAt.toISOString() // Ensure createdAt is in string format
+      };
+    });
     res.json(tabsWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : i18n.t('tabs.log.fetchError'), {
