@@ -25,9 +25,8 @@ Before starting backend or frontend server, make sure they are not already runni
 
 NO Workarounds! NO shortcuts! ONLY proper coding!
 
-## ALWAYS USE SUBTASKS TO KEEP TOKEN USAGE AT A MINIMUM
+## ALWAYS USE MICRO SUBTASKS TO KEEP TOKEN USAGE AT A MINIMUM
 
-Frontend is running on port 3000
 
 ### We are testing from LAN with a browser, NOT from localhost
 # Instructions for e2e testing
