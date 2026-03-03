@@ -1,5 +1,5 @@
 import express, { Request, Response } from 'express';
-import cors from 'cors';
+import cors, { CorsOptions } from 'cors';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
 import i18nextMiddleware from 'i18next-http-middleware';
@@ -15,11 +15,125 @@ import dotenv from 'dotenv';
 // Load environment variables from .env file
 dotenv.config();
 
-// CORS options based on environment variables
-const corsOptions: cors.CorsOptions = {
-  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',').map(origin => origin.trim()) : [
-    'http://localhost:80'
-  ],
+/**
+ * Validates a CORS origin against security requirements.
+ * 
+ * Security checks:
+ * 1. Must be a valid URL with http:// or https:// protocol
+ * 2. Must not contain special characters that could be used for malicious purposes
+ * 3. Must match the expected pattern for IP addresses or domain names
+ * 
+ * @param origin - The origin URL to validate
+ * @returns true if the origin is valid and allowed
+ */
+function isValidOrigin(origin: string): boolean {
+  // Trim whitespace
+  const trimmedOrigin = origin.trim();
+  
+  // Check for empty string
+  if (!trimmedOrigin) {
+    return false;
+  }
+  
+  // Must start with http:// or https://
+  if (!/^https?:\/\//i.test(trimmedOrigin)) {
+    return false;
+  }
+  
+  // Extract the hostname portion (after protocol)
+  const urlMatch = trimmedOrigin.match(/^https?:\/\/([^\/:\?#]+)/i);
+  if (!urlMatch) {
+    return false;
+  }
+  
+  const hostname = urlMatch[1];
+  
+  // Reject if hostname contains potentially dangerous characters
+  // Allow: alphanumeric, dots, hyphens, and square brackets (for IPv6)
+  if (!/^[a-zA-Z0-9\.\-\[\]:]+$/.test(hostname)) {
+    return false;
+  }
+  
+  // Reject if hostname starts or ends with a dot (common in malicious patterns)
+  if (hostname.startsWith('.') || hostname.endsWith('.')) {
+    return false;
+  }
+  
+  // Reject if there are consecutive dots (could be used for bypass attempts)
+  if (hostname.includes('..')) {
+    return false;
+  }
+  
+  // Validate hostname format - must be either:
+  // - A valid IPv4 address (digits separated by dots)
+  // - A valid IPv6 address (in brackets)
+  // - A valid domain name (alphanumeric with dots and hyphens)
+  
+  // Check for IPv4
+  const ipv4Pattern = /^(\d{1,3}\.){3}\d{1,3}$/;
+  if (ipv4Pattern.test(hostname)) {
+    const parts = hostname.split('.').map(Number);
+    // Validate each octet is 0-255
+    if (parts.every(part => part >= 0 && part <= 255)) {
+      return true;
+    }
+    return false;
+  }
+  
+  // Check for IPv6
+  const ipv6Pattern = /^\[?([a-fA-F0-9:]+)\]?$/;
+  if (ipv6Pattern.test(hostname)) {
+    return true;
+  }
+  
+  // Check for valid domain name
+  // Must start and end with alphanumeric, can contain dots and hyphens in between
+  const domainPattern = /^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$/;
+  if (domainPattern.test(hostname)) {
+    return true;
+  }
+  
+  // If none of the above patterns match, reject
+  return false;
+}
+
+/**
+ * Parses and validates CORS origins from environment variable.
+ * 
+ * @returns Array of validated origin URLs
+ */
+function getValidatedOrigins(): string[] {
+  const defaultOrigins = ['http://localhost:80'];
+  
+  if (!process.env.CORS_ORIGIN) {
+    return defaultOrigins;
+  }
+  
+  const rawOrigins = process.env.CORS_ORIGIN.split(',');
+  const validatedOrigins: string[] = [];
+  
+  for (const origin of rawOrigins) {
+    const trimmedOrigin = origin.trim();
+    
+    if (isValidOrigin(trimmedOrigin)) {
+      validatedOrigins.push(trimmedOrigin);
+    } else {
+      console.warn(`CORS: Rejected invalid origin: ${trimmedOrigin}`);
+    }
+  }
+  
+  // If no valid origins found, fall back to defaults
+  if (validatedOrigins.length === 0) {
+    console.warn('CORS: No valid origins found in CORS_ORIGIN, using defaults');
+    return defaultOrigins;
+  }
+  
+  return validatedOrigins;
+}
+
+// CORS options based on environment variables with validation
+const corsOptions: CorsOptions = {
+  origin: getValidatedOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
