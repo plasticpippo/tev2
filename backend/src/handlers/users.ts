@@ -109,11 +109,46 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
     const { id } = req.params;
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password?: string };
     
+    // Get authenticated user info
+    const authenticatedUserId = Number(req.user?.id);
+    const authenticatedUserRole = req.user?.role;
+    const targetUserId = Number(id);
+    
+    // Check if user is admin
+    const isAdmin = authenticatedUserRole === 'ADMIN' || authenticatedUserRole === 'Admin';
+    
+    // Authorization check: user can only update their own profile unless they are admin
+    // Non-admin users cannot change their own role or any other user's role
+    if (role !== undefined && role !== null && !isAdmin) {
+      // Log unauthorized role change attempt
+      logAuthEvent('FAILED_LOGIN', authenticatedUserId, req.user?.username, false, {
+        correlationId: (req as any).correlationId,
+        reason: 'Non-admin user attempted to change user role'
+      });
+      return res.status(403).json({ error: i18n.t('errors.authorization.adminPrivilegesRequired') });
+    }
+    
+    // Non-admin users can only update their own profile
+    if (!isAdmin && authenticatedUserId !== targetUserId) {
+      return res.status(403).json({ error: i18n.t('errors.authorization.cannotModifyOtherUser') });
+    }
+    
+    // Get current user data for audit logging before update
+    const currentUser = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { role: true }
+    });
+    const previousRole = currentUser?.role || 'unknown';
+    
     const updateData: any = {
       name,
-      username,
-      role
+      username
     };
+    
+    // Only allow role update if user is admin
+    if (isAdmin && role !== undefined) {
+      updateData.role = role;
+    }
     
     // Only hash and update password if provided
     if (password) {
@@ -121,7 +156,7 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
     }
     
     const user = await prisma.user.update({
-      where: { id: Number(id) },
+      where: { id: targetUserId },
       data: updateData
     });
     
@@ -130,6 +165,16 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
       logAuthEvent('PASSWORD_CHANGE', user.id, user.username, true, {
         correlationId: (req as any).correlationId
       });
+    }
+    
+    // Log role change event if role was updated
+    if (isAdmin && role !== undefined && role !== null) {
+      logAuditEvent('USER_ROLE_CHANGED', 'User role changed via admin', {
+        previousRole: previousRole,
+        newRole: role,
+        targetUserId: user.id,
+        correlationId: (req as any).correlationId,
+      }, 'high', { userId: authenticatedUserId, username: req.user?.username });
     }
     
     // Transform user to DTO to exclude sensitive fields

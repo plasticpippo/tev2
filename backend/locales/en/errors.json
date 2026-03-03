@@ -28,6 +28,7 @@
     "layoutAccessDenied": "Access denied. You do not own this layout.",
     "verifyLayoutOwnershipFailed": "Failed to verify layout ownership",
     "adminPrivilegesRequired": "Access denied. Admin privileges required.",
+    "cannotModifyOtherUser": "You cannot modify another user's profile.",
     "verifyAdminPrivilegesFailed": "Failed to verify admin privileges"
   },
   "validation": {

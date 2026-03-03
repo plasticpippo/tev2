@@ -28,6 +28,7 @@
     "layoutAccessDenied": "Accesso negato. Non sei il proprietario di questo layout.",
     "verifyLayoutOwnershipFailed": "Impossibile verificare la proprieta del layout",
     "adminPrivilegesRequired": "Accesso negato. Sono richiesti privilegi di amministratore.",
+    "cannotModifyOtherUser": "Non e possibile modificare il profilo di un altro utente.",
     "verifyAdminPrivilegesFailed": "Impossibile verificare i privilegi di amministratore"
   },
   "validation": {

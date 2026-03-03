@@ -4,11 +4,13 @@ import { validateAnalyticsParams } from '../utils/validation';
 import { aggregateProductPerformance, aggregateHourlySales, compareHourlySales } from '../services/analyticsService';
 import { logError } from '../utils/logger';
 import i18n from '../i18n';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 
 export const analyticsRouter = express.Router();
 
 // GET /api/analytics/product-performance - Get detailed product performance metrics
-analyticsRouter.get('/product-performance', async (req: Request, res: Response) => {
+analyticsRouter.get('/product-performance', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     // Validate and parse query parameters
     const params = validateAnalyticsParams(req.query);
@@ -27,7 +29,7 @@ analyticsRouter.get('/product-performance', async (req: Request, res: Response) 
 });
 
 // GET /api/analytics/top-performers - Maintains backward compatibility with existing functionality
-analyticsRouter.get('/top-performers', async (req: Request, res: Response) => {
+analyticsRouter.get('/top-performers', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     // Validate and parse query parameters
     const params = validateAnalyticsParams(req.query);
@@ -54,7 +56,7 @@ analyticsRouter.get('/top-performers', async (req: Request, res: Response) => {
 // ============================================================================
 
 // GET /api/analytics/hourly-sales - Get hourly sales for a specific business day
-analyticsRouter.get('/hourly-sales', async (req: Request, res: Response) => {
+analyticsRouter.get('/hourly-sales', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { date } = req.query;
     
@@ -93,7 +95,7 @@ analyticsRouter.get('/hourly-sales', async (req: Request, res: Response) => {
 });
 
 // GET /api/analytics/compare - Compare hourly sales between two days
-analyticsRouter.get('/compare', async (req: Request, res: Response) => {
+analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { date1, date2 } = req.query;
     
