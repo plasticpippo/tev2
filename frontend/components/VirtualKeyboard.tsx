@@ -14,7 +14,7 @@ const Key: React.FC<{
         e.preventDefault();
         onClick(value);
     }}
-    className={`h-14 rounded-lg shadow-md flex items-center justify-center font-semibold text-xl transition transform active:scale-95 ${className}`}
+    className={`h-10 rounded shadow-sm flex items-center justify-center font-semibold text-base transition transform active:scale-95 ${className}`}
     aria-label={label || value}
   >
     {label || value}
@@ -25,16 +25,16 @@ const NumpadLayout: React.FC = () => {
     const { t } = useTranslation();
     const { handleKeyPress, handleBackspace, closeKeyboard } = useVirtualKeyboard();
     return (
-        <div className="grid grid-cols-4 gap-2 p-2">
+        <div className="grid grid-cols-4 gap-1 p-1">
             <Key value="1" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="2" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="3" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-14 rounded-lg shadow-md font-semibold" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
+            <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-10 rounded shadow-sm font-semibold text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
 
             <Key value="4" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="5" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="6" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <button onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 h-14 rounded-lg shadow-md font-semibold text-2xl row-span-2 flex items-center justify-center" aria-label={t('virtualKeyboard.backspace')}>⌫</button>
+            <button onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 h-10 rounded shadow-sm font-semibold text-xl row-span-2 flex items-center justify-center" aria-label={t('virtualKeyboard.backspace')}>⌫</button>
 
             <Key value="7" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="8" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
@@ -42,7 +42,7 @@ const NumpadLayout: React.FC = () => {
 
             <Key value="Enter" label="↵" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="0" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <Key value="0" label="0" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
+            <Key value="." label="." onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
         </div>
     );
 };
@@ -69,26 +69,26 @@ const FullKeyboardLayout: React.FC = () => {
     const applyCase = (char: string) => (isShift || isCaps ? char.toUpperCase() : char.toLowerCase());
 
     return (
-        <div className="p-2 space-y-1.5 w-full">
-            <div className="flex gap-1.5 justify-center">
+        <div className="p-1 space-y-1 w-full">
+            <div className="flex gap-1 justify-center">
                 {numbers.split('').map(k => <Key key={k} value={k} onClick={handleKeyClick} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
-                 <Key value="Backspace" label="⌫" onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 flex-1 text-2xl" />
+                 <Key value="Backspace" label="⌫" onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 flex-1 text-lg" />
             </div>
-            <div className="flex gap-1.5 justify-center">
+            <div className="flex gap-1 justify-center">
                 {keys.row1.split('').map(k => <Key key={k} value={applyCase(k)} onClick={() => handleKeyClick(k)} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
             </div>
-            <div className="flex gap-1.5 justify-center px-4">
+            <div className="flex gap-1 justify-center px-2">
                 {keys.row2.split('').map(k => <Key key={k} value={applyCase(k)} onClick={() => handleKeyClick(k)} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
             </div>
-            <div className="flex gap-1.5 justify-center">
-                <button onClick={toggleShift} className={`h-14 rounded-lg shadow-md px-6 font-semibold text-xl transition ${isShift ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.shift')}>⇧</button>
+            <div className="flex gap-1 justify-center">
+                <button onClick={toggleShift} className={`h-10 rounded shadow-sm px-2 font-semibold text-base transition ${isShift ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.shift')}>⇧</button>
                 {keys.row3.split('').map(k => <Key key={k} value={applyCase(k)} onClick={() => handleKeyClick(k)} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
-                <button onClick={toggleCaps} className={`h-14 rounded-lg shadow-md px-6 font-semibold text-xl transition ${isCaps ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.capsLock')}>⇪</button>
+                <button onClick={toggleCaps} className={`h-10 rounded shadow-sm px-2 font-semibold text-base transition ${isCaps ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.capsLock')}>⇪</button>
             </div>
-            <div className="flex gap-1.5 justify-center">
+            <div className="flex gap-1 justify-center">
                 <Key value="Enter" label="↵" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-1" />
-                <Key value=" " label={t('virtualKeyboard.space')} onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-grow-[2]" />
-                <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-14 rounded-lg shadow-md font-semibold px-6" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
+                <Key value=" " label={t('virtualKeyboard.space')} onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-grow-[3]" />
+                <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-10 rounded shadow-sm font-semibold px-2 text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
             </div>
         </div>
     );
@@ -154,53 +154,75 @@ export const VirtualKeyboard: React.FC = () => {
         const input = focusedInputRef.current;
         if (!input || !keyboardRef.current) return;
 
-        const inputRect = input.getBoundingClientRect();
-        const keyboardRect = keyboardRef.current.getBoundingClientRect();
-        const viewportHeight = window.innerHeight;
-        const viewportWidth = window.innerWidth;
+        // First, ensure the input is scrolled into view
+        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        // Use requestAnimationFrame to ensure scroll completes before calculating position
+        // This is more reliable than setTimeout as it syncs with the browser's render cycle
+        const calculatePosition = () => {
+            const input = focusedInputRef.current;
+            const keyboardElement = keyboardRef.current;
+            if (!input || !keyboardElement) return;
+            
+            const inputRect = input.getBoundingClientRect();
+            const keyboardRect = keyboardElement.getBoundingClientRect();
+            const viewportHeight = window.innerHeight;
+            const viewportWidth = window.innerWidth;
 
-        const padding = 8; // Space between input and keyboard
-        const keyboardHeight = keyboardRect.height || 300; // Default height if not measured
-        const keyboardWidth = keyboardRect.width || 400; // Default width if not measured
+            const padding = 8; // Space between input and keyboard
+            const keyboardHeight = keyboardRect.height || 300; // Default height if not measured
+            const keyboardWidth = keyboardRect.width || 400; // Default width if not measured
 
-        // Calculate vertical position
-        let top: number;
-        let positionAbove = false;
+            // Calculate vertical position
+            let top: number;
+            let positionAbove = false;
 
-        // Try to position below the input first
-        const spaceBelow = viewportHeight - inputRect.bottom - padding;
-        const spaceAbove = inputRect.top - padding;
+            // Try to position below the input first
+            const spaceBelow = viewportHeight - inputRect.bottom - padding;
+            const spaceAbove = inputRect.top - padding;
 
-        if (spaceBelow >= keyboardHeight) {
-            // Enough space below, position keyboard below input
-            top = inputRect.bottom + padding;
-            positionAbove = false;
-        } else if (spaceAbove >= keyboardHeight) {
-            // Not enough space below, but enough above, position keyboard above input
-            top = inputRect.top - keyboardHeight - padding;
-            positionAbove = true;
-        } else {
-            // Not enough space in either direction, position where there's more space
-            if (spaceBelow > spaceAbove) {
+            if (spaceBelow >= keyboardHeight) {
+                // Enough space below, position keyboard below input
                 top = inputRect.bottom + padding;
                 positionAbove = false;
-            } else {
+            } else if (spaceAbove >= keyboardHeight) {
+                // Not enough space below, but enough above, position keyboard above input
                 top = inputRect.top - keyboardHeight - padding;
                 positionAbove = true;
+            } else {
+                // Not enough space in either direction, position where there's more space
+                // but ensure we don't cover the input by scrolling the page
+                if (spaceBelow > spaceAbove) {
+                    top = inputRect.bottom + padding;
+                    positionAbove = false;
+                    // Scroll the page up to make room
+                    window.scrollBy({ top: keyboardHeight - spaceBelow + padding, behavior: 'smooth' });
+                } else {
+                    top = inputRect.top - keyboardHeight - padding;
+                    positionAbove = true;
+                    // Scroll the page down to make room
+                    window.scrollBy({ top: -(keyboardHeight - spaceAbove + padding), behavior: 'smooth' });
+                }
             }
-        }
 
-        // Calculate horizontal position - center the keyboard under the input
-        let left = inputRect.left + (inputRect.width / 2) - (keyboardWidth / 2);
+            // Calculate horizontal position - center the keyboard under the input
+            let left = inputRect.left + (inputRect.width / 2) - (keyboardWidth / 2);
 
-        // Ensure keyboard stays within viewport bounds horizontally
-        if (left < padding) {
-            left = padding;
-        } else if (left + keyboardWidth > viewportWidth - padding) {
-            left = viewportWidth - keyboardWidth - padding;
-        }
+            // Ensure keyboard stays within viewport bounds horizontally
+            if (left < padding) {
+                left = padding;
+            } else if (left + keyboardWidth > viewportWidth - padding) {
+                left = viewportWidth - keyboardWidth - padding;
+            }
 
-        setKeyboardPosition({ top, left, positionAbove });
+            setKeyboardPosition({ top, left, positionAbove });
+        };
+
+        // Use requestAnimationFrame to wait for scroll to complete
+        // This typically runs after the next paint, ensuring scrollIntoView has completed
+        requestAnimationFrame(() => {
+            requestAnimationFrame(calculatePosition);
+        });
     };
 
     if (!isOpen) {
@@ -222,10 +244,14 @@ export const VirtualKeyboard: React.FC = () => {
             style={{
                 ...positionStyle,
                 transition: 'top 0.2s ease-out, left 0.2s ease-out',
+                minWidth: '280px',
+                maxWidth: '95vw',
+                maxHeight: '60vh',
+                overflowY: 'auto',
             }}
             onMouseDown={(e) => e.preventDefault()}
         >
-            <div className="max-w-xs sm:max-w-4xl">
+            <div className="w-full min-w-[260px] max-w-md">
                 {keyboardType === 'numeric' && <NumpadLayout />}
                 {keyboardType === 'full' && <FullKeyboardLayout />}
             </div>

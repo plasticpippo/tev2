@@ -95,19 +95,51 @@ export const VirtualKeyboardProvider: React.FC<{ children: React.ReactNode }> = 
   const handleBackspace = useCallback(() => {
     if (activeInputRef.current) {
       const target = activeInputRef.current;
-      const start = target.selectionStart || 0;
-      const end = target.selectionEnd || 0;
       
-      if (start === end && start > 0) {
-        const newValue = target.value.substring(0, start - 1) + target.value.substring(end);
-        dispatchInputChange(target, newValue);
-        target.focus();
-        target.selectionStart = target.selectionEnd = start - 1;
+      // Check if target is a spinbutton element (type="number" with stepper buttons)
+      // Spinbuttons don't support selectionStart/selectionEnd properly
+      const isSpinbutton = target.type === 'number';
+      
+      if (isSpinbutton) {
+        // For spinbutton elements, use cursor position to delete character at cursor - 1
+        // Spinbuttons don't support selectionStart/selectionEnd properly in all browsers
+        // so we use a fallback approach
+        const currentValue = target.value;
+        const cursorPos = target.selectionStart ?? currentValue.length;
+        
+        if (currentValue.length > 0 && cursorPos > 0) {
+          // Delete character before cursor position
+          const newValue = currentValue.slice(0, cursorPos - 1) + currentValue.slice(cursorPos);
+          dispatchInputChange(target, newValue);
+          target.focus();
+          // Restore cursor position after the deleted character
+          try {
+            target.setSelectionRange(cursorPos - 1, cursorPos - 1);
+          } catch (e) {
+            // Some input types don't support setSelectionRange, fall back to end
+          }
+        } else if (currentValue.length > 0) {
+          // Cursor at position 0, just slice off the last character
+          const newValue = currentValue.slice(0, -1);
+          dispatchInputChange(target, newValue);
+          target.focus();
+        }
       } else {
-        const newValue = target.value.substring(0, start) + target.value.substring(end);
-        dispatchInputChange(target, newValue);
-        target.focus();
-        target.selectionStart = target.selectionEnd = start;
+        // Use selection-based approach for regular inputs
+        const start = target.selectionStart || 0;
+        const end = target.selectionEnd || 0;
+        
+        if (start === end && start > 0) {
+          const newValue = target.value.substring(0, start - 1) + target.value.substring(end);
+          dispatchInputChange(target, newValue);
+          target.focus();
+          target.selectionStart = target.selectionEnd = start - 1;
+        } else {
+          const newValue = target.value.substring(0, start) + target.value.substring(end);
+          dispatchInputChange(target, newValue);
+          target.focus();
+          target.selectionStart = target.selectionEnd = start;
+        }
       }
     }
   }, []);
