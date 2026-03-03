@@ -6,7 +6,7 @@ import type { Settings } from '../../shared/types';
 export const getSettings = async (): Promise<Settings> => {
   const cacheKey = 'getSettings';
   try {
-    const result = await makeApiRequest(apiUrl('/api/settings'), undefined, cacheKey);
+    const result = await makeApiRequest(apiUrl('/api/settings'), { headers: getAuthHeaders() }, cacheKey);
     return result;
   } catch (error) {
     console.error(i18n.t('settingService.errorFetchingSettings'), error);

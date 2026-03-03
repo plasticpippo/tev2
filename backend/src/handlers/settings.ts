@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Settings } from '../types';
+import { authenticateToken } from '../middleware/auth';
+import { requireAdmin } from '../middleware/authorization';
 import { logError, logInfo } from '../utils/logger';
 import i18n from '../i18n';
 import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayScheduler';
@@ -30,7 +32,7 @@ function formatTaxRate(taxRate: PrismaTaxRate | null) {
 }
 
 // GET /api/settings - Get current settings
-settingsRouter.get('/', async (req: Request, res: Response) => {
+settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     // Get the first (and should be only) settings record with default tax rate
     const settings = await prisma.settings.findFirst({
@@ -84,8 +86,8 @@ settingsRouter.get('/', async (req: Request, res: Response) => {
   }
 });
 
-// PUT /api/settings - Update settings
-settingsRouter.put('/', async (req: Request, res: Response) => {
+// PUT /api/settings - Update settings (requires admin role)
+settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
     const { tax, businessDay } = req.body as Settings;
     
