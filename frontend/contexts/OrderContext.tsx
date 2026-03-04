@@ -64,7 +64,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
               ...item,
               price: Number(item.price),
               quantity: Number(item.quantity),
-              effectiveTaxRate: Number(item.effectiveTaxRate),
+              effectiveTaxRate: Number(item.effectiveTaxRate) || 0,
             }));
             setOrderItems(sanitizedItems);
           } else {

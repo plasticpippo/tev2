@@ -2,6 +2,10 @@ import type { OrderItem } from '@shared/types';
 import { HTTP_ERROR_MESSAGES, CUSTOM_ERROR_MESSAGES } from '../utils/errorMessages';
 import i18n from '../src/i18n';
 
+// CSRF token cookie name (must match backend)
+const CSRF_COOKIE_NAME = 'XSRF-TOKEN-READ';
+const CSRF_HEADER_NAME = 'x-csrf-token';
+
 // Define OrderSession interface for frontend
 export interface OrderSession {
   id: string;
@@ -62,8 +66,8 @@ const isTokenExpired = (token: string): boolean => {
   try {
     const payload = JSON.parse(atob(token.split('.')[1]));
     const currentTime = Math.floor(Date.now() / 1000);
-    // Consider token as expired 5 minutes before actual expiration for safety
-    return payload.exp < currentTime + 300;
+    // Check token expiry based on actual expiration time (no buffer)
+    return payload.exp < currentTime;
   } catch (e) {
     // If we can't decode the token, assume it's invalid/expired
     return true;
@@ -146,6 +150,43 @@ export const getAuthHeaders = (): Record<string, string> => {
   return headers;
 };
 
+/**
+ * Get CSRF token from cookie
+ * The backend sets two cookies: XSRF-TOKEN (httpOnly) and XSRF-TOKEN-READ (accessible)
+ * We read the accessible one to include in request headers for double-submit validation
+ */
+export const getCsrfToken = (): string | null => {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const trimmedCookie = cookie.trim();
+    const equalIndex = trimmedCookie.indexOf('=');
+    if (equalIndex === -1) continue;
+    
+    const name = trimmedCookie.substring(0, equalIndex);
+    const value = trimmedCookie.substring(equalIndex + 1);
+    
+    if (name === CSRF_COOKIE_NAME) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
+/**
+ * Get headers with CSRF token for state-changing requests
+ * Includes both auth token and CSRF token
+ */
+export const getAuthHeadersWithCsrf = (): Record<string, string> => {
+  const headers = getAuthHeaders();
+  const csrfToken = getCsrfToken();
+  
+  if (csrfToken) {
+    headers[CSRF_HEADER_NAME] = csrfToken;
+  }
+  
+  return headers;
+};
+
 // Helper function to check if authentication token is available
 export const isAuthTokenReady = (): boolean => {
   const token = localStorage.getItem('authToken');
@@ -164,8 +205,6 @@ export const isAuthTokenReady = (): boolean => {
   
   return false;
 };
-
-// --- SUBSCRIBER for real-time updates ---
 export let subscribers: (() => void)[] = [];
 
 export const subscribeToUpdates = (callback: () => void): (() => void) => {
@@ -202,10 +241,14 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
   const timeoutId = setTimeout(() => controller.abort(), API_TIMEOUT_MS);
 
   // Merge the abort signal with any existing options
+  const isStateChangingRequest = ['POST', 'PUT', 'DELETE', 'PATCH'].includes((options?.method || 'GET').toUpperCase());
+  
+  // For state-changing requests, include CSRF token; for safe methods, just use auth headers
   const fetchOptions: RequestInit = {
     ...options,
+    credentials: 'include',
     headers: {
-      ...getAuthHeaders(),
+      ...(isStateChangingRequest ? getAuthHeadersWithCsrf() : getAuthHeaders()),
       ...options?.headers,
     },
     signal: controller.signal,
@@ -215,7 +258,7 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
     .then(async response => {
       clearTimeout(timeoutId);
       
-      // Handle 403 Forbidden specifically (usually means token is invalid/expired)
+      // Handle 403 Forbidden specifically (usually means token is invalid/expired or CSRF failure)
       if (response.status === 403) {
         const errorData = await response.json().catch(() => ({}));
         
@@ -231,6 +274,11 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
           if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
             window.location.href = '/';
           }
+        }
+        
+        // Check if the error is related to CSRF
+        if (errorData.error && (errorData.error.includes('CSRF') || errorData.error.includes('token'))) {
+          console.warn(i18n.t('api.csrfError') || 'CSRF validation failed. Please refresh the page.');
         }
         
         throw new Error(errorData.error || i18n.t('api.invalidToken'));

@@ -1,8 +1,9 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, subDays } from 'date-fns';
 import type { Transaction, Product, Category, Settings } from '../shared/types';
 import { getBusinessDayStart } from '../utils/time';
+import { getAuthHeaders, isAuthTokenReady } from '../services/apiBase';
 
 import { HourlySalesChart } from './analytics/HourlySalesChart';
 import { SalesTrendChart } from './analytics/SalesTrendChart';
@@ -74,32 +75,58 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
   const [comparisonData, setComparisonData] = useState<ComparisonResult | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [authReady, setAuthReady] = useState(false);
   
-  // Fetch hourly data when date changes
+  // Check auth state on mount and when it changes
   useEffect(() => {
+    if (isAuthTokenReady()) {
+      setAuthReady(true);
+    } else {
+      // Poll for auth token to become ready
+      const interval = setInterval(() => {
+        if (isAuthTokenReady()) {
+          setAuthReady(true);
+          clearInterval(interval);
+        }
+      }, 100);
+      return () => clearInterval(interval);
+    }
+  }, []);
+  
+  // Fetch hourly data when date changes or auth becomes ready
+  useEffect(() => {
+    if (!authReady) {
+      return;
+    }
     if (dateRange === 'custom' || dateRange === 'today') {
       fetchHourlyData();
     } else {
       setHourlyData(null);
       setComparisonData(null);
     }
-  }, [selectedDate, dateRange]);
+  }, [selectedDate, dateRange, authReady]);
   
   // Fetch comparison data when in comparison mode
   useEffect(() => {
+    if (!authReady) {
+      return;
+    }
     if (isComparisonMode && selectedDate && comparisonDate) {
       fetchComparisonData();
     } else {
       setComparisonData(null);
     }
-  }, [isComparisonMode, selectedDate, comparisonDate]);
+  }, [isComparisonMode, selectedDate, comparisonDate, authReady]);
   
   const fetchHourlyData = async () => {
     setIsLoading(true);
     setError(null);
     try {
       const dateStr = format(selectedDate, 'yyyy-MM-dd');
-      const response = await fetch(`/api/analytics/hourly-sales?date=${dateStr}`);
+      const response = await fetch(`/api/analytics/hourly-sales?date=${dateStr}`, {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch hourly data');
       }
@@ -120,7 +147,10 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
     try {
       const date1 = format(selectedDate, 'yyyy-MM-dd');
       const date2 = format(comparisonDate, 'yyyy-MM-dd');
-      const response = await fetch(`/api/analytics/compare?date1=${date1}&date2=${date2}`);
+      const response = await fetch(`/api/analytics/compare?date1=${date1}&date2=${date2}`, {
+        headers: getAuthHeaders(),
+        credentials: 'include'
+      });
       if (!response.ok) {
         throw new Error('Failed to fetch comparison data');
       }

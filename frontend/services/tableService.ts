@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { Room, Table } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -21,7 +21,8 @@ export const saveRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'update
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(roomData)
     });
     
@@ -43,7 +44,8 @@ export const deleteRoom = async (roomId: string): Promise<{ success: boolean; me
   try {
     const response = await fetch(apiUrl(`/api/rooms/${roomId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -78,7 +80,8 @@ export const saveTable = async (tableData: Omit<Table, 'id' | 'createdAt' | 'upd
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(tableData)
     });
     
@@ -100,7 +103,8 @@ export const deleteTable = async (tableId: string): Promise<{ success: boolean; 
   try {
     const response = await fetch(apiUrl(`/api/tables/${tableId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -121,7 +125,8 @@ export const updateTablePosition = async (tableId: string, x: number, y: number)
   try {
     const response = await fetch(apiUrl(`/api/tables/${tableId}/position`), {
       method: 'PUT',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify({ x, y })  // Changed from positionX/positionY to x/y
     });
     
@@ -144,10 +149,8 @@ export const updateTableStatus = async (tableId: string, status: string): Promis
   try {
     const response = await fetch(apiUrl(`/api/tables/${tableId}/status`), {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        ...getAuthHeaders()
-      },
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify({ status })
     });
     

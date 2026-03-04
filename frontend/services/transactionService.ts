@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { Transaction, Tab } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -18,7 +18,8 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
   try {
     const response = await fetch(apiUrl('/api/transactions'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(transactionData)
     });
     
@@ -56,7 +57,8 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(tabData)
     });
     
@@ -82,7 +84,8 @@ export const deleteTab = async (tabId: number): Promise<void> => {
   try {
     const response = await fetch(apiUrl(`/api/tabs/${tabId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {

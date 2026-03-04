@@ -5,6 +5,7 @@ import type { User } from '../types';
 import { hashPassword, comparePassword } from '../utils/password';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
+import { sendCsrfToken, clearCsrfToken } from '../middleware/csrf';
 import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistService';
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
 import { logError, logAuthEvent, logDataAccess, logAuditEvent } from '../utils/logger';
@@ -270,6 +271,9 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
       correlationId: (req as any).correlationId
     });
     
+    // Send CSRF token in response cookie
+    await sendCsrfToken(req, res);
+    
     // Transform user to DTO to exclude sensitive fields
     const userDTO = toUserDTO(user);
     res.json({
@@ -317,6 +321,9 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     logAuthEvent('LOGOUT', userId, req.user?.username, true, {
       correlationId: (req as any).correlationId
     });
+
+    // Clear CSRF tokens to prevent reuse
+    clearCsrfToken(res);
 
     // Return success response
     res.status(200).json({ message: i18n.t('api.success.logoutSuccess') });

@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { OrderItem, OrderActivityLog } from '../../shared/types';
 import type { OrderSession } from './apiBase';
 import i18n from '../src/i18n';
@@ -7,7 +7,8 @@ import i18n from '../src/i18n';
 export const getOrderSession = async (): Promise<OrderSession | null> => {
   try {
     const response = await fetch(apiUrl('/api/order-sessions/current'), {
-      headers: getAuthHeaders()
+      headers: getAuthHeaders(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -33,7 +34,8 @@ export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSe
   try {
     const response = await fetch(apiUrl('/api/order-sessions/current'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify({ items: orderItems })
     });
     
@@ -74,7 +76,8 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
     
     const response = await fetch(apiUrl(endpoint), {
       method: 'PUT',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify({})
     });
     
@@ -118,7 +121,8 @@ export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' 
   try {
     const response = await fetch(apiUrl('/api/order-activity-logs'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(logData)
     });
     

@@ -528,7 +528,8 @@
     "httpError": "Errore HTTP! stato: {{status}}",
     "requestTimeout": "Richiesta scaduta. Verifica la connessione di rete e riprova.",
     "requestError": "Errore nella richiesta a {{url}}",
-    "unexpectedError": "Si e verificato un errore imprevisto"
+    "unexpectedError": "Si e verificato un errore imprevisto",
+    "csrfError": "Validazione CSRF fallita. Aggiorna la pagina e riprova."
   },
   "tableService": {
     "errorFetchingRooms": "Errore nel caricamento delle stanze",

@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { StockItem, StockAdjustment } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -21,7 +21,8 @@ export const saveStockItem = async (item: Omit<StockItem, 'id'> & { id?: string 
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(item)
     });
     
@@ -43,7 +44,8 @@ export const deleteStockItem = async (itemId: string): Promise<{ success: boolea
   try {
     const response = await fetch(apiUrl(`/api/stock-items/${itemId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -63,7 +65,8 @@ export const updateStockLevels = async (consumptions: { stockItemId: string, qua
   try {
      const response = await fetch(apiUrl('/api/stock-items/update-levels'), {
        method: 'PUT',
-       headers: getAuthHeaders(),
+       headers: getAuthHeadersWithCsrf(),
+       credentials: 'include',
        body: JSON.stringify({ consumptions })
      });
      
@@ -109,7 +112,8 @@ export const saveStockAdjustment = async (adjData: Omit<StockAdjustment, 'id' | 
   try {
     const response = await fetch(apiUrl('/api/stock-adjustments'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(adjData)
     });
     

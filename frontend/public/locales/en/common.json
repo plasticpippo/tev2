@@ -528,7 +528,8 @@
     "httpError": "HTTP error! status: {{status}}",
     "requestTimeout": "Request timed out. Please check your network connection and try again.",
     "requestError": "Error making request to {{url}}",
-    "unexpectedError": "An unexpected error occurred"
+    "unexpectedError": "An unexpected error occurred",
+    "csrfError": "CSRF validation failed. Please refresh the page and try again."
   },
   "tableService": {
     "errorFetchingRooms": "Error fetching rooms",

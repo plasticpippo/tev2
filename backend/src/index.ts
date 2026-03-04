@@ -8,6 +8,7 @@ import { initPrisma, checkDatabaseHealth } from './prisma';
 import { validateJwtSecret } from './utils/jwtSecretValidation';
 import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { csrfMiddleware } from './middleware/csrf';
 import i18n, { initI18n } from './i18n';
 import { initializeScheduler, stopScheduler } from './services/businessDayScheduler';
 import dotenv from 'dotenv';
@@ -136,8 +137,8 @@ const corsOptions: CorsOptions = {
   origin: getValidatedOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
-  exposedHeaders: ['X-Correlation-ID'],  // Expose correlation ID header to clients
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'x-csrf-token'],
+  exposedHeaders: ['X-Correlation-ID', 'XSRF-TOKEN-READ'],  // Expose correlation ID header and CSRF token to clients
   optionsSuccessStatus: 204,
   preflightContinue: false,
 };
@@ -184,6 +185,9 @@ app.use(express.json({ limit: '10mb' }));
 
 // i18n middleware - adds req.t function for translations
 app.use(i18nextMiddleware.handle(i18n));
+
+// CSRF protection middleware - validates CSRF tokens for authenticated state-changing requests
+app.use('/api', csrfMiddleware);
 
 // API routes
 app.use('/api', router);

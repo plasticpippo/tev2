@@ -46,9 +46,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
             const itemSubtotal = divideMoney(itemTotal, addMoney(1, taxRate));
             subtotal = addMoney(subtotal, itemSubtotal);
             tax = addMoney(tax, subtractMoney(itemTotal, itemSubtotal));
-        } else { // exclusive
+        } else if (taxSettings.mode === 'exclusive') {
+            // exclusive mode: tax is calculated on top of item price
             subtotal = addMoney(subtotal, itemTotal);
             tax = addMoney(tax, multiplyMoney(itemTotal, taxRate));
+        } else {
+            // 'none' mode - no tax, just add item total to subtotal
+            subtotal = addMoney(subtotal, itemTotal);
         }
     });
 

@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { User } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -21,7 +21,8 @@ export const saveUser = async (user: Omit<User, 'id'> & { id?: number }): Promis
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(user)
     });
     
@@ -43,7 +44,8 @@ export const deleteUser = async (userId: number): Promise<{ success: boolean; me
   try {
     const response = await fetch(apiUrl(`/api/users/${userId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -66,6 +68,7 @@ export const login = async (username: string, password: string): Promise<User> =
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({ username, password })
     });
     

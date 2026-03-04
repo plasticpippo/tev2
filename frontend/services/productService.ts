@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { Product, Category, ProductVariant } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -21,7 +21,8 @@ export const saveProduct = async (productData: Omit<Product, 'id' | 'variants'> 
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(productData)
     });
     
@@ -43,7 +44,8 @@ export const deleteProduct = async (productId: number): Promise<{ success: boole
   try {
     const response = await fetch(apiUrl(`/api/products/${productId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {
@@ -91,7 +93,8 @@ export const saveCategory = async (category: Omit<Category, 'id'> & { id?: numbe
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify(category)
     });
     
@@ -113,7 +116,8 @@ export const deleteCategory = async (categoryId: number): Promise<{ success: boo
   try {
     const response = await fetch(apiUrl(`/api/categories/${categoryId}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include'
     });
     
     if (!response.ok) {

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Settings } from '../shared/types';
 import ConfirmationModal from './ConfirmationModal';
+import { getAuthHeaders } from '../services/apiBase';
 
 interface BusinessDaySettingsProps {
   settings: Settings['businessDay'];
@@ -39,11 +40,9 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
         const fetchStatus = async () => {
             setStatusLoading(true);
             try {
-                const token = localStorage.getItem('token');
                 const response = await fetch('/api/settings/business-day-status', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    headers: getAuthHeaders(),
+                    credentials: 'include'
                 });
                 if (response.ok) {
                     const data = await response.json();

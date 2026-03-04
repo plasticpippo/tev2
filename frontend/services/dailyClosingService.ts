@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
 import type { DailyClosing } from './apiBase';
 
 // Daily Closings
@@ -26,7 +26,8 @@ export const createDailyClosing = async (closedAt: string, userId: number): Prom
   try {
     const response = await fetch(apiUrl('/api/daily-closings'), {
       method: 'POST',
-      headers: getAuthHeaders(),
+      headers: getAuthHeadersWithCsrf(),
+      credentials: 'include',
       body: JSON.stringify({ closedAt, userId, summary: {} }) // Summary will be calculated on the backend
     });
     
