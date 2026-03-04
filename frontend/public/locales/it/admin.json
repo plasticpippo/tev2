@@ -494,7 +494,14 @@
     "nextScheduledClose": "Prossima chiusura programmata",
     "loading": "Caricamento...",
     "statusUnavailable": "Stato non disponibile",
-    "never": "Mai"
+    "never": "Mai",
+    "backup": "Backup",
+    "backupDescription": "Crea un backup completo del database che puo essere scaricato sul tuo dispositivo. Il file di backup sara in formato SQL.",
+    "createBackup": "Crea Backup",
+    "creatingBackup": "Creazione Backup...",
+    "backupSuccess": "Backup creato con successo!",
+    "backupFailed": "Impossibile creare il backup. Riprova.",
+    "lastBackup": "Ultimo Backup"
   },
   "itemisedConsumption": {
     "title": "Consumo Dettagliato",

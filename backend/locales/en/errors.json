@@ -284,7 +284,8 @@
     "updateFailed": "Failed to update settings",
     "fetchFailed": "Failed to fetch settings",
     "invalidDefaultTaxRate": "Invalid default tax rate ID",
-    "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default"
+    "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
+    "backupFailed": "Failed to create database backup. Please try again later."
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",

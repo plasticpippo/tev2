@@ -12,8 +12,8 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install system dependencies for Prisma
-RUN apk add --no-cache openssl libssl3 libc6-compat wget
+# Install system dependencies for Prisma and PostgreSQL client for backup functionality
+RUN apk add --no-cache openssl libssl3 libc6-compat wget postgresql-client
 
 # Install all dependencies (including dev dependencies for build)
 RUN npm install

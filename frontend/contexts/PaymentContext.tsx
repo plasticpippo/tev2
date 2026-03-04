@@ -28,7 +28,22 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   const { setIsPaymentModalOpen } = useUIStateContext();
 
   const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string) => {
-    if (!currentUser || !assignedTillId || !appData.settings) return;
+    // Check if user is logged in
+    if (!currentUser) {
+      alert(t('errors.api.auth.authenticationFailed'));
+      return;
+    }
+
+    // Check if till is assigned before attempting payment
+    if (!assignedTillId) {
+      alert(t('errors.api.transactions.noTillAssigned'));
+      return;
+    }
+
+    if (!appData.settings) {
+      alert(t('errors.general.loadFailed'));
+      return;
+    }
 
     try {
       let subtotal = 0;
@@ -37,13 +52,14 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
           const itemTotal = multiplyMoney(item.price, item.quantity);
           if (appData.settings!.tax.mode === 'inclusive') {
               const itemSubtotal = divideMoney(itemTotal, 1 + item.effectiveTaxRate);
-              subtotal += itemSubtotal;
-              tax += subtractMoney(itemTotal, itemSubtotal);
+              const itemTax = subtractMoney(itemTotal, itemSubtotal);
+              subtotal = addMoney(subtotal, itemSubtotal);
+              tax = addMoney(tax, itemTax);
           } else if (appData.settings!.tax.mode === 'exclusive') {
-              subtotal += itemTotal;
-              tax += multiplyMoney(itemTotal, item.effectiveTaxRate);
+              subtotal = addMoney(subtotal, itemTotal);
+              tax = addMoney(tax, multiplyMoney(itemTotal, item.effectiveTaxRate));
           } else { // 'none'
-              subtotal += itemTotal;
+              subtotal = addMoney(subtotal, itemTotal);
           }
       });
 

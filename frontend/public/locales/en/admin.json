@@ -494,7 +494,14 @@
     "nextScheduledClose": "Next scheduled close",
     "loading": "Loading...",
     "statusUnavailable": "Status unavailable",
-    "never": "Never"
+    "never": "Never",
+    "backup": "Backup",
+    "backupDescription": "Create a full database backup that can be downloaded to your device. The backup file will be in SQL format.",
+    "createBackup": "Create Backup",
+    "creatingBackup": "Creating Backup...",
+    "backupSuccess": "Backup created successfully!",
+    "backupFailed": "Failed to create backup. Please try again.",
+    "lastBackup": "Last Backup"
   },
   "itemisedConsumption": {
     "title": "Itemised Consumption",

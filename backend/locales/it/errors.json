@@ -284,7 +284,8 @@
     "updateFailed": "Aggiornamento impostazioni non riuscito",
     "fetchFailed": "Impossibile recuperare le impostazioni",
     "invalidDefaultTaxRate": "ID aliquota IVA predefinita non valido",
-    "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita"
+    "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita",
+    "backupFailed": "Impossibile creare il backup del database. Riprova piu tardi."
   },
   "dailyClosings": {
     "notFound": "Chiusura giornaliera non trovata",

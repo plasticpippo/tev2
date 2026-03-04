@@ -7,6 +7,7 @@ import { logError, logInfo } from '../utils/logger';
 import i18n from '../i18n';
 import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayScheduler';
 import { Settings as PrismaSettings, TaxRate as PrismaTaxRate } from '@prisma/client';
+import { spawn } from 'child_process';
 
 export const settingsRouter = express.Router();
 
@@ -199,6 +200,143 @@ settingsRouter.get('/business-day-status', async (req: Request, res: Response) =
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
+  }
+});
+
+// POST /api/settings/backup - Create database backup (requires admin role)
+// Uses spawn with array arguments to prevent command injection
+settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const backupTimeout = 120000; // 2 minutes timeout
+  let timeoutId: NodeJS.Timeout | null = null;
+
+  try {
+    // Get database URL from environment
+    const databaseUrl = process.env.DATABASE_URL;
+    
+    if (!databaseUrl) {
+      res.status(500).json({ error: 'Database configuration not found' });
+      return;
+    }
+    
+    // Parse the database URL to extract connection parameters
+    // Format: postgresql://user:password@host:port/database?query_params
+    const urlMatch = databaseUrl.match(/postgresql:\/\/([^:]+):([^@]+)@([^:]+):(\d+)\/([^?]+)/);
+    
+    if (!urlMatch) {
+      logError('Failed to parse database URL for backup', { correlationId: (req as any).correlationId });
+      res.status(500).json({ error: 'Invalid database configuration' });
+      return;
+    }
+    
+    const [, user, password, host, port, database] = urlMatch;
+    
+    // Validate and sanitize database URL components to prevent command injection
+    // Only allow alphanumeric characters, underscores, hyphens, and dots
+    const sanitizeParam = (param: string, name: string): string | null => {
+      if (!param || !/^[a-zA-Z0-9_.-]+$/.test(param)) {
+        logError(`Invalid ${name} in database URL`, { correlationId: (req as any).correlationId });
+        return null;
+      }
+      return param;
+    };
+
+    const safeUser = sanitizeParam(user, 'username');
+    const safeHost = sanitizeParam(host, 'host');
+    const safePort = sanitizeParam(port, 'port');
+    const safeDatabase = sanitizeParam(database, 'database');
+
+    // If sanitization failed, return error
+    if (!safeUser || !safeHost || !safePort || !safeDatabase) {
+      res.status(500).json({ error: 'Invalid database configuration' });
+      return;
+    }
+    
+    // Set PGPASSWORD environment variable for pg_dump
+    const env = { ...process.env, PGPASSWORD: password };
+    
+    // Use spawn with array arguments to prevent command injection (no shell interpretation)
+    const pgDumpArgs = [
+      '-h', safeHost,
+      '-p', safePort,
+      '-U', safeUser,
+      '-d', safeDatabase,
+      '--format=p',
+      '--clean',
+      '--if-exists',
+      '--no-owner',
+      '--no-privileges'
+    ];
+    
+    // Create promise-based pg_dump execution with timeout
+    const pgDumpPromise = new Promise<{ stdout: string; stderr: string; exitCode: number }>((resolve, reject) => {
+      const pgDump = spawn('pg_dump', pgDumpArgs, { env });
+      
+      let stdout = '';
+      let stderr = '';
+      
+      pgDump.stdout.on('data', (data) => {
+        stdout += data.toString();
+      });
+      
+      pgDump.stderr.on('data', (data) => {
+        stderr += data.toString();
+      });
+      
+      pgDump.on('close', (code) => {
+        resolve({ stdout, stderr, exitCode: code ?? 0 });
+      });
+      
+      pgDump.on('error', (err) => {
+        reject(err);
+      });
+    });
+    
+    // Set up timeout
+    const timeoutPromise = new Promise<never>((_, reject) => {
+      timeoutId = setTimeout(() => {
+        reject(new Error('Backup operation timed out'));
+      }, backupTimeout);
+    });
+    
+    // Race between backup and timeout
+    const { stdout, stderr, exitCode } = await Promise.race([pgDumpPromise, timeoutPromise]);
+    
+    // Clear timeout after successful completion
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      timeoutId = null;
+    }
+    
+    // Check exit code
+    if (exitCode !== 0) {
+      logError(`pg_dump failed with exit code ${exitCode}: ${stderr}`, { correlationId: (req as any).correlationId });
+      res.status(500).json({ error: i18n.t('errors:settings.backupFailed') });
+      return;
+    }
+    
+    if (stderr && !stderr.includes('WARNING')) {
+      logError('pg_dump stderr: ' + stderr, { correlationId: (req as any).correlationId });
+    }
+    
+    logInfo('Database backup created successfully', { correlationId: (req as any).correlationId });
+    
+    // Set response headers for file download
+    res.setHeader('Content-Type', 'application/sql');
+    res.setHeader('Content-Disposition', 'attachment; filename=database_backup.sql');
+    
+    // Send the backup content
+    res.send(stdout);
+  } catch (error) {
+    // Clear timeout on error
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+    }
+    
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    logError(errorMessage, {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors:settings.backupFailed') });
   }
 });
 

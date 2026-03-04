@@ -82,7 +82,8 @@
     "transactions": {
       "notFound": "Transaction not found.",
       "refundFailed": "Failed to process refund.",
-      "invalidPaymentMethod": "Invalid payment method."
+      "invalidPaymentMethod": "Invalid payment method.",
+      "noTillAssigned": "No till assigned"
     },
     "orderSessions": {
       "notFound": "Order session not found.",

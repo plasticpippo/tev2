@@ -82,7 +82,8 @@
     "transactions": {
       "notFound": "Transazione non trovata.",
       "refundFailed": "Elaborazione rimborso non riuscita.",
-      "invalidPaymentMethod": "Metodo di pagamento non valido."
+      "invalidPaymentMethod": "Metodo di pagamento non valido.",
+      "noTillAssigned": "Nessun cassetto assegnato"
     },
     "orderSessions": {
       "notFound": "Sessione ordine non trovata.",
