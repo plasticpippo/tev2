@@ -43,7 +43,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         
         const itemTotal = multiplyMoney(item.price, item.quantity);
         if (taxSettings.mode === 'inclusive') {
-            const itemSubtotal = divideMoney(itemTotal, addMoney(1, taxRate));
+            // In inclusive mode, extract pre-tax price from unit price first
+            // then multiply by quantity - this matches backend calculation
+            // IMPORTANT: Round the pre-tax unit price to 2 decimal places before
+            // multiplying by quantity to follow Italian VAT rounding rules (IVA)
+            const preTaxUnitPrice = roundMoney(divideMoney(item.price, addMoney(1, taxRate)));
+            const itemSubtotal = multiplyMoney(preTaxUnitPrice, item.quantity);
             subtotal = addMoney(subtotal, itemSubtotal);
             tax = addMoney(tax, subtractMoney(itemTotal, itemSubtotal));
         } else if (taxSettings.mode === 'exclusive') {

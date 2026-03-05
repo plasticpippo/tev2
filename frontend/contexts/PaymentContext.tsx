@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useCallback } from 'react';
-import { addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+import { addMoney, subtractMoney, multiplyMoney, divideMoney, roundMoney } from '../utils/money';
 import { useTranslation } from 'react-i18next';
 import type { OrderItem } from '../../shared/types';
 import * as api from '../services/apiService';
@@ -49,9 +49,15 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       let subtotal = 0;
       let tax = 0;
       orderItems.forEach(item => {
+          // Calculate item total (price * quantity)
           const itemTotal = multiplyMoney(item.price, item.quantity);
           if (appData.settings!.tax.mode === 'inclusive') {
-              const itemSubtotal = divideMoney(itemTotal, 1 + item.effectiveTaxRate);
+              // In inclusive mode, extract pre-tax price from unit price first
+              // then multiply by quantity - this matches backend calculation
+              // IMPORTANT: Round the pre-tax unit price to 2 decimal places before
+              // multiplying by quantity to follow Italian VAT rounding rules (IVA)
+              const preTaxUnitPrice = roundMoney(divideMoney(item.price, 1 + item.effectiveTaxRate));
+              const itemSubtotal = multiplyMoney(preTaxUnitPrice, item.quantity);
               const itemTax = subtractMoney(itemTotal, itemSubtotal);
               subtotal = addMoney(subtotal, itemSubtotal);
               tax = addMoney(tax, itemTax);
