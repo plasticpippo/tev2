@@ -164,7 +164,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <div className="pt-2"></div>
                 <NavButton view="settings" label={t('navigation.settings')} isFirst/>
             </nav>
-            <main className="flex-grow p-6 overflow-y-auto bg-slate-900">
+            <main className="flex-grow p-6 bg-slate-900 flex flex-col overflow-hidden">
                 {renderView()}
             </main>
         </div>

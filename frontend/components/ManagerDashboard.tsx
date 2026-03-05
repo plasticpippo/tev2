@@ -3,6 +3,7 @@ import type { Transaction, Tab, User, Till, Settings, DailyClosing } from '@shar
 import { getDailyClosings } from '../services/dailyClosingService';
 import { format } from 'date-fns';
 import { useTranslation } from 'react-i18next';
+import { formatMoney, isMoneyValid } from '../utils/money';
 
 import { TotalSalesTicker } from './dashboard/TotalSalesTicker';
 import { TillStatus } from './dashboard/TillStatus';
@@ -75,8 +76,8 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
                                 <div key={closing.id} className="flex justify-between text-sm border-b border-slate-700 pb-2">
                                     <span className="text-slate-300">{format(new Date(closing.closedAt), 'MMM dd, HH:mm')}</span>
                                     <span className="text-amber-400">{closing.userName}</span>
-                                    <span className="text-green-400">{t('managerDashboard.transactions', { count: closing.summary.transactions })}</span>
-                                    <span className="text-green-400">{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(closing.summary.totalSales)}</span>
+                                    <span className="text-green-400">{t('managerDashboard.transactions', { count: closing.summary?.transactions || 0 })}</span>
+                                    <span className="text-green-400">{isMoneyValid(closing.summary?.totalSales) ? formatMoney(closing.summary.totalSales) : '€0.00'}</span>
                                 </div>
                             ))}
                         </div>

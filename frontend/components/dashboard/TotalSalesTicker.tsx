@@ -20,7 +20,12 @@ export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings:
         const businessDayStart = getBusinessDayStart(settings);
         const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart));
         
-        const totalRevenue = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.total), 0));
+        // grossSales is the sum of all transaction totals (before discounts)
+        const grossSales = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.total), 0));
+        // totalDiscounts is the sum of all discounts
+        const totalDiscounts = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.discount || 0), 0));
+        // netSales = grossSales - totalDiscounts (this matches backend calculation)
+        const netSales = roundMoney(grossSales - totalDiscounts);
         const totalSubtotal = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.subtotal), 0));
         const totalTax = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.tax), 0));
         const totalTips = roundMoney(todaysTransactions.reduce((sum, t) => addMoney(sum, t.tip), 0));
@@ -35,7 +40,9 @@ export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings:
         }, { totalCash: 0, totalCard: 0 });
         
         return { 
-            totalRevenue: roundMoney(totalRevenue), 
+            grossSales: roundMoney(grossSales),
+            netSales: roundMoney(netSales),
+            totalDiscounts: roundMoney(totalDiscounts),
             totalSubtotal: roundMoney(totalSubtotal), 
             totalTax: roundMoney(totalTax), 
             totalTips: roundMoney(totalTips), 
@@ -48,10 +55,10 @@ export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings:
         <div className="flex-shrink-0 bg-slate-900 p-4 rounded-lg">
              <h2 className="text-xl font-bold text-slate-300 mb-3 text-center">{t('dashboard.currentBusinessDaySales')}</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                <StatCard title={t('dashboard.totalRevenue')} value={formatMoney(dailyStats.totalRevenue)} color="text-green-400" />
+                <StatCard title={t('dashboard.grossSales')} value={formatMoney(dailyStats.grossSales)} color="text-green-400" />
                 <StatCard title={t('dashboard.totalCash')} value={formatMoney(dailyStats.totalCash)} color="text-green-400" />
                 <StatCard title={t('dashboard.totalCard')} value={formatMoney(dailyStats.totalCard)} color="text-green-400" />
-                <StatCard title={t('dashboard.netSales')} value={formatMoney(dailyStats.totalSubtotal)} color="text-sky-400" />
+                <StatCard title={t('dashboard.netSales')} value={formatMoney(dailyStats.netSales)} color="text-sky-400" />
                 <StatCard title={t('dashboard.totalTax')} value={formatMoney(dailyStats.totalTax)} color="text-slate-300" />
                 <StatCard title={t('dashboard.totalTips')} value={formatMoney(dailyStats.totalTips)} color="text-amber-400" />
             </div>

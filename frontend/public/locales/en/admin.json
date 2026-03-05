@@ -474,6 +474,8 @@
     "confirmManualCloseTitle": "Confirm Manual Close",
     "confirmManualCloseMessage": "Are you sure? This will end the current business day for reporting. All new sales will be part of the next day. This action cannot be undone.",
     "confirmManualCloseButton": "Yes, End Business Day",
+    "closing": "Closing...",
+    "dailyClosingCreateFailed": "Failed to create daily closing record: {{error}}",
     "currency": "Currency",
     "currencySymbol": "Currency Symbol",
     "currencyPosition": "Currency Position",
@@ -542,6 +544,7 @@
     "manageProducts": "Manage Products",
     "manageUsers": "Manage Users",
     "currentBusinessDaySales": "Current Business Day Sales (All Tills)",
+    "grossSales": "Gross Sales",
     "totalRevenue": "Total Revenue",
     "totalCash": "Total Cash",
     "totalCard": "Total Card",
@@ -698,6 +701,7 @@
       "hideDetails": "Hide Details"
     },
     "details": {
+      "title": "Daily Closing Details",
       "transactionSummary": "Transaction Summary",
       "paymentMethods": "Payment Methods",
       "tillSummary": "Till Summary",
@@ -705,7 +709,8 @@
       "closingId": "Closing ID",
       "closedBy": "Closed By",
       "closedAt": "Closed At",
-      "transactionsCount": "{{count}} transactions"
+      "transactionsCount": "{{count}} transactions",
+      "close": "Close"
     },
     "combined": {
       "paymentMethods": "Combined Payment Methods",

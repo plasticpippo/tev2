@@ -474,6 +474,8 @@
     "confirmManualCloseTitle": "Conferma Chiusura Manuale",
     "confirmManualCloseMessage": "Sei sicuro? Questo terminera la giornata lavorativa corrente per il reporting. Tutte le nuove vendite faranno parte del giorno successivo. Questa azione non puo essere annullata.",
     "confirmManualCloseButton": "Si, Termina Giornata Lavorativa",
+    "closing": "Chiusura in corso...",
+    "dailyClosingCreateFailed": "Impossibile creare il record di chiusura giornaliera: {{error}}",
     "currency": "Valuta",
     "currencySymbol": "Simbolo Valuta",
     "currencyPosition": "Posizione Valuta",
@@ -542,6 +544,7 @@
     "manageProducts": "Gestisci Prodotti",
     "manageUsers": "Gestisci Utenti",
     "currentBusinessDaySales": "Vendite Giornata Lavorativa Corrente (Tutte le Casse)",
+    "grossSales": "Vendite Lorde",
     "totalRevenue": "Ricavi Totali",
     "totalCash": "Contanti Totali",
     "totalCard": "Carta Totale",
@@ -698,6 +701,7 @@
       "hideDetails": "Nascondi Dettagli"
     },
     "details": {
+      "title": "Dettagli Chiusura Giornaliera",
       "transactionSummary": "Riepilogo Transazioni",
       "paymentMethods": "Metodi di Pagamento",
       "tillSummary": "Riepilogo Casse",
@@ -705,7 +709,8 @@
       "closingId": "ID Chiusura",
       "closedBy": "Chiuso Da",
       "closedAt": "Chiuso Il",
-      "transactionsCount": "{{count}} transazioni"
+      "transactionsCount": "{{count}} transazioni",
+      "close": "Chiudi"
     },
     "combined": {
       "paymentMethods": "Metodi di Pagamento Combinati",

@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import type { Settings } from '../shared/types';
 import ConfirmationModal from './ConfirmationModal';
 import { getAuthHeaders } from '../services/apiBase';
+import { createDailyClosing } from '../services/dailyClosingService';
 
 interface BusinessDaySettingsProps {
   settings: Settings['businessDay'];
@@ -25,6 +26,8 @@ interface BusinessDayStatus {
 export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settings, onUpdate }) => {
     const { t } = useTranslation('admin');
     const [isConfirmModalOpen, setIsConfirmModalOpen] = useState(false);
+    const [isClosing, setIsClosing] = useState(false);
+    const [closeError, setCloseError] = useState<string | null>(null);
     const [status, setStatus] = useState<BusinessDayStatus | null>(null);
     const [statusLoading, setStatusLoading] = useState(false);
 
@@ -61,12 +64,49 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
         return () => clearInterval(interval);
     }, []);
     
-    const handleManualClose = () => {
-        onUpdate({
-            ...settings,
-            lastManualClose: new Date().toISOString(),
-        });
-        setIsConfirmModalOpen(false);
+    const handleManualClose = async () => {
+        setIsClosing(true);
+        setCloseError(null);
+        try {
+            // Get current user ID from localStorage with proper validation
+            const currentUserStr = localStorage.getItem('currentUser');
+            let userId: number | undefined;
+            if (currentUserStr) {
+                try {
+                    const parsed = JSON.parse(currentUserStr);
+                    if (parsed && typeof parsed.id === 'number') {
+                        userId = parsed.id;
+                    }
+                } catch (e) {
+                    console.error('Failed to parse current user:', e);
+                }
+            }
+
+            // Create DailyClosing record if we have a user ID
+            if (userId) {
+                const closedAt = new Date().toISOString();
+                await createDailyClosing(closedAt, userId);
+            }
+
+            // Update settings with lastManualClose timestamp
+            onUpdate({
+                ...settings,
+                lastManualClose: new Date().toISOString(),
+            });
+            setIsConfirmModalOpen(false);
+        } catch (error) {
+            console.error('Failed to manually close business day:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+            setCloseError(t('settings.dailyClosingCreateFailed') || `Failed to create daily closing record: ${errorMessage}`);
+            // Still update settings even if daily closing creation fails
+            onUpdate({
+                ...settings,
+                lastManualClose: new Date().toISOString(),
+            });
+            // Don't close modal on error - let user see the error
+        } finally {
+            setIsClosing(false);
+        }
     };
 
     const handleAutoCloseToggle = (enabled: boolean) => {
@@ -212,10 +252,11 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
             <ConfirmationModal
                 show={isConfirmModalOpen}
                 title={t('settings.confirmManualCloseTitle')}
-                message={t('settings.confirmManualCloseMessage')}
-                confirmText={t('settings.confirmManualCloseButton')}
+                message={closeError || t('settings.confirmManualCloseMessage')}
+                confirmText={isClosing ? (t('settings.closing') || 'Closing...') : t('settings.confirmManualCloseButton')}
                 onConfirm={handleManualClose}
-                onCancel={() => setIsConfirmModalOpen(false)}
+                onCancel={() => { setIsConfirmModalOpen(false); setCloseError(null); }}
+                disabled={isClosing}
             />
         </div>
     );
