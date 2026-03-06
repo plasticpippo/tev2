@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppContext } from '../contexts/AppContext';
 import { LayoutProvider, useLayout } from '../src/contexts/LayoutContext';
@@ -16,6 +16,8 @@ import { TableAssignmentModal } from './TableAssignmentModal';
 
 export const MainPOSInterface: React.FC = () => {
   const { t } = useTranslation(['pos', 'common']);
+  // Mobile tab state for phone/tablet view (< 768px - md breakpoint)
+  const [activeMobileTab, setActiveMobileTab] = useState<'grid' | 'cart'>('grid');
   const {
     isLoading,
     currentUser,
@@ -121,33 +123,113 @@ export const MainPOSInterface: React.FC = () => {
           {assignedTillId ? (
             <LayoutProvider tillId={assignedTillId} initialCategoryId={'favourites'}>
               <>
-                <div className="w-full lg:w-[calc(100%-384px)] h-full flex flex-col min-w-0">
-                  {/* Product Grid with Layout System */}
-                  <div className="flex-1 overflow-y-auto bg-slate-900">
-                    <ProductGridLayout
-                      products={appData.products}
-                      categories={appData.categories}
-                      onAddToCart={handleAddToCart}
-                      makableVariantIds={makableVariantIds}
-                      assignedTillId={assignedTillId}
+                {/* Desktop/Tablet: Show both panels side by side */}
+                <div className="hidden md:flex w-full h-full min-w-0">
+                  <div className="w-full lg:w-[calc(100%-384px)] h-full flex flex-col min-w-0">
+                    {/* Product Grid with Layout System */}
+                    <div className="flex-1 overflow-y-auto bg-slate-900">
+                      <ProductGridLayout
+                        products={appData.products}
+                        categories={appData.categories}
+                        onAddToCart={handleAddToCart}
+                        makableVariantIds={makableVariantIds}
+                        assignedTillId={assignedTillId}
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="w-full lg:w-96 h-full flex-shrink-0">
+                    <OrderPanel
+                      orderItems={orderItems}
+                      user={currentUser}
+                      onUpdateQuantity={handleUpdateQuantity}
+                      onClearOrder={() => clearOrder(true)}
+                      onPayment={() => setIsPaymentModalOpen(true)}
+                      onOpenTabs={() => setIsTabsModalOpen(true)}
+                      onLogout={handleLogout}
+                      activeTab={activeTab}
+                      onSaveTab={handleSaveTab}
+                      assignedTable={assignedTable}
+                      onOpenTableAssignment={handleOpenTableAssignment}
                     />
                   </div>
                 </div>
-                
-                <div className="w-full lg:w-96 h-full flex-shrink-0">
-                  <OrderPanel
-                    orderItems={orderItems}
-                    user={currentUser}
-                    onUpdateQuantity={handleUpdateQuantity}
-                    onClearOrder={() => clearOrder(true)}
-                    onPayment={() => setIsPaymentModalOpen(true)}
-                    onOpenTabs={() => setIsTabsModalOpen(true)}
-                    onLogout={handleLogout}
-                    activeTab={activeTab}
-                    onSaveTab={handleSaveTab}
-                    assignedTable={assignedTable}
-                    onOpenTableAssignment={handleOpenTableAssignment}
-                  />
+
+                {/* Mobile: Tab-based view with bottom tabs (< 768px) */}
+                <div className="flex md:hidden flex-col h-full">
+                  {/* Content area - shows either grid or cart based on active tab */}
+                  <div className="flex-1 overflow-hidden">
+                    {activeMobileTab === 'grid' ? (
+                      <div className="h-full flex flex-col">
+                        <div className="flex-1 overflow-y-auto bg-slate-900">
+                          <ProductGridLayout
+                            products={appData.products}
+                            categories={appData.categories}
+                            onAddToCart={handleAddToCart}
+                            makableVariantIds={makableVariantIds}
+                            assignedTillId={assignedTillId}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="h-full">
+                        <OrderPanel
+                          orderItems={orderItems}
+                          user={currentUser}
+                          onUpdateQuantity={handleUpdateQuantity}
+                          onClearOrder={() => clearOrder(true)}
+                          onPayment={() => setIsPaymentModalOpen(true)}
+                          onOpenTabs={() => setIsTabsModalOpen(true)}
+                          onLogout={handleLogout}
+                          activeTab={activeTab}
+                          onSaveTab={handleSaveTab}
+                          assignedTable={assignedTable}
+                          onOpenTableAssignment={handleOpenTableAssignment}
+                        />
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Bottom Tab Bar for Mobile */}
+                  <div className="flex-shrink-0 bg-slate-900 border-t border-slate-700">
+                    <div className="flex">
+                      <button
+                        onClick={() => setActiveMobileTab('grid')}
+                        aria-label={t('pos:productGrid.title')}
+                        aria-pressed={activeMobileTab === 'grid'}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-semibold transition ${
+                          activeMobileTab === 'grid'
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-slate-800 text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                        </svg>
+                        {t('pos:productGrid.title') || 'Products'}
+                      </button>
+                      <button
+                        onClick={() => setActiveMobileTab('cart')}
+                        aria-label={t('pos:cart.title', { defaultValue: 'Cart' })}
+                        aria-pressed={activeMobileTab === 'cart'}
+                        className={`flex-1 py-4 flex items-center justify-center gap-2 text-sm font-semibold transition relative ${
+                          activeMobileTab === 'cart'
+                            ? 'bg-amber-600 text-white'
+                            : 'bg-slate-800 text-slate-400 hover:text-white'
+                        }`}
+                      >
+                        <svg aria-hidden="true" className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                        </svg>
+                        {t('pos:cart.title', { defaultValue: 'Cart' })}
+                        {orderItems.length > 0 && (
+                          <span className="absolute -top-1 right-3 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold" aria-label={`${orderItems.length} items`}>
+                            {orderItems.length}
+                          </span>
+                        )}
+                      </button>
+                    </div>
+                  </div>
                 </div>
                 <LayoutLoadingOverlay />
               </>

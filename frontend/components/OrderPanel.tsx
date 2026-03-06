@@ -52,12 +52,12 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
               <p className="font-semibold">{item.name || t('pos:cart.itemVariant', { variantId: item.variantId })}</p>
               <p className="text-slate-400 text-sm">{formatCurrency(item.price)}</p>
             </div>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 md:gap-3">
               {/* Fix: item.id is a string, and onUpdateQuantity now correctly accepts it. */}
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center">-</button>
+              <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="w-12 h-12 md:w-10 md:h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">-</button>
               <span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
               {/* Fix: item.id is a string, and onUpdateQuantity now correctly accepts it. */}
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center">+</button>
+              <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="w-12 h-12 md:w-10 md:h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">+</button>
             </div>
           </div>
         ))}

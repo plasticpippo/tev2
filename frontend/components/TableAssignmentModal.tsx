@@ -193,8 +193,8 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               </div>
             </div>
 
-            {/* Canvas for visual layout */}
-            <div className="flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 relative overflow-auto min-h-[400px]">
+            {/* Desktop/Tablet: Visual canvas layout (hidden on mobile) */}
+            <div className="hidden md:block flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 relative overflow-auto min-h-[400px]">
               {roomTables.length > 0 ? (
                 <div
                   className="relative mx-auto"
@@ -255,6 +255,59 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                     <div className="text-slate-500 text-6xl mb-4">TABLE</div>
                     <p className="text-slate-400 text-lg">{t('tableAssignmentModal.noTablesInRoom')}</p>
                     <p className="text-slate-500 text-sm mt-2">{t('tableAssignmentModal.addTablesInAdmin')}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Mobile: List view fallback (< 768px) */}
+            <div className="md:hidden flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 overflow-y-auto max-h-[50vh]">
+              {roomTables.length > 0 ? (
+                <div className="space-y-2">
+                  {roomTables.map(table => {
+                    const isSelected = selectedTableId === table.id;
+                    const isCurrent = currentTableId === table.id;
+                    const isDisabled = table.status === 'occupied' || table.status === 'unavailable' || table.status === 'bill_requested';
+                    
+                    return (
+                      <button
+                        key={table.id}
+                        onClick={() => !isDisabled && setSelectedTableId(table.id)}
+                        disabled={isDisabled || isAssigning}
+                        className={`
+                          w-full p-4 rounded-lg flex items-center justify-between
+                          text-white font-semibold border-2 transition-all duration-150
+                          ${getStatusColor(table.status)}
+                          ${isSelected ? 'ring-2 ring-amber-400' : ''}
+                          ${isCurrent ? 'ring-2 ring-blue-400' : ''}
+                          ${isDisabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:shadow-lg hover:shadow-amber-500/30'}
+                        `}
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className={`w-10 h-10 rounded-full flex items-center justify-center ${getStatusColor(table.status).split(' ')[0]}`}>
+                            <span className="font-bold">{table.name}</span>
+                          </div>
+                          <div className="text-left">
+                            <p className="font-bold">{table.name}</p>
+                            <p className={`text-xs ${getStatusTextColor(table.status)}`}>
+                              {getStatusLabel(table.status)}
+                            </p>
+                          </div>
+                        </div>
+                        {isSelected && (
+                          <svg className="w-6 h-6 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="flex items-center justify-center h-40">
+                  <div className="text-center">
+                    <div className="text-slate-500 text-4xl mb-2">TABLE</div>
+                    <p className="text-slate-400">{t('tableAssignmentModal.noTablesInRoom')}</p>
                   </div>
                 </div>
               )}

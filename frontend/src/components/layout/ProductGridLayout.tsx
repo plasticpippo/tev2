@@ -7,7 +7,8 @@ import AvailableProductsPanel from '../../../components/AvailableProductsPanel';
 import type { Product, ProductVariant, Category } from '@shared/types';
 
 const GRID_COLUMNS = 4;
-const GRID_ROW_HEIGHT = 128; // Configurable grid row height in pixels
+// Note: GRID_ROW_HEIGHT is kept for edit mode grid positioning calculations
+// The visual grid uses responsive classes
 
 interface ProductGridLayoutProps {
   products: Product[];
@@ -174,14 +175,13 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col, row)}
             className={`
-              border-2 border-dashed rounded-lg transition-colors
+              border-2 border-dashed rounded-lg transition-colors min-h-24 sm:min-h-28 md:min-h-32 lg:min-h-40
               ${isEditMode ? 'border-slate-600 bg-slate-800/30' : 'border-transparent'}
               ${isHighlighted ? 'bg-yellow-500/20 border-yellow-500' : ''}
             `}
             style={{
               gridColumn: col,
-              gridRow: row,
-              minHeight: `${GRID_ROW_HEIGHT}px`
+              gridRow: row
             }}
           />
         );
@@ -240,7 +240,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                               repeating-linear-gradient(0deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%),
                               repeating-linear-gradient(90deg, transparent, transparent calc(25% - 1px), rgba(100, 116, 139, 0.3) calc(25% - 1px), rgba(100, 116, 139, 0.3) 25%)
                             `,
-                            backgroundSize: `100% ${GRID_ROW_HEIGHT}px, calc(100% / 4) 100%`
+                            backgroundSize: `100% 128px, calc(100% / 4) 100%`
                           }}
                         >
                           <div className="absolute top-2 left-2 bg-yellow-500 text-black px-3 py-1 rounded-md text-xs font-bold">
@@ -269,11 +269,10 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             
                       {/* Product grid */}
                       <div
-                        className="relative grid gap-4 z-10"
+                        className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 z-10 min-h-24 sm:min-h-28 md:min-h-32 lg:min-h-40"
                         style={{
-                          gridTemplateColumns: `repeat(${GRID_COLUMNS}, 1fr)`,
-                          gridTemplateRows: `repeat(${gridRows}, minmax(${GRID_ROW_HEIGHT}px, auto))`,  // Explicit row heights
-                          gridAutoRows: `minmax(${GRID_ROW_HEIGHT}px, auto)`
+                          gridTemplateRows: `repeat(${gridRows}, minmax(96px, auto))`,
+                          gridAutoRows: 'minmax(96px, auto)'
                         }}
                       >
                         {/* Drop zone cells */}
