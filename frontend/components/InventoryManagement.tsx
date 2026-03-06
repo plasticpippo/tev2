@@ -159,7 +159,7 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
     }, [stockItems, activeTab, searchTerm, stockLevelFilter, categoryFilter, products]);
 
     return (
-        <div className="h-full flex flex-col">
+        <div className="flex flex-col h-full">
             <div className="flex-shrink-0 space-y-4">
                 <div className="flex gap-2">
                     <button onClick={() => setActiveTab('ingredients')} className={`btn ${activeTab === 'ingredients' ? 'btn-primary' : 'btn-secondary'}`}>
@@ -181,27 +181,29 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
                 </div>
             </div>
             
-            <div className="flex-grow overflow-y-auto pr-2 mt-4 space-y-2">
-                {filteredStockItems.map(item => (
-                    <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
-                        <div>
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-slate-400">{t('inventoryManagement.trackedIn', { unit: item.baseUnit })}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 overflow-hidden h-full">
+                <div className="overflow-y-auto pr-2 space-y-2">
+                    {filteredStockItems.map(item => (
+                        <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
+                            <div>
+                                <p className="font-semibold">{item.name}</p>
+                                <p className="text-sm text-slate-400">{t('inventoryManagement.trackedIn', { unit: item.baseUnit })}</p>
+                            </div>
+                            <div className="flex items-center gap-4">
+                                <span className={`text-xl font-bold ${item.quantity <= 0 ? 'text-red-400' : item.quantity <= 10 ? 'text-yellow-400' : 'text-green-400'}`}>
+                                    {t('inventoryManagement.inStock', { quantity: item.quantity })}
+                                </span>
+                                <button onClick={() => handleOpenAdjustModal(item.id)} className="btn btn-success btn-sm">
+                                    {t('inventoryManagement.adjust')}
+                                </button>
+                            </div>
                         </div>
-                        <div className="flex items-center gap-4">
-                            <span className={`text-xl font-bold ${item.quantity <= 0 ? 'text-red-400' : item.quantity <= 10 ? 'text-yellow-400' : 'text-green-400'}`}>
-                                {t('inventoryManagement.inStock', { quantity: item.quantity })}
-                            </span>
-                             <button onClick={() => handleOpenAdjustModal(item.id)} className="btn btn-success btn-sm">
-                                {t('inventoryManagement.adjust')}
-                            </button>
-                        </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
+                <div className="overflow-y-auto">
+                    <StockAdjustmentHistory adjustments={stockAdjustments} />
+                </div>
             </div>
-             <div className="flex-shrink-0 mt-4">
-                 <StockAdjustmentHistory adjustments={stockAdjustments} />
-             </div>
 
             {isAdjustmentModalOpen && (
                 <AdjustmentModal
