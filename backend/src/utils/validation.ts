@@ -1,5 +1,6 @@
 import type { Product, ProductVariant } from '../types';
 import type { Request } from 'express';
+import { logWarn } from './logger';
 
 /**
  * Translation helper type for i18n
@@ -300,6 +301,8 @@ export const validateStockItem = (stockItem: any, t?: TranslateFunction): { isVa
 export interface AnalyticsParams {
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  endTime?: string;
   productId?: number;
   categoryId?: number;
   sortBy?: 'revenue' | 'quantity' | 'name';
@@ -366,6 +369,61 @@ export const validateRoom = (room: any, allRooms: any[] = [], t?: TranslateFunct
   };
 };
 
+// Validate datetime format YYYY-MM-DDTHH:MM
+export const isValidDateTime = (value: string): boolean => {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+  // Accept both datetime format (YYYY-MM-DDTHH:MM) and date-only format (YYYY-MM-DD)
+  const dateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+  const dateOnlyRegex = /^\d{4}-\d{2}-\d{2}$/;
+  
+  if (!dateTimeRegex.test(value) && !dateOnlyRegex.test(value)) {
+    return false;
+  }
+  
+  // If it's a full datetime, validate the date and time components
+  if (dateTimeRegex.test(value)) {
+    const [datePart, timePart] = value.split('T');
+    const [year, month, day] = datePart.split('-').map(Number);
+    const [hours, minutes] = timePart.split(':').map(Number);
+    
+    // Check date validity
+    const date = new Date(year, month - 1, day);
+    if (date.getFullYear() !== year || date.getMonth() !== month - 1 || date.getDate() !== day) {
+      return false;
+    }
+    
+    // Check time validity (24-hour format)
+    if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+      return false;
+    }
+  }
+  
+  return true;
+};
+
+// Validate time format HH:MM (24-hour)
+export const isValidTime = (value: string): boolean => {
+  if (!value || typeof value !== 'string') {
+    return false;
+  }
+  
+  const timeRegex = /^\d{2}:\d{2}$/;
+  if (!timeRegex.test(value)) {
+    return false;
+  }
+  
+  const [hours, minutes] = value.split(':').map(Number);
+  
+  // Check time validity (24-hour format)
+  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
+    return false;
+  }
+  
+  return true;
+};
+
 export const validateAnalyticsParams = (query: any): AnalyticsParams => {
   const params: AnalyticsParams = {};
 
@@ -381,6 +439,38 @@ export const validateAnalyticsParams = (query: any): AnalyticsParams => {
     const endDate = new Date(query.endDate);
     if (!isNaN(endDate.getTime())) {
       params.endDate = query.endDate;
+    }
+  }
+
+  // Validate time parameters (datetime format YYYY-MM-DDTHH:MM)
+  if (query.startTime) {
+    if (isValidDateTime(query.startTime)) {
+      params.startTime = query.startTime;
+    }
+  }
+
+  if (query.endTime) {
+    if (isValidDateTime(query.endTime)) {
+      params.endTime = query.endTime;
+    }
+  }
+
+    // Validate that endTime is after startTime if both are provided
+  if (params.startTime && params.endTime) {
+    const startDateTime = new Date(params.startTime.replace('T', ' '));
+    const endDateTime = new Date(params.endTime.replace('T', ' '));
+    
+    // If both are date-only, append time for proper comparison
+    if (!params.startTime.includes('T') && !params.endTime.includes('T')) {
+      // Both are date-only, which is valid for date filtering
+    } else if (endDateTime <= startDateTime) {
+      // Clear both if endTime is not after startTime (for datetime comparisons)
+      logWarn('Analytics time filter validation: endTime is not after startTime, clearing time filters', {
+        startTime: params.startTime,
+        endTime: params.endTime
+      });
+      delete params.startTime;
+      delete params.endTime;
     }
   }
 

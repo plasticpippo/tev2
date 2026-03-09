@@ -35,6 +35,8 @@ export interface ProductPerformanceResult {
 export interface AnalyticsParams {
   startDate?: string;
   endDate?: string;
+  startTime?: string;
+  endTime?: string;
   productId?: number;
   categoryId?: number;
   sortBy?: 'revenue' | 'quantity' | 'name';
@@ -51,6 +53,8 @@ export const fetchProductPerformance = async (
   
   if (params.startDate) queryParams.append('startDate', params.startDate);
   if (params.endDate) queryParams.append('endDate', params.endDate);
+  if (params.startTime) queryParams.append('startTime', params.startTime);
+  if (params.endTime) queryParams.append('endTime', params.endTime);
   if (params.productId) queryParams.append('productId', params.productId.toString());
   if (params.categoryId) queryParams.append('categoryId', params.categoryId.toString());
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);
@@ -77,6 +81,8 @@ export const fetchTopPerformers = async (
   
   if (params.startDate) queryParams.append('startDate', params.startDate);
   if (params.endDate) queryParams.append('endDate', params.endDate);
+  if (params.startTime) queryParams.append('startTime', params.startTime);
+  if (params.endTime) queryParams.append('endTime', params.endTime);
   if (params.productId) queryParams.append('productId', params.productId.toString());
   if (params.categoryId) queryParams.append('categoryId', params.categoryId.toString());
   if (params.sortBy) queryParams.append('sortBy', params.sortBy);

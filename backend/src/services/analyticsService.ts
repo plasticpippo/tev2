@@ -44,6 +44,8 @@ export const aggregateProductPerformance = async (
   const {
     startDate,
     endDate,
+    startTime,
+    endTime,
     productId,
     categoryId,
     sortBy = 'revenue',
@@ -59,12 +61,49 @@ export const aggregateProductPerformance = async (
   // Add date range filter if provided
   if (startDate || endDate) {
     whereClause.createdAt = {};
+    
     if (startDate) {
-      whereClause.createdAt.gte = new Date(startDate);
+      // Check if startTime contains a datetime (YYYY-MM-DDTHH:MM format)
+      // The startTime param is the full datetime string if provided
+      if (startTime && startTime.includes('T')) {
+        // Use exact datetime from startTime parameter
+        whereClause.createdAt.gte = new Date(startTime);
+      } else {
+        // Date-only: use start of day (00:00:00)
+        whereClause.createdAt.gte = new Date(`${startDate}T00:00:00`);
+      }
     }
+    
     if (endDate) {
-      whereClause.createdAt.lte = new Date(endDate);
+      // Check if endTime contains a datetime (YYYY-MM-DDTHH:MM format)
+      // The endTime param is the full datetime string if provided
+      if (endTime && endTime.includes('T')) {
+        // Use exact datetime from endTime parameter (add 59 seconds for inclusive end)
+        const endDateTime = new Date(endTime);
+        endDateTime.setSeconds(59);
+        endDateTime.setMilliseconds(999);
+        whereClause.createdAt.lte = endDateTime;
+      } else {
+        // Date-only: use end of day (23:59:59.999)
+        const endDateTime = new Date(`${endDate}T23:59:59.999`);
+        whereClause.createdAt.lte = endDateTime;
+      }
     }
+  } else if (startTime && startTime.includes('T')) {
+    // Handle case where only time parameters are provided without dates
+    whereClause.createdAt = {};
+    whereClause.createdAt.gte = new Date(startTime);
+    
+    if (endTime && endTime.includes('T')) {
+      const endDateTime = new Date(endTime);
+      endDateTime.setSeconds(59);
+      endDateTime.setMilliseconds(999);
+      whereClause.createdAt.lte = endDateTime;
+    }
+  } else if (endTime && endTime.includes('T')) {
+    // Handle case where only endTime is provided
+    whereClause.createdAt = {};
+    whereClause.createdAt.lte = new Date(endTime);
   }
 
   // Get all transactions that match the criteria

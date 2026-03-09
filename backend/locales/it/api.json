@@ -106,5 +106,10 @@
     "import": "Importa",
     "print": "Stampa",
     "email": "Email"
+  },
+  "analytics": {
+    "startTime": "Ora di inizio",
+    "endTime": "Ora di fine",
+    "timeFilterHint": "Opzionale: Filtra per orario specifico all'interno dell'intervallo di date"
   }
 }

@@ -7,26 +7,42 @@ interface AdvancedFilterProps {
   products: Product[];
   onFilterChange: (filters: any) => void;
   initialFilters?: any;
+  showTimeFilters?: boolean;
 }
 
 export const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
   categories,
   products,
   onFilterChange,
-  initialFilters = {}
+  initialFilters = {},
+  showTimeFilters = false
 }) => {
   const { t } = useTranslation('admin');
   const [startDate, setStartDate] = useState<string>(initialFilters.startDate || '');
   const [endDate, setEndDate] = useState<string>(initialFilters.endDate || '');
+  const [startTime, setStartTime] = useState<string>(initialFilters.startTime || '');
+  const [endTime, setEndTime] = useState<string>(initialFilters.endTime || '');
   const [selectedProductId, setSelectedProductId] = useState<number | ''>(initialFilters.productId || '');
   const [selectedCategoryId, setSelectedCategoryId] = useState<number | ''>(initialFilters.categoryId || '');
   const [sortBy, setSortBy] = useState<'revenue' | 'quantity' | 'name'>(initialFilters.sortBy || 'revenue');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>(initialFilters.sortOrder || 'desc');
 
+  // Effect to clear time values when corresponding date values are cleared
+  useEffect(() => {
+    if (!startDate && startTime) {
+      setStartTime('');
+    }
+    if (!endDate && endTime) {
+      setEndTime('');
+    }
+  }, [startDate, endDate]);
+
   useEffect(() => {
     const filters = {
       startDate: startDate || undefined,
       endDate: endDate || undefined,
+      startTime: (startTime && startDate) ? `${startDate}T${startTime}` : undefined,
+      endTime: (endTime && endDate) ? `${endDate}T${endTime}` : undefined,
       productId: selectedProductId || undefined,
       categoryId: selectedCategoryId || undefined,
       sortBy,
@@ -34,7 +50,7 @@ export const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
     };
     
     onFilterChange(filters);
-  }, [startDate, endDate, selectedProductId, selectedCategoryId, sortBy, sortOrder]);
+  }, [startDate, endDate, startTime, endTime, selectedProductId, selectedCategoryId, sortBy, sortOrder]);
 
   const getSortByLabel = (option: string) => {
     switch (option) {
@@ -71,6 +87,40 @@ export const AdvancedFilter: React.FC<AdvancedFilterProps> = ({
             className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
           />
         </div>
+        
+        {/* Time filters - shown when showTimeFilters prop is true or when either time has a value */}
+        {(showTimeFilters || startTime || endTime) && (
+          <>
+            <div>
+              <label htmlFor="start-time" className="block text-sm font-medium text-slate-300 mb-1">{t('analytics.startTime')}</label>
+              <input
+                id="start-time"
+                data-testid="start-time-input"
+                type="time"
+                value={startTime}
+                onChange={(e) => setStartTime(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+            
+            <div>
+              <label htmlFor="end-time" className="block text-sm font-medium text-slate-300 mb-1">{t('analytics.endTime')}</label>
+              <input
+                id="end-time"
+                data-testid="end-time-input"
+                type="time"
+                value={endTime}
+                onChange={(e) => setEndTime(e.target.value)}
+                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-amber-500"
+              />
+            </div>
+          </>
+        )}
+        
+        {/* Time filter hint */}
+        {(showTimeFilters || startTime || endTime) && (
+          <p className="col-span-full text-xs text-slate-400">{t('analytics.timeFilterHint')}</p>
+        )}
         
         <div>
           <label htmlFor="category-select" className="block text-sm font-medium text-slate-300 mb-1">{t('analytics.category')}</label>

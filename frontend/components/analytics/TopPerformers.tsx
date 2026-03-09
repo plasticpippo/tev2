@@ -12,13 +12,15 @@ interface TopPerformersProps {
     products: Product[];
     categories: Category[];
     includeAllProducts?: boolean; // New prop to control whether to show all products or just top performers
+    showTimeFilters?: boolean;
 }
 
 export const TopPerformers: React.FC<TopPerformersProps> = ({
     transactions,
     products,
     categories,
-    includeAllProducts = false
+    includeAllProducts = false,
+    showTimeFilters = true
 }) => {
     const { t } = useTranslation('admin');
     const [performanceData, setPerformanceData] = useState<ProductPerformanceResult | null>(null);
@@ -142,6 +144,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
                 categories={categories}
                 products={products}
                 onFilterChange={handleFilterChange}
+                showTimeFilters={showTimeFilters}
             />
             
             {error && (

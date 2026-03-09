@@ -106,5 +106,10 @@
     "import": "Import",
     "print": "Print",
     "email": "Email"
+  },
+  "analytics": {
+    "startTime": "Start Time",
+    "endTime": "End Time",
+    "timeFilterHint": "Optional: Filter by specific time within the date range"
   }
 }
