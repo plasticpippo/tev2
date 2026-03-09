@@ -143,7 +143,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
               </button>
             </div>
         </header>
-        <div className="flex-grow flex overflow-hidden">
+        <div className="flex-grow flex overflow-y-auto">
             <nav className="w-64 bg-slate-900 p-4 space-y-1 overflow-y-auto flex-shrink-0">
                 <NavButton view="dashboard" label={t('navigation.dashboard')} isFirst/>
                 <NavButton view="analytics" label={t('navigation.analytics')}/>
@@ -164,7 +164,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
                 <div className="pt-2"></div>
                 <NavButton view="settings" label={t('navigation.settings')} isFirst/>
             </nav>
-            <main className="flex-grow p-6 bg-slate-900 flex flex-col overflow-hidden">
+            <main className="flex-grow p-6 bg-slate-900 flex flex-col overflow-y-auto">
                 {renderView()}
             </main>
         </div>
