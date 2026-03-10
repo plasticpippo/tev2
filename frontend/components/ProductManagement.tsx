@@ -72,6 +72,32 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                     ))}
                 </select>
             </div>
+            <div className="border-t border-slate-600 pt-4 mt-4">
+                <label className="block text-sm font-medium text-slate-400 mb-1">
+                    {t('products.costPrice')}
+                    <span className="text-xs text-slate-500 ml-2">({t('products.costPriceOptional')})</span>
+                </label>
+                <VKeyboardInput 
+                    k-type="numeric" 
+                    type="number" 
+                    placeholder={t('products.costPricePlaceholder')} 
+                    value={variant.costPrice ?? ''} 
+                    onChange={e => onUpdate({ ...variant, costPrice: e.target.value ? parseFloat(e.target.value) : null })}
+                    className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md"
+                    step="0.01"
+                    min="0"
+                />
+                {variant.calculatedCost !== undefined && (
+                    <p className="text-xs text-slate-500 mt-1">
+                        {t('products.calculatedFromStock')}: {formatCurrency(variant.calculatedCost)}
+                    </p>
+                )}
+                {variant.costPrice !== undefined && variant.costPrice !== null && (
+                    <p className="text-xs text-amber-400 mt-1">
+                        {t('products.manualOverrideActive')}
+                    </p>
+                )}
+            </div>
              <div>
                 <label className="flex items-center gap-2 cursor-pointer">
                     <input

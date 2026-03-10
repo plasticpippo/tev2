@@ -1,12 +1,13 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Product, ProductVariant } from '../types';
-import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
+import { validateProduct, validateProductName, validateCategoryId, validateProductVariant, validateCostPrice } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { multiplyMoney } from '../utils/money';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import i18n from '../i18n';
+import { calculateProductCosts } from '../services/costCalculationService';
 
 export const productsRouter = express.Router();
 
@@ -17,6 +18,7 @@ function formatProductVariant(variant: any) {
     productId: variant.productId,
     name: variant.name,
     price: Number(variant.price),
+    costPrice: variant.costPrice !== null ? Number(variant.costPrice) : null,
     isFavourite: variant.isFavourite,
     backgroundColor: variant.backgroundColor,
     textColor: variant.textColor,
@@ -151,6 +153,22 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     
     // If variants have stock consumption, validate stock item references
     if (variants && variants.length > 0) {
+      // Validate costPrice for each variant
+      for (let i = 0; i < variants.length; i++) {
+        const variant = variants[i];
+        const costPrice = (variant as any).costPrice;
+        
+        if (costPrice !== undefined && costPrice !== null) {
+          const costPriceError = validateCostPrice(costPrice);
+          if (costPriceError) {
+            return res.status(400).json({
+              error: i18n.t('errors:products.validationFailed'),
+              details: [`Variant ${i + 1}: ${costPriceError}`]
+            });
+          }
+        }
+      }
+      
       // Collect all stock item IDs from all variants
       const allStockItemIds: string[] = [];
       variants.forEach(v => {
@@ -189,6 +207,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
           create: variants.map(v => ({
             name: v.name,
             price: v.price,
+            costPrice: (v as any).costPrice !== undefined ? (v as any).costPrice : null,
             isFavourite: v.isFavourite || false,
             backgroundColor: v.backgroundColor,
             textColor: v.textColor,
@@ -307,6 +326,22 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           });
         }
       }
+      
+      // Validate costPrice for each variant
+      for (let i = 0; i < variants.length; i++) {
+        const variant = variants[i];
+        const costPrice = (variant as any).costPrice;
+        
+        if (costPrice !== undefined && costPrice !== null) {
+          const costPriceError = validateCostPrice(costPrice);
+          if (costPriceError) {
+            return res.status(400).json({
+              error: i18n.t('errors:products.validationFailed'),
+              details: [`Variant ${i + 1}: ${costPriceError}`]
+            });
+          }
+        }
+      }
     }
     
     // If variants are provided with stock consumption, validate stock item references
@@ -384,6 +419,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
               create: variants.map(v => ({
                 name: v.name,
                 price: v.price,
+                costPrice: (v as any).costPrice !== undefined ? (v as any).costPrice : null,
                 isFavourite: v.isFavourite || false,
                 backgroundColor: v.backgroundColor,
                 textColor: v.textColor,
@@ -461,6 +497,39 @@ productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Reque
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:products.deleteFailedInUse') });
+  }
+});
+
+// GET /api/products/:id/cost-breakdown - Get detailed cost breakdown for a product
+productsRouter.get('/:id/cost-breakdown', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const productId = Number(id);
+    
+    // Validate product ID
+    if (isNaN(productId)) {
+      return res.status(400).json({ error: i18n.t('errors:products.invalidId') });
+    }
+    
+    // Check if product exists
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      select: { id: true, name: true }
+    });
+    
+    if (!product) {
+      return res.status(404).json({ error: i18n.t('errors:products.notFound') });
+    }
+    
+    // Get cost breakdown using the service
+    const costResult = await calculateProductCosts(productId);
+    
+    res.json(costResult);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching product cost breakdown', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors:products.fetchFailed') });
   }
 });
 

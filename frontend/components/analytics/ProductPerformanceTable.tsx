@@ -11,16 +11,21 @@ interface ProductPerformance {
   totalRevenue: number;
   averagePrice: number;
   transactionCount: number;
+  totalCost?: number;
+  grossProfit?: number;
+  profitMargin?: number | null;
 }
 
 interface ProductPerformanceTableProps {
   products: ProductPerformance[];
   loading?: boolean;
+  showCostColumns?: boolean;
 }
 
 export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = ({ 
   products, 
-  loading = false 
+  loading = false,
+  showCostColumns = false
 }) => {
   const { t } = useTranslation();
 
@@ -62,6 +67,13 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.category')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.quantitySold')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.averagePrice')}</th>
+            {showCostColumns && (
+              <>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.totalCost')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.grossProfit')}</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.profitMargin')}</th>
+              </>
+            )}
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.totalRevenue')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('productPerformanceTable.transactions')}</th>
           </tr>
@@ -73,6 +85,13 @@ export const ProductPerformanceTable: React.FC<ProductPerformanceTableProps> = (
               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-400">{product.categoryName}</td>
               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{product.totalQuantity}</td>
               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{formatCurrency(product.averagePrice)}</td>
+              {showCostColumns && (
+                <>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{product.totalCost !== undefined ? formatCurrency(product.totalCost) : '-'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{product.grossProfit !== undefined ? formatCurrency(product.grossProfit) : '-'}</td>
+                  <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{product.profitMargin !== undefined && product.profitMargin !== null ? `${product.profitMargin.toFixed(1)}%` : '-'}</td>
+                </>
+              )}
               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300 font-semibold">{formatCurrency(product.totalRevenue)}</td>
               <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">{product.transactionCount}</td>
             </tr>

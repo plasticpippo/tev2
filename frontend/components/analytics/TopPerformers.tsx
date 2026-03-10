@@ -153,6 +153,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
             <ProductPerformanceTable
                 products={performanceData?.products || []}
                 loading={loading}
+                showCostColumns={true}
             />
             
             {performanceData?.metadata && (
@@ -165,10 +166,22 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
             )}
             
             {performanceData?.summary && (
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-6">
                     <div className="bg-slate-800 p-4 rounded-lg">
                         <h4 className="text-sm font-medium text-slate-400">{t('analytics.totalRevenue')}</h4>
                         <p className="text-xl font-bold text-slate-300">{formatCurrency(performanceData.summary.totalRevenue)}</p>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.totalCost')}</h4>
+                        <p className="text-xl font-bold text-slate-300">{performanceData.summary.totalCost !== undefined ? formatCurrency(performanceData.summary.totalCost) : '-'}</p>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.grossProfit')}</h4>
+                        <p className="text-xl font-bold text-green-400">{performanceData.summary.totalProfit !== undefined ? formatCurrency(performanceData.summary.totalProfit) : '-'}</p>
+                    </div>
+                    <div className="bg-slate-800 p-4 rounded-lg">
+                        <h4 className="text-sm font-medium text-slate-400">{t('analytics.profitMargin')}</h4>
+                        <p className="text-xl font-bold text-amber-400">{performanceData.summary.averageMargin !== undefined && performanceData.summary.averageMargin !== null ? `${performanceData.summary.averageMargin.toFixed(1)}%` : '-'}</p>
                     </div>
                     <div className="bg-slate-800 p-4 rounded-lg">
                         <h4 className="text-sm font-medium text-slate-400">{t('analytics.totalUnitsSold')}</h4>

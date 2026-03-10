@@ -77,7 +77,12 @@
     "errors": {
       "failedToSave": "Impossibile salvare il prodotto. Verifica i dati e riprova.",
       "failedToDelete": "Impossibile eliminare il prodotto. Il prodotto potrebbe essere in uso o referenziato altrove."
-    }
+    },
+    "costPrice": "Prezzo di Costo",
+    "costPricePlaceholder": "es., 2,50",
+    "costPriceOptional": "Override manuale",
+    "calculatedFromStock": "Calcolato dal magazzino",
+    "manualOverrideActive": "Override manuale attivo"
   },
   "categories": {
     "title": "Gestione Categorie",
@@ -153,7 +158,13 @@
     "failedToSave": "Impossibile salvare l'articolo magazzino. Verifica i dati e riprova.",
     "unknownError": "Si e verificato un errore sconosciuto.",
     "ok": "OK",
-    "confirm": "Conferma"
+    "confirm": "Conferma",
+    "costSettings": "Impostazioni Costo",
+    "costSettingsDescription": "Imposta il costo per unita e l'aliquota IVA per i calcoli dei costi.",
+    "costPerUnitLabel": "Costo",
+    "costPerUnitPlaceholder": "es., 5,00",
+    "taxRate": "Aliquota IVA",
+    "taxRateNone": "Nessuna"
   },
   "inventory": {
     "title": "Gestione Inventario",
@@ -588,6 +599,9 @@
     "topSellingCategories": "Categorie Piu Vendute",
     "loading": "Caricamento...",
     "totalRevenue": "Ricavi Totali",
+    "totalCost": "Costi Totali",
+    "grossProfit": "Profitto Lordo",
+    "profitMargin": "Margine Profitto",
     "totalUnitsSold": "Unita Vendute Totali",
     "topProduct": "Prodotto Top",
     "notApplicable": "N/D",

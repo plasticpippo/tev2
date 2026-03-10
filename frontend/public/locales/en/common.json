@@ -433,7 +433,10 @@
     "quantitySold": "Quantity Sold",
     "averagePrice": "Average Price",
     "totalRevenue": "Total Revenue",
-    "transactions": "Transactions"
+    "transactions": "Transactions",
+    "totalCost": "Total Cost",
+    "grossProfit": "Gross Profit",
+    "profitMargin": "Margin"
   },
   "managerDashboard": {
     "loadingDashboard": "Loading Dashboard...",

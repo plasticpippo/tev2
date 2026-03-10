@@ -88,7 +88,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
       case 'categories':
         return <CategoryManagement categories={categories} tills={tills} onDataUpdate={onDataUpdate} />;
       case 'stockItems':
-        return <StockItemManagement stockItems={stockItems} products={products} onDataUpdate={onDataUpdate} />;
+        return <StockItemManagement stockItems={stockItems} products={products} taxRates={taxRates} onDataUpdate={onDataUpdate} />;
       case 'inventory':
           return <InventoryManagement stockItems={stockItems} stockAdjustments={stockAdjustments} currentUser={currentUser} products={products} categories={categories} onDataUpdate={onDataUpdate} />
       case 'users':

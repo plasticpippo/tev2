@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockItem } from '../types';
-import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
+import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit, validateCostPerUnit, validateTaxRateId } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin, requireRole } from '../middleware/authorization';
@@ -13,10 +13,16 @@ export const stockItemsRouter = express.Router();
 // GET /api/stock-items - Get all stock items
 stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
-    const stockItems = await prisma.stockItem.findMany();
+    const stockItems = await prisma.stockItem.findMany({
+      include: {
+        taxRate: true
+      }
+    });
     // Parse the purchasingUnits JSON string back to array
     const stockItemsWithParsedUnits = stockItems.map(item => ({
       ...item,
+      // Convert Decimal to number for JSON serialization
+      costPerUnit: item.costPerUnit ? Number(item.costPerUnit) : null,
       purchasingUnits: safeJsonParse(item.purchasingUnits, [], { id: item.id, field: 'purchasingUnits' })
     }));
     res.json(stockItemsWithParsedUnits);
@@ -38,7 +44,10 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     }
     
     const stockItem = await prisma.stockItem.findUnique({
-      where: { id }
+      where: { id },
+      include: {
+        taxRate: true
+      }
     });
     
     if (!stockItem) {
@@ -48,6 +57,8 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     // Parse the purchasingUnits JSON string back to array
     const stockItemWithParsedUnits = {
       ...stockItem,
+      // Convert Decimal to number for JSON serialization
+      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null,
       purchasingUnits: safeJsonParse(stockItem.purchasingUnits, [], { id: stockItem.id, field: 'purchasingUnits' })
     };
     
@@ -61,12 +72,28 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
 // POST /api/stock-items - Create a new stock item
 stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number };
     
     // Validate stock item data
     const validation = validateStockItem({ name, quantity, baseUnit, purchasingUnits: purchasingUnits || [] });
     if (!validation.isValid) {
       return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: validation.errors });
+    }
+    
+    // Validate costPerUnit if provided
+    if (costPerUnit !== undefined && costPerUnit !== null) {
+      const costError = validateCostPerUnit(costPerUnit);
+      if (costError) {
+        return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: [costError] });
+      }
+    }
+    
+    // Validate taxRateId if provided
+    if (taxRateId !== undefined && taxRateId !== null) {
+      const taxRateError = await validateTaxRateId(taxRateId);
+      if (taxRateError) {
+        return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: [taxRateError] });
+      }
     }
     
     const stockItem = await prisma.stockItem.create({
@@ -75,11 +102,22 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
         quantity,
         type,
         baseUnit: baseUnit || 'unit',
-        ...(purchasingUnits !== undefined && purchasingUnits !== null && { purchasingUnits: JSON.stringify(purchasingUnits) })
+        ...(purchasingUnits !== undefined && purchasingUnits !== null && { purchasingUnits: JSON.stringify(purchasingUnits) }),
+        ...(costPerUnit !== undefined && costPerUnit !== null && { costPerUnit }),
+        ...(taxRateId !== undefined && taxRateId !== null && { taxRateId })
+      },
+      include: {
+        taxRate: true
       }
     });
     
-    res.status(201).json(stockItem);
+    // Convert Decimal to number for JSON serialization
+    const response = {
+      ...stockItem,
+      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+    };
+    
+    res.status(201).json(response);
   } catch (error) {
     logError('Error creating stock item:', { error });
     res.status(500).json({ error: i18n.t('errors:stockItems.createFailed') });
@@ -221,10 +259,10 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
     }
     
-    const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
+    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number };
     
     // Validate stock item data if any field is provided
-    if (name !== undefined || quantity !== undefined || baseUnit !== undefined || purchasingUnits !== undefined) {
+    if (name !== undefined || quantity !== undefined || baseUnit !== undefined || purchasingUnits !== undefined || costPerUnit !== undefined || taxRateId !== undefined) {
       const stockItemToUpdate = {
         name: name !== undefined ? name : '',
         quantity: quantity !== undefined ? quantity : 0,
@@ -260,6 +298,18 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
         }
       }
       
+      // Validate costPerUnit if provided
+      if (costPerUnit !== undefined && costPerUnit !== null) {
+        const costError = validateCostPerUnit(costPerUnit);
+        if (costError) errors.push(costError);
+      }
+      
+      // Validate taxRateId if provided
+      if (taxRateId !== undefined && taxRateId !== null) {
+        const taxRateError = await validateTaxRateId(taxRateId);
+        if (taxRateError) errors.push(taxRateError);
+      }
+      
       if (errors.length > 0) {
         return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: errors });
       }
@@ -274,26 +324,48 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     if (purchasingUnits !== undefined && purchasingUnits !== null) {
       updateData.purchasingUnits = JSON.stringify(purchasingUnits);
     }
+    if (costPerUnit !== undefined) {
+      // Allow setting to null to clear the value, or to a positive number
+      updateData.costPerUnit = costPerUnit;
+    }
+    if (taxRateId !== undefined) {
+      // Allow setting to null to clear the value, or to a valid tax rate ID
+      updateData.taxRateId = taxRateId;
+    }
     
     // If updateData is empty, return early to avoid Prisma error
     if (Object.keys(updateData).length === 0) {
       const stockItem = await prisma.stockItem.findUnique({
-        where: { id }
+        where: { id },
+        include: {
+          taxRate: true
+        }
       });
       
       if (!stockItem) {
         return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
       }
       
-      return res.json(stockItem);
+      // Convert Decimal to number for JSON serialization
+      return res.json({
+        ...stockItem,
+        costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+      });
     }
     
     const stockItem = await prisma.stockItem.update({
       where: { id },
-      data: updateData
+      data: updateData,
+      include: {
+        taxRate: true
+      }
     });
     
-    res.json(stockItem);
+    // Convert Decimal to number for JSON serialization
+    res.json({
+      ...stockItem,
+      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+    });
   } catch (error) {
     logError('Error updating stock item:', { error });
     res.status(500).json({ error: i18n.t('errors:stockItems.updateFailed') });

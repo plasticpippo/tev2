@@ -19,7 +19,11 @@ export interface ProductVariant {
       quantity: number;
   }[];
   backgroundColor: string;
-  textColor: string; 
+  textColor: string;
+  taxRateId?: number | null;
+  taxRate?: TaxRate | null;
+  costPrice?: number | null;
+  calculatedCost?: number;
 }
 
 export interface Product {
@@ -94,6 +98,9 @@ export interface StockItem {
     type: 'Ingredient' | 'Sellable Good';
     baseUnit: string;
     purchasingUnits: PurchasingUnit[];
+    costPerUnit?: number | null;
+    taxRateId?: number | null;
+    taxRate?: TaxRate;
 }
 
 export interface StockAdjustment {
@@ -197,11 +204,11 @@ export interface ConsumptionReportResponse {
 export interface TaxRate {
   id: number;
   name: string;
-  rate: number;  // Frontend expects number
-  ratePercent: string;
-  description: string | null;
+  rate: number;
+  ratePercent?: string;
+  description?: string | null;
   isDefault: boolean;
-  isActive: boolean;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }

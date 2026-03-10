@@ -433,7 +433,10 @@
     "quantitySold": "Quantita Venduta",
     "averagePrice": "Prezzo Medio",
     "totalRevenue": "Ricavo Totale",
-    "transactions": "Transazioni"
+    "transactions": "Transazioni",
+    "totalCost": "Costo Totale",
+    "grossProfit": "Profitto Lordo",
+    "profitMargin": "Margine"
   },
   "managerDashboard": {
     "loadingDashboard": "Caricamento Dashboard...",

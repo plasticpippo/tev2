@@ -6,7 +6,9 @@
 
 ### Config is:
 
-- postgres on port 5432 in a docker container
+- postgres on port 5432 in a docker container called bar_pos_backend_db
+- backend runs in a container called bar_pos_backend
+- frontend runs in a container called bar_pos_frontend
 check .env file for username and password and other important details
 
 - app credentials
@@ -39,4 +41,4 @@ NO Workarounds! NO shortcuts! ONLY proper coding!
 
 ### ALL documentation must be located at ./docs
 
-### do not rush! always make sure you are editing things right. the goal is here is quality and not speed
+### do not rush! always make sure you are editing things right. the goal is here is *quality* and not *speed*

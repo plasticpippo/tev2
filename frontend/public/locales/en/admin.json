@@ -77,7 +77,12 @@
     "errors": {
       "failedToSave": "Failed to save product. Please check your data and try again.",
       "failedToDelete": "Failed to delete product. The product may be in use or referenced elsewhere."
-    }
+    },
+    "costPrice": "Cost Price",
+    "costPricePlaceholder": "e.g., 2.50",
+    "costPriceOptional": "Manual override",
+    "calculatedFromStock": "Calculated from stock",
+    "manualOverrideActive": "Manual override active"
   },
   "categories": {
     "title": "Category Management",
@@ -153,7 +158,13 @@
     "failedToSave": "Failed to save stock item. Please check your data and try again.",
     "unknownError": "An unknown error occurred.",
     "ok": "OK",
-    "confirm": "Confirm"
+    "confirm": "Confirm",
+    "costSettings": "Cost Settings",
+    "costSettingsDescription": "Set the cost per unit and tax rate for cost calculations.",
+    "costPerUnitLabel": "Cost",
+    "costPerUnitPlaceholder": "e.g., 5.00",
+    "taxRate": "Tax Rate",
+    "taxRateNone": "None"
   },
   "inventory": {
     "title": "Inventory Management",
@@ -588,6 +599,9 @@
     "topSellingCategories": "Top Selling Categories",
     "loading": "Loading...",
     "totalRevenue": "Total Revenue",
+    "totalCost": "Total Cost",
+    "grossProfit": "Gross Profit",
+    "profitMargin": "Profit Margin",
     "totalUnitsSold": "Total Units Sold",
     "topProduct": "Top Product",
     "notApplicable": "N/A",

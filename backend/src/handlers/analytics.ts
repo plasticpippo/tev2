@@ -2,6 +2,7 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { validateAnalyticsParams } from '../utils/validation';
 import { aggregateProductPerformance, aggregateHourlySales, compareHourlySales } from '../services/analyticsService';
+import { getProductCostAnalytics } from '../services/costCalculationService';
 import { logError } from '../utils/logger';
 import i18n from '../i18n';
 import { authenticateToken } from '../middleware/auth';
@@ -130,5 +131,58 @@ analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Req
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors.analytics.compare.fetchFailed') });
+  }
+});
+
+// ============================================================================
+// PRODUCT COST ANALYTICS ENDPOINTS
+// ============================================================================
+
+// GET /api/analytics/product-costs - Get cost and profit analytics for products
+analyticsRouter.get('/product-costs', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate, categoryId, sortBy, sortOrder } = req.query;
+    
+    // Parse and validate parameters
+    const params = {
+      startDate: startDate as string | undefined,
+      endDate: endDate as string | undefined,
+      categoryId: categoryId ? Number(categoryId) : undefined,
+      sortBy: (sortBy as 'cost' | 'revenue' | 'profit' | 'margin') || 'profit',
+      sortOrder: (sortOrder as 'asc' | 'desc') || 'desc'
+    };
+    
+    // Validate sortBy
+    if (params.sortBy && !['cost', 'revenue', 'profit', 'margin'].includes(params.sortBy)) {
+      res.status(400).json({ error: 'Invalid sortBy parameter. Use: cost, revenue, profit, or margin' });
+      return;
+    }
+    
+    // Validate sortOrder
+    if (params.sortOrder && !['asc', 'desc'].includes(params.sortOrder)) {
+      res.status(400).json({ error: 'Invalid sortOrder parameter. Use: asc or desc' });
+      return;
+    }
+    
+    // Validate date format if provided
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (params.startDate && !dateRegex.test(params.startDate)) {
+      res.status(400).json({ error: 'Invalid startDate format. Use YYYY-MM-DD' });
+      return;
+    }
+    if (params.endDate && !dateRegex.test(params.endDate)) {
+      res.status(400).json({ error: 'Invalid endDate format. Use YYYY-MM-DD' });
+      return;
+    }
+    
+    // Get analytics using the service
+    const result = await getProductCostAnalytics(params);
+    
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching product cost analytics', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors.analytics.productCosts.fetchFailed') });
   }
 });

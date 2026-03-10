@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
-import type { StockItem, PurchasingUnit, Product } from '../shared/types';
+import type { StockItem, PurchasingUnit, Product, TaxRate } from '../shared/types';
 import * as inventoryApi from '../services/inventoryService';
 import * as productApi from '../services/productService';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
 import { v4 as uuidv4 } from 'uuid';
+import { getTaxRateLabel } from '../utils/taxRateUtils';
+import { formatCurrency } from '../utils/formatting';
 
 interface StockItemModalProps {
   item?: StockItem;
   onClose: () => void;
   onSave: () => void;
   products: Product[];
+  taxRates?: TaxRate[];
 }
 
-const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, products }) => {
+const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, products, taxRates = [] }) => {
   const { t } = useTranslation('admin');
   const [name, setName] = useState(item?.name || '');
   const [type, setType] = useState<'Ingredient' | 'Sellable Good'>(item?.type || 'Sellable Good');
   const [baseUnit, setBaseUnit] = useState(item?.baseUnit || 'pcs');
   const [quantity, setQuantity] = useState(item?.quantity || 0);
   const [purchasingUnits, setPurchasingUnits] = useState<PurchasingUnit[]>(item?.purchasingUnits || []);
+  const [costPerUnit, setCostPerUnit] = useState<number | null>(item?.costPerUnit ?? null);
+  const [taxRateId, setTaxRateId] = useState<number | null>(item?.taxRateId ?? null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
 
@@ -92,7 +97,9 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           type,
           baseUnit,
           quantity: item?.id ? item.quantity : quantity,
-          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.name.trim() && pu.multiplier > 0)
+          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.name.trim() && pu.multiplier > 0),
+          costPerUnit,
+          taxRateId
       };
       await inventoryApi.saveStockItem(itemData);
       onSave();
@@ -226,6 +233,42 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
               <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">{t('stockItems.addPurchasingUnit')}</button>
           </div>
 
+          <div className="border-t border-slate-700 pt-4">
+              <h4 className="text-lg font-semibold text-slate-300 mb-2">{t('stockItems.costSettings')}</h4>
+              <p className="text-xs text-slate-500 mb-3">{t('stockItems.costSettingsDescription')}</p>
+              <div className="grid grid-cols-2 gap-4">
+                  <div>
+                      <label className="block text-sm text-slate-400">{t('stockItems.costPerUnit')}</label>
+                      <VKeyboardInput
+                        k-type="numeric"
+                        type="number"
+                        value={costPerUnit === null ? '' : costPerUnit}
+                        onChange={e => {
+                          const value = e.target.value ? parseFloat(e.target.value) : null;
+                          setCostPerUnit(value);
+                        }}
+                        placeholder={t('stockItems.costPerUnitPlaceholder')}
+                        className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+                        step="0.01"
+                        min="0"
+                      />
+                  </div>
+                  <div>
+                      <label className="block text-sm text-slate-400">{t('stockItems.taxRate')}</label>
+                      <select
+                          value={taxRateId || ''}
+                          onChange={e => setTaxRateId(e.target.value ? Number(e.target.value) : null)}
+                          className="w-full mt-1 p-3 bg-slate-800 border border-slate-700 rounded-md"
+                      >
+                          <option value="">{t('stockItems.taxRateNone')}</option>
+                          {taxRates.map(tr => (
+                              <option key={tr.id} value={tr.id}>{getTaxRateLabel(tr)}</option>
+                          ))}
+                      </select>
+                  </div>
+              </div>
+          </div>
+
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
           <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">{t('stockItems.cancel')}</button>
@@ -250,10 +293,11 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
 interface StockItemManagementProps {
     stockItems: StockItem[];
     products: Product[];
+    taxRates?: TaxRate[];
     onDataUpdate: () => void;
 }
 
-export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockItems, products, onDataUpdate }) => {
+export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockItems, products, taxRates = [], onDataUpdate }) => {
     const { t } = useTranslation('admin');
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<StockItem | undefined>(undefined);
@@ -306,6 +350,9 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                         <div>
                             <p className="font-semibold">{item.name}</p>
                             <p className="text-sm text-slate-400">{item.type} ({t('stockItems.trackedIn', { unit: item.baseUnit })})</p>
+                            {item.costPerUnit !== undefined && item.costPerUnit !== null && (
+                                <p className="text-xs text-green-400">{t('stockItems.costPerUnitLabel')}: {formatCurrency(item.costPerUnit)}</p>
+                            )}
                         </div>
                         <div className="flex items-center gap-2">
                             <span className="text-lg font-bold text-amber-400">{t('stockItems.inStockValue', { quantity: item.quantity, unit: item.baseUnit })}</span>
@@ -344,6 +391,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                     onClose={() => { setIsModalOpen(false); setEditingItem(undefined); }}
                     onSave={handleSave}
                     products={products}
+                    taxRates={taxRates}
                 />
             )}
             <ConfirmationModal

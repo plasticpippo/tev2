@@ -12,8 +12,10 @@ export interface TaxRate {
   id: number;
   name: string;
   rate: number; // Decimal value (0-1), e.g., 0.19 for 19%
+  ratePercent?: string;
   description?: string | null;
   isDefault: boolean;
+  isActive?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -45,6 +47,8 @@ export interface ProductVariant {
   textColor: string;
   taxRateId?: number | null;
   taxRate?: TaxRate | null;
+  costPrice?: number | null;
+  calculatedCost?: number;
 }
 
 export interface Product {
@@ -122,6 +126,9 @@ export interface StockItem {
     type: 'Ingredient' | 'Sellable Good';
     baseUnit: string;
     purchasingUnits: PurchasingUnit[];
+    costPerUnit?: number | null;
+    taxRateId?: number | null;
+    taxRate?: TaxRate;
 }
 
 export interface StockAdjustment {

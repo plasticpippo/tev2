@@ -1,5 +1,6 @@
 import type { Product, ProductVariant } from '../types';
 import type { Request } from 'express';
+import { prisma } from '../prisma';
 
 /**
  * Translation helper type for i18n
@@ -90,7 +91,15 @@ export const validateProductVariant = (variant: ProductVariant, t?: TranslateFun
   if (priceError) {
     return priceError;
   }
-  
+
+  // Validate costPrice if provided
+  if (variant.costPrice !== undefined && variant.costPrice !== null) {
+    const costPriceError = validateCostPrice(variant.costPrice, t);
+    if (costPriceError) {
+      return costPriceError;
+    }
+  }
+
   return null;
 };
 
@@ -294,6 +303,82 @@ export const validateStockItem = (stockItem: any, t?: TranslateFunction): { isVa
     isValid: errors.length === 0,
     errors
   };
+};
+
+// Cost per unit validation
+const validateCostPerUnitValue = (costPerUnit: number, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
+  if (typeof costPerUnit !== 'number') {
+    return translate('errors:stockItems.invalidCostPerUnit');
+  }
+  
+  if (costPerUnit < 0) {
+    return translate('errors:stockItems.invalidCostPerUnit');
+  }
+  
+  if (costPerUnit > 1000000) {
+    return translate('errors:stockItems.invalidCostPerUnit');
+  }
+  
+  return null;
+};
+
+export const validateCostPerUnit = (costPerUnit: number, t?: TranslateFunction): string | null => {
+  return validateCostPerUnitValue(costPerUnit, t);
+};
+
+// Cost price validation for product variants
+const validateCostPriceValue = (costPrice: number, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
+  if (typeof costPrice !== 'number') {
+    return translate('errors:products.invalidCostPrice');
+  }
+  
+  if (costPrice < 0) {
+    return translate('errors:products.invalidCostPrice');
+  }
+  
+  if (costPrice > 1000000) {
+    return translate('errors:products.invalidCostPrice');
+  }
+  
+  return null;
+};
+
+export const validateCostPrice = (costPrice: number, t?: TranslateFunction): string | null => {
+  return validateCostPriceValue(costPrice, t);
+};
+
+// Tax rate ID validation (async - checks if tax rate exists)
+export const validateTaxRateId = async (taxRateId: number, t?: TranslateFunction): Promise<string | null> => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
+  if (typeof taxRateId !== 'number') {
+    return translate('errors:stockItems.invalidTaxRateId');
+  }
+  
+  if (taxRateId <= 0) {
+    return translate('errors:stockItems.invalidTaxRateId');
+  }
+  
+  try {
+    // Check if tax rate exists
+    const taxRate = await prisma.taxRate.findUnique({
+      where: { id: taxRateId }
+    });
+    
+    if (!taxRate) {
+      return translate('errors:stockItems.taxRateNotFound');
+    }
+    
+    return null;
+  } catch (error) {
+    // Log error but don't expose details to client
+    console.error('Error validating tax rate ID:', error);
+    return translate('errors:common.internalError');
+  }
 };
 
 // Analytics validation functions

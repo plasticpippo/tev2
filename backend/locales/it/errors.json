@@ -83,7 +83,8 @@
     "invalidStockItemReferences": "Riferimenti ad articoli magazzino non validi: {{ids}}",
     "variantError": "Variante {{index}}: {{error}}",
     "invalidTaxRateReferences": "ID aliquote IVA non validi: {{ids}}",
-    "cannotUseInactiveTaxRate": "Impossibile utilizzare aliquote IVA inattive"
+    "cannotUseInactiveTaxRate": "Impossibile utilizzare aliquote IVA inattive",
+    "invalidCostPrice": "Il prezzo di costo deve essere un numero non negativo"
   },
   "categories": {
     "notFound": "Categoria non trovata",
@@ -131,7 +132,10 @@
     "fetchOrphanedFailed": "Impossibile recuperare i riferimenti ai consumi magazzino orfani. Riprova piu tardi.",
     "cleanupOrphanedFailed": "Impossibile pulire i riferimenti ai consumi magazzino orfani. Riprova piu tardi.",
     "validateIntegrityFailed": "Impossibile validare l'integrita dei dati. Riprova piu tardi.",
-    "purchasingUnitError": "Unita di acquisto {{index}}: {{error}}"
+    "purchasingUnitError": "Unita di acquisto {{index}}: {{error}}",
+    "invalidCostPerUnit": "Il costo per unita deve essere un numero non negativo",
+    "invalidTaxRateId": "ID aliquota IVA non valido",
+    "taxRateNotFound": "Aliquota IVA non trovata"
   },
   "users": {
     "notFound": "Utente non trovato",
@@ -371,6 +375,9 @@
     "compare": {
       "datesRequired": "Entrambi i parametri date1 e date2 sono obbligatori",
       "fetchFailed": "Impossibile recuperare i dati di confronto. Riprova piu tardi."
+    },
+    "productCosts": {
+      "fetchFailed": "Impossibile recuperare i dati sui costi dei prodotti. Riprova piu tardi."
     }
   },
   "rateLimiter": {

@@ -32,6 +32,7 @@ export interface ProductVariant {
   productId: number;
   name: string;
   price: number;
+  costPrice?: number | null;
   isFavourite?: boolean;
   stockConsumption: {
     stockItemId: string;
@@ -39,6 +40,7 @@ export interface ProductVariant {
   }[];
   backgroundColor: string;
   textColor: string;
+  taxRateId?: number | null;
 }
 
 export interface Product {
@@ -135,6 +137,8 @@ export interface StockItem {
     type: 'Ingredient' | 'Sellable Good';
     baseUnit: string;
     purchasingUnits: PurchasingUnit[];
+    costPerUnit?: number | null;
+    taxRateId?: number | null;
 }
 
 export interface StockAdjustment {

@@ -83,7 +83,8 @@
     "invalidStockItemReferences": "Invalid stock item references: {{ids}}",
     "variantError": "Variant {{index}}: {{error}}",
     "invalidTaxRateReferences": "Invalid tax rate IDs: {{ids}}",
-    "cannotUseInactiveTaxRate": "Cannot use inactive tax rates"
+    "cannotUseInactiveTaxRate": "Cannot use inactive tax rates",
+    "invalidCostPrice": "Cost price must be a non-negative number"
   },
   "categories": {
     "notFound": "Category not found",
@@ -131,7 +132,10 @@
     "fetchOrphanedFailed": "Failed to fetch orphaned stock consumption references. Please try again later.",
     "cleanupOrphanedFailed": "Failed to clean up orphaned stock consumption references. Please try again later.",
     "validateIntegrityFailed": "Failed to validate data integrity. Please try again later.",
-    "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}"
+    "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}",
+    "invalidCostPerUnit": "Cost per unit must be a non-negative number",
+    "invalidTaxRateId": "Invalid tax rate ID",
+    "taxRateNotFound": "Tax rate not found"
   },
   "users": {
     "notFound": "User not found",
@@ -371,6 +375,9 @@
     "compare": {
       "datesRequired": "Both date1 and date2 parameters are required",
       "fetchFailed": "Failed to fetch comparison data. Please try again later."
+    },
+    "productCosts": {
+      "fetchFailed": "Failed to fetch product cost data. Please try again later."
     }
   },
   "rateLimiter": {
