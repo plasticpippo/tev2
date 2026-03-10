@@ -175,19 +175,21 @@ model Till {
 }
 
 model StockItem {
-  name              String
-  quantity          Int
-  type              String
-  baseUnit          String
-  purchasingUnits   Json?
-  costPerUnit       Decimal?            @db.Decimal(10, 4)
-  taxRateId         Int?
-  id                String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
-  stockAdjustments  StockAdjustment[]
-  stockConsumptions StockConsumption[]
-  taxRate           TaxRate?           @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
+  name                   String
+  quantity               Int
+  type                   String
+  baseUnit               String
+  purchasingUnits        Json?
+  costPerUnit            Decimal?            @db.Decimal(10, 4)
+  taxRateId              Int?
+  activePurchasingUnitId String?             @map("active_purchasing_unit_id")
+  id                     String             @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  stockAdjustments       StockAdjustment[]
+  stockConsumptions      StockConsumption[]
+  taxRate                TaxRate?           @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
 
   @@index([taxRateId])
+  @@index([activePurchasingUnitId])
   @@map("stock_items")
 }
 

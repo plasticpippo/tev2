@@ -135,7 +135,9 @@
     "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}",
     "invalidCostPerUnit": "Cost per unit must be a non-negative number",
     "invalidTaxRateId": "Invalid tax rate ID",
-    "taxRateNotFound": "Tax rate not found"
+    "taxRateNotFound": "Tax rate not found",
+    "activeUnitWithoutUnits": "Cannot set active purchasing unit when no units exist",
+    "invalidActiveUnit": "Active purchasing unit ID does not exist in purchasing units"
   },
   "users": {
     "notFound": "User not found",

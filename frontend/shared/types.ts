@@ -87,8 +87,11 @@ export interface Till {
 
 export interface PurchasingUnit {
     id: string;
-    name: string; 
-    multiplier: number; 
+    name: string;
+    multiplier: number;
+    costPerUnit: number;
+    isDefault: boolean;
+    minOrderQuantity?: number;
 }
 
 export interface StockItem {
@@ -101,6 +104,7 @@ export interface StockItem {
     costPerUnit?: number | null;
     taxRateId?: number | null;
     taxRate?: TaxRate;
+    activePurchasingUnitId?: string | null;
 }
 
 export interface StockAdjustment {
@@ -199,6 +203,17 @@ export interface ConsumptionReportTotal {
 export interface ConsumptionReportResponse {
     details: ConsumptionReportItem[];
     totals: ConsumptionReportTotal[];
+}
+
+export interface CostBreakdownItem {
+    stockItemName: string;
+    recipeQuantity: number;
+    recipeUnit: string;
+    purchasingUnitName: string;
+    costPerBaseUnit: number;
+    baseUnit: string;
+    taxRate: number;
+    subtotal: number;
 }
 
 export interface TaxRate {

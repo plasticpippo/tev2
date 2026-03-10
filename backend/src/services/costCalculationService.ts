@@ -1,13 +1,29 @@
 import { prisma } from '../prisma';
 import { roundMoney, addMoney, subtractMoney } from '../utils/money';
+import { logInfo, logWarn, logError } from '../utils/logger';
+
+/**
+ * Purchasing unit type definition
+ */
+interface PurchasingUnit {
+  id: string;
+  name: string;
+  multiplier: number;
+  costPerUnit: number;
+  isDefault: boolean;
+  minOrderQuantity?: number;
+}
 
 /**
  * Cost breakdown item for a single stock consumption
  */
 export interface CostBreakdownItem {
   stockItemName: string;
-  quantity: number;
-  costPerUnit: number;
+  recipeQuantity: number;
+  recipeUnit: string;
+  purchasingUnitName: string;
+  costPerBaseUnit: number;
+  baseUnit: string;
   taxRate: number;
   subtotal: number;
 }
@@ -51,6 +67,99 @@ export interface ProfitCalculation {
   netEarnings: number;
 }
 
+/**
+ * Get cost per base unit from purchasing unit
+ * Cost Per Base Unit = purchasingUnit.costPerUnit / purchasingUnit.multiplier
+ * Example: Bottle €20.00 / 750ml = €0.02667 per ml
+ */
+function getCostPerBaseUnit(purchasingUnit: PurchasingUnit): number {
+  if (!purchasingUnit || purchasingUnit.multiplier <= 0) {
+    return 0;
+  }
+  return (purchasingUnit.costPerUnit ?? 0) / purchasingUnit.multiplier;
+}
+
+/**
+ * Get the active purchasing unit from stock item
+ * Priority: activePurchasingUnitId > isDefault > first available
+ */
+function getActivePurchasingUnit(stockItem: any): PurchasingUnit | null {
+  // Handle JSON field from Prisma - it might be an object or null
+  let units: PurchasingUnit[] = [];
+  
+  if (stockItem.purchasingUnits) {
+    // If it's already an array, use it directly
+    if (Array.isArray(stockItem.purchasingUnits)) {
+      units = stockItem.purchasingUnits as PurchasingUnit[];
+    } else {
+      // If it's a JSON object, try to parse it
+      try {
+        const parsed = stockItem.purchasingUnits;
+        if (Array.isArray(parsed)) {
+          units = parsed as PurchasingUnit[];
+        }
+      } catch (e) {
+        // Ignore parsing errors
+      }
+    }
+  }
+  
+  if (!units || units.length === 0) {
+    return null;
+  }
+
+  // 1. Find by activePurchasingUnitId
+  if (stockItem.activePurchasingUnitId) {
+    const active = units.find((u: PurchasingUnit) => u.id === stockItem.activePurchasingUnitId);
+    if (active) return active;
+  }
+
+  // 2. Find default
+  const defaultUnit = units.find((u: PurchasingUnit) => u.isDefault);
+  if (defaultUnit) return defaultUnit;
+
+  // 3. First available
+  return units[0];
+}
+
+/**
+ * Calculate cost for a single stock consumption with UOM support
+ */
+function calculateConsumptionCost(
+  consumption: any,
+  stockItem: any,
+  taxRate: number
+): CostBreakdownItem {
+  const quantity = consumption.quantity;
+  const baseUnit = stockItem.baseUnit || 'units';
+
+  let costPerBaseUnit = 0;
+  let purchasingUnitName = 'Legacy';
+
+  // Try to get from purchasing units (UOM system)
+  const activeUnit = getActivePurchasingUnit(stockItem);
+  if (activeUnit && activeUnit.costPerUnit !== undefined && activeUnit.costPerUnit !== null) {
+    costPerBaseUnit = getCostPerBaseUnit(activeUnit);
+    purchasingUnitName = activeUnit.name;
+  } else {
+    // No valid UOM - cost is 0 (require proper UOM configuration)
+    purchasingUnitName = 'NO_UOM';
+  }
+
+  // Formula: quantity × costPerBaseUnit × (1 + taxRate)
+  const subtotal = roundMoney(quantity * costPerBaseUnit * (1 + taxRate));
+
+  return {
+    stockItemName: stockItem.name,
+    recipeQuantity: quantity,
+    recipeUnit: baseUnit,
+    purchasingUnitName,
+    costPerBaseUnit,
+    baseUnit,
+    taxRate,
+    subtotal
+  };
+}
 /**
  * Calculate profit metrics for a variant
  * @param variantPrice - The selling price (including or excluding VAT based on settings)
@@ -158,28 +267,24 @@ export async function calculateVariantCost(
     };
   }
 
-  // Calculate cost from stock consumption
+  // Calculate cost from stock consumption with UOM
   const costBreakdown: CostBreakdownItem[] = [];
   let totalCost = 0;
 
   for (const consumption of variant.stockConsumption) {
-    const costPerUnit = Number(consumption.stockItem.costPerUnit) || 0;
-    const taxRate = consumption.stockItem.taxRate
-      ? Number(consumption.stockItem.taxRate.rate)
+    const stockItem = consumption.stockItem;
+    const itemTaxRate = stockItem.taxRate
+      ? Number(stockItem.taxRate.rate)
       : 0;
-    const quantity = consumption.quantity;
 
-    // Formula: costPerUnit × quantity × (1 + taxRate)
-    const subtotal = roundMoney(costPerUnit * quantity * (1 + taxRate));
-    totalCost = addMoney(totalCost, subtotal);
+    const breakdown = calculateConsumptionCost(
+      consumption,
+      stockItem,
+      itemTaxRate
+    );
 
-    costBreakdown.push({
-      stockItemName: consumption.stockItem.name,
-      quantity,
-      costPerUnit,
-      taxRate,
-      subtotal
-    });
+    costBreakdown.push(breakdown);
+    totalCost = addMoney(totalCost, breakdown.subtotal);
   }
 
   const calculatedCost = roundMoney(totalCost);
@@ -264,28 +369,24 @@ export async function calculateProductCosts(
       continue;
     }
 
-    // Calculate from stock consumption
+    // Calculate from stock consumption with UOM
     const costBreakdown: CostBreakdownItem[] = [];
     let totalCost = 0;
 
     for (const consumption of variant.stockConsumption) {
-      const costPerUnit = Number(consumption.stockItem.costPerUnit) || 0;
-      const taxRate = consumption.stockItem.taxRate
-        ? Number(consumption.stockItem.taxRate.rate)
+      const stockItem = consumption.stockItem;
+      const itemTaxRate = stockItem.taxRate
+        ? Number(stockItem.taxRate.rate)
         : 0;
-      const quantity = consumption.quantity;
 
-      // Formula: costPerUnit × quantity × (1 + taxRate)
-      const subtotal = roundMoney(costPerUnit * quantity * (1 + taxRate));
-      totalCost = addMoney(totalCost, subtotal);
+      const breakdown = calculateConsumptionCost(
+        consumption,
+        stockItem,
+        itemTaxRate
+      );
 
-      costBreakdown.push({
-        stockItemName: consumption.stockItem.name,
-        quantity,
-        costPerUnit,
-        taxRate,
-        subtotal
-      });
+      costBreakdown.push(breakdown);
+      totalCost = addMoney(totalCost, breakdown.subtotal);
     }
 
     const calculatedCost = roundMoney(totalCost);
@@ -408,7 +509,8 @@ export async function getProductCostAnalytics(
   }
 
   // Get all products with their variants and categories
-  const products = await prisma.product.findMany({
+  // Using any type to bypass Prisma type inference issues with includes
+  const products: any = await prisma.product.findMany({
     where: {
       ...(categoryId && { categoryId })
     },
@@ -486,15 +588,34 @@ export async function getProductCostAnalytics(
       if (variant.costPrice !== null && variant.costPrice !== undefined) {
         calculatedCost = Number(variant.costPrice) * totalSold;
       } else {
-        // Calculate from stock consumption
+        // Calculate from stock consumption using UOM system
         for (const consumption of variant.stockConsumption) {
-          const costPerUnit = Number(consumption.stockItem.costPerUnit) || 0;
-          const taxRate = consumption.stockItem.taxRate
-            ? Number(consumption.stockItem.taxRate.rate)
+          const stockItem = consumption.stockItem;
+          const taxRate = stockItem.taxRate
+            ? Number(stockItem.taxRate.rate)
             : 0;
           const quantity = consumption.quantity * totalSold;
           
-          calculatedCost += costPerUnit * quantity * (1 + taxRate);
+          // Get cost per base unit using UOM system
+          // REQUIRE UOM: Must have valid purchasing unit with costPerUnit - no legacy fallback
+          let costPerBaseUnit = 0;
+          let costSource = 'none';
+          
+          // Try to get from purchasing units (UOM system)
+          const activeUnit = getActivePurchasingUnit(stockItem);
+          if (activeUnit && activeUnit.costPerUnit !== undefined && activeUnit.costPerUnit !== null) {
+            costPerBaseUnit = getCostPerBaseUnit(activeUnit);
+            costSource = `UOM:${activeUnit.name} costPerUnit=${activeUnit.costPerUnit} mult=${activeUnit.multiplier}`;
+          } else {
+            // No valid UOM - cost is 0 (require proper UOM configuration)
+            costSource = 'NO_UOM:costPerUnit is required on purchasing unit';
+            logWarn(`[COST_DEBUG] StockItem ${stockItem.name} has no valid purchasing unit with costPerUnit - cost set to 0`);
+          }
+          
+          // DEBUG: Log cost calculation details
+          logInfo(`[COST_DEBUG] StockItem: ${stockItem.name}, Source: ${costSource}, costPerBaseUnit: ${costPerBaseUnit}, quantity: ${quantity}, taxRate: ${taxRate}, subtotal: ${costPerBaseUnit * quantity * (1 + taxRate)}`);
+          
+          calculatedCost += costPerBaseUnit * quantity * (1 + taxRate);
         }
       }
 

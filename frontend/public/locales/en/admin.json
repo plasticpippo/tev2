@@ -137,8 +137,12 @@
     "purchasingUnits": "Purchasing Units",
     "purchasingUnitsDescription": "Define how you buy this item for easy stock intake (e.g., a \"Bottle\" is 750 base units of \"ml\").",
     "addPurchasingUnit": "+ Add Purchasing Unit",
+    "unitName": "Name",
     "unitNamePlaceholder": "Unit Name (e.g., Bottle)",
-    "multiplierPlaceholder": "Multiplier",
+    "multiplierPlaceholder": "Qty",
+    "costPerUnit": "Cost/Unit",
+    "costPerBase": "Cost/{{base}}",
+    "default": "Default",
     "validation": {
       "nameRequired": "Stock item name is required",
       "nameMaxLength": "Stock item name must be 255 characters or less",
@@ -146,7 +150,9 @@
       "baseUnitMaxLength": "Base unit must be 50 characters or less",
       "quantityMin": "Quantity must be 0 or greater",
       "unitNameMaxLength": "Unit name must be 50 characters or less",
-      "multiplierMin": "Multiplier must be greater than 0"
+      "multiplierMin": "Multiplier must be greater than 0",
+      "costPerUnitMin": "Cost must be 0 or greater",
+      "defaultUnitRequired": "Please select a default purchasing unit"
     },
     "saving": "Saving...",
     "save": "Save",

@@ -135,7 +135,9 @@
     "purchasingUnitError": "Unita di acquisto {{index}}: {{error}}",
     "invalidCostPerUnit": "Il costo per unita deve essere un numero non negativo",
     "invalidTaxRateId": "ID aliquota IVA non valido",
-    "taxRateNotFound": "Aliquota IVA non trovata"
+    "taxRateNotFound": "Aliquota IVA non trovata",
+    "activeUnitWithoutUnits": "Impossibile impostare unita di acquisto attiva quando non esistono unita",
+    "invalidActiveUnit": "L'ID dell'unita di acquisto attiva non esiste nelle unita di acquisto"
   },
   "users": {
     "notFound": "Utente non trovato",

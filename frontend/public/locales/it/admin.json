@@ -137,8 +137,12 @@
     "purchasingUnits": "Unita di Acquisto",
     "purchasingUnitsDescription": "Definisci come acquisti questo articolo per un facile carico magazzino (es., una \"Bottiglia\" e 750 unita base di \"ml\").",
     "addPurchasingUnit": "+ Aggiungi Unita di Acquisto",
+    "unitName": "Nome",
     "unitNamePlaceholder": "Nome Unita (es., Bottiglia)",
-    "multiplierPlaceholder": "Moltiplicatore",
+    "multiplierPlaceholder": "Qta",
+    "costPerUnit": "Costo/Uni",
+    "costPerBase": "Costo/{{base}}",
+    "default": "Predefinito",
     "validation": {
       "nameRequired": "Il nome dell'articolo magazzino e obbligatorio",
       "nameMaxLength": "Il nome dell'articolo magazzino deve essere di massimo 255 caratteri",
@@ -146,7 +150,9 @@
       "baseUnitMaxLength": "L'unita base deve essere di massimo 50 caratteri",
       "quantityMin": "La quantita deve essere 0 o superiore",
       "unitNameMaxLength": "Il nome dell'unita deve essere di massimo 50 caratteri",
-      "multiplierMin": "Il moltiplicatore deve essere maggiore di 0"
+      "multiplierMin": "Il moltiplicatore deve essere maggiore di 0",
+      "costPerUnitMin": "Il costo deve essere 0 o superiore",
+      "defaultUnitRequired": "Seleziona un'unita di acquisto predefinita"
     },
     "saving": "Salvataggio...",
     "save": "Salva",

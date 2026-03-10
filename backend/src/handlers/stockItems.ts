@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockItem } from '../types';
-import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit, validateCostPerUnit, validateTaxRateId } from '../utils/validation';
+import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit, validateCostPerUnit, validateTaxRateId, validateActivePurchasingUnitId } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin, requireRole } from '../middleware/authorization';
@@ -23,7 +23,9 @@ stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response)
       ...item,
       // Convert Decimal to number for JSON serialization
       costPerUnit: item.costPerUnit ? Number(item.costPerUnit) : null,
-      purchasingUnits: safeJsonParse(item.purchasingUnits, [], { id: item.id, field: 'purchasingUnits' })
+      purchasingUnits: safeJsonParse(item.purchasingUnits, [], { id: item.id, field: 'purchasingUnits' }),
+      // Include activePurchasingUnitId in response
+      activePurchasingUnitId: item.activePurchasingUnitId || null
     }));
     res.json(stockItemsWithParsedUnits);
   } catch (error) {
@@ -59,7 +61,9 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
       ...stockItem,
       // Convert Decimal to number for JSON serialization
       costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null,
-      purchasingUnits: safeJsonParse(stockItem.purchasingUnits, [], { id: stockItem.id, field: 'purchasingUnits' })
+      purchasingUnits: safeJsonParse(stockItem.purchasingUnits, [], { id: stockItem.id, field: 'purchasingUnits' }),
+      // Include activePurchasingUnitId in response
+      activePurchasingUnitId: stockItem.activePurchasingUnitId || null
     };
     
     res.json(stockItemWithParsedUnits);
@@ -72,7 +76,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
 // POST /api/stock-items - Create a new stock item
 stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number };
+    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId, activePurchasingUnitId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number; activePurchasingUnitId?: string | null };
     
     // Validate stock item data
     const validation = validateStockItem({ name, quantity, baseUnit, purchasingUnits: purchasingUnits || [] });
@@ -96,6 +100,14 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
       }
     }
     
+    // Validate activePurchasingUnitId if provided
+    if (activePurchasingUnitId !== undefined && activePurchasingUnitId !== null) {
+      const activeUnitError = validateActivePurchasingUnitId(activePurchasingUnitId, purchasingUnits || []);
+      if (activeUnitError) {
+        return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: [activeUnitError] });
+      }
+    }
+    
     const stockItem = await prisma.stockItem.create({
       data: {
         name,
@@ -104,7 +116,8 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
         baseUnit: baseUnit || 'unit',
         ...(purchasingUnits !== undefined && purchasingUnits !== null && { purchasingUnits: JSON.stringify(purchasingUnits) }),
         ...(costPerUnit !== undefined && costPerUnit !== null && { costPerUnit }),
-        ...(taxRateId !== undefined && taxRateId !== null && { taxRateId })
+        ...(taxRateId !== undefined && taxRateId !== null && { taxRateId }),
+        ...(activePurchasingUnitId !== undefined && { activePurchasingUnitId: activePurchasingUnitId || null })
       },
       include: {
         taxRate: true
@@ -114,7 +127,8 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     // Convert Decimal to number for JSON serialization
     const response = {
       ...stockItem,
-      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null,
+      activePurchasingUnitId: stockItem.activePurchasingUnitId || null
     };
     
     res.status(201).json(response);
@@ -259,10 +273,10 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
     }
     
-    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number };
+    const { name, quantity, type, baseUnit, purchasingUnits, costPerUnit, taxRateId, activePurchasingUnitId } = req.body as Omit<StockItem, 'id'> & { costPerUnit?: number; taxRateId?: number; activePurchasingUnitId?: string | null };
     
     // Validate stock item data if any field is provided
-    if (name !== undefined || quantity !== undefined || baseUnit !== undefined || purchasingUnits !== undefined || costPerUnit !== undefined || taxRateId !== undefined) {
+    if (name !== undefined || quantity !== undefined || baseUnit !== undefined || purchasingUnits !== undefined || costPerUnit !== undefined || taxRateId !== undefined || activePurchasingUnitId !== undefined) {
       const stockItemToUpdate = {
         name: name !== undefined ? name : '',
         quantity: quantity !== undefined ? quantity : 0,
@@ -310,6 +324,16 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
         if (taxRateError) errors.push(taxRateError);
       }
       
+      // Validate activePurchasingUnitId if provided
+      if (activePurchasingUnitId !== undefined) {
+        // Get existing purchasing units if not provided in request
+        const unitsToValidate = purchasingUnits !== undefined ? purchasingUnits : [];
+        const activeUnitError = validateActivePurchasingUnitId(activePurchasingUnitId, unitsToValidate);
+        if (activeUnitError) {
+          errors.push(activeUnitError);
+        }
+      }
+      
       if (errors.length > 0) {
         return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: errors });
       }
@@ -332,6 +356,10 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       // Allow setting to null to clear the value, or to a valid tax rate ID
       updateData.taxRateId = taxRateId;
     }
+    if (activePurchasingUnitId !== undefined) {
+      // Allow setting to null to clear the value
+      updateData.activePurchasingUnitId = activePurchasingUnitId || null;
+    }
     
     // If updateData is empty, return early to avoid Prisma error
     if (Object.keys(updateData).length === 0) {
@@ -349,7 +377,8 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       // Convert Decimal to number for JSON serialization
       return res.json({
         ...stockItem,
-        costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+        costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null,
+        activePurchasingUnitId: stockItem.activePurchasingUnitId || null
       });
     }
     
@@ -364,7 +393,8 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     // Convert Decimal to number for JSON serialization
     res.json({
       ...stockItem,
-      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null
+      costPerUnit: stockItem.costPerUnit ? Number(stockItem.costPerUnit) : null,
+      activePurchasingUnitId: stockItem.activePurchasingUnitId || null
     });
   } catch (error) {
     logError('Error updating stock item:', { error });

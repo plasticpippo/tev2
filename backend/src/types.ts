@@ -128,6 +128,9 @@ export interface PurchasingUnit {
     id: string;
     name: string;
     multiplier: number;
+    costPerUnit: number;
+    isDefault: boolean;
+    minOrderQuantity?: number;
 }
 
 export interface StockItem {
@@ -139,6 +142,7 @@ export interface StockItem {
     purchasingUnits: PurchasingUnit[];
     costPerUnit?: number | null;
     taxRateId?: number | null;
+    activePurchasingUnitId?: string | null;
 }
 
 export interface StockAdjustment {

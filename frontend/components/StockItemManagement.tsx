@@ -24,28 +24,75 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
   const [type, setType] = useState<'Ingredient' | 'Sellable Good'>(item?.type || 'Sellable Good');
   const [baseUnit, setBaseUnit] = useState(item?.baseUnit || 'pcs');
   const [quantity, setQuantity] = useState(item?.quantity || 0);
-  const [purchasingUnits, setPurchasingUnits] = useState<PurchasingUnit[]>(item?.purchasingUnits || []);
+  const [purchasingUnits, setPurchasingUnits] = useState<PurchasingUnit[]>(
+    item?.purchasingUnits?.map(pu => ({
+      ...pu,
+      costPerUnit: pu.costPerUnit ?? 0,
+      isDefault: pu.isDefault ?? false
+    })) || []
+  );
+  const [defaultUnitId, setDefaultUnitId] = useState<string | null>(
+    item?.purchasingUnits?.find(pu => pu.isDefault)?.id || 
+    (item?.purchasingUnits?.length ? item.purchasingUnits[0].id : null)
+  );
   const [costPerUnit, setCostPerUnit] = useState<number | null>(item?.costPerUnit ?? null);
   const [taxRateId, setTaxRateId] = useState<number | null>(item?.taxRateId ?? null);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
 
-  const handleAddPurchasingUnit = () => {
-    setPurchasingUnits([...purchasingUnits, { id: uuidv4(), name: '', multiplier: 1 }]);
+  // Calculate cost per base unit for display
+  const getCostPerBaseUnit = (unit: PurchasingUnit): number => {
+    if (!unit.multiplier || unit.multiplier === 0) return 0;
+    return (unit.costPerUnit || 0) / unit.multiplier;
   };
 
-  const handleUpdatePurchasingUnit = (index: number, field: keyof PurchasingUnit, value: string | number) => {
+  const handleAddPurchasingUnit = () => {
+    const newUnit: PurchasingUnit = {
+      id: uuidv4(),
+      name: '',
+      multiplier: 1,
+      costPerUnit: 0,
+      isDefault: purchasingUnits.length === 0
+    };
+    setPurchasingUnits([...purchasingUnits, newUnit]);
+    // Set as default if it's the first unit
+    if (purchasingUnits.length === 0) {
+      setDefaultUnitId(newUnit.id);
+    }
+  };
+
+  const handleUpdatePurchasingUnit = (index: number, field: keyof PurchasingUnit, value: string | number | boolean) => {
     const newUnits = [...purchasingUnits];
-    if (typeof newUnits[index][field] === 'number') {
-        newUnits[index] = { ...newUnits[index], [field]: Number(value) };
+    if (field === 'isDefault' && value === true) {
+      // If setting as default, update all units
+      setDefaultUnitId(newUnits[index].id);
+      newUnits[index] = { ...newUnits[index], isDefault: true };
+    } else if (typeof newUnits[index][field] === 'number') {
+      newUnits[index] = { ...newUnits[index], [field]: Number(value) };
     } else {
-        newUnits[index] = { ...newUnits[index], [field]: value };
+      newUnits[index] = { ...newUnits[index], [field]: value };
     }
     setPurchasingUnits(newUnits);
   };
   
   const handleRemovePurchasingUnit = (index: number) => {
-    setPurchasingUnits(purchasingUnits.filter((_, i) => i !== index));
+    const unitToRemove = purchasingUnits[index];
+    const newUnits = purchasingUnits.filter((_, i) => i !== index);
+    
+    // If we removed the default unit, set a new default
+    if (unitToRemove.id === defaultUnitId && newUnits.length > 0) {
+      setDefaultUnitId(newUnits[0].id);
+      newUnits[0] = { ...newUnits[0], isDefault: true };
+    }
+    setPurchasingUnits(newUnits);
+  };
+
+  const handleSetDefault = (unitId: string) => {
+    setDefaultUnitId(unitId);
+    setPurchasingUnits(purchasingUnits.map(pu => ({
+      ...pu,
+      isDefault: pu.id === unitId
+    })));
   };
 
   const validateForm = (): boolean => {
@@ -76,6 +123,14 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
       if (unit.name && unit.multiplier <= 0) {
         newErrors[`purchasingUnit-${i}-multiplier`] = t('stockItems.validation.multiplierMin');
       }
+      if (unit.name && unit.costPerUnit < 0) {
+        newErrors[`purchasingUnit-${i}-costPerUnit`] = t('stockItems.validation.costPerUnitMin');
+      }
+    }
+    
+    // Ensure at least one default unit if there are purchasing units
+    if (purchasingUnits.length > 0 && !defaultUnitId) {
+      newErrors.defaultUnit = t('stockItems.validation.defaultUnitRequired');
     }
     
     setErrors(newErrors);
@@ -91,13 +146,21 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
 
     setIsSaving(true);
     try {
+      const validUnits = purchasingUnits.filter(pu => pu.name && pu.name.trim() && pu.multiplier > 0);
       const itemData = {
           id: item?.id,
           name,
           type,
           baseUnit,
           quantity: item?.id ? item.quantity : quantity,
-          purchasingUnits: purchasingUnits.filter(pu => pu.name && pu.name.trim() && pu.multiplier > 0),
+          purchasingUnits: validUnits.map(pu => ({
+            id: pu.id,
+            name: pu.name,
+            multiplier: pu.multiplier,
+            costPerUnit: pu.costPerUnit || 0,
+            isDefault: pu.id === defaultUnitId
+          })),
+          activePurchasingUnitId: defaultUnitId,
           costPerUnit,
           taxRateId
       };
@@ -188,48 +251,103 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
           <div className="border-t border-slate-700 pt-4">
               <h4 className="text-lg font-semibold text-slate-300 mb-2">{t('stockItems.purchasingUnits')}</h4>
               <p className="text-xs text-slate-500 mb-3">{t('stockItems.purchasingUnitsDescription')}</p>
+              
+              {/* Table Header */}
+              <div className="grid grid-cols-12 gap-2 mb-2 text-xs text-slate-400 font-semibold px-2">
+                <div className="col-span-3">{t('stockItems.unitName')}</div>
+                <div className="col-span-2">{t('stockItems.multiplier')}</div>
+                <div className="col-span-2">{t('stockItems.costPerUnit')}</div>
+                <div className="col-span-2">{t('stockItems.costPerBase', { base: baseUnit })}</div>
+                <div className="col-span-2 text-center">{t('stockItems.default')}</div>
+                <div className="col-span-1"></div>
+              </div>
+              
               <div className="space-y-2">
                   {purchasingUnits.map((unit, index) => (
-                       <div key={unit.id} className="flex items-center gap-2 p-2 bg-slate-800 rounded-md">
-                           <VKeyboardInput
-                             k-type="full"
-                             type="text"
-                             value={unit.name}
-                             onChange={e => {
-                               handleUpdatePurchasingUnit(index, 'name', e.target.value);
-                               // Clear any error for this specific unit if there was one
-                               if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) setErrors(prev => {
-                                 const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, ...rest} = prev;
-                                 return rest;
-                               });
-                             }}
-                             maxLength={50}
-                             placeholder={t('stockItems.unitNamePlaceholder')}
-                             className={`flex-grow p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
-                           />
-                           <span className="text-slate-400">=</span>
-                           <VKeyboardInput
-                             k-type="numeric"
-                             type="number"
-                             value={unit.multiplier}
-                             onChange={e => {
-                               const value = parseFloat(e.target.value) || 1;
-                               handleUpdatePurchasingUnit(index, 'multiplier', value);
-                               // Clear any error for this specific unit if there was one
-                               if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) setErrors(prev => {
-                                 const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, ...rest} = prev;
-                                 return rest;
-                               });
-                             }}
-                             placeholder={t('stockItems.multiplierPlaceholder')}
-                             className={`w-24 p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
-                           />
-                           <span className="text-slate-400 text-sm">{baseUnit}</span>
-                           <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
-                           {(errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]) && <p className="text-red-500 text-xs mt-1 col-span-2">{errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`]}</p>}
-                       </div>
-                   ))}
+                      <div key={unit.id} className="grid grid-cols-12 gap-2 items-center p-2 bg-slate-800 rounded-md">
+                          <div className="col-span-3">
+                              <VKeyboardInput
+                                k-type="full"
+                                type="text"
+                                value={unit.name}
+                                onChange={e => {
+                                  handleUpdatePurchasingUnit(index, 'name', e.target.value);
+                                  if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] || errors[`purchasingUnit-${index}-costPerUnit`]) setErrors(prev => {
+                                    const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, [`purchasingUnit-${index}-costPerUnit`]: ___, ...rest} = prev;
+                                    return rest;
+                                  });
+                                }}
+                                maxLength={50}
+                                placeholder={t('stockItems.unitNamePlaceholder')}
+                                className={`w-full p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
+                              />
+                          </div>
+                          <div className="col-span-2 flex items-center gap-1">
+                              <VKeyboardInput
+                                k-type="numeric"
+                                type="number"
+                                value={unit.multiplier}
+                                onChange={e => {
+                                  const value = parseFloat(e.target.value) || 1;
+                                  handleUpdatePurchasingUnit(index, 'multiplier', value);
+                                  if (errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] || errors[`purchasingUnit-${index}-costPerUnit`]) setErrors(prev => {
+                                    const {[`purchasingUnit-${index}-name`]: _, [`purchasingUnit-${index}-multiplier`]: __, [`purchasingUnit-${index}-costPerUnit`]: ___, ...rest} = prev;
+                                    return rest;
+                                  });
+                                }}
+                                placeholder={t('stockItems.multiplierPlaceholder')}
+                                className={`w-full p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
+                              />
+                              <span className="text-slate-400 text-xs">{baseUnit}</span>
+                          </div>
+                          <div className="col-span-2">
+                              <VKeyboardInput
+                                k-type="numeric"
+                                type="number"
+                                value={unit.costPerUnit === 0 ? '' : unit.costPerUnit}
+                                onChange={e => {
+                                  const value = parseFloat(e.target.value) || 0;
+                                  handleUpdatePurchasingUnit(index, 'costPerUnit', value);
+                                  if (errors[`purchasingUnit-${index}-costPerUnit`]) setErrors(prev => {
+                                    const {[`purchasingUnit-${index}-costPerUnit`]: _, ...rest} = prev;
+                                    return rest;
+                                  });
+                                }}
+                                placeholder={t('stockItems.costPerUnitPlaceholder')}
+                                className={`w-full p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-costPerUnit`] ? 'border-red-500' : 'border-slate-600'}`}
+                                step="0.01"
+                                min="0"
+                              />
+                          </div>
+                          <div className="col-span-2 text-green-400 text-sm font-mono">
+                            {formatCurrency(getCostPerBaseUnit(unit))}/{baseUnit}
+                          </div>
+                          <div className="col-span-2 flex justify-center">
+                            <button
+                              type="button"
+                              onClick={() => handleSetDefault(unit.id)}
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                                unit.id === defaultUnitId 
+                                  ? 'border-amber-500 bg-amber-500' 
+                                  : 'border-slate-500 hover:border-amber-400'
+                              }`}
+                            >
+                              {unit.id === defaultUnitId && (
+                                <div className="w-2 h-2 bg-white rounded-full" />
+                              )}
+                            </button>
+                          </div>
+                          <div className="col-span-1 flex justify-center">
+                            <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
+                          </div>
+                      </div>
+                  ))}
               </div>
+              {(errors[`purchasingUnit-${0}-name`] || errors[`purchasingUnit-${0}-multiplier`] || errors[`purchasingUnit-${0}-costPerUnit`] || errors.defaultUnit) && (
+                <p className="text-red-500 text-xs mt-2">
+                  {errors.defaultUnit || errors[`purchasingUnit-0-name`] || errors[`purchasingUnit-0-multiplier`] || errors[`purchasingUnit-0-costPerUnit`]}
+                </p>
+              )}
               <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">{t('stockItems.addPurchasingUnit')}</button>
           </div>
 

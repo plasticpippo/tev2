@@ -252,6 +252,13 @@ export const validateStockItemBaseUnit = (baseUnit: string, t?: TranslateFunctio
 export const validatePurchasingUnit = (unit: any, t?: TranslateFunction): string | null => {
   const translate = t || ((key: string) => key.split('.').pop() || key);
   
+  // Validate id if provided (for enhanced purchasing units with costs)
+  if (unit.id !== undefined && unit.id !== null) {
+    if (typeof unit.id !== 'string' || unit.id.trim() === '') {
+      return translate('errors:validation.required');
+    }
+  }
+  
   if (!unit.name || typeof unit.name !== 'string') {
     return translate('errors:validation.required');
   }
@@ -266,6 +273,44 @@ export const validatePurchasingUnit = (unit: any, t?: TranslateFunction): string
   
   if (typeof unit.multiplier !== 'number' || unit.multiplier <= 0) {
     return translate('errors:validation.invalidValue');
+  }
+  
+  // Validate costPerUnit if provided (for enhanced purchasing units with costs)
+  if (unit.costPerUnit !== undefined && unit.costPerUnit !== null) {
+    if (typeof unit.costPerUnit !== 'number' || unit.costPerUnit < 0) {
+      return translate('errors:stockItems.invalidCostPerUnit');
+    }
+    if (unit.costPerUnit > 1000000) {
+      return translate('errors:stockItems.invalidCostPerUnit');
+    }
+  }
+  
+  // Validate isDefault if provided (for enhanced purchasing units with costs)
+  if (unit.isDefault !== undefined && unit.isDefault !== null) {
+    if (typeof unit.isDefault !== 'boolean') {
+      return translate('errors:validation.invalidValue');
+    }
+  }
+  
+  return null;
+};
+
+// Validate active purchasing unit ID
+export const validateActivePurchasingUnitId = (activeId: string | null | undefined, purchasingUnits: any[], t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+  
+  // Allow null or undefined to reset
+  if (activeId === null || activeId === undefined || activeId === '') {
+    return null;
+  }
+  
+  if (!purchasingUnits || purchasingUnits.length === 0) {
+    return translate('errors:stockItems.activeUnitWithoutUnits');
+  }
+  
+  const exists = purchasingUnits.some((u: any) => u.id === activeId);
+  if (!exists) {
+    return translate('errors:stockItems.invalidActiveUnit');
   }
   
   return null;
