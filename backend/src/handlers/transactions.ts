@@ -7,6 +7,50 @@ import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
 import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney } from '../utils/money';
 import i18n from '../i18n';
+import { Prisma } from '@prisma/client';
+
+// StockDeduction interface for atomic stock deduction with transaction
+export interface StockDeduction {
+  stockItemId: string;
+  quantity: number;
+}
+
+// Retry helper function for handling Prisma P2034 (deadlock) errors
+async function withRetry<T>(
+  operation: () => Promise<T>,
+  maxRetries: number = 3,
+  delayMs: number = 100
+): Promise<T> {
+  let lastError: Error | null = null;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await operation();
+    } catch (error) {
+      lastError = error instanceof Error ? error : new Error(String(error));
+      
+      // Check if it's a P2034 deadlock error or VERSION_CONFLICT
+      if (lastError.message?.includes('P2034') || lastError.message?.includes('VERSION_CONFLICT')) {
+        logInfo('Transaction conflict detected, retrying', {
+          attempt,
+          maxRetries,
+          error: lastError.message
+        });
+        
+        if (attempt < maxRetries) {
+          // Exponential backoff
+          await new Promise(resolve => setTimeout(resolve, delayMs * Math.pow(2, attempt - 1)));
+          continue;
+        }
+      }
+      
+      // For non-deadlock errors or after max retries, throw the error
+      throw lastError;
+    }
+  }
+  
+  throw lastError;
+}
 
 export const transactionsRouter = express.Router();
 
@@ -77,8 +121,9 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     
     const {
       items, subtotal, tax, tip, paymentMethod,
-      userId, userName, tillId, tillName, discount, discountReason
-    } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total'>;
+      userId, userName, tillId, tillName, discount, discountReason,
+      stockDeductions
+    } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total'> & { stockDeductions?: StockDeduction[] };
     
     // Validate monetary values are valid numbers
     if (!isMoneyValid(subtotal)) {
@@ -261,23 +306,75 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       }
     );
     
-    const transaction = await prisma.transaction.create({
-      data: {
-        items: JSON.stringify(items),
-        subtotal: validatedSubtotal,
-        tax: validatedTax,
-        tip,
-        total: finalTotal,
-        paymentMethod,
-        userId,
-        userName,
-        tillId,
-        tillName,
-        discount: discountAmount,
-        discountReason: discountReasonText,
-        status,
-        createdAt: new Date()
-      }
+    // Execute transaction creation with optional stock deductions atomically
+    const transaction = await withRetry(async () => {
+      return await prisma.$transaction(async (tx) => {
+        // If stockDeductions are provided, process them with optimistic locking
+        if (stockDeductions && stockDeductions.length > 0) {
+          for (const deduction of stockDeductions) {
+            // Validate deduction quantity
+            if (deduction.quantity <= 0) {
+              throw new Error('Stock deduction quantity must be positive');
+            }
+            
+            // Fetch current stock item with its version for optimistic locking
+            const stockItem = await tx.stockItem.findUnique({
+              where: { id: deduction.stockItemId }
+            });
+            
+            if (!stockItem) {
+              throw new Error(`Stock item not found: ${deduction.stockItemId}`);
+            }
+            
+            // Check if sufficient quantity exists
+            if (stockItem.quantity < deduction.quantity) {
+              const error = new Error('INSUFFICIENT_STOCK') as Error & { code?: string };
+              error.code = 'INSUFFICIENT_STOCK';
+              throw error;
+            }
+            
+            // Update stock with optimistic locking (version check)
+            const currentVersion = stockItem.version;
+            const updateResult = await tx.stockItem.updateMany({
+              where: {
+                id: deduction.stockItemId,
+                version: currentVersion
+              },
+              data: {
+                quantity: stockItem.quantity - deduction.quantity,
+                version: currentVersion + 1
+              }
+            });
+            
+            // If update count is 0, version conflict - concurrent modification detected
+            if (updateResult.count === 0) {
+              const error = new Error('VERSION_CONFLICT') as Error & { code?: string };
+              error.code = 'VERSION_CONFLICT';
+              throw error;
+            }
+          }
+        }
+        
+        // Create the transaction
+        return await tx.transaction.create({
+          data: {
+            items: JSON.stringify(items),
+            subtotal: validatedSubtotal,
+            tax: validatedTax,
+            tip,
+            total: finalTotal,
+            paymentMethod,
+            userId,
+            userName,
+            tillId,
+            tillName,
+            discount: discountAmount,
+            discountReason: discountReasonText,
+            status,
+            createdAt: new Date()
+          }
+        });
+      });
     });
     
     // Log payment success
@@ -296,6 +393,27 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
     
     res.status(201).json(transaction);
   } catch (error) {
+    // Check for specific error codes
+    if (error instanceof Error) {
+      const err = error as Error & { code?: string };
+      
+      if (err.code === 'INSUFFICIENT_STOCK') {
+        logError('Insufficient stock for transaction', {
+          correlationId: (req as any).correlationId,
+          error: err.message
+        });
+        return res.status(400).json({ error: 'Insufficient stock' });
+      }
+      
+      if (err.code === 'VERSION_CONFLICT') {
+        logError('Version conflict during stock deduction', {
+          correlationId: (req as any).correlationId,
+          error: err.message
+        });
+        return res.status(409).json({ error: 'Concurrent modification detected, please retry' });
+      }
+    }
+    
     // Log payment failure
     logPaymentEvent(
       'FAILED',

@@ -177,6 +177,7 @@ model Till {
 model StockItem {
   name                   String
   quantity               Int
+  version                Int               @default(0)
   type                   String
   baseUnit               String
   purchasingUnits        Json?

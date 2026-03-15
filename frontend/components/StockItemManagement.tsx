@@ -175,8 +175,8 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-lg max-h-[90vh] flex flex-col border border-slate-700">
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-2 sm:p-4">
+      <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-2xl lg:max-w-3xl max-h-[95vh] flex flex-col border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 p-6 pb-0">{item ? t('stockItems.editStockItem') : t('stockItems.addStockItem')}</h3>
         <div className="p-6 space-y-4 overflow-y-auto">
           <div>
@@ -252,20 +252,21 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
               <h4 className="text-lg font-semibold text-slate-300 mb-2">{t('stockItems.purchasingUnits')}</h4>
               <p className="text-xs text-slate-500 mb-3">{t('stockItems.purchasingUnitsDescription')}</p>
               
-              {/* Table Header */}
-              <div className="grid grid-cols-12 gap-2 mb-2 text-xs text-slate-400 font-semibold px-2">
-                <div className="col-span-3">{t('stockItems.unitName')}</div>
-                <div className="col-span-2">{t('stockItems.multiplier')}</div>
-                <div className="col-span-2">{t('stockItems.costPerUnit')}</div>
-                <div className="col-span-2">{t('stockItems.costPerBase', { base: baseUnit })}</div>
-                <div className="col-span-2 text-center">{t('stockItems.default')}</div>
+              {/* Table Header - Hidden on mobile, visible on larger screens */}
+              <div className="hidden md:grid grid-cols-7 gap-3 mb-2 text-xs text-slate-400 font-semibold px-2">
+                <div className="col-span-2">{t('stockItems.unitName')}</div>
+                <div className="col-span-1">{t('stockItems.multiplier')} ({baseUnit})</div>
+                <div className="col-span-1">{t('stockItems.costPerUnit')}</div>
+                <div className="col-span-1">{t('stockItems.costPerBase', { base: baseUnit })}</div>
+                <div className="col-span-1 text-center">{t('stockItems.default')}</div>
                 <div className="col-span-1"></div>
               </div>
               
-              <div className="space-y-2">
+              <div className="space-y-3">
                   {purchasingUnits.map((unit, index) => (
-                      <div key={unit.id} className="grid grid-cols-12 gap-2 items-center p-2 bg-slate-800 rounded-md">
-                          <div className="col-span-3">
+                      <div key={unit.id} className="grid grid-cols-1 md:grid-cols-7 gap-2 md:gap-3 items-center p-3 bg-slate-800 rounded-md">
+                          <div className="col-span-1 md:col-span-2">
+                              <label className="md:hidden text-xs text-slate-500 mb-1 block">{t('stockItems.unitName')}</label>
                               <VKeyboardInput
                                 k-type="full"
                                 type="text"
@@ -282,7 +283,8 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                                 className={`w-full p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
                               />
                           </div>
-                          <div className="col-span-2 flex items-center gap-1">
+                          <div className="col-span-1 md:col-span-1">
+                              <label className="md:hidden text-xs text-slate-500 mb-1 block">{t('stockItems.multiplier')} ({baseUnit})</label>
                               <VKeyboardInput
                                 k-type="numeric"
                                 type="number"
@@ -298,9 +300,9 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                                 placeholder={t('stockItems.multiplierPlaceholder')}
                                 className={`w-full p-2 bg-slate-700 border rounded-md text-sm ${errors[`purchasingUnit-${index}-name`] || errors[`purchasingUnit-${index}-multiplier`] ? 'border-red-500' : 'border-slate-600'}`}
                               />
-                              <span className="text-slate-400 text-xs">{baseUnit}</span>
                           </div>
-                          <div className="col-span-2">
+                          <div className="col-span-1 md:col-span-1">
+                              <label className="md:hidden text-xs text-slate-500 mb-1 block">{t('stockItems.costPerUnit')}</label>
                               <VKeyboardInput
                                 k-type="numeric"
                                 type="number"
@@ -319,26 +321,30 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                                 min="0"
                               />
                           </div>
-                          <div className="col-span-2 text-green-400 text-sm font-mono">
-                            {formatCurrency(getCostPerBaseUnit(unit))}/{baseUnit}
+                          <div className="col-span-1 md:col-span-1">
+                              <label className="md:hidden text-xs text-slate-500 mb-1 block">{t('stockItems.costPerBase', { base: baseUnit })}</label>
+                              <div className="text-green-400 text-sm font-mono bg-slate-900/50 p-2 rounded-md border border-slate-600 min-h-[42px] flex items-center justify-center">
+                                {formatCurrency(getCostPerBaseUnit(unit))}/{baseUnit}
+                              </div>
                           </div>
-                          <div className="col-span-2 flex justify-center">
+                          <div className="col-span-1 md:col-span-1 flex items-center justify-center gap-2">
+                              <label className="md:hidden text-xs text-slate-500">{t('stockItems.default')}</label>
                             <button
                               type="button"
                               onClick={() => handleSetDefault(unit.id)}
-                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-colors ${
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors ${
                                 unit.id === defaultUnitId 
                                   ? 'border-amber-500 bg-amber-500' 
                                   : 'border-slate-500 hover:border-amber-400'
                               }`}
                             >
                               {unit.id === defaultUnitId && (
-                                <div className="w-2 h-2 bg-white rounded-full" />
+                                <div className="w-2.5 h-2.5 bg-white rounded-full" />
                               )}
                             </button>
                           </div>
-                          <div className="col-span-1 flex justify-center">
-                            <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2">&times;</button>
+                          <div className="col-span-1 md:col-span-1 flex justify-center">
+                            <button type="button" onClick={() => handleRemovePurchasingUnit(index)} className="text-red-500 hover:text-red-400 font-bold px-2 py-1 rounded-md hover:bg-red-500/10 text-lg">&times;</button>
                           </div>
                       </div>
                   ))}

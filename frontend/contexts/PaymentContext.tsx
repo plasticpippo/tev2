@@ -75,57 +75,8 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       // Determine status: if total is 0 and discount was applied, it's complimentary
       const status: 'completed' | 'complimentary' = total === 0 && discount > 0 ? 'complimentary' : 'completed';
       
-      // Validate that all items have names before saving transaction
-      const validItems = orderItems.filter(item => item.name && item.name.trim() !== '');
-      if (validItems.length !== orderItems.length) {
-        console.warn(t('paymentContext.invalidItemNames'));
-        // Fix items without names
-        const correctedItems = orderItems.map(item => ({
-          ...item,
-          name: item.name && item.name.trim() !== '' ? item.name : t('paymentContext.itemFallbackName', { variantId: item.variantId })
-        }));
-        const transactionData = {
-          items: correctedItems,
-          subtotal: subtotal,
-          tax: tax,
-          tip: tip,
-          discount: discount,
-          discountReason: discountReason || undefined,
-          status: status,
-          total: total,
-          paymentMethod: paymentMethod,
-          userId: currentUser.id,
-          userName: currentUser.name,
-          tillId: assignedTillId,
-          tillName: currentTillName,
-          tableId: assignedTable?.id, // Include table ID if available
-          tableName: assignedTable?.name // Include table name for reference
-        };
-        
-        await api.saveTransaction(transactionData);
-      } else {
-        const transactionData = {
-          items: orderItems,
-          subtotal: subtotal,
-          tax: tax,
-          tip: tip,
-          discount: discount,
-          discountReason: discountReason || undefined,
-          status: status,
-          total: total,
-          paymentMethod: paymentMethod,
-          userId: currentUser.id,
-          userName: currentUser.name,
-          tillId: assignedTillId,
-          tillName: currentTillName,
-          tableId: assignedTable?.id, // Include table ID if available
-          tableName: assignedTable?.name // Include table name for reference
-        };
-        
-        await api.saveTransaction(transactionData);
-      }
-      
-      // Decrease stock levels
+      // Build stockDeductions array from order items that consume stock
+      const stockDeductions: { stockItemId: string; quantity: number }[] = [];
       const consumptions = new Map<string, number>();
       orderItems.forEach(item => {
         const product = appData.products.find(p => p.id === item.productId);
@@ -153,10 +104,66 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
           });
         }
       });
+      
+      // Convert consumptions map to stockDeductions array
       if (consumptions.size > 0) {
-        await api.updateStockLevels(Array.from(consumptions.entries()).map(([stockItemId, quantity]) => ({ stockItemId, quantity })));
+        Array.from(consumptions.entries()).forEach(([stockItemId, quantity]) => {
+          stockDeductions.push({ stockItemId, quantity });
+        });
       }
-
+      
+      // Validate that all items have names before saving transaction
+      const validItems = orderItems.filter(item => item.name && item.name.trim() !== '');
+      if (validItems.length !== orderItems.length) {
+        console.warn(t('paymentContext.invalidItemNames'));
+        // Fix items without names
+        const correctedItems = orderItems.map(item => ({
+          ...item,
+          name: item.name && item.name.trim() !== '' ? item.name : t('paymentContext.itemFallbackName', { variantId: item.variantId })
+        }));
+        const transactionData = {
+          items: correctedItems,
+          subtotal: subtotal,
+          tax: tax,
+          tip: tip,
+          discount: discount,
+          discountReason: discountReason || undefined,
+          status: status,
+          total: total,
+          paymentMethod: paymentMethod,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          tillId: assignedTillId,
+          tillName: currentTillName,
+          tableId: assignedTable?.id, // Include table ID if available
+          tableName: assignedTable?.name, // Include table name for reference
+          stockDeductions: stockDeductions.length > 0 ? stockDeductions : undefined
+        };
+        
+        await api.saveTransaction(transactionData);
+      } else {
+        const transactionData = {
+          items: orderItems,
+          subtotal: subtotal,
+          tax: tax,
+          tip: tip,
+          discount: discount,
+          discountReason: discountReason || undefined,
+          status: status,
+          total: total,
+          paymentMethod: paymentMethod,
+          userId: currentUser.id,
+          userName: currentUser.name,
+          tillId: assignedTillId,
+          tillName: currentTillName,
+          tableId: assignedTable?.id, // Include table ID if available
+          tableName: assignedTable?.name, // Include table name for reference
+          stockDeductions: stockDeductions.length > 0 ? stockDeductions : undefined
+        };
+        
+        await api.saveTransaction(transactionData);
+      }
+      
       if (activeTab) {
         await api.deleteTab(activeTab.id);
       }
@@ -181,6 +188,26 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       setIsPaymentModalOpen(false);
     } catch (error) {
       console.error(t('paymentContext.paymentProcessingFailed'), error);
+      
+      // Handle specific error types from atomic stock transaction
+      if (error instanceof Error) {
+        const errorMessage = error.message;
+        
+        // Check for insufficient stock error (HTTP 400)
+        if (errorMessage === 'Insufficient stock') {
+          alert(t('errors.api.transactions.insufficientStock'));
+          setIsPaymentModalOpen(false);
+          return;
+        }
+        
+        // Check for version conflict error (HTTP 409)
+        if (errorMessage === 'Concurrent modification detected, please retry') {
+          alert(t('errors.api.transactions.versionConflict'));
+          // Keep modal open so user can retry
+          return;
+        }
+      }
+      
       alert(error instanceof Error ? error.message : t('paymentContext.paymentProcessingFailedMessage'));
       // Keep the modal open so the user can try again or cancel
     }

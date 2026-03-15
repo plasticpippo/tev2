@@ -83,7 +83,9 @@
       "notFound": "Transazione non trovata.",
       "refundFailed": "Elaborazione rimborso non riuscita.",
       "invalidPaymentMethod": "Metodo di pagamento non valido.",
-      "noTillAssigned": "Nessun cassetto assegnato"
+      "noTillAssigned": "Nessun cassetto assegnato",
+      "insufficientStock": "Scorta insufficiente. Verifica il magazzino e riprova.",
+      "versionConflict": "Il magazzino \u00e8 stato modificato da un altro utente. Aggiorna e riprova."
     },
     "orderSessions": {
       "notFound": "Sessione ordine non trovata.",

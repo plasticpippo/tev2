@@ -143,6 +143,7 @@ export interface StockItem {
     costPerUnit?: number | null;
     taxRateId?: number | null;
     activePurchasingUnitId?: string | null;
+    version?: number;
 }
 
 export interface StockAdjustment {

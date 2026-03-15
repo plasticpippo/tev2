@@ -83,7 +83,9 @@
       "notFound": "Transaction not found.",
       "refundFailed": "Failed to process refund.",
       "invalidPaymentMethod": "Invalid payment method.",
-      "noTillAssigned": "No till assigned"
+      "noTillAssigned": "No till assigned",
+      "insufficientStock": "Insufficient stock. Please check inventory and try again.",
+      "versionConflict": "The inventory was modified by another user. Please refresh and try again."
     },
     "orderSessions": {
       "notFound": "Order session not found.",
