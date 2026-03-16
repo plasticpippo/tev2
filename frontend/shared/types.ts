@@ -14,6 +14,7 @@ export interface ProductVariant {
   name: string; 
   price: number;
   isFavourite?: boolean;
+  trackInventory?: boolean;
   stockConsumption: {
       stockItemId: string;
       quantity: number;

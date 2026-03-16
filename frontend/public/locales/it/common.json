@@ -667,5 +667,9 @@
   },
   "languageSwitcher": {
     "changeLanguage": "Cambia lingua"
+  },
+  "products": {
+    "trackInventory": "Traccia inventario",
+    "trackInventoryDescription": "Abilita il tracciamento dell'inventario per questa variante del prodotto"
   }
 }

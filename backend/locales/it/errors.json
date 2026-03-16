@@ -404,5 +404,15 @@
     "cannotDeleteDefault": "Impossibile disattivare l'aliquota IVA predefinita",
     "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita",
     "setDefaultFailed": "Impossibile impostare l'aliquota IVA predefinita"
+  },
+  "stockReconciliations": {
+    "fetchFailed": "Impossibile recuperare le riconciliazioni magazzino. Riprova piu tardi.",
+    "notFound": "Riconciliazione magazzino non trovata",
+    "fetchOneFailed": "Impossibile recuperare la riconciliazione magazzino. Riprova piu tardi.",
+    "alreadyResolved": "La riconciliazione magazzino e gia risolta",
+    "resolveFailed": "Impossibile risolvere la riconciliazione magazzino. Riprova piu tardi.",
+    "alreadyManual": "La riconciliazione magazzino e gia contrassegnata come manuale",
+    "cannotEscalateResolved": "Impossible escalare una riconciliazione magazzino gia risolta",
+    "escalateFailed": "Impossibile escalare la riconciliazione magazzino. Riprova piu tardi."
   }
 }

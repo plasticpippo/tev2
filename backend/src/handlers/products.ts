@@ -23,6 +23,7 @@ function formatProductVariant(variant: any) {
     backgroundColor: variant.backgroundColor,
     textColor: variant.textColor,
     stockConsumption: variant.stockConsumption || [],
+    trackInventory: variant.trackInventory ?? true,
     taxRateId: variant.taxRateId,
     taxRate: variant.taxRate ? {
       id: variant.taxRate.id,
@@ -211,6 +212,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
             isFavourite: v.isFavourite || false,
             backgroundColor: v.backgroundColor,
             textColor: v.textColor,
+            trackInventory: (v as any).trackInventory !== undefined ? (v as any).trackInventory : true,
             taxRateId: (v as any).taxRateId || null,
             stockConsumption: {
               create: v.stockConsumption.map((sc: { stockItemId: string; quantity: number }) => ({
@@ -423,6 +425,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
                 isFavourite: v.isFavourite || false,
                 backgroundColor: v.backgroundColor,
                 textColor: v.textColor,
+                trackInventory: (v as any).trackInventory !== undefined ? (v as any).trackInventory : true,
                 taxRateId: (v as any).taxRateId || null,
                 stockConsumption: {
                   create: v.stockConsumption.map((sc) => ({

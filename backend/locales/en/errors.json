@@ -404,5 +404,15 @@
     "cannotDeleteDefault": "Cannot deactivate the default tax rate",
     "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
     "setDefaultFailed": "Failed to set default tax rate"
+  },
+  "stockReconciliations": {
+    "fetchFailed": "Failed to fetch stock reconciliations. Please try again later.",
+    "notFound": "Stock reconciliation not found",
+    "fetchOneFailed": "Failed to fetch stock reconciliation. Please try again later.",
+    "alreadyResolved": "Stock reconciliation is already resolved",
+    "resolveFailed": "Failed to resolve stock reconciliation. Please try again later.",
+    "alreadyManual": "Stock reconciliation is already marked as manual",
+    "cannotEscalateResolved": "Cannot escalate a resolved stock reconciliation",
+    "escalateFailed": "Failed to escalate stock reconciliation. Please try again later."
   }
 }

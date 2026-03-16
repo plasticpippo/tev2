@@ -57,7 +57,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                   <div>
                      <label className="block text-sm font-medium text-slate-400 mb-1">{t('products.price')}</label>
                      <VKeyboardInput k-type="numeric" type="number" placeholder={t('products.pricePlaceholder')} value={variant.price ?? ''} onChange={e => onUpdate({ ...variant, price: parseFloat(e.target.value) || 0 })} className="w-full p-2 bg-slate-800 border border-slate-600 rounded-md" required />
-                  </div>
+                 </div>
              </div>
               <div>
                 <label className="block text-sm font-medium text-slate-400 mb-1">{t('products.taxRate')}</label>
@@ -109,6 +109,18 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                     <span className="text-sm font-medium text-slate-400">{t('products.markAsFavourite')}</span>
                 </label>
             </div>
+            <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        checked={variant.trackInventory !== false}
+                        onChange={(e) => onUpdate({ ...variant, trackInventory: e.target.checked })}
+                        className="h-4 w-4 rounded text-emerald-500 bg-slate-800 border-slate-600 focus:ring-emerald-500"
+                    />
+                    <span className="text-sm font-medium text-slate-400">{t('products.trackInventory')}</span>
+                </label>
+                <p className="text-xs text-slate-500 ml-6 mt-1">{t('products.trackInventoryDescription')}</p>
+            </div>
              <div>
                 <label className="block text-sm font-medium text-slate-400 mb-2">{t('products.buttonColor')}</label>
                  <div className="flex items-center gap-4">
@@ -143,7 +155,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
         </div>
     )
 };
-    
+
 
 
 interface ProductModalProps {
@@ -159,7 +171,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const { t } = useTranslation('admin');
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
-  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, trackInventory: true, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -174,7 +186,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const { closeKeyboard } = useVirtualKeyboard();
 
   const handleAddVariant = () => {
-    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, trackInventory: true, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
   };
 
   const handleUpdateVariant = (index: number, updatedVariant: Partial<ProductVariant>) => {
@@ -245,7 +257,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const handleClearForm = () => {
     setName('');
     setCategoryId('');
-    setVariants([{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+    setVariants([{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, trackInventory: true, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
     setErrors({});
     setApiError(null);
   };

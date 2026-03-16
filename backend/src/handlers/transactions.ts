@@ -9,10 +9,28 @@ import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, forma
 import i18n from '../i18n';
 import { Prisma } from '@prisma/client';
 
+// StockReconciliationStatus enum (defined locally since Prisma may not export it)
+const StockReconciliationStatus = {
+  PENDING: 'PENDING',
+  RESOLVED: 'RESOLVED',
+  MANUAL: 'MANUAL'
+} as const;
+type StockReconciliationStatus = typeof StockReconciliationStatus[keyof typeof StockReconciliationStatus];
+
 // StockDeduction interface for atomic stock deduction with transaction
 export interface StockDeduction {
   stockItemId: string;
   quantity: number;
+  variantId?: number; // Optional: used to check trackInventory flag
+}
+
+// Interface for capturing stock error details for reconciliation logging
+interface StockErrorDetails {
+  stockItemId: string;
+  errorType: 'INSUFFICIENT_STOCK' | 'VERSION_CONFLICT';
+  requestedQuantity?: number;
+  availableQuantity?: number;
+  version?: number;
 }
 
 // Retry helper function for handling Prisma P2034 (deadlock) errors
@@ -105,6 +123,9 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
 
 // POST /api/transactions - Create a new transaction
 transactionsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
+  // Variable to capture error details for reconciliation logging
+  let stockErrorDetails: StockErrorDetails | null = null;
+  
   try {
     // Get settings to determine tax mode
     let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
@@ -311,7 +332,34 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       return await prisma.$transaction(async (tx) => {
         // If stockDeductions are provided, process them with optimistic locking
         if (stockDeductions && stockDeductions.length > 0) {
-          for (const deduction of stockDeductions) {
+          // Log warning if any deductions are missing variantId - trackInventory filtering may be incomplete
+          const missingVariantIds = stockDeductions.filter(d => d.variantId === undefined || d.variantId === null);
+          if (missingVariantIds.length > 0) {
+            logError('Stock deductions missing variantId - trackInventory filtering may be incomplete', {
+              correlationId: (req as any).correlationId,
+              count: missingVariantIds.length,
+              totalDeductions: stockDeductions.length
+            });
+          }
+          
+          // Filter out deductions for variants where trackInventory is false
+          const variantIds = [...new Set(stockDeductions.filter(d => d.variantId !== undefined && d.variantId !== null).map(d => d.variantId))] as number[];
+          const variantsToCheck = variantIds.length > 0 ? await tx.productVariant.findMany({
+            where: { id: { in: variantIds } },
+            select: { id: true, trackInventory: true }
+          }) : [];
+          
+          const trackInventoryDisabledVariants = new Set(
+            variantsToCheck.filter(v => v.trackInventory === false).map(v => v.id)
+          );
+          
+          // Filter out deductions for variants with trackInventory = false
+          // Only filter if variantId is explicitly provided and belongs to a disabled variant
+          const filteredDeductions = stockDeductions.filter(
+            d => d.variantId === undefined || d.variantId === null || !trackInventoryDisabledVariants.has(d.variantId)
+          );
+          
+          for (const deduction of filteredDeductions) {
             // Validate deduction quantity
             if (deduction.quantity <= 0) {
               throw new Error('Stock deduction quantity must be positive');
@@ -328,6 +376,13 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
             
             // Check if sufficient quantity exists
             if (stockItem.quantity < deduction.quantity) {
+              // Capture error details for reconciliation logging
+              stockErrorDetails = {
+                stockItemId: deduction.stockItemId,
+                errorType: 'INSUFFICIENT_STOCK',
+                requestedQuantity: deduction.quantity,
+                availableQuantity: stockItem.quantity
+              };
               const error = new Error('INSUFFICIENT_STOCK') as Error & { code?: string };
               error.code = 'INSUFFICIENT_STOCK';
               throw error;
@@ -348,6 +403,12 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
             
             // If update count is 0, version conflict - concurrent modification detected
             if (updateResult.count === 0) {
+              // Capture error details for reconciliation logging
+              stockErrorDetails = {
+                stockItemId: deduction.stockItemId,
+                errorType: 'VERSION_CONFLICT',
+                version: currentVersion
+              };
               const error = new Error('VERSION_CONFLICT') as Error & { code?: string };
               error.code = 'VERSION_CONFLICT';
               throw error;
@@ -400,16 +461,81 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       if (err.code === 'INSUFFICIENT_STOCK') {
         logError('Insufficient stock for transaction', {
           correlationId: (req as any).correlationId,
-          error: err.message
+          error: err.message,
+          stockErrorDetails
         });
+        
+        // Create StockReconciliation record for audit trail
+        try {
+          // Build details object - use type assertion for TypeScript
+          const details = stockErrorDetails as StockErrorDetails | null;
+          const detailsObj = details ? {
+            stockItemId: details.stockItemId,
+            requestedQuantity: details.requestedQuantity,
+            availableQuantity: details.availableQuantity
+          } : undefined;
+          
+          await prisma.stockReconciliation.create({
+            data: {
+              transactionId: null, // Transaction was not created due to failure
+              status: StockReconciliationStatus.PENDING,
+              errorType: 'INSUFFICIENT_STOCK',
+              errorMessage: err.message,
+              details: detailsObj as any,
+              createdAt: new Date()
+            }
+          });
+          logInfo('StockReconciliation record created for INSUFFICIENT_STOCK', {
+            correlationId: (req as any).correlationId,
+            stockErrorDetails
+          });
+        } catch (reconciliationError) {
+          logError('Failed to create StockReconciliation record', {
+            correlationId: (req as any).correlationId,
+            error: reconciliationError instanceof Error ? reconciliationError.message : 'Unknown error'
+          });
+        }
+        
         return res.status(400).json({ error: 'Insufficient stock' });
       }
       
       if (err.code === 'VERSION_CONFLICT') {
         logError('Version conflict during stock deduction', {
           correlationId: (req as any).correlationId,
-          error: err.message
+          error: err.message,
+          stockErrorDetails
         });
+        
+        // Create StockReconciliation record for audit trail
+        try {
+          // Build details object - use type assertion for TypeScript
+          const details = stockErrorDetails as StockErrorDetails | null;
+          const detailsObj = details ? {
+            stockItemId: details.stockItemId,
+            version: details.version
+          } : undefined;
+          
+          await prisma.stockReconciliation.create({
+            data: {
+              transactionId: null, // Transaction was not created due to failure
+              status: StockReconciliationStatus.PENDING,
+              errorType: 'VERSION_CONFLICT',
+              errorMessage: err.message,
+              details: detailsObj as any,
+              createdAt: new Date()
+            }
+          });
+          logInfo('StockReconciliation record created for VERSION_CONFLICT', {
+            correlationId: (req as any).correlationId,
+            stockErrorDetails
+          });
+        } catch (reconciliationError) {
+          logError('Failed to create StockReconciliation record', {
+            correlationId: (req as any).correlationId,
+            error: reconciliationError instanceof Error ? reconciliationError.message : 'Unknown error'
+          });
+        }
+        
         return res.status(409).json({ error: 'Concurrent modification detected, please retry' });
       }
     }

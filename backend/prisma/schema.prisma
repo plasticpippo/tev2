@@ -64,6 +64,7 @@ model ProductVariant {
   backgroundColor  String
   textColor        String
   taxRateId        Int?
+  trackInventory   Boolean            @default(true) @map("track_inventory")
   product          Product            @relation(fields: [productId], references: [id])
   taxRate          TaxRate?           @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
   stockConsumption StockConsumption[]
@@ -329,6 +330,26 @@ model SharedLayoutPosition {
   @@unique([sharedLayoutId, variantId])
   @@index([sharedLayoutId])
   @@map("shared_layout_positions")
+}
+enum StockReconciliationStatus {
+  PENDING
+  RESOLVED
+  MANUAL
+}
+
+model StockReconciliation {
+  id            String                   @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  transactionId String?                  @map("transaction_id") @db.Uuid
+  status        StockReconciliationStatus
+  details       Json?
+  errorType     String                 @map("error_type")
+  errorMessage  String                 @map("error_message")
+  createdAt     DateTime               @default(now()) @map("created_at")
+  resolvedAt    DateTime?              @map("resolved_at")
+  resolvedBy    String?                @map("resolved_by")
+  resolution    String?
+
+  @@map("stock_reconciliations")
 }
 
 
