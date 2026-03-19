@@ -11,7 +11,7 @@ import { useTableAssignmentContext } from './TableAssignmentContext';
 import { useUIStateContext } from './UIStateContext';
 
 interface PaymentContextType {
-  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string) => Promise<void>;
+  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => Promise<void>;
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
@@ -28,7 +28,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   const { assignedTable, clearTableAssignment } = useTableAssignmentContext();
   const { setIsPaymentModalOpen } = useUIStateContext();
 
-  const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string) => {
+  const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => {
     // Check if user is logged in
     if (!currentUser) {
       alert(t('errors.api.auth.authenticationFailed'));
@@ -89,24 +89,25 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
         }));
       }
       
-      // Use atomic payment processing - handles transaction + stock + session + tab in one call
-      // If ANY step fails, ALL changes are rolled back
-      await processPayment({
-        items: itemsToSave,
-        subtotal: subtotal,
-        tax: tax,
-        tip: tip,
-        paymentMethod: paymentMethod,
-        userId: currentUser.id,
-        userName: currentUser.name,
-        tillId: assignedTillId,
-        tillName: currentTillName,
-        discount: discount,
-        discountReason: discountReason || undefined,
-        activeTabId: activeTab?.id,
-        tableId: assignedTable?.id,
-        tableName: assignedTable?.name
-      });
+    // Use atomic payment processing - handles transaction + stock + session + tab in one call
+    // If ANY step fails, ALL changes are rolled back
+    await processPayment({
+      items: itemsToSave,
+      subtotal: subtotal,
+      tax: tax,
+      tip: tip,
+      paymentMethod: paymentMethod,
+      userId: currentUser.id,
+      userName: currentUser.name,
+      tillId: assignedTillId,
+      tillName: currentTillName,
+      discount: discount,
+      discountReason: discountReason || undefined,
+      activeTabId: activeTab?.id,
+      tableId: assignedTable?.id,
+      tableName: assignedTable?.name,
+      idempotencyKey: idempotencyKey
+    });
       
       // Clear table assignment after successful payment
       if (assignedTable) {

@@ -80,11 +80,15 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
 
   const isComplimentary = finalTotal === 0 && discount > 0;
 
-  const handlePayment = (paymentMethod: string) => {
+  const handlePayment = async (paymentMethod: string) => {
     if (isProcessing) return; // Prevent double-clicks
     setIsProcessing(true);
-    const idempotencyKey = generateIdempotencyKey(orderItems);
-    onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
+    try {
+      const idempotencyKey = generateIdempotencyKey(orderItems);
+      await onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (

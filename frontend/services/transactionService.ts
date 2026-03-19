@@ -123,6 +123,7 @@ export interface ProcessPaymentData {
   activeTabId?: number;
   tableId?: string;
   tableName?: string;
+  idempotencyKey: string;
 }
 
 export const processPayment = async (paymentData: ProcessPaymentData): Promise<Transaction> => {
