@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma';
-import type { StockAdjustment } from '../types';
+import type { StockAdjustment as StockAdjustmentType } from '../types';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
@@ -49,7 +50,7 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
 // POST /api/stock-adjustments - Create a new stock adjustment
 stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustment, 'id' | 'createdAt'>;
+    const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustmentType, 'id' | 'createdAt'>;
     
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -66,27 +67,31 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
       return res.status(400).json({ error: i18n.t('errors:stockAdjustments.invalidStockItemId', { stockItemId }) });
     }
     
-    // Update the stock item quantity
-    await prisma.stockItem.update({
-      where: { id: stockItemId },
-      data: {
-        quantity: {
-          increment: quantity // This can be positive or negative
+    // Use atomic transaction to ensure both stock update and adjustment record are created together
+    // This prevents data inconsistency if the server crashes between operations
+    const stockAdjustment = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Update the stock item quantity
+      await tx.stockItem.update({
+        where: { id: stockItemId },
+        data: {
+          quantity: {
+            increment: quantity // This can be positive or negative
+          }
         }
-      }
-    });
-    
-    // Create the stock adjustment record
-    const stockAdjustment = await prisma.stockAdjustment.create({
-      data: {
-        stockItemId,
-        itemName,
-        quantity,
-        reason,
-        userId,
-        userName,
-        createdAt: new Date()
-      }
+      });
+  
+      // Create the stock adjustment record
+      return tx.stockAdjustment.create({
+        data: {
+          stockItemId,
+          itemName,
+          quantity,
+          reason,
+          userId,
+          userName,
+          createdAt: new Date()
+        }
+      });
     });
     
     res.status(201).json(stockAdjustment);
@@ -114,7 +119,7 @@ stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req
     });
     
     // Extract the stock item IDs referenced in stock adjustments
-    const referencedStockItemIds = allStockAdjustments.map(adjustment => adjustment.stockItemId);
+    const referencedStockItemIds = allStockAdjustments.map((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => adjustment.stockItemId);
     
     // Find all stock items that exist in the database
     const existingStockItems = await prisma.stockItem.findMany({
@@ -125,10 +130,10 @@ stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req
     });
     
     // Create a set of existing stock item IDs for quick lookup
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
     
     // Filter the stock adjustments to find those that reference non-existent stock items
-    const orphanedAdjustments = allStockAdjustments.filter(adjustment => !existingStockItemIds.has(adjustment.stockItemId));
+    const orphanedAdjustments = allStockAdjustments.filter((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => !existingStockItemIds.has(adjustment.stockItemId));
     
     res.json(orphanedAdjustments);
   } catch (error) {
@@ -155,7 +160,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     });
     
     // Extract the stock item IDs referenced in stock adjustments
-    const referencedStockItemIds = allStockAdjustments.map(adjustment => adjustment.stockItemId);
+    const referencedStockItemIds = allStockAdjustments.map((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => adjustment.stockItemId);
     
     // Find all stock items that exist in the database
     const existingStockItems = await prisma.stockItem.findMany({
@@ -166,10 +171,10 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     });
     
     // Create a set of existing stock item IDs for quick lookup
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
     
     // Filter the stock adjustments to find those that reference non-existent stock items
-    const orphanedAdjustments = allStockAdjustments.filter(adjustment => !existingStockItemIds.has(adjustment.stockItemId));
+    const orphanedAdjustments = allStockAdjustments.filter((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => !existingStockItemIds.has(adjustment.stockItemId));
     
     if (orphanedAdjustments.length === 0) {
       return res.status(200).json({
@@ -179,7 +184,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     }
     
     // Extract the IDs of orphaned adjustment records
-    const orphanedIds = orphanedAdjustments.map(oc => oc.id);
+    const orphanedIds = orphanedAdjustments.map((oc: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => oc.id);
     
     // Delete the orphaned adjustment records
     await prisma.stockAdjustment.deleteMany({
@@ -217,7 +222,7 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     });
     
     // Extract the stock item IDs referenced in stock adjustments
-    const referencedStockItemIds = allStockAdjustments.map(adjustment => adjustment.stockItemId);
+    const referencedStockItemIds = allStockAdjustments.map((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => adjustment.stockItemId);
     
     // Find all stock items that exist in the database
     const existingStockItems = await prisma.stockItem.findMany({
@@ -228,10 +233,10 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     });
     
     // Create a set of existing stock item IDs for quick lookup
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
     
     // Filter the stock adjustments to find those that reference non-existent stock items
-    const orphanedAdjustments = allStockAdjustments.filter(adjustment => !existingStockItemIds.has(adjustment.stockItemId));
+    const orphanedAdjustments = allStockAdjustments.filter((adjustment: { id: number; stockItemId: string; itemName: string; quantity: number; reason: string; userName: string }) => !existingStockItemIds.has(adjustment.stockItemId));
     
     const integrityReport = {
       orphanedAdjustments: orphanedAdjustments.length,

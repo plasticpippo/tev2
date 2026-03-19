@@ -15,11 +15,7 @@
     "userInactive": "L'account utente e inattivo",
     "passwordMismatch": "La password attuale non e corretta",
     "passwordTooWeak": "La nuova password non soddisfa i requisiti di sicurezza"
-  },
-  "csrf": {
-    "noToken": "Token CSRF mancante. Aggiorna la pagina e riprova.",
-    "invalidToken": "Token CSRF non valido. Aggiorna la pagina e riprova."
-  },
+   },
   "authorization": {
     "tableIdRequired": "L'ID del tavolo e obbligatorio",
     "tableNotFound": "Tavolo non trovato",

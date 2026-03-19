@@ -1,5 +1,6 @@
 import { Request, Response, Router } from 'express';
 import { prisma } from '../prisma';
+import { Prisma, TaxRate } from '@prisma/client';
 import { AppError, NotFoundError, ValidationError } from '../middleware/errorHandler';
 import { logError, logInfo } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
@@ -12,8 +13,8 @@ export const taxRatesRouter = Router();
  * Helper function to format tax rate for API response
  * Converts Decimal rate to string and adds computed ratePercent field
  */
-function formatTaxRate(taxRate: any) {
-  return {
+function formatTaxRate(taxRate: TaxRate) {
+	return {
     id: taxRate.id,
     name: taxRate.name,
     rate: Number(taxRate.rate),
@@ -151,7 +152,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
     const rateNumber = typeof rate === 'string' ? parseFloat(rate) : rate;
 
     // Create tax rate (handle default in transaction)
-    const taxRate = await prisma.$transaction(async (tx) => {
+    const taxRate = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // If setting as default, unset other defaults first
       if (isDefault) {
         await tx.taxRate.updateMany({
@@ -227,7 +228,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
     }
 
     // Update tax rate (handle default in transaction)
-    const taxRate = await prisma.$transaction(async (tx) => {
+    const taxRate = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // If setting as default, unset other defaults first
       if (isDefault) {
         await tx.taxRate.updateMany({
@@ -323,7 +324,7 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
     }
 
     // Set as default in transaction
-    const taxRate = await prisma.$transaction(async (tx) => {
+    const taxRate = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Unset all defaults
       await tx.taxRate.updateMany({
         where: { isDefault: true },

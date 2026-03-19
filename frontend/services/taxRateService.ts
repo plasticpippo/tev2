@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { TaxRate, CreateTaxRateInput, UpdateTaxRateInput } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -38,7 +38,7 @@ export const createTaxRate = async (data: CreateTaxRateInput): Promise<TaxRate> 
   try {
     const response = await fetch(apiUrl('/api/tax-rates'), {
       method: 'POST',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(data)
     });
@@ -62,7 +62,7 @@ export const updateTaxRate = async (id: number, data: UpdateTaxRateInput): Promi
   try {
     const response = await fetch(apiUrl(`/api/tax-rates/${id}`), {
       method: 'PUT',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(data)
     });
@@ -86,7 +86,7 @@ export const setDefaultTaxRate = async (id: number): Promise<TaxRate> => {
   try {
     const response = await fetch(apiUrl(`/api/tax-rates/${id}/default`), {
       method: 'PUT',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
 
@@ -109,7 +109,7 @@ export const deleteTaxRate = async (id: number): Promise<{ success: boolean; mes
   try {
     const response = await fetch(apiUrl(`/api/tax-rates/${id}`), {
       method: 'DELETE',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
 

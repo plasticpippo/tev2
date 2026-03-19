@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Till } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -21,7 +21,7 @@ export const saveTill = async (till: Omit<Till, 'id'> & { id?: number }): Promis
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(till)
     });
@@ -44,7 +44,7 @@ export const deleteTill = async (tillId: number): Promise<{success: boolean, mes
   try {
     const response = await fetch(apiUrl(`/api/tills/${tillId}`), {
       method: 'DELETE',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     

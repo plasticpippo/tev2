@@ -88,6 +88,7 @@ export const saveTillLayout = async (
       {
         method: 'POST',
         headers: getAuthHeaders(),
+        credentials: 'include',
         body: JSON.stringify({ positions })
       }
     );
@@ -111,7 +112,8 @@ export const resetTillLayout = async (
       apiUrl(`/api/layouts/till/${tillId}/category/${categoryId}`),
       {
         method: 'DELETE',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        credentials: 'include'
       }
     );
     notifyUpdates();
@@ -181,6 +183,7 @@ export const createSharedLayout = async (
     const result = await makeApiRequest(apiUrl('/api/layouts/shared'), {
       method: 'POST',
       headers: getAuthHeaders(),
+      credentials: 'include',
       body: JSON.stringify({ name: sanitizedName, categoryId, positions })
     });
     notifyUpdates();
@@ -208,6 +211,7 @@ export const updateSharedLayout = async (
     const result = await makeApiRequest(apiUrl(`/api/layouts/shared/${id}`), {
       method: 'PUT',
       headers: getAuthHeaders(),
+      credentials: 'include',
       body: JSON.stringify(updates)
     });
     notifyUpdates();
@@ -225,7 +229,8 @@ export const deleteSharedLayout = async (id: number): Promise<void> => {
   try {
     await makeApiRequest(apiUrl(`/api/layouts/shared/${id}`), {
       method: 'DELETE',
-      headers: getAuthHeaders()
+      headers: getAuthHeaders(),
+      credentials: 'include'
     });
     notifyUpdates();
   } catch (error) {
@@ -247,7 +252,8 @@ export const loadSharedLayoutToTill = async (
       apiUrl(`/api/layouts/shared/${sharedLayoutId}/load-to-till/${tillId}`),
       {
         method: 'POST',
-        headers: getAuthHeaders()
+        headers: getAuthHeaders(),
+        credentials: 'include'
       }
     );
     notifyUpdates();

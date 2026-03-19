@@ -34,6 +34,9 @@
     "orderSessionAssignedToTab": "Sessione ordine assegnata al conto con successo",
     "layoutLoaded": "Layout condiviso caricato con successo"
   },
+  "auth": {
+    "csrfTokenRefreshed": "Token CSRF aggiornato con successo"
+  },
   "response": {
     "ok": "OK",
     "success": "Successo",

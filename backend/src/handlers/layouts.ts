@@ -7,6 +7,7 @@ import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import i18n from '../i18n';
+import { Prisma } from '@prisma/client';
 
 export const layoutsRouter = express.Router();
 
@@ -112,7 +113,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
     // If categoryId is -1, it's the Favourites pseudo-category - allow it
     
     // Use transaction to replace all positions for this till+category
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Delete existing layouts for this till+category
       await tx.variantLayout.deleteMany({
         where: {
@@ -443,7 +444,7 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
     }
     
     // Update in transaction
-    const updated = await prisma.$transaction(async (tx) => {
+    const updated = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update name if provided
       const updateData: any = {};
       if (sanitizedName !== undefined) {
@@ -555,7 +556,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
     }
     
     // Copy shared layout positions to till-specific layout
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Delete existing layouts for this till+category
       await tx.variantLayout.deleteMany({
         where: {
@@ -566,7 +567,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
       
       // Create new layouts from shared layout positions
       const createdLayouts = await Promise.all(
-        sharedLayout.positions.map(pos =>
+        sharedLayout.positions.map((pos: { variantId: number; gridColumn: number; gridRow: number }) =>
           tx.variantLayout.create({
             data: {
               tillId: Number(tillId),

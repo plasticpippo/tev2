@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Transaction, Tab } from '../../shared/types';
 import i18n from '../src/i18n';
 
@@ -18,7 +18,7 @@ export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 
   try {
     const response = await fetch(apiUrl('/api/transactions'), {
       method: 'POST',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(transactionData)
     });
@@ -57,7 +57,7 @@ export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise
     
     const response = await fetch(url, {
       method,
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(tabData)
     });
@@ -84,7 +84,7 @@ export const deleteTab = async (tabId: number): Promise<void> => {
   try {
     const response = await fetch(apiUrl(`/api/tabs/${tabId}`), {
       method: 'DELETE',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include'
     });
     
@@ -105,4 +105,45 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
   const promises = tabsToUpdate.map(tab => saveTab(tab));
   await Promise.all(promises);
   notifyUpdates();
+};
+
+// Atomic payment processing - handles transaction + stock + order session + tab in one call
+export interface ProcessPaymentData {
+  items: Transaction['items'];
+  subtotal: number;
+  tax: number;
+  tip: number;
+  paymentMethod: string;
+  userId: number;
+  userName: string;
+  tillId: number;
+  tillName: string;
+  discount?: number;
+  discountReason?: string;
+  activeTabId?: number;
+  tableId?: string;
+  tableName?: string;
+}
+
+export const processPayment = async (paymentData: ProcessPaymentData): Promise<Transaction> => {
+  try {
+    const response = await fetch(apiUrl('/api/transactions/process-payment'), {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      credentials: 'include',
+      body: JSON.stringify(paymentData)
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+      throw new Error(errorMessage);
+    }
+    const result = await response.json();
+    notifyUpdates();
+    return result;
+  } catch (error) {
+    console.error(i18n.t('transactionService.errorProcessingPayment'), error);
+    throw error;
+  }
 };

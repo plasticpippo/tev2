@@ -44,6 +44,7 @@ export {
 export {
   getTransactions,
   saveTransaction,
+  processPayment,
   getTabs,
   saveTab,
   deleteTab,

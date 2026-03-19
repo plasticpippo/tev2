@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { StockItem } from '../types';
+import { Prisma, StockItem as PrismaStockItem, StockConsumption, ProductVariant, Product } from '@prisma/client';
 import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
@@ -15,7 +16,7 @@ stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response)
   try {
     const stockItems = await prisma.stockItem.findMany();
     // Parse the purchasingUnits JSON string back to array
-    const stockItemsWithParsedUnits = stockItems.map(item => ({
+    const stockItemsWithParsedUnits = stockItems.map((item: PrismaStockItem) => ({
       ...item,
       purchasingUnits: safeJsonParse(item.purchasingUnits, [], { id: item.id, field: 'purchasingUnits' })
     }));
@@ -113,72 +114,66 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
     });
     
     // Create a map of existing stock items for quick lookup and quantity validation
-    const existingStockMap = new Map(existingStockItems.map(item => [item.id, item.quantity]));
+    const existingStockMap = new Map<string, number>();
+    for (const item of existingStockItems) {
+      existingStockMap.set(item.id, item.quantity);
+    }
     
     // Identify invalid stock item IDs (orphaned references)
     const invalidStockItemIds = validConsumptions
       .filter(c => !existingStockMap.has(c.stockItemId))
       .map(c => c.stockItemId);
     
-    if (invalidStockItemIds.length > 0) {
-      // Get names of invalid stock items for more descriptive error messages
-      const invalidStockItems = await prisma.stockItem.findMany({
-        where: { id: { in: invalidStockItemIds } },
-        select: { id: true, name: true }
-      });
+    // First, validate ALL consumptions for sufficiency BEFORE any updates
+    // This ensures we either update all or update none
+    const validationErrors: { stockItemId: string; name: string; required: number; available: number }[] = [];
+    
+    for (const { stockItemId, quantity } of validConsumptions) {
+      const currentQuantity = existingStockMap.get(stockItemId);
       
-      // Log the invalid references for debugging
-      logWarn(`Invalid stock item references found: ${invalidStockItemIds.join(', ')}`);
-      
-      // Filter out invalid consumptions and continue with valid ones
-      const validConsumptionsForExistingStock = validConsumptions.filter(c => existingStockMap.has(c.stockItemId));
-      
-      // Process only the valid consumptions for existing stock items
-      for (const { stockItemId, quantity } of validConsumptionsForExistingStock) {
-        const currentQuantity = existingStockMap.get(stockItemId)!;
-        
-        // Check if we have enough stock to decrement
-        if (currentQuantity >= quantity) {
-          await prisma.stockItem.update({
-            where: { id: stockItemId },
-            data: {
-              quantity: {
-                decrement: quantity
-              }
-            }
-          });
-          // Update the map to reflect the new quantity for potential multiple updates to the same item
-          existingStockMap.set(stockItemId, currentQuantity - quantity);
-        } else {
-          // Get the stock item name for more descriptive error
-          const stockItem = await prisma.stockItem.findUnique({
-            where: { id: stockItemId },
-            select: { name: true }
-          });
-          const stockItemName = stockItem?.name || `ID ${stockItemId}`;
-          
-          logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
-          return res.status(400).json({
-            error: i18n.t('errors:stockItems.insufficientStockDetailed', { name: stockItemName, id: stockItemId, required: quantity, available: currentQuantity })
-          });
-        }
+      if (currentQuantity === undefined) {
+        // Already identified as invalid, skip
+        continue;
       }
       
-      // Return a warning response instead of failing completely
-      return res.status(200).json({
-        message: i18n.t('api:success.stockLevelsUpdatedWithWarnings'),
-        warnings: [`Found and skipped ${invalidStockItemIds.length} invalid stock item references: ${invalidStockItemIds.join(', ')}`],
-        invalidStockItemIds
+      if (currentQuantity < quantity) {
+      	const stockItem = existingStockItems.find((i: PrismaStockItem) => i.id === stockItemId);
+        validationErrors.push({
+          stockItemId,
+          name: stockItem?.name || `ID ${stockItemId}`,
+          required: quantity,
+          available: currentQuantity
+        });
+      }
+    }
+    
+    // If there are validation errors, return them without making any changes
+    if (validationErrors.length > 0) {
+      const firstError = validationErrors[0];
+      return res.status(400).json({
+        error: i18n.t('errors:stockItems.insufficientStockDetailed', { 
+          name: firstError.name, 
+          id: firstError.stockItemId, 
+          required: firstError.required, 
+          available: firstError.available 
+        }),
+        validationErrors
       });
     }
     
-    // Process only the valid consumptions for existing stock items
-    for (const { stockItemId, quantity } of validConsumptions) {
-      const currentQuantity = existingStockMap.get(stockItemId)!;
-      
-      // Check if we have enough stock to decrement
-      if (currentQuantity >= quantity) {
-        await prisma.stockItem.update({
+    // Use a transaction to ensure ALL stock updates succeed or ALL rollback
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      for (const { stockItemId, quantity } of validConsumptions) {
+        // Check current quantity again inside transaction for consistency
+        const currentItem = await tx.stockItem.findUnique({
+          where: { id: stockItemId }
+        });
+        
+        if (!currentItem || currentItem.quantity < quantity) {
+          throw new Error(`Insufficient stock for item ${stockItemId}`);
+        }
+        
+        await tx.stockItem.update({
           where: { id: stockItemId },
           data: {
             quantity: {
@@ -186,27 +181,29 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
             }
           }
         });
-        // Update the map to reflect the new quantity for potential multiple updates to the same item
-        existingStockMap.set(stockItemId, currentQuantity - quantity);
-      } else {
-        // Get the stock item name for more descriptive error
-        const stockItem = await prisma.stockItem.findUnique({
-          where: { id: stockItemId },
-          select: { name: true }
-        });
-        const stockItemName = stockItem?.name || `ID ${stockItemId}`;
-        
-        logWarn(`Insufficient stock for item ${stockItemName} (ID: ${stockItemId}). Required: ${quantity}, Available: ${currentQuantity}.`);
-        return res.status(400).json({
-          error: i18n.t('errors:stockItems.insufficientStockDetailed', { name: stockItemName, id: stockItemId, required: quantity, available: currentQuantity })
-        });
       }
+    });
+    
+    // If there were invalid stock items, return a warning
+    if (invalidStockItemIds.length > 0) {
+      logWarn(`Invalid stock item references found: ${invalidStockItemIds.join(', ')}`);
+      return res.status(200).json({
+        message: i18n.t('api:success.stockLevelsUpdatedWithWarnings'),
+        warnings: [`Found and skipped ${invalidStockItemIds.length} invalid stock item references: ${invalidStockItemIds.join(', ')}`],
+        invalidStockItemIds
+      });
     }
     
     res.status(200).json({ message: i18n.t('api:success.stockLevelsUpdated') });
   } catch (error) {
-      logError('Error updating stock levels:', { error });
-      res.status(500).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
+    // If the error is about insufficient stock, it was already handled above
+    if (error instanceof Error && error.message.includes('Insufficient stock')) {
+      // This shouldn't happen due to validation above, but just in case
+      logWarn(`Insufficient stock during transaction: ${error.message}`);
+      return res.status(400).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
+    }
+    logError('Error updating stock levels:', { error });
+    res.status(500).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
   }
 });
 
@@ -349,7 +346,7 @@ stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Requ
     });
     
     // Then check which stock items exist
-    const stockItemIds = [...new Set(allStockConsumptions.map(sc => sc.stockItemId))];
+    const stockItemIds = [...new Set(allStockConsumptions.map((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => sc.stockItemId))];
     const existingStockItems = await prisma.stockItem.findMany({
       where: {
         id: { in: stockItemIds }
@@ -359,13 +356,13 @@ stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Requ
       }
     });
     
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
-    
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
+   
     // Filter to only include orphaned references
-    const orphanedConsumptions = allStockConsumptions.filter(sc => !existingStockItemIds.has(sc.stockItemId));
-    
+    const orphanedConsumptions = allStockConsumptions.filter((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => !existingStockItemIds.has(sc.stockItemId));
+   
     // Format the response to match the original structure
-    const formattedOrphanedConsumptions = orphanedConsumptions.map(consumption => ({
+    const formattedOrphanedConsumptions = orphanedConsumptions.map((consumption: StockConsumption & { variant: ProductVariant & { product: Product } }) => ({
       id: consumption.id,
       variantId: consumption.variantId,
       stockItemId: consumption.stockItemId,
@@ -397,7 +394,7 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     });
     
     // Then check which stock items exist
-    const stockItemIds = [...new Set(allStockConsumptions.map(sc => sc.stockItemId))];
+    const stockItemIds = [...new Set(allStockConsumptions.map((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => sc.stockItemId))];
     const existingStockItems = await prisma.stockItem.findMany({
       where: {
         id: { in: stockItemIds }
@@ -407,13 +404,13 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
       }
     });
     
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
-    
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
+   
     // Filter to only include orphaned references
-    const orphanedConsumptions = allStockConsumptions.filter(sc => !existingStockItemIds.has(sc.stockItemId));
-    
+    const orphanedConsumptions = allStockConsumptions.filter((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => !existingStockItemIds.has(sc.stockItemId));
+   
     // Format the response to match the original structure
-    const formattedOrphanedConsumptions = orphanedConsumptions.map(consumption => ({
+    const formattedOrphanedConsumptions = orphanedConsumptions.map((consumption: StockConsumption & { variant: ProductVariant & { product: Product } }) => ({
       id: consumption.id,
       variantId: consumption.variantId,
       stockItemId: consumption.stockItemId,
@@ -430,7 +427,7 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     }
     
     // Extract the IDs of orphaned consumption records
-    const orphanedIds = formattedOrphanedConsumptions.map(oc => oc.id);
+    const orphanedIds = formattedOrphanedConsumptions.map((oc: { id: number; variantId: number; stockItemId: string; quantity: number; variantName: string; productName: string }) => oc.id);
     
     // Delete the orphaned consumption records
     await prisma.stockConsumption.deleteMany({
@@ -466,7 +463,7 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
     });
     
     // Then check which stock items exist
-    const stockItemIds = [...new Set(allStockConsumptions.map(sc => sc.stockItemId))];
+    const stockItemIds = [...new Set(allStockConsumptions.map((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => sc.stockItemId))];
     const existingStockItems = await prisma.stockItem.findMany({
       where: {
         id: { in: stockItemIds }
@@ -476,13 +473,13 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
       }
     });
     
-    const existingStockItemIds = new Set(existingStockItems.map(item => item.id));
-    
+    const existingStockItemIds = new Set(existingStockItems.map((item: { id: string }) => item.id));
+   
     // Filter to only include orphaned references
-    const orphanedConsumptions = allStockConsumptions.filter(sc => !existingStockItemIds.has(sc.stockItemId));
-    
+    const orphanedConsumptions = allStockConsumptions.filter((sc: StockConsumption & { variant: ProductVariant & { product: Product } }) => !existingStockItemIds.has(sc.stockItemId));
+   
     // Format the response to match the original structure
-    const formattedOrphanedConsumptions = orphanedConsumptions.map(consumption => ({
+    const formattedOrphanedConsumptions = orphanedConsumptions.map((consumption: StockConsumption & { variant: ProductVariant & { product: Product } }) => ({
       id: consumption.id,
       variantId: consumption.variantId,
       stockItemId: consumption.stockItemId,
@@ -519,10 +516,10 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
       details: {
         orphanedConsumptions: formattedOrphanedConsumptions,
         negativeStockItems,
-        variantsWithoutConsumption: variantsWithoutConsumption.map(v => ({
-          id: v.id,
-          name: v.name,
-          productName: v.product.name
+        variantsWithoutConsumption: variantsWithoutConsumption.map((v: ProductVariant & { product: Product }) => ({
+        	id: v.id,
+        	name: v.name,
+        	productName: v.product.name
         }))
       }
     };

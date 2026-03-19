@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma';
 import type { OrderSession } from '../types';
 import { logError, logDebug } from '../utils/logger';
@@ -20,7 +21,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
     logDebug('[GET /api/order-sessions/current] Fetching session', { userId, correlationId: (req as any).correlationId });
 
     // Use a transaction to ensure atomic session restoration
-    const orderSession = await prisma.$transaction(async (tx) => {
+    const orderSession = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // First try to find an active session
       let session = await tx.orderSession.findFirst({
         where: {
@@ -46,18 +47,25 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
         });
         
         if (session) {
-          const itemsCount = safeJsonParse(session.items, []).length;
-          logDebug('[GET /api/order-sessions/current] Found pending_logout session, restoring to active', { sessionId: session.id, itemsCount, correlationId: (req as any).correlationId });
-          // Restore the session to active within the same transaction
-          session = await tx.orderSession.update({
-            where: { id: session.id },
-            data: {
-              status: 'active',
-              logoutTime: null,
-              updatedAt: new Date()
-            }
-          });
-          logDebug('[GET /api/order-sessions/current] Successfully restored session to active', { sessionId: session.id, correlationId: (req as any).correlationId });
+        	const itemsCount = safeJsonParse(session.items, []).length;
+        	logDebug('[GET /api/order-sessions/current] Found pending_logout session, restoring to active', { sessionId: session.id, itemsCount, correlationId: (req as any).correlationId });
+        	// Restore the session to active within the same transaction with version-based optimistic locking
+        	const currentVersion = session.version;
+        	const updateResult = await tx.orderSession.updateMany({
+        		where: { id: session.id, version: currentVersion },
+        		data: {
+        			status: 'active',
+        			logoutTime: null,
+        			updatedAt: new Date(),
+        			version: { increment: 1 }
+        		}
+        	});
+        	if (updateResult.count === 0) {
+        		throw new Error('CONFLICT: Order session was modified by another transaction');
+        	}
+        	// Fetch the updated session to return
+        	session = await tx.orderSession.findUnique({ where: { id: session.id } });
+        	logDebug('[GET /api/order-sessions/current] Successfully restored session to active', { sessionId: session!.id, correlationId: (req as any).correlationId });
         } else {
           logDebug('[GET /api/order-sessions/current] No pending_logout session found', { correlationId: (req as any).correlationId });
         }
@@ -106,7 +114,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
     logDebug('[POST /api/order-sessions/current] Request received', { userId, itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
 
     // Use a transaction to ensure atomic session operations
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Check if the user already has an active order session
       let orderSession = await tx.orderSession.findFirst({
         where: {
@@ -118,16 +126,22 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
       let wasCreated = false;
 
       if (orderSession) {
-        logDebug('[POST /api/order-sessions/current] Found active session, updating', { sessionId: orderSession.id, itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
-        // Update existing active session
-        orderSession = await tx.orderSession.update({
-          where: { id: orderSession.id },
-          data: {
-            items: JSON.stringify(items),
-            status: 'active',
-            updatedAt: new Date()
-          }
-        });
+      	logDebug('[POST /api/order-sessions/current] Found active session, updating', { sessionId: orderSession.id, itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
+      	// Update existing active session with version-based optimistic locking
+      	const currentVersion = orderSession.version;
+      	const updateResult = await tx.orderSession.updateMany({
+      		where: { id: orderSession.id, version: currentVersion },
+      		data: {
+      			items: JSON.stringify(items),
+      			status: 'active',
+      			updatedAt: new Date(),
+      			version: { increment: 1 }
+      		}
+      	});
+      	if (updateResult.count === 0) {
+      		throw new Error('CONFLICT: Order session was modified by another transaction');
+      	}
+      	orderSession = await tx.orderSession.findUnique({ where: { id: orderSession.id } });
       } else {
         logDebug('[POST /api/order-sessions/current] No active session found, checking for pending_logout session', { correlationId: (req as any).correlationId });
         // Check for pending_logout session to restore
@@ -142,29 +156,35 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
           const existingItemsCount = safeJsonParse(pendingLogoutSession.items, []).length;
           logDebug('[POST /api/order-sessions/current] Found pending_logout session', { sessionId: pendingLogoutSession.id, existingItemsCount, correlationId: (req as any).correlationId });
 
-          // Restore pending_logout session (treat as update)
+          // Restore pending_logout session (treat as update) with version-based optimistic locking
           // Preserve existing items when restoring, only update if new items are provided
           const updateData: any = {
-            status: 'active',
-            logoutTime: null,
-            updatedAt: new Date()
+          	status: 'active',
+          	logoutTime: null,
+          	updatedAt: new Date(),
+          	version: { increment: 1 }
           };
-
+       
           // Only update items if the request contains non-empty items
           // This prevents overwriting the session items when frontend sends empty array after re-login
           if (items && items.length > 0) {
-            logDebug('[POST /api/order-sessions/current] Updating items', { newItemsCount: items.length, correlationId: (req as any).correlationId });
-            updateData.items = JSON.stringify(items);
+          	logDebug('[POST /api/order-sessions/current] Updating items', { newItemsCount: items.length, correlationId: (req as any).correlationId });
+          	updateData.items = JSON.stringify(items);
           } else {
-            logDebug('[POST /api/order-sessions/current] Preserving existing items (request has empty items)', { existingItemsCount, correlationId: (req as any).correlationId });
+          	logDebug('[POST /api/order-sessions/current] Preserving existing items (request has empty items)', { existingItemsCount, correlationId: (req as any).correlationId });
           }
-
-          orderSession = await tx.orderSession.update({
-            where: { id: pendingLogoutSession.id },
-            data: updateData
+       
+          const currentVersion = pendingLogoutSession.version;
+          const updateResult = await tx.orderSession.updateMany({
+          	where: { id: pendingLogoutSession.id, version: currentVersion },
+          	data: updateData
           });
-          logDebug('[POST /api/order-sessions/current] Successfully restored session to active', { sessionId: orderSession.id, correlationId: (req as any).correlationId });
-          const finalItemsCount = safeJsonParse(orderSession.items, []).length;
+          if (updateResult.count === 0) {
+          	throw new Error('CONFLICT: Order session was modified by another transaction');
+          }
+          orderSession = await tx.orderSession.findUnique({ where: { id: pendingLogoutSession.id } });
+          logDebug('[POST /api/order-sessions/current] Successfully restored session to active', { sessionId: orderSession!.id, correlationId: (req as any).correlationId });
+          const finalItemsCount = safeJsonParse(orderSession!.items, []).length;
           logDebug('[POST /api/order-sessions/current] Final items count', { finalItemsCount, correlationId: (req as any).correlationId });
         } else {
           logDebug('[POST /api/order-sessions/current] No pending_logout session found, creating new session', { itemsCount: items?.length || 0, correlationId: (req as any).correlationId });
@@ -188,6 +208,9 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
 
     // Return 201 for new sessions, 200 for updates
     const statusCode = result.wasCreated ? 201 : 200;
+    if (!result.orderSession) {
+      return res.status(500).json({ error: t('errors:orderSessions.createUpdateFailed') });
+    }
     logDebug('[POST /api/order-sessions/current] Returning response', { statusCode, sessionId: result.orderSession.id, correlationId: (req as any).correlationId });
     res.status(statusCode).json(result.orderSession);
   } catch (error) {
@@ -212,7 +235,7 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
     const { items } = req.body as { items: OrderSession['items'] };
 
     // Use transaction to prevent race conditions
-    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+    const updatedOrderSession = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Find the user's active order session
       const orderSession = await tx.orderSession.findFirst({
         where: {
@@ -225,14 +248,20 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
         throw new Error('NOT_FOUND');
       }
 
-      // Update the existing session
-      return await tx.orderSession.update({
-        where: { id: orderSession.id },
-        data: {
-          items: JSON.stringify(items),
-          updatedAt: new Date()
-        }
+      // Update the existing session with version-based optimistic locking
+      const currentVersion = orderSession.version;
+      const updateResult = await tx.orderSession.updateMany({
+      	where: { id: orderSession.id, version: currentVersion },
+      	data: {
+      		items: JSON.stringify(items),
+      		updatedAt: new Date(),
+      		version: { increment: 1 }
+      	}
       });
+      if (updateResult.count === 0) {
+      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      }
+      return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
 
     res.json(updatedOrderSession);
@@ -261,7 +290,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
     logDebug('[PUT /api/order-sessions/current/logout] Logout request received', { userId, correlationId: (req as any).correlationId });
 
     // Use transaction to prevent race conditions
-    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+    const updatedOrderSession = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Find the user's active order session
       const orderSession = await tx.orderSession.findFirst({
         where: {
@@ -278,20 +307,26 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
       const itemsCount = safeJsonParse(orderSession.items, []).length;
       logDebug('[PUT /api/order-sessions/current/logout] Found active session, marking as pending_logout', { sessionId: orderSession.id, itemsCount, correlationId: (req as any).correlationId });
 
-      // Update the session to pending logout status - PRESERVE ITEMS
-      const updated = await tx.orderSession.update({
-        where: { id: orderSession.id },
-        data: {
-          status: 'pending_logout',
-          logoutTime: new Date(),
-          updatedAt: new Date()
-        }
+      // Update the session to pending logout status - PRESERVE ITEMS - with version-based optimistic locking
+      const currentVersion = orderSession.version;
+      const updateResult = await tx.orderSession.updateMany({
+      	where: { id: orderSession.id, version: currentVersion },
+      	data: {
+      		status: 'pending_logout',
+      		logoutTime: new Date(),
+      		updatedAt: new Date(),
+      		version: { increment: 1 }
+      	}
       });
-
-      const updatedItemsCount = safeJsonParse(updated.items, []).length;
-      logDebug('[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout', { sessionId: updated.id, itemsCount: updatedItemsCount, status: updated.status, correlationId: (req as any).correlationId });
-
-      return updated;
+      if (updateResult.count === 0) {
+      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      }
+      const updated = await tx.orderSession.findUnique({ where: { id: orderSession.id } });
+    
+      const updatedItemsCount = safeJsonParse(updated!.items, []).length;
+      logDebug('[PUT /api/order-sessions/current/logout] Successfully marked session as pending_logout', { sessionId: updated!.id, itemsCount: updatedItemsCount, status: updated!.status, correlationId: (req as any).correlationId });
+    
+      return updated!;
     });
 
     res.json(updatedOrderSession);
@@ -318,7 +353,7 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
     }
 
     // Use transaction to prevent race conditions
-    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+    const updatedOrderSession = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Find the user's active order session
       const orderSession = await tx.orderSession.findFirst({
         where: {
@@ -331,14 +366,20 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
         throw new Error('NOT_FOUND');
       }
 
-      // Update the session to completed status
-      return await tx.orderSession.update({
-        where: { id: orderSession.id },
-        data: {
-          status: 'completed',
-          updatedAt: new Date()
-        }
+      // Update the session to completed status with version-based optimistic locking
+      const currentVersion = orderSession.version;
+      const updateResult = await tx.orderSession.updateMany({
+      	where: { id: orderSession.id, version: currentVersion },
+      	data: {
+      		status: 'completed',
+      		updatedAt: new Date(),
+      		version: { increment: 1 }
+      	}
       });
+      if (updateResult.count === 0) {
+      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      }
+      return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
 
     res.json(updatedOrderSession);
@@ -365,7 +406,7 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
     }
 
     // Use transaction to prevent race conditions
-    const updatedOrderSession = await prisma.$transaction(async (tx) => {
+    const updatedOrderSession = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Find the user's active order session
       const orderSession = await tx.orderSession.findFirst({
         where: {
@@ -378,14 +419,20 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
         throw new Error('NOT_FOUND');
       }
 
-      // Update the session to completed status (since it's now assigned to a tab)
-      return await tx.orderSession.update({
-        where: { id: orderSession.id },
-        data: {
-          status: 'completed',
-          updatedAt: new Date()
-        }
+      // Update the session to completed status (since it's now assigned to a tab) with version-based optimistic locking
+      const currentVersion = orderSession.version;
+      const updateResult = await tx.orderSession.updateMany({
+      	where: { id: orderSession.id, version: currentVersion },
+      	data: {
+      		status: 'completed',
+      		updatedAt: new Date(),
+      		version: { increment: 1 }
+      	}
       });
+      if (updateResult.count === 0) {
+      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      }
+      return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
 
     res.json(updatedOrderSession);

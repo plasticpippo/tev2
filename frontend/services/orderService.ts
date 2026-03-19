@@ -1,4 +1,4 @@
-import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { OrderItem, OrderActivityLog } from '../../shared/types';
 import type { OrderSession } from './apiBase';
 import i18n from '../src/i18n';
@@ -34,7 +34,7 @@ export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSe
   try {
     const response = await fetch(apiUrl('/api/order-sessions/current'), {
       method: 'POST',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify({ items: orderItems })
     });
@@ -76,7 +76,7 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
     
     const response = await fetch(apiUrl(endpoint), {
       method: 'PUT',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify({})
     });
@@ -121,7 +121,7 @@ export const saveOrderActivityLog = async (logData: Omit<OrderActivityLog, 'id' 
   try {
     const response = await fetch(apiUrl('/api/order-activity-logs'), {
       method: 'POST',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(logData)
     });

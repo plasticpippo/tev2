@@ -140,6 +140,26 @@ export function formatMoney(value: number, locale?: string): string {
 }
 
 /**
+ * Converts a Prisma Decimal value to a JavaScript number
+ * Handles various Decimal representations from Prisma queries
+ * @param value - The value to convert (can be Decimal object, number, null, or undefined)
+ * @returns The numeric value, or 0 for null/undefined
+ */
+export function decimalToNumber(value: unknown): number {
+  if (value === null || value === undefined) return 0;
+  if (typeof value === 'number') return value;
+  // Handle Prisma Decimal object with 'value' property
+  if (typeof value === 'object' && value !== null && 'value' in value) {
+    return Number((value as { value: unknown }).value);
+  }
+  // Handle Decimal objects with toNumber method
+  if (typeof value === 'object' && value !== null && 'toNumber' in value && typeof (value as { toNumber: () => number }).toNumber === 'function') {
+    return (value as { toNumber: () => number }).toNumber();
+  }
+  return Number(value);
+}
+
+/**
  * Distributes a monetary value into equal parts (useful for split payments)
  * Distributes the remainder to ensure the total equals the original value
  * @param value - The total monetary value to distribute

@@ -15,11 +15,7 @@
     "userInactive": "User account is inactive",
     "passwordMismatch": "Current password is incorrect",
     "passwordTooWeak": "New password does not meet security requirements"
-  },
-  "csrf": {
-    "noToken": "CSRF token is missing. Please refresh the page and try again.",
-    "invalidToken": "Invalid CSRF token. Please refresh the page and try again."
-  },
+   },
   "authorization": {
     "tableIdRequired": "Table ID is required",
     "tableNotFound": "Table not found",

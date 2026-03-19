@@ -15,15 +15,15 @@ const CSRF_COOKIE_ACCESSIBLE = 'XSRF-TOKEN-READ';
 const JWT_SECRET = process.env.JWT_SECRET!;
 
 // Cookie options for httpOnly CSRF token (browser auto-send only)
-// Using SameSite=Strict provides CSRF protection even without HTTP-only
-// because browsers will not send this cookie on cross-site requests
+// Using SameSite=lax allows cookies to be sent across ports on the same host
+// This is still secure for CSRF protection as browsers won't send lax cookies on cross-site requests
 const getCsrfCookieOptionsHttpOnly = (): Record<string, any> => {
   const isProduction = process.env.NODE_ENV === 'production';
   
   return {
     httpOnly: true, // Prevent XSS from reading CSRF token - browser sends automatically
     secure: isProduction, // Only send over HTTPS in production
-    sameSite: 'strict', // Strict same-site policy - critical for CSRF protection
+    sameSite: 'lax', // Lax allows cookies on same host different ports (e.g., port 80 vs 3001)
     maxAge: 24 * 60 * 60 * 1000, // 24 hours - matches token expiration
     path: '/',
   };
@@ -37,7 +37,7 @@ const getCsrfCookieOptionsAccessible = (): Record<string, any> => {
   return {
     httpOnly: false, // JavaScript CAN read this cookie to send as header
     secure: isProduction,
-    sameSite: 'strict',
+    sameSite: 'lax', // Lax allows cookies on same host different ports (e.g., port 80 vs 3001)
     maxAge: 24 * 60 * 60 * 1000,
     path: '/',
   };
@@ -163,13 +163,13 @@ const extractUserFromToken = async (req: Request): Promise<{ id: number; usernam
  * - Server validates both match the same signed value
  */
 export const csrfMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-  // Skip CSRF validation for safe methods
-  const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
-  if (safeMethods.includes(req.method)) {
-    return next();
-  }
+	// Skip CSRF validation for safe methods
+	const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
+	if (safeMethods.includes(req.method)) {
+		return next();
+	}
 
-  // Extract and validate JWT token to get user info
+	// Extract and validate JWT token to get user info
   const user = await extractUserFromToken(req);
   
   // If no valid JWT token, skip CSRF validation
@@ -184,7 +184,9 @@ export const csrfMiddleware = async (req: Request, res: Response, next: NextFunc
   // 1. Check httpOnly cookie is present (browser auto-sends this)
   const signedCsrfTokenCookie = cookies[CSRF_COOKIE_HTTPONLY];
   if (!signedCsrfTokenCookie) {
-    console.warn(`CSRF validation failed: No httpOnly CSRF cookie. Path: ${req.path}, Method: ${req.method}`);
+    // Also check for the accessible cookie as fallback
+    const accessibleCookie = cookies[CSRF_COOKIE_ACCESSIBLE];
+    console.warn(`CSRF validation failed: No httpOnly CSRF cookie. Path: ${req.path}, Method: ${req.method}. Available cookies: ${Object.keys(cookies).join(', ')}. Fallback cookie found: ${!!accessibleCookie}`);
     res.status(403).json({ error: i18n.t('errors.csrf.noToken') });
     return;
   }

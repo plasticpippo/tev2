@@ -1,6 +1,6 @@
 import type { Transaction, User, Till } from '../types';
 import { prisma } from '../prisma';
-import { addMoney, subtractMoney, roundMoney } from '../utils/money';
+import { addMoney, subtractMoney, roundMoney, decimalToNumber } from '../utils/money';
 
 const VALID_PAYMENT_METHODS = ['cash', 'card', 'bank_transfer', 'other', 'split'] as const;
 
@@ -59,17 +59,23 @@ export const calculateDailyClosingSummary = async (
 
   // Process each transaction to build the summary
   for (const transaction of transactions) {
+    // Convert Decimal to number
+    const txTotal = decimalToNumber(transaction.total);
+    const txTax = decimalToNumber(transaction.tax);
+    const txTip = decimalToNumber(transaction.tip);
+    const txDiscount = decimalToNumber(transaction.discount);
+    
     // Update basic totals
     summary.transactions++;
     
     // Track gross sales (total before discount)
-    summary.grossSales = addMoney(summary.grossSales, transaction.total);
+    summary.grossSales = addMoney(summary.grossSales, txTotal);
     
     // Track discounts
-    summary.totalDiscounts = addMoney(summary.totalDiscounts, transaction.discount || 0);
+    summary.totalDiscounts = addMoney(summary.totalDiscounts, txDiscount || 0);
     
-    summary.totalTax = addMoney(summary.totalTax, transaction.tax);
-    summary.totalTips = addMoney(summary.totalTips, transaction.tip);
+    summary.totalTax = addMoney(summary.totalTax, txTax);
+    summary.totalTips = addMoney(summary.totalTips, txTip);
 
     // Update payment method stats
     const normalizedPaymentMethod = normalizePaymentMethod(transaction.paymentMethod);
@@ -82,7 +88,7 @@ export const calculateDailyClosingSummary = async (
     summary.paymentMethods[normalizedPaymentMethod].count++;
     summary.paymentMethods[normalizedPaymentMethod].total = addMoney(
       summary.paymentMethods[normalizedPaymentMethod].total, 
-      transaction.total
+      txTotal
     );
 
     // Update till stats
@@ -94,7 +100,7 @@ export const calculateDailyClosingSummary = async (
       };
     }
     summary.tills[tillKey].transactions++;
-    summary.tills[tillKey].total = addMoney(summary.tills[tillKey].total, transaction.total);
+    summary.tills[tillKey].total = addMoney(summary.tills[tillKey].total, txTotal);
   }
 
   // Calculate net sales (gross - discounts)

@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import i18n from '../i18n';
+import { StockConsumption, ProductVariant, Product, StockItem, Category } from '@prisma/client';
 
 export const consumptionReportsRouter = express.Router();
 
@@ -82,8 +83,8 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
     });
 
     // Create a map of variantId to consumption details for quick lookup
-    const variantConsumptionMap = new Map<number, typeof stockConsumptions>();
-    stockConsumptions.forEach(consumption => {
+    const variantConsumptionMap = new Map<number, (StockConsumption & { variant: ProductVariant & { product: Product }; stockItem: StockItem })[]>();
+    stockConsumptions.forEach((consumption: StockConsumption & { variant: ProductVariant & { product: Product }; stockItem: StockItem }) => {
       if (!variantConsumptionMap.has(consumption.variantId)) {
         variantConsumptionMap.set(consumption.variantId, []);
       }
@@ -141,7 +142,7 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
       }
     });
 
-    const categoryMap = new Map(categories.map(cat => [cat.id, cat.name]));
+    const categoryMap = new Map(categories.map((cat: { id: number; name: string }) => [cat.id, cat.name]));
 
     // Update category names in the result
     const finalResult = consumptionTotals.map(item => ({

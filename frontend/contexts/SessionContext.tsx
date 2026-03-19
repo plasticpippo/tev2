@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useCallback } from 'react';
+import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { User } from '../../shared/types';
 import * as api from '../services/apiService';
 import { clearAllSubscribers } from '../services/apiBase';
@@ -47,22 +47,26 @@ export const SessionProvider: React.FC<SessionProviderProps> = ({ children }) =>
   };
 
   const handleLogout = async () => {
-    if (currentUser) {
-      try {
+    // Always clear localStorage and reset state, regardless of API call success
+    // This ensures robust logout even if CSRF token is missing/expired
+    try {
+      if (currentUser) {
         const result = await api.updateOrderSessionStatus('logout');
         if (!result) {
           console.warn('Order session logout status update failed or user not authenticated');
         }
-      } catch (error) {
-        console.error('Failed to update order session status on logout:', error);
       }
+    } catch (error) {
+      // Log the error but continue with logout - CSRF token might be missing/expired
+      console.warn('Failed to update order session status on logout (this is expected if session expired):', error);
+    } finally {
+      // Always clear all subscribers and reset state
+      clearAllSubscribers();
+      setCurrentUser(null);
+      // Clear stored user from localStorage using API service
+      await api.logout();
+      setIsAdminPanelOpen(false);
     }
-    // Clear all subscribers to prevent API calls from in-flight operations after logout
-    clearAllSubscribers();
-    setCurrentUser(null);
-    // Clear stored user from localStorage using API service
-    await api.logout();
-    setIsAdminPanelOpen(false);
   };
 
   const handleTillSelect = (tillId: number) => {

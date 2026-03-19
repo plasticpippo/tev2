@@ -1,14 +1,361 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Transaction } from '../types';
-import { logPaymentEvent, logError, logInfo } from '../utils/logger';
+import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
+import { logPaymentEvent, logError, logInfo, logDebug } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
-import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney } from '../utils/money';
+import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber } from '../utils/money';
 import i18n from '../i18n';
+import { requireRole } from '../middleware/authorization';
 
 export const transactionsRouter = express.Router();
+
+// POST /api/transactions/process-payment - Atomic payment processing
+// This endpoint handles the entire payment flow in a single database transaction:
+// 1. Create transaction record
+// 2. Decrement stock levels
+// 3. Complete order session
+// 4. Delete tab (if exists)
+// 5. Update table status (if exists)
+// If ANY step fails, ALL changes are rolled back
+transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
+  const correlationId = (req as any).correlationId;
+  
+  try {
+    // Get settings to determine tax mode
+    let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
+    try {
+      const settings = await prisma.settings.findFirst();
+      taxMode = (settings?.taxMode || 'exclusive') as 'inclusive' | 'exclusive' | 'none';
+    } catch (settingsError) {
+      logError('Failed to fetch settings for tax mode', { correlationId });
+    }
+    
+    const {
+      items,
+      subtotal,
+      tax,
+      tip,
+      paymentMethod,
+      userId,
+      userName,
+      tillId,
+      tillName,
+      discount,
+      discountReason,
+      activeTabId,
+      tableId,
+      tableName
+    } = req.body;
+    
+    // Validate required fields
+    if (!items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
+    }
+    
+    if (!userId || !tillId) {
+      return res.status(400).json({ error: 'Missing userId or tillId' });
+    }
+    
+    // Validate all items have required properties
+    for (const item of items) {
+      if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
+        return res.status(400).json({ error: i18n.t('transactions.itemNameRequired') });
+      }
+      if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
+        return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
+      }
+    }
+    
+    // Recalculate and validate totals (same logic as regular transaction creation)
+    let calculatedSubtotal = 0;
+    let calculatedTax = 0;
+    
+    for (const item of items) {
+      const itemPrice = item.price;
+      const itemQuantity = item.quantity;
+      const taxRate = item.effectiveTaxRate ?? 0;
+      
+      let itemSubtotal: number;
+      let itemTax: number = 0;
+      
+      if (taxMode === 'inclusive' && taxRate > 0) {
+        const preTaxPrice = divideMoney(itemPrice, 1 + taxRate);
+        itemSubtotal = multiplyMoney(preTaxPrice, itemQuantity);
+        itemTax = multiplyMoney(subtractMoney(itemPrice, preTaxPrice), itemQuantity);
+      } else if (taxMode === 'exclusive' && taxRate > 0) {
+        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
+        itemTax = multiplyMoney(itemSubtotal, taxRate);
+      } else {
+        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
+      }
+      
+      calculatedSubtotal = addMoney(calculatedSubtotal, itemSubtotal);
+      calculatedTax = addMoney(calculatedTax, itemTax);
+    }
+    
+    // Validate subtotal matches
+    const subtotalDifference = Math.abs(subtractMoney(subtotal || 0, calculatedSubtotal));
+    if (subtotalDifference > 0.01) {
+      return res.status(400).json({ 
+        error: `Subtotal mismatch. Expected: ${formatMoney(calculatedSubtotal)}, Received: ${formatMoney(subtotal || 0)}` 
+      });
+    }
+    
+    // Validate tax matches
+    let validatedTax = calculatedTax;
+    if (tax === 0) {
+      validatedTax = 0;
+    } else {
+      const taxDifference = Math.abs(subtractMoney(tax || 0, calculatedTax));
+      if (taxDifference > 0.01) {
+        return res.status(400).json({ 
+          error: `Tax mismatch. Expected: ${formatMoney(calculatedTax)}, Received: ${formatMoney(tax || 0)}` 
+        });
+      }
+      validatedTax = tax || 0;
+    }
+    
+    // Calculate final total
+    const discountAmount = discount || 0;
+    const preDiscountTotal = addMoney(addMoney(calculatedSubtotal, validatedTax), tip || 0);
+    const finalTotal = subtractMoney(preDiscountTotal, discountAmount);
+    const finalStatus = finalTotal <= 0 && discountAmount > 0 ? 'complimentary' : 'completed';
+    
+    // Execute ALL operations in a single atomic transaction
+    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    	// 0. Collect stock consumptions INSIDE transaction to prevent race conditions
+    	const consumptions = new Map<string, number>();
+    	for (const item of items) {
+    		const product = await tx.product.findUnique({
+    			where: { id: item.productId },
+    			include: { variants: { where: { id: item.variantId }, include: { stockConsumption: true } } }
+    		});
+   
+    		if (product && product.variants[0]) {
+    			for (const sc of product.variants[0].stockConsumption) {
+    				const currentQty = consumptions.get(sc.stockItemId) || 0;
+    				consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
+    			}
+    		}
+    	}
+   
+    	// 1. Create the transaction
+      const transaction = await tx.transaction.create({
+        data: {
+          items: JSON.stringify(items),
+          subtotal: calculatedSubtotal,
+          tax: validatedTax,
+          tip: tip || 0,
+          total: finalTotal,
+          discount: discountAmount,
+          discountReason: discountReason || null,
+          status: finalStatus,
+          paymentMethod,
+          userId,
+          userName,
+          tillId,
+          tillName,
+          createdAt: new Date()
+        }
+      });
+      
+      // 2. Decrement stock levels (if any consumptions)
+      if (consumptions.size > 0) {
+      	for (const [stockItemId, quantity] of consumptions) {
+      		const updateResult = await tx.stockItem.updateMany({
+      			where: {
+      				id: stockItemId,
+      				quantity: { gte: quantity }
+      			},
+      			data: { quantity: { decrement: quantity } }
+      		});
+      		if (updateResult.count === 0) {
+      			// Either stock item doesn't exist or insufficient quantity
+      			const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
+      			if (!stockItem) {
+      				throw new Error(`Stock item not found: ${stockItemId}`);
+      			}
+      			throw new Error(`Insufficient stock for item ${stockItem.name}. Available: ${stockItem.quantity}, Requested: ${quantity}`);
+      		}
+      	}
+      }
+      
+      // 3. Complete order session with version-based optimistic locking
+      const activeSession = await tx.orderSession.findFirst({
+      	where: { userId, status: 'active' }
+      });
+      if (activeSession) {
+      	const sessionResult = await tx.orderSession.updateMany({
+      		where: { id: activeSession.id, version: activeSession.version },
+      		data: { status: 'completed', updatedAt: new Date(), version: { increment: 1 } }
+      	});
+      	if (sessionResult.count === 0) {
+      		throw new Error('CONFLICT: Order session was modified by another transaction');
+      	}
+      }
+      
+      // 4. Delete tab if exists
+      if (activeTabId) {
+      	await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
+      		logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
+      	});
+      }
+      
+      // 5. Update table status if assigned
+      if (tableId) {
+        await tx.table.update({
+          where: { id: tableId },
+          data: { status: 'available' }
+        });
+      }
+      
+      return transaction;
+    });
+    
+    // Log payment success
+    logPaymentEvent('PROCESSED', finalTotal, 'EUR', true, {
+      orderId: result.id,
+      paymentMethod,
+      itemCount: items.length,
+      correlationId,
+    });
+    
+    // Return the created transaction with converted decimals
+    res.status(201).json({
+      ...result,
+      subtotal: decimalToNumber(result.subtotal),
+      tax: decimalToNumber(result.tax),
+      tip: decimalToNumber(result.tip),
+      total: decimalToNumber(result.total),
+      discount: decimalToNumber(result.discount),
+    });
+    
+  } catch (error) {
+    logPaymentEvent('FAILED', req.body?.total || 0, 'EUR', false, {
+      orderId: 'failed',
+      reason: error instanceof Error ? error.message : 'Unknown error',
+      correlationId,
+    });
+    
+    logError(error instanceof Error ? error : 'Atomic payment processing failed', { correlationId });
+    
+    // If it's a known error type, return appropriate status
+    if (error instanceof Error) {
+      if (error.message.includes('Insufficient stock')) {
+        return res.status(400).json({ error: error.message });
+      }
+    }
+    
+    res.status(500).json({ error: i18n.t('transactions.createFailed') });
+  }
+});
+
+// GET /api/transactions/reconcile - Reconcile transactions with stock levels (MUST be before /:id route)
+transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    // Get all completed transactions
+    const transactions = await prisma.transaction.findMany({
+      where: { status: 'completed' },
+      orderBy: { createdAt: 'desc' }
+    });
+    
+    // Get all product variants with stock consumption
+    const variants = await prisma.productVariant.findMany({
+      include: {
+        stockConsumption: true,
+        product: true
+      }
+    });
+    
+    // Build stock consumption map: stockItemId -> total consumed
+    const stockConsumptionMap = new Map<string, number>();
+    
+    for (const variant of variants) {
+      for (const consumption of variant.stockConsumption) {
+        const current = stockConsumptionMap.get(consumption.stockItemId) || 0;
+        stockConsumptionMap.set(consumption.stockItemId, current + consumption.quantity);
+      }
+    }
+    
+    // Get all stock items
+    const stockItems = await prisma.stockItem.findMany();
+    const stockItemMap = new Map(stockItems.map(item => [item.id, item]));
+    
+    // Calculate expected vs actual stock
+    const reconciliationResults = {
+      totalTransactions: transactions.length,
+      totalRevenue: 0,
+      totalTips: 0,
+      totalTax: 0,
+      stockItems: [] as {
+        stockItemId: string;
+        name: string;
+        currentQuantity: number;
+        totalConsumedFromVariants: number;
+        status: 'OK' | 'WARNING' | 'ERROR';
+        notes: string;
+      }[]
+    };
+    
+    // Sum up transaction totals
+    for (const tx of transactions) {
+      reconciliationResults.totalRevenue += decimalToNumber(tx.total);
+      reconciliationResults.totalTips += decimalToNumber(tx.tip);
+      reconciliationResults.totalTax += decimalToNumber(tx.tax);
+    }
+    
+    // Check each stock item
+    for (const [stockItemId, consumedQuantity] of stockConsumptionMap) {
+      const stockItem = stockItemMap.get(stockItemId);
+      
+      if (stockItem) {
+        // This is just tracking what was configured to be consumed
+        // We can't know the original quantity, so we mark as WARNING
+        reconciliationResults.stockItems.push({
+          stockItemId,
+          name: stockItem.name,
+          currentQuantity: stockItem.quantity,
+          totalConsumedFromVariants: consumedQuantity,
+          status: 'WARNING',
+          notes: 'Current quantity shown. Original quantity unknown - manual verification recommended.'
+        });
+      } else {
+        reconciliationResults.stockItems.push({
+          stockItemId,
+          name: 'Unknown (orphaned)',
+          currentQuantity: 0,
+          totalConsumedFromVariants: consumedQuantity,
+          status: 'ERROR',
+          notes: 'Stock item no longer exists but is referenced by product variants'
+        });
+      }
+    }
+    
+    // Add stock items that have no consumption at all (potential unused stock)
+    for (const stockItem of stockItems) {
+      if (!stockConsumptionMap.has(stockItem.id)) {
+        reconciliationResults.stockItems.push({
+          stockItemId: stockItem.id,
+          name: stockItem.name,
+          currentQuantity: stockItem.quantity,
+          totalConsumedFromVariants: 0,
+          status: 'OK',
+          notes: 'No consumption configured for this stock item'
+        });
+      }
+    }
+    
+    res.json(reconciliationResults);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error reconciling data', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Data reconciliation failed' });
+  }
+});
 
 // GET /api/transactions - Get all transactions
 transactionsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
@@ -16,9 +363,14 @@ transactionsRouter.get('/', authenticateToken, async (req: Request, res: Respons
     const transactions = await prisma.transaction.findMany({
       orderBy: { createdAt: 'desc' }
     });
-    // Parse the items JSON string back to array
-    const transactionsWithParsedItems = transactions.map(transaction => ({
+    // Parse the items JSON string back to array and convert Decimal to number
+    const transactionsWithParsedItems = transactions.map((transaction: PrismaTransaction) => ({
       ...transaction,
+      subtotal: decimalToNumber(transaction.subtotal),
+      tax: decimalToNumber(transaction.tax),
+      tip: decimalToNumber(transaction.tip),
+      total: decimalToNumber(transaction.total),
+      discount: decimalToNumber(transaction.discount),
       items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
       createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
     }));
@@ -43,9 +395,14 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
       return res.status(404).json({ error: i18n.t('transactions.notFound') });
     }
     
-    // Parse the items JSON string back to array
+    // Parse the items JSON string back to array and convert Decimal to number
     const transactionWithParsedItems = {
       ...transaction,
+      subtotal: decimalToNumber(transaction.subtotal),
+      tax: decimalToNumber(transaction.tax),
+      tip: decimalToNumber(transaction.tip),
+      total: decimalToNumber(transaction.total),
+      discount: decimalToNumber(transaction.discount),
       items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
       createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
     };
@@ -294,7 +651,17 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       }
     );
     
-    res.status(201).json(transaction);
+    // Convert Decimal to number for JSON response
+    const response = {
+      ...transaction,
+      subtotal: decimalToNumber(transaction.subtotal),
+      tax: decimalToNumber(transaction.tax),
+      tip: decimalToNumber(transaction.tip),
+      total: decimalToNumber(transaction.total),
+      discount: decimalToNumber(transaction.discount),
+    };
+    
+    res.status(201).json(response);
   } catch (error) {
     // Log payment failure
     logPaymentEvent(

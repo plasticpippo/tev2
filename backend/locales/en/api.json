@@ -34,6 +34,9 @@
     "orderSessionAssignedToTab": "Order session assigned to tab successfully",
     "layoutLoaded": "Shared layout loaded successfully"
   },
+  "auth": {
+    "csrfTokenRefreshed": "CSRF token refreshed successfully"
+  },
   "response": {
     "ok": "OK",
     "success": "Success",

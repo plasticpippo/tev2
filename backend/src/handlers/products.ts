@@ -1,6 +1,7 @@
 import express, { Request, Response } from 'express';
+import { Prisma, ProductVariant, StockConsumption, TaxRate } from '@prisma/client';
 import { prisma } from '../prisma';
-import type { Product, ProductVariant } from '../types';
+import type { Product, ProductVariant as ProductVariantType } from '../types';
 import { validateProduct, validateProductName, validateCategoryId, validateProductVariant } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { multiplyMoney } from '../utils/money';
@@ -11,7 +12,7 @@ import i18n from '../i18n';
 export const productsRouter = express.Router();
 
 // Helper: Format product variant for API response
-function formatProductVariant(variant: any) {
+function formatProductVariant(variant: ProductVariant & { stockConsumption: StockConsumption[]; taxRate: TaxRate | null }) {
   return {
     id: variant.id,
     productId: variant.productId,
@@ -342,7 +343,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
     }
     
     // Start a transaction to ensure data consistency
-    const product = await prisma.$transaction(async (tx) => {
+    const product = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Update the product fields
       const updatedProduct = await tx.product.update({
         where: { id: Number(id) },
@@ -434,7 +435,7 @@ productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Reque
     const { id } = req.params;
     
     // Start a transaction to ensure data consistency
-    await prisma.$transaction(async (tx) => {
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // First, delete stock consumption records for this product's variants
       await tx.stockConsumption.deleteMany({
         where: {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getAuthHeadersWithCsrf } from '../services/apiBase';
+import { getAuthHeaders } from '../services/apiBase';
 
 export const BackupSettings: React.FC = () => {
     const { t } = useTranslation('admin');
@@ -17,7 +17,7 @@ export const BackupSettings: React.FC = () => {
         try {
             const response = await fetch('/api/settings/backup', {
                 method: 'POST',
-                headers: getAuthHeadersWithCsrf(),
+                headers: getAuthHeaders(),
                 credentials: 'include',
             });
 

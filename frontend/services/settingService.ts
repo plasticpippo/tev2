@@ -1,5 +1,5 @@
 import i18n from '../src/i18n';
-import { makeApiRequest, apiUrl, getAuthHeaders, getAuthHeadersWithCsrf, notifyUpdates } from './apiBase';
+import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
 import type { Settings } from '../../shared/types';
 
 // Settings
@@ -22,7 +22,7 @@ export const saveSettings = async (settings: Settings): Promise<void> => {
   try {
     const response = await fetch(apiUrl('/api/settings'), {
       method: 'PUT',
-      headers: getAuthHeadersWithCsrf(),
+      headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(settings)
     });

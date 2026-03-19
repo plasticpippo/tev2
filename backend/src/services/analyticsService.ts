@@ -2,7 +2,8 @@ import { prisma } from '../prisma';
 import { AnalyticsParams } from '../utils/validation';
 import { OrderItem } from '../types';
 import { getBusinessDayRange, parseTimeString, getHoursInBusinessDay } from '../utils/businessDay';
-import { addMoney, roundMoney, divideMoney, multiplyMoney, subtractMoney } from '../utils/money';
+import { addMoney, roundMoney, divideMoney, multiplyMoney, subtractMoney, decimalToNumber } from '../utils/money';
+import { Product, Category, Transaction } from '@prisma/client';
 
 interface ProductPerformance {
   id: number;
@@ -120,7 +121,7 @@ export const aggregateProductPerformance = async (
 
   // Create a map of product data for quick lookup
   const productMap = new Map<number, { name: string; categoryId: number; categoryName: string }>();
-  products.forEach(product => {
+  products.forEach((product: Product & { category: Category | null }) => {
     productMap.set(product.id, {
       name: product.name,
       categoryId: product.categoryId,
@@ -385,11 +386,11 @@ export const aggregateHourlySales = async (
     
     const bucket = hourlyBuckets.get(label);
     if (bucket) {
-      bucket.total = addMoney(bucket.total, transaction.total);
+      bucket.total = addMoney(bucket.total, decimalToNumber(transaction.total));
       bucket.count += 1;
     }
     
-    totalSales = addMoney(totalSales, transaction.total);
+    totalSales = addMoney(totalSales, decimalToNumber(transaction.total));
     totalTransactions += 1;
   }
   
