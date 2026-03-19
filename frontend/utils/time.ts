@@ -4,35 +4,39 @@ import type { Settings } from '@shared/types';
 
 /**
  * Calculates the exact start time of the current business day.
- * It considers the automatic daily cutoff time and the last manual day closure,
- * returning whichever is more recent.
+ * The business day starts when the previous day ends, defined by businessDayEndHour.
+ * For example, if businessDayEndHour is "05:00":
+ *   - At 04:00 AM on Wednesday, we're still in Tuesday's business day
+ *   - At 06:00 AM on Wednesday, we're in Wednesday's business day
+ * It also considers the last manual day closure, returning whichever is more recent.
  * @param settings The application's settings object.
  * @returns A Date object representing the start of the current business day.
  */
 export const getBusinessDayStart = (settings: Settings): Date => {
-    const now = new Date();
-    const [hours, minutes] = settings.businessDay.autoStartTime.split(':').map(Number);
+  const now = new Date();
+  const [hours, minutes] = settings.businessDay.businessDayEndHour.split(':').map(Number);
 
-    const todayAtCutoff = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0);
-    
-    let mostRecentAutoCutoff: Date;
-    if (now >= todayAtCutoff) {
-        // If we are past today's cutoff time, the business day started today.
-        mostRecentAutoCutoff = todayAtCutoff;
-    } else {
-        // If we are before today's cutoff, the business day started yesterday.
-        const yesterdayAtCutoff = new Date(todayAtCutoff);
-        yesterdayAtCutoff.setDate(yesterdayAtCutoff.getDate() - 1);
-        mostRecentAutoCutoff = yesterdayAtCutoff;
-    }
+  const todayAtEndHour = new Date(now.getFullYear(), now.getMonth(), now.getDate(), hours, minutes, 0, 0);
 
-    if (settings.businessDay.lastManualClose) {
-        const lastManualCloseDate = new Date(settings.businessDay.lastManualClose);
-        // Return the more recent of the two dates
-        return lastManualCloseDate > mostRecentAutoCutoff ? lastManualCloseDate : mostRecentAutoCutoff;
-    }
+  let mostRecentBusinessDayStart: Date;
+  if (now >= todayAtEndHour) {
+    // If we are at or after today's businessDayEndHour, the new business day started today at that time.
+    mostRecentBusinessDayStart = todayAtEndHour;
+  } else {
+    // If we are before today's businessDayEndHour, we're still in the previous business day.
+    // The current business day started yesterday at businessDayEndHour.
+    const yesterdayAtEndHour = new Date(todayAtEndHour);
+    yesterdayAtEndHour.setDate(yesterdayAtEndHour.getDate() - 1);
+    mostRecentBusinessDayStart = yesterdayAtEndHour;
+  }
 
-    return mostRecentAutoCutoff;
+  if (settings.businessDay.lastManualClose) {
+    const lastManualCloseDate = new Date(settings.businessDay.lastManualClose);
+    // Return the more recent of the two dates
+    return lastManualCloseDate > mostRecentBusinessDayStart ? lastManualCloseDate : mostRecentBusinessDayStart;
+  }
+
+  return mostRecentBusinessDayStart;
 };
 
 /**

@@ -370,27 +370,41 @@ export const aggregateHourlySales = async (
   // Aggregate transactions into hourly buckets
   let totalSales = 0;
   let totalTransactions = 0;
-  
+
   for (const transaction of transactions) {
     const transactionDate = new Date(transaction.createdAt);
     const transactionHour = transactionDate.getHours();
-    
+
     // Calculate which hour bucket this belongs to
     let hoursSinceStart = transactionHour - startHours;
     if (hoursSinceStart < 0) {
       hoursSinceStart += 24; // Crosses midnight
     }
-    
+
     const bucketHour = (startHours + hoursSinceStart) % 24;
     const label = `${bucketHour.toString().padStart(2, '0')}:00`;
-    
+
+    // Convert Decimal fields to numbers for calculations
+    const txTotal = decimalToNumber(transaction.total);
+    const txSubtotal = decimalToNumber(transaction.subtotal);
+    const txTax = decimalToNumber(transaction.tax);
+    const txTip = decimalToNumber(transaction.tip);
+    const txDiscount = decimalToNumber(transaction.discount);
+
+    // For complimentary orders (total is 0 but discount > 0), use pre-discount amount for gross sales
+    // This ensures analytics shows actual money in till (0) while tracking the full value of items given
+    const isComplimentary = transaction.status === 'complimentary' || (txTotal === 0 && txDiscount > 0);
+    const grossAmount = isComplimentary
+      ? addMoney(addMoney(txSubtotal, txTax), txTip) // Pre-discount total for complimentary
+      : txTotal; // Regular orders use actual total
+
     const bucket = hourlyBuckets.get(label);
     if (bucket) {
-      bucket.total = addMoney(bucket.total, decimalToNumber(transaction.total));
+      bucket.total = addMoney(bucket.total, grossAmount);
       bucket.count += 1;
     }
-    
-    totalSales = addMoney(totalSales, decimalToNumber(transaction.total));
+
+    totalSales = addMoney(totalSales, grossAmount);
     totalTransactions += 1;
   }
   

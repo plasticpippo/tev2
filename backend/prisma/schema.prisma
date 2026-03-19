@@ -97,23 +97,26 @@ model Category {
 }
 
 model Transaction {
-  id               Int      @id @default(autoincrement())
-  items            Json
-  subtotal         Decimal  @db.Decimal(10, 2)
-  tax              Decimal  @db.Decimal(10, 2)
-  tip              Decimal  @db.Decimal(10, 2)
-  total            Decimal  @db.Decimal(10, 2)
-  discount         Decimal  @default(0) @db.Decimal(10, 2)
-  discountReason   String?
-  status           String   @default("completed")
-  paymentMethod    String
-  userId           Int
-  userName         String
-  tillId           Int
-  tillName         String
-  createdAt        DateTime @default(now())
-  version          Int      @default(0)
-  user             User     @relation(fields: [userId], references: [id])
+  id Int @id @default(autoincrement())
+  items Json
+  subtotal Decimal @db.Decimal(10, 2)
+  tax Decimal @db.Decimal(10, 2)
+  tip Decimal @db.Decimal(10, 2)
+  total Decimal @db.Decimal(10, 2)
+  discount Decimal @default(0) @db.Decimal(10, 2)
+  discountReason String?
+  status String @default("completed")
+  paymentMethod String
+  userId Int
+  userName String
+  tillId Int
+  tillName String
+  createdAt DateTime @default(now())
+  version Int @default(0)
+  // Idempotency protection fields
+  idempotencyKey String? @unique
+  idempotencyCreatedAt DateTime?
+  user User @relation(fields: [userId], references: [id])
 
   @@map("transactions")
 }

@@ -4,13 +4,14 @@ import type { OrderItem, TaxSettings } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 import { useSessionContext } from '../contexts/SessionContext';
 import { isMoneyValid, roundMoney, addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
+import { generateIdempotencyKey } from '../utils/idempotency';
 
 interface PaymentModalProps {
   isOpen: boolean;
   onClose: () => void;
   orderItems: OrderItem[];
   taxSettings: TaxSettings;
-  onConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string) => void;
+  onConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => void;
   assignedTable?: { name: string } | null;
 }
 
@@ -18,10 +19,11 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
   const { t } = useTranslation('pos');
   const { currentUser } = useSessionContext();
   const isAdmin = currentUser?.role === 'Admin';
-  
+
   const [tip, setTip] = useState(0);
   const [discount, setDiscount] = useState(0);
   const [discountReason, setDiscountReason] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
   
   const { subtotal, tax } = useMemo(() => {
     let subtotal = 0;
@@ -77,6 +79,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
   };
 
   const isComplimentary = finalTotal === 0 && discount > 0;
+
+  const handlePayment = (paymentMethod: string) => {
+    if (isProcessing) return; // Prevent double-clicks
+    setIsProcessing(true);
+    const idempotencyKey = generateIdempotencyKey(orderItems);
+    onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -200,16 +209,18 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
         <div className="pt-4 border-t border-slate-700 flex-shrink-0">
           <div className="flex gap-3">
             <button
-              onClick={() => onConfirmPayment('Cash', tip, discount, discountReason)}
-              className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-4 text-lg rounded-md transition"
+              onClick={() => handlePayment('Cash')}
+              disabled={isProcessing}
+              className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'} text-white font-bold py-4 text-lg rounded-md transition`}
             >
-              {t('payment.payWithCash')}
+              {isProcessing ? 'Processing...' : t('payment.payWithCash')}
             </button>
             <button
-              onClick={() => onConfirmPayment('Card', tip, discount, discountReason)}
-              className="flex-1 bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 text-lg rounded-md transition"
+              onClick={() => handlePayment('Card')}
+              disabled={isProcessing}
+              className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'} text-white font-bold py-4 text-lg rounded-md transition`}
             >
-              {t('payment.payWithCard')}
+              {isProcessing ? 'Processing...' : t('payment.payWithCard')}
             </button>
           </div>
         </div>

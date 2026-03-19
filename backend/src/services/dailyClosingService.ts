@@ -61,23 +61,31 @@ export const calculateDailyClosingSummary = async (
   for (const transaction of transactions) {
     // Convert Decimal to number
     const txTotal = decimalToNumber(transaction.total);
+    const txSubtotal = decimalToNumber(transaction.subtotal);
     const txTax = decimalToNumber(transaction.tax);
     const txTip = decimalToNumber(transaction.tip);
     const txDiscount = decimalToNumber(transaction.discount);
-    
+
     // Update basic totals
     summary.transactions++;
-    
+
+    // For complimentary orders (total is 0 but discount > 0), use pre-discount amount for gross sales
+    // This ensures analytics shows actual money in till (0) while tracking the full value of items given
+    const isComplimentary = transaction.status === 'complimentary' || (txTotal === 0 && txDiscount > 0);
+    const grossAmount = isComplimentary
+      ? addMoney(addMoney(txSubtotal, txTax), txTip) // Pre-discount total for complimentary
+      : txTotal; // Regular orders use actual total
+
     // Track gross sales (total before discount)
-    summary.grossSales = addMoney(summary.grossSales, txTotal);
-    
+    summary.grossSales = addMoney(summary.grossSales, grossAmount);
+
     // Track discounts
     summary.totalDiscounts = addMoney(summary.totalDiscounts, txDiscount || 0);
-    
+
     summary.totalTax = addMoney(summary.totalTax, txTax);
     summary.totalTips = addMoney(summary.totalTips, txTip);
 
-    // Update payment method stats
+    // Update payment method stats - use actual total (0 for complimentary)
     const normalizedPaymentMethod = normalizePaymentMethod(transaction.paymentMethod);
     if (!summary.paymentMethods[normalizedPaymentMethod]) {
       summary.paymentMethods[normalizedPaymentMethod] = {
@@ -87,11 +95,11 @@ export const calculateDailyClosingSummary = async (
     }
     summary.paymentMethods[normalizedPaymentMethod].count++;
     summary.paymentMethods[normalizedPaymentMethod].total = addMoney(
-      summary.paymentMethods[normalizedPaymentMethod].total, 
-      txTotal
+      summary.paymentMethods[normalizedPaymentMethod].total,
+      txTotal // Always use actual total (0 for complimentary)
     );
 
-    // Update till stats
+    // Update till stats - use actual total (0 for complimentary)
     const tillKey = generateTillKey(transaction.tillId, transaction.tillName);
     if (!summary.tills[tillKey]) {
       summary.tills[tillKey] = {
@@ -104,6 +112,7 @@ export const calculateDailyClosingSummary = async (
   }
 
   // Calculate net sales (gross - discounts)
+  // For complimentary orders, this will correctly show 0 since grossAmount = discount
   summary.netSales = subtractMoney(summary.grossSales, summary.totalDiscounts);
 
   return summary;

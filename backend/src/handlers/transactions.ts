@@ -12,6 +12,28 @@ import { requireRole } from '../middleware/authorization';
 
 export const transactionsRouter = express.Router();
 
+// Idempotency key expiration time in milliseconds (24 hours)
+const IDEMPOTENCY_KEY_EXPIRATION_MS = 24 * 60 * 60 * 1000;
+
+/**
+ * Validates an idempotency key.
+ * - Must be a string
+ * - Must be 8-128 characters long
+ * - Must contain only alphanumeric characters, dashes, or underscores
+ * @param key - The key to validate
+ * @returns The validated key string, or null if invalid/not provided
+ */
+function validateIdempotencyKey(key: unknown): string | null {
+  if (!key) return null;
+  if (typeof key !== 'string') return null;
+  
+  // Allow 8-128 alphanumeric characters, dashes, underscores
+  const validPattern = /^[a-zA-Z0-9_-]{8,128}$/;
+  if (!validPattern.test(key)) return null;
+  
+  return key;
+}
+
 // POST /api/transactions/process-payment - Atomic payment processing
 // This endpoint handles the entire payment flow in a single database transaction:
 // 1. Create transaction record
@@ -22,7 +44,7 @@ export const transactionsRouter = express.Router();
 // If ANY step fails, ALL changes are rolled back
 transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
   const correlationId = (req as any).correlationId;
-  
+
   try {
     // Get settings to determine tax mode
     let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
@@ -32,7 +54,11 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     } catch (settingsError) {
       logError('Failed to fetch settings for tax mode', { correlationId });
     }
-    
+
+    // Extract and validate idempotency key
+    const { idempotencyKey: rawIdempotencyKey, ...paymentData } = req.body;
+    const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
+
     const {
       items,
       subtotal,
@@ -48,7 +74,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       activeTabId,
       tableId,
       tableName
-    } = req.body;
+    } = paymentData;
     
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -124,25 +150,57 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     const finalTotal = subtractMoney(preDiscountTotal, discountAmount);
     const finalStatus = finalTotal <= 0 && discountAmount > 0 ? 'complimentary' : 'completed';
     
+    // Define type for idempotent result
+    type IdempotentResult = { isDuplicate: true; transaction: PrismaTransaction } | PrismaTransaction;
+  
     // Execute ALL operations in a single atomic transaction
-    const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-    	// 0. Collect stock consumptions INSIDE transaction to prevent race conditions
-    	const consumptions = new Map<string, number>();
-    	for (const item of items) {
-    		const product = await tx.product.findUnique({
-    			where: { id: item.productId },
-    			include: { variants: { where: { id: item.variantId }, include: { stockConsumption: true } } }
-    		});
-   
-    		if (product && product.variants[0]) {
-    			for (const sc of product.variants[0].stockConsumption) {
-    				const currentQty = consumptions.get(sc.stockItemId) || 0;
-    				consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
-    			}
-    		}
-    	}
-   
-    	// 1. Create the transaction
+    const result: IdempotentResult = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // 0. Idempotency check - if key provided, check for existing transaction
+      if (idempotencyKey) {
+        const expirationCutoff = new Date(Date.now() - IDEMPOTENCY_KEY_EXPIRATION_MS);
+  
+        const existingTransaction = await tx.transaction.findFirst({
+          where: {
+            idempotencyKey,
+            userId, // Bind to user for security - prevent cross-user replay attacks
+            idempotencyCreatedAt: {
+              gte: expirationCutoff // Only check keys within expiration window
+            }
+          }
+        });
+  
+        if (existingTransaction) {
+          // Log idempotent replay for audit purposes
+          logInfo('Idempotent replay detected', {
+            correlationId,
+            idempotencyKey,
+            transactionId: existingTransaction.id,
+            originalCreatedAt: existingTransaction.createdAt.toISOString(),
+            userId
+          });
+  
+          // Return existing transaction - will be returned with HTTP 200
+          return { isDuplicate: true, transaction: existingTransaction } as IdempotentResult;
+        }
+      }
+  
+      // 1. Collect stock consumptions INSIDE transaction to prevent race conditions
+      const consumptions = new Map<string, number>();
+      for (const item of items) {
+        const product = await tx.product.findUnique({
+          where: { id: item.productId },
+          include: { variants: { where: { id: item.variantId }, include: { stockConsumption: true } } }
+        });
+  
+        if (product && product.variants[0]) {
+          for (const sc of product.variants[0].stockConsumption) {
+            const currentQty = consumptions.get(sc.stockItemId) || 0;
+            consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
+          }
+        }
+      }
+  
+      // 2. Create the transaction with idempotency key
       const transaction = await tx.transaction.create({
         data: {
           items: JSON.stringify(items),
@@ -158,79 +216,98 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
           userName,
           tillId,
           tillName,
+          idempotencyKey: idempotencyKey || null,
+          idempotencyCreatedAt: idempotencyKey ? new Date() : null,
           createdAt: new Date()
         }
       });
-      
-      // 2. Decrement stock levels (if any consumptions)
+  
+      // 3. Decrement stock levels (if any consumptions)
       if (consumptions.size > 0) {
-      	for (const [stockItemId, quantity] of consumptions) {
-      		const updateResult = await tx.stockItem.updateMany({
-      			where: {
-      				id: stockItemId,
-      				quantity: { gte: quantity }
-      			},
-      			data: { quantity: { decrement: quantity } }
-      		});
-      		if (updateResult.count === 0) {
-      			// Either stock item doesn't exist or insufficient quantity
-      			const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
-      			if (!stockItem) {
-      				throw new Error(`Stock item not found: ${stockItemId}`);
-      			}
-      			throw new Error(`Insufficient stock for item ${stockItem.name}. Available: ${stockItem.quantity}, Requested: ${quantity}`);
-      		}
-      	}
+        for (const [stockItemId, quantity] of consumptions) {
+          const updateResult = await tx.stockItem.updateMany({
+            where: {
+              id: stockItemId,
+              quantity: { gte: quantity }
+            },
+            data: { quantity: { decrement: quantity } }
+          });
+          if (updateResult.count === 0) {
+            // Either stock item doesn't exist or insufficient quantity
+            const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
+            if (!stockItem) {
+              throw new Error(`Stock item not found: ${stockItemId}`);
+            }
+            throw new Error(`Insufficient stock for item ${stockItem.name}. Available: ${stockItem.quantity}, Requested: ${quantity}`);
+          }
+        }
       }
-      
-      // 3. Complete order session with version-based optimistic locking
+  
+      // 4. Complete order session with version-based optimistic locking
       const activeSession = await tx.orderSession.findFirst({
-      	where: { userId, status: 'active' }
+        where: { userId, status: 'active' }
       });
       if (activeSession) {
-      	const sessionResult = await tx.orderSession.updateMany({
-      		where: { id: activeSession.id, version: activeSession.version },
-      		data: { status: 'completed', updatedAt: new Date(), version: { increment: 1 } }
-      	});
-      	if (sessionResult.count === 0) {
-      		throw new Error('CONFLICT: Order session was modified by another transaction');
-      	}
+        const sessionResult = await tx.orderSession.updateMany({
+          where: { id: activeSession.id, version: activeSession.version },
+          data: { status: 'completed', updatedAt: new Date(), version: { increment: 1 } }
+        });
+        if (sessionResult.count === 0) {
+          throw new Error('CONFLICT: Order session was modified by another transaction');
+        }
       }
-      
-      // 4. Delete tab if exists
+  
+      // 5. Delete tab if exists
       if (activeTabId) {
-      	await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
-      		logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
-      	});
+        await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
+          logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
+        });
       }
-      
-      // 5. Update table status if assigned
+  
+      // 6. Update table status if assigned
       if (tableId) {
         await tx.table.update({
           where: { id: tableId },
           data: { status: 'available' }
         });
       }
-      
-      return transaction;
+  
+      return transaction as IdempotentResult;
     });
-    
+  
+    // Handle the result - check if it's a duplicate or new transaction
+    const isDuplicate = 'isDuplicate' in result && result.isDuplicate;
+    // Extract the actual transaction object - TypeScript needs explicit type assertion
+    const transaction: PrismaTransaction = isDuplicate
+      ? (result as { isDuplicate: true; transaction: PrismaTransaction }).transaction
+      : result as PrismaTransaction;
+  
+    // Set appropriate response headers for idempotent replays
+    if (isDuplicate) {
+      res.setHeader('X-Idempotent-Replay', 'true');
+      res.setHeader('X-Original-Timestamp', transaction.createdAt.toISOString());
+    }
+  
     // Log payment success
     logPaymentEvent('PROCESSED', finalTotal, 'EUR', true, {
-      orderId: result.id,
+      orderId: transaction.id,
       paymentMethod,
       itemCount: items.length,
       correlationId,
+      idempotentReplay: isDuplicate || undefined,
     });
-    
-    // Return the created transaction with converted decimals
-    res.status(201).json({
-      ...result,
-      subtotal: decimalToNumber(result.subtotal),
-      tax: decimalToNumber(result.tax),
-      tip: decimalToNumber(result.tip),
-      total: decimalToNumber(result.total),
-      discount: decimalToNumber(result.discount),
+  
+    // Return the transaction with converted decimals
+    // Use 200 for idempotent replays, 201 for new transactions
+    const statusCode = isDuplicate ? 200 : 201;
+    res.status(statusCode).json({
+      ...transaction,
+      subtotal: decimalToNumber(transaction.subtotal),
+      tax: decimalToNumber(transaction.tax),
+      tip: decimalToNumber(transaction.tip),
+      total: decimalToNumber(transaction.total),
+      discount: decimalToNumber(transaction.discount),
+      _meta: isDuplicate ? { idempotent: true } : undefined,
     });
     
   } catch (error) {
