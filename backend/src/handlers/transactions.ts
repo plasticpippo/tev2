@@ -78,11 +78,29 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
+        return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
     }
-    
-    if (!userId || !tillId) {
-      return res.status(400).json({ error: 'Missing userId or tillId' });
+
+    if (!tillId) {
+        return res.status(400).json({ error: 'Missing tillId' });
+    }
+
+    // SECURITY FIX: Use authenticated user from JWT token instead of request body
+    // This prevents user impersonation attacks (A4.5)
+    const authenticatedUserId = req.user?.id;
+    const authenticatedUserName = req.user?.username;
+
+    if (!authenticatedUserId || !authenticatedUserName) {
+        return res.status(401).json({ error: 'User not authenticated' });
+    }
+
+    // SECURITY FIX: Validate that tillId exists and tillName matches (A4.4)
+    const till = await prisma.till.findUnique({ where: { id: tillId } });
+    if (!till) {
+        return res.status(400).json({ error: 'Invalid till reference: till not found' });
+    }
+    if (till.name !== tillName) {
+        return res.status(400).json({ error: 'Till name mismatch' });
     }
     
     // Validate all items have required properties
@@ -158,11 +176,11 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       // 0. Idempotency check - if key provided, check for existing transaction
       if (idempotencyKey) {
         const expirationCutoff = new Date(Date.now() - IDEMPOTENCY_KEY_EXPIRATION_MS);
-  
+
         const existingTransaction = await tx.transaction.findFirst({
           where: {
             idempotencyKey,
-            userId, // Bind to user for security - prevent cross-user replay attacks
+            userId: authenticatedUserId, // SECURITY: Use authenticated user ID (A4.5)
             idempotencyCreatedAt: {
               gte: expirationCutoff // Only check keys within expiration window
             }
@@ -176,7 +194,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
             idempotencyKey,
             transactionId: existingTransaction.id,
             originalCreatedAt: existingTransaction.createdAt.toISOString(),
-            userId
+            userId: authenticatedUserId // SECURITY: Use authenticated user ID (A4.5)
           });
   
           // Return existing transaction - will be returned with HTTP 200
@@ -212,10 +230,10 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
           discountReason: discountReason || null,
           status: finalStatus,
           paymentMethod,
-          userId,
-          userName,
-          tillId,
-          tillName,
+          userId: authenticatedUserId, // SECURITY: Use authenticated user ID (A4.5)
+          userName: authenticatedUserName, // SECURITY: Use authenticated user name (A4.5)
+          tillId, // Already validated to exist (A4.4)
+          tillName, // Already validated to match till.name (A4.4)
           idempotencyKey: idempotencyKey || null,
           idempotencyCreatedAt: idempotencyKey ? new Date() : null,
           createdAt: new Date()
@@ -245,7 +263,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
   
       // 4. Complete order session with version-based optimistic locking
       const activeSession = await tx.orderSession.findFirst({
-        where: { userId, status: 'active' }
+        where: { userId: authenticatedUserId, status: 'active' } // SECURITY: Use authenticated user ID (A4.5)
       });
       if (activeSession) {
         const sessionResult = await tx.orderSession.updateMany({
@@ -310,24 +328,37 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       _meta: isDuplicate ? { idempotent: true } : undefined,
     });
     
-  } catch (error) {
-    logPaymentEvent('FAILED', req.body?.total || 0, 'EUR', false, {
-      orderId: 'failed',
-      reason: error instanceof Error ? error.message : 'Unknown error',
-      correlationId,
-    });
-    
-    logError(error instanceof Error ? error : 'Atomic payment processing failed', { correlationId });
-    
-    // If it's a known error type, return appropriate status
-    if (error instanceof Error) {
-      if (error.message.includes('Insufficient stock')) {
-        return res.status(400).json({ error: error.message });
-      }
-    }
-    
-    res.status(500).json({ error: i18n.t('transactions.createFailed') });
-  }
+	} catch (error) {
+		logPaymentEvent('FAILED', req.body?.total || 0, 'EUR', false, {
+			orderId: 'failed',
+			reason: error instanceof Error ? error.message : 'Unknown error',
+			correlationId,
+		});
+
+		logError(error instanceof Error ? error : 'Atomic payment processing failed', { correlationId });
+
+		// If it's a known error type, return appropriate status
+		if (error instanceof Error) {
+			// Conflict errors - return 409 for client retry
+			if (error.message.includes('CONFLICT') || error.message.includes('Order session was modified')) {
+				return res.status(409).json({ 
+					error: 'Payment conflict detected. Please retry.',
+					code: 'CONFLICT',
+					details: error.message
+				});
+			}
+			// Insufficient stock - return 400 (client error)
+			if (error.message.includes('Insufficient stock')) {
+				return res.status(400).json({ error: error.message });
+			}
+			// Stock item not found - return 400 (configuration error)
+			if (error.message.includes('Stock item not found')) {
+				return res.status(400).json({ error: error.message });
+			}
+		}
+
+		res.status(500).json({ error: i18n.t('transactions.createFailed') });
+	}
 });
 
 // GET /api/transactions/reconcile - Reconcile transactions with stock levels (MUST be before /:id route)
@@ -509,12 +540,33 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       // Fall back to default 'exclusive' mode
     }
     
-    const {
-      items, subtotal, tax, tip, paymentMethod,
-      userId, userName, tillId, tillName, discount, discountReason
-    } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total'>;
-    
-    // Validate monetary values are valid numbers
+  const {
+    items, subtotal, tax, tip, paymentMethod,
+    tillId, tillName, discount, discountReason
+  } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total' | 'userId' | 'userName'>;
+
+  // SECURITY FIX (A4.5): Use authenticated user from JWT token instead of request body
+  const authenticatedUserId = req.user?.id;
+  const authenticatedUserName = req.user?.username;
+
+  if (!authenticatedUserId || !authenticatedUserName) {
+    return res.status(401).json({ error: 'User not authenticated' });
+  }
+
+  // SECURITY FIX (A4.4): Validate that tillId exists and tillName matches
+  if (!tillId) {
+    return res.status(400).json({ error: 'Missing tillId' });
+  }
+
+  const till = await prisma.till.findUnique({ where: { id: tillId } });
+  if (!till) {
+    return res.status(400).json({ error: 'Invalid till reference: till not found' });
+  }
+  if (till.name !== tillName) {
+    return res.status(400).json({ error: 'Till name mismatch' });
+  }
+
+  // Validate monetary values are valid numbers
     if (!isMoneyValid(subtotal)) {
       return res.status(400).json({ error: 'Invalid subtotal value' });
     }
@@ -695,24 +747,24 @@ transactionsRouter.post('/', authenticateToken, async (req: Request, res: Respon
       }
     );
     
-    const transaction = await prisma.transaction.create({
-      data: {
-        items: JSON.stringify(items),
-        subtotal: validatedSubtotal,
-        tax: validatedTax,
-        tip,
-        total: finalTotal,
-        paymentMethod,
-        userId,
-        userName,
-        tillId,
-        tillName,
-        discount: discountAmount,
-        discountReason: discountReasonText,
-        status,
-        createdAt: new Date()
-      }
-    });
+  const transaction = await prisma.transaction.create({
+    data: {
+      items: JSON.stringify(items),
+      subtotal: validatedSubtotal,
+      tax: validatedTax,
+      tip,
+      total: finalTotal,
+      paymentMethod,
+      userId: authenticatedUserId, // SECURITY: Use authenticated user ID (A4.5)
+      userName: authenticatedUserName, // SECURITY: Use authenticated user name (A4.5)
+      tillId, // Already validated to exist (A4.4)
+      tillName, // Already validated to match till.name (A4.4)
+      discount: discountAmount,
+      discountReason: discountReasonText,
+      status,
+      createdAt: new Date()
+    }
+  });
     
     // Log payment success
     logPaymentEvent(

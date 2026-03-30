@@ -13,7 +13,7 @@ check .env file for username and password and other important details
 admin user: admin
 admin password: admin123
 
-app is available at http://192.168.1.12:80
+app is available at http://192.168.1.70
 
 
 ## General Behaviour
@@ -22,6 +22,12 @@ to run test new features and fixes you need to use the command
 'docker compose up -d --build'
 
 Before starting backend or frontend server, make sure they are not already running
+
+Docker container names of the app are
+ - bar_pos_nginx
+ - bar_pos_frontend
+ - bar_pos_backend
+ - bar_pos_backend_db
 
 NO Workarounds! NO shortcuts! ONLY proper coding!
 

@@ -109,42 +109,75 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
 
 // Atomic payment processing - handles transaction + stock + order session + tab in one call
 export interface ProcessPaymentData {
-  items: Transaction['items'];
-  subtotal: number;
-  tax: number;
-  tip: number;
-  paymentMethod: string;
-  userId: number;
-  userName: string;
-  tillId: number;
-  tillName: string;
-  discount?: number;
-  discountReason?: string;
-  activeTabId?: number;
-  tableId?: string;
-  tableName?: string;
-  idempotencyKey: string;
+	items: Transaction['items'];
+	subtotal: number;
+	tax: number;
+	tip: number;
+	paymentMethod: string;
+	userId: number;
+	userName: string;
+	tillId: number;
+	tillName: string;
+	discount?: number;
+	discountReason?: string;
+	activeTabId?: number;
+	tableId?: string;
+	tableName?: string;
+	idempotencyKey: string;
 }
 
-export const processPayment = async (paymentData: ProcessPaymentData): Promise<Transaction> => {
-  try {
-    const response = await fetch(apiUrl('/api/transactions/process-payment'), {
-      method: 'POST',
-      headers: getAuthHeaders(),
-      credentials: 'include',
-      body: JSON.stringify(paymentData)
-    });
-    
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}));
-      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
-      throw new Error(errorMessage);
-    }
-    const result = await response.json();
-    notifyUpdates();
-    return result;
-  } catch (error) {
-    console.error(i18n.t('transactionService.errorProcessingPayment'), error);
-    throw error;
-  }
+// Helper to delay execution for retry backoff
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+export const processPayment = async (
+	paymentData: ProcessPaymentData, 
+	maxRetries: number = 3
+): Promise<Transaction> => {
+	let lastError: Error | null = null;
+	
+	for (let attempt = 0; attempt <= maxRetries; attempt++) {
+		try {
+			const response = await fetch(apiUrl('/api/transactions/process-payment'), {
+				method: 'POST',
+				headers: getAuthHeaders(),
+				credentials: 'include',
+				body: JSON.stringify(paymentData)
+			});
+
+			if (!response.ok) {
+				const errorData = await response.json().catch(() => ({}));
+				const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+				
+				// If conflict (409), retry with exponential backoff
+				if (response.status === 409 && attempt < maxRetries) {
+					const backoffMs = 100 * Math.pow(2, attempt); // 100ms, 200ms, 400ms
+					console.log(`Payment conflict detected, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+					await delay(backoffMs);
+					continue;
+				}
+				
+				throw new Error(errorMessage);
+			}
+			
+			const result = await response.json();
+			notifyUpdates();
+			return result;
+		} catch (error) {
+			lastError = error instanceof Error ? error : new Error(String(error));
+			
+			// Only retry on network errors or conflicts, not on validation errors
+			if (attempt < maxRetries && lastError.message.includes('CONFLICT')) {
+				const backoffMs = 100 * Math.pow(2, attempt);
+				console.log(`Payment error, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
+				await delay(backoffMs);
+				continue;
+			}
+			
+			console.error(i18n.t('transactionService.errorProcessingPayment'), error);
+			throw error;
+		}
+	}
+	
+	// All retries exhausted
+	throw lastError || new Error('Payment processing failed after multiple attempts');
 };

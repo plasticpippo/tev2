@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { OrderItem, TaxSettings } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
@@ -20,10 +20,14 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
   const { currentUser } = useSessionContext();
   const isAdmin = currentUser?.role === 'Admin';
 
-  const [tip, setTip] = useState(0);
-  const [discount, setDiscount] = useState(0);
-  const [discountReason, setDiscountReason] = useState('');
-  const [isProcessing, setIsProcessing] = useState(false);
+	const [tip, setTip] = useState(0);
+	const [discount, setDiscount] = useState(0);
+	const [discountReason, setDiscountReason] = useState('');
+	const [isProcessing, setIsProcessing] = useState(false);
+	// Use a ref to synchronously block concurrent payment attempts
+	// React state updates are batched and async, so isProcessing=false 
+	// may still be read by a rapid second click before the first update completes
+	const isProcessingRef = useRef(false);
   
   const { subtotal, tax } = useMemo(() => {
     let subtotal = 0;
@@ -80,16 +84,22 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
 
   const isComplimentary = finalTotal === 0 && discount > 0;
 
-  const handlePayment = async (paymentMethod: string) => {
-    if (isProcessing) return; // Prevent double-clicks
-    setIsProcessing(true);
-    try {
-      const idempotencyKey = generateIdempotencyKey(orderItems);
-      await onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
-    } finally {
-      setIsProcessing(false);
-    }
-  };
+	const handlePayment = async (paymentMethod: string) => {
+		// Synchronous check using ref - prevents race conditions from rapid clicks
+		if (isProcessingRef.current) return;
+		isProcessingRef.current = true;
+		
+		// Also set state for UI feedback
+		if (isProcessing) return; // Prevent double-clicks
+		setIsProcessing(true);
+		try {
+			const idempotencyKey = generateIdempotencyKey(orderItems);
+			await onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
+		} finally {
+			setIsProcessing(false);
+			isProcessingRef.current = false;
+		}
+	};
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
