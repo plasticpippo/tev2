@@ -1,3 +1,96 @@
 {
-  "unknownUser": "Utente Sconosciuto"
+  "unknownUser": "Utente Sconosciuto",
+  "customers": {
+    "fetchFailed": "Impossibile recuperare i clienti",
+    "fetchOneFailed": "Impossibile recuperare il cliente",
+    "notFound": "Cliente non trovato",
+    "nameRequired": "Il nome del cliente è obbligatorio",
+    "duplicateEmail": "Esiste già un cliente con questa email",
+    "duplicateCheckFailed": "Impossibile verificare duplicati",
+    "searchQueryRequired": "La query di ricerca è obbligatoria",
+    "searchFailed": "Impossibile cercare i clienti",
+    "createFailed": "Impossibile creare il cliente",
+    "updateFailed": "Impossibile aggiornare il cliente",
+    "deleteFailed": "Impossibile eliminare il cliente",
+    "created": "Cliente creato con successo",
+    "updated": "Cliente aggiornato con successo",
+    "deleted": "Cliente eliminato con successo",
+    "fields": {
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefono",
+      "vatNumber": "Partita IVA",
+      "address": "Indirizzo",
+      "city": "Città",
+      "postalCode": "Codice Postale",
+      "country": "Paese",
+      "notes": "Note",
+      "isActive": "Attivo",
+      "createdAt": "Creato il",
+      "updatedAt": "Aggiornato il"
+    },
+    "validation": {
+      "nameTooShort": "Il nome deve contenere almeno 2 caratteri",
+      "nameTooLong": "Il nome deve contenere meno di 200 caratteri",
+      "invalidEmail": "Inserisci un indirizzo email valido",
+      "invalidPhone": "Inserisci un numero di telefono valido",
+      "invalidVatNumber": "Inserisci una partita IVA valida"
+    },
+    "messages": {
+      "duplicateWarning": "Esiste già un cliente simile. Vuoi visualizzare i clienti esistenti o crearne uno nuovo?",
+      "confirmDelete": "Sei sicuro di voler eliminare questo cliente? Questa azione non può essere annullata.",
+      "deleteSuccess": "Cliente eliminato con successo"
+    }
+  },
+  "receipts": {
+    "fetchFailed": "Impossibile recuperare le ricevute",
+    "fetchOneFailed": "Impossibile recuperare la ricevuta",
+    "notFound": "Ricevuta non trovata",
+    "createFailed": "Impossibile creare la ricevuta",
+    "updateFailed": "Impossibile aggiornare la ricevuta",
+    "issueFailed": "Impossibile emettere la ricevuta",
+    "voidFailed": "Impossibile annullare la ricevuta",
+    "transactionIdRequired": "L'ID transazione è obbligatorio",
+    "alreadyExists": "Esiste già una ricevuta per questa transazione",
+    "onlyDraftCanBeIssued": "Solo le bozze possono essere emesse",
+    "onlyIssuedCanBeVoided": "Solo le ricevute emesse possono essere annullate",
+    "onlyDraftCanBeUpdated": "Solo le bozze possono essere aggiornate",
+    "voidReasonRequired": "Il motivo dell'annullamento è obbligatorio",
+    "created": "Ricevuta creata con successo",
+    "issued": "Ricevuta emessa con successo",
+    "voided": "Ricevuta annullata con successo",
+    "updated": "Ricevuta aggiornata con successo",
+    "status": {
+      "draft": "Bozza",
+      "issued": "Emessa",
+      "voided": "Annullata",
+      "emailed": "Inviata per email"
+    },
+    "emailStatus": {
+      "pending": "In attesa",
+      "sent": "Inviata",
+      "failed": "Fallita",
+      "bounced": "Respinta"
+    },
+    "fields": {
+      "receiptNumber": "Numero Ricevuta",
+      "transactionId": "ID Transazione",
+      "customerId": "ID Cliente",
+      "status": "Stato",
+      "subtotal": "Subtotale",
+      "tax": "Imposta",
+      "discount": "Sconto",
+      "tip": "Mancia",
+      "total": "Totale",
+      "paymentMethod": "Metodo di Pagamento",
+      "notes": "Note",
+      "internalNotes": "Note Interne",
+      "issuedAt": "Emessa il",
+      "issuedBy": "Emessa da",
+      "voidedAt": "Annullata il",
+      "voidReason": "Motivo Annullamento",
+      "createdAt": "Creata il",
+      "updatedAt": "Aggiornata il"
+    }
+  }
 }

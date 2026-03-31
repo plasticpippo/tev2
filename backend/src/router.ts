@@ -17,10 +17,11 @@ import { consumptionReportsRouter } from './handlers/consumptionReports';
 import { analyticsRouter } from './handlers/analytics';
 import { layoutsRouter } from './handlers/layouts';
 import { taxRatesRouter } from './handlers/taxRates';
+import { customersRouter } from './handlers/customerHandler';
+import { receiptsRouter } from './handlers/receiptHandler';
 
 export const router = express.Router();
 
-// Mount individual route handlers
 router.use('/products', productsRouter);
 router.use('/users', usersRouter);
 router.use('/categories', categoriesRouter);
@@ -39,8 +40,9 @@ router.use('/consumption-reports', consumptionReportsRouter);
 router.use('/analytics', analyticsRouter);
 router.use('/layouts', layoutsRouter);
 router.use('/tax-rates', taxRatesRouter);
+router.use('/customers', customersRouter);
+router.use('/receipts', receiptsRouter);
 
-// Health check for the API
 router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });
 });
