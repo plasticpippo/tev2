@@ -1,0 +1,17 @@
+{
+  "number": "Receipt",
+  "item": "Item",
+  "qty": "Qty",
+  "price": "Price",
+  "total": "Total",
+  "subtotal": "Subtotal",
+  "tax": "Tax",
+  "discount": "Discount",
+  "tip": "Tip",
+  "paymentMethod": "Payment",
+  "customer": "Customer",
+  "vatNumber": "VAT",
+  "phone": "Phone",
+  "thankYou": "Thank you for your business!",
+  "taxInfo": "Tax document for your records"
+}

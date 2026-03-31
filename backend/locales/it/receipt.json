@@ -1,0 +1,17 @@
+{
+  "number": "Ricevuta",
+  "item": "Articolo",
+  "qty": "Qtà",
+  "price": "Prezzo",
+  "total": "Totale",
+  "subtotal": "Subtotale",
+  "tax": "IVA",
+  "discount": "Sconto",
+  "tip": "Mancia",
+  "paymentMethod": "Pagamento",
+  "customer": "Cliente",
+  "vatNumber": "P.IVA",
+  "phone": "Tel",
+  "thankYou": "Grazie per la Sua visita!",
+  "taxInfo": "Documento fiscale per i Vostri archivi"
+}

@@ -12,8 +12,18 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install system dependencies for Prisma and PostgreSQL client for backup functionality
-RUN apk add --no-cache openssl libssl3 libc6-compat wget postgresql-client
+# Install system dependencies for Prisma, PostgreSQL client, and Puppeteer/Chromium
+RUN apk add --no-cache openssl libssl3 libc6-compat wget postgresql-client \
+    chromium \
+    nss \
+    freetype \
+    harfbuzz \
+    ca-certificates \
+    ttf-freefont
+
+# Set Puppeteer to use system Chromium
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 
 # Install all dependencies (including dev dependencies for build)
 RUN npm install
@@ -32,6 +42,12 @@ COPY src/ ./src/
 
 # Copy locales for i18n translations
 COPY locales/ ./locales/
+
+# Copy templates for PDF generation
+COPY templates/ ./templates/
+
+# Copy assets for PDF generation
+COPY assets/ ./assets/
 
 # Build the application with explicit config
 RUN npx tsc --project tsconfig.json

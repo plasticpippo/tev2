@@ -1,0 +1,11 @@
+<header class="receipt-header">
+  <div class="business-info">
+    <h1 class="business-name">{{receipt.business.name}}</h1>
+    {{#if receipt.business.address}}<p class="business-address">{{receipt.business.address}}</p>{{/if}}
+    {{#if receipt.business.city}}<p class="business-city">{{receipt.business.postalCode}} {{receipt.business.city}}</p>{{/if}}
+    {{#if receipt.business.country}}<p class="business-country">{{receipt.business.country}}</p>{{/if}}
+    {{#if receipt.business.phone}}<p class="business-phone">{{t 'receipt.phone'}}: {{receipt.business.phone}}</p>{{/if}}
+    {{#if receipt.business.email}}<p class="business-email">{{receipt.business.email}}</p>{{/if}}
+    {{#if receipt.business.vatNumber}}<p class="business-vat">{{t 'receipt.vatNumber'}}: {{receipt.business.vatNumber}}</p>{{/if}}
+  </div>
+</header>

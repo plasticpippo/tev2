@@ -1,0 +1,10 @@
+<footer class="receipt-footer">
+  <div class="footer-content">
+    <p class="thank-you">{{t 'receipt.thankYou'}}</p>
+    <p class="receipt-number">{{t 'receipt.number'}}: {{receipt.receiptNumber}}</p>
+    <p class="receipt-date">{{formatDate receipt.issuedAt 'long'}}</p>
+    {{#if receipt.business.vatNumber}}
+    <p class="tax-info">{{t 'receipt.taxInfo'}}</p>
+    {{/if}}
+  </div>
+</footer>

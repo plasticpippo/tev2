@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="{{locale}}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt {{receipt.receiptNumber}}</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 12px;
+      line-height: 1.4;
+      color: #1a1a1a;
+      background: #fff;
+    }
+    
+    .receipt-container {
+      width: 70mm;
+      padding: 2mm;
+    }
+    
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px dashed #ccc;
+    }
+    
+    .business-name {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 1mm;
+    }
+    
+    .business-address,
+    .business-city,
+    .business-country,
+    .business-phone,
+    .business-email,
+    .business-vat {
+      font-size: 10px;
+      color: #555;
+    }
+    
+    .receipt-info {
+      text-align: center;
+      margin-bottom: 3mm;
+      padding: 2mm 0;
+      border-bottom: 1px dashed #ccc;
+    }
+    
+    .receipt-info p {
+      font-size: 10px;
+    }
+    
+    .customer-info {
+      margin-bottom: 3mm;
+      padding-bottom: 2mm;
+      border-bottom: 1px dashed #ccc;
+    }
+    
+    .customer-info h3 {
+      font-size: 11px;
+      margin-bottom: 1mm;
+    }
+    
+    .customer-info p {
+      font-size: 10px;
+      color: #555;
+    }
+    
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 3mm;
+    }
+    
+    .items-table th {
+      font-size: 10px;
+      text-align: left;
+      padding: 1mm 0;
+      border-bottom: 1px solid #ccc;
+    }
+    
+    .items-table td {
+      font-size: 10px;
+      padding: 1mm 0;
+    }
+    
+    .col-qty,
+    .col-price,
+    .col-total {
+      text-align: right;
+    }
+    
+    .col-item {
+      width: 45%;
+    }
+    
+    .totals-section {
+      margin-bottom: 3mm;
+      padding-top: 2mm;
+      border-top: 1px dashed #ccc;
+    }
+    
+    .totals-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    
+    .totals-table td {
+      font-size: 10px;
+      padding: 1mm 0;
+    }
+    
+    .totals-table .value {
+      text-align: right;
+    }
+    
+    .total-row td {
+      font-size: 12px;
+      padding-top: 2mm;
+      border-top: 1px dashed #ccc;
+    }
+    
+    .receipt-footer {
+      text-align: center;
+      margin-top: 3mm;
+      padding-top: 2mm;
+      border-top: 1px dashed #ccc;
+    }
+    
+    .receipt-footer p {
+      font-size: 10px;
+      color: #555;
+      margin: 1mm 0;
+    }
+    
+    .thank-you {
+      font-size: 11px !important;
+      font-weight: 500;
+      color: #1a1a1a !important;
+    }
+    
+    .notes-section {
+      margin-top: 3mm;
+      padding-top: 2mm;
+      border-top: 1px dashed #ccc;
+    }
+    
+    .notes-section p {
+      font-size: 10px;
+      color: #555;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <div class="receipt-container">
+    {{> header}}
+    
+    <div class="receipt-info">
+      <p><strong>{{t 'receipt.number'}}:</strong> {{receipt.receiptNumber}}</p>
+      <p>{{formatDate receipt.issuedAt 'long'}}</p>
+    </div>
+    
+    {{#if receipt.customer}}
+    <div class="customer-info">
+      <h3>{{t 'receipt.customer'}}</h3>
+      <p>{{receipt.customer.name}}</p>
+      {{#if receipt.customer.address}}<p>{{receipt.customer.address}}</p>{{/if}}
+      {{#if receipt.customer.city}}<p>{{receipt.customer.postalCode}} {{receipt.customer.city}}</p>{{/if}}
+      {{#if receipt.customer.vatNumber}}<p>{{t 'receipt.vatNumber'}}: {{receipt.customer.vatNumber}}</p>{{/if}}
+    </div>
+    {{/if}}
+    
+    {{> items}}
+    
+    {{> totals}}
+    
+    {{#if receipt.notes}}
+    <div class="notes-section">
+      <p>{{receipt.notes}}</p>
+    </div>
+    {{/if}}
+    
+    {{> footer}}
+  </div>
+</body>
+</html>

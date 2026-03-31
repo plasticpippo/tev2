@@ -1,0 +1,20 @@
+<table class="items-table">
+  <thead>
+    <tr>
+      <th class="col-item">{{t 'receipt.item'}}</th>
+      <th class="col-qty">{{t 'receipt.qty'}}</th>
+      <th class="col-price">{{t 'receipt.price'}}</th>
+      <th class="col-total">{{t 'receipt.total'}}</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each receipt.items}}
+    <tr class="item-row">
+      <td class="item-name">{{this.name}}</td>
+      <td class="item-qty">{{this.quantity}}</td>
+      <td class="item-price">{{formatCurrency this.price}}</td>
+      <td class="item-total">{{formatCurrency this.total}}</td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
