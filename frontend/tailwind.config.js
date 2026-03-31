@@ -6,9 +6,20 @@ export default {
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      containers: {
+        xs: '320px',
+        sm: '384px',
+        md: '448px',
+        lg: '512px',
+        xl: '576px',
+        '2xl': '672px',
+      },
+    },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/container-queries'),
+  ],
   safelist: [
     // Safelist all the color classes that might be used dynamically
     {

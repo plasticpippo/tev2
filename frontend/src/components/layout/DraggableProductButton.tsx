@@ -82,7 +82,9 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
         ${isDragging ? 'opacity-50' : 'opacity-100'}
         ${isEditMode ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''}
         ${!isMakable && !isEditMode ? 'opacity-50' : ''}
-        h-24 sm:h-28 md:h-32 lg:h-40
+        min-h-24
+        aspect-[4/3]
+        w-full
         shadow-md
       `}
     >

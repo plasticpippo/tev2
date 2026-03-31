@@ -24,15 +24,15 @@ export const DailyClosingDetailsModal: React.FC<DailyClosingDetailsModalProps> =
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+      <div className="bg-slate-800 rounded-lg w-full max-w-md sm:max-w-lg max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center p-6 border-b border-slate-700">
           <h2 className="text-xl font-bold text-slate-200">{t('dailyClosing.details.title')}</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white text-2xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
-          >
-            &times;
-          </button>
+<button
+onClick={onClose}
+className="text-slate-400 hover:text-white text-2xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
+>
+&times;
+</button>
         </div>
         <div className="p-6">
           {/* Basic Info */}

@@ -174,11 +174,11 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             onDragOver={(e) => handleDragOver(e, col, row)}
             onDragLeave={handleDragLeave}
             onDrop={(e) => handleDrop(e, col, row)}
-            className={`
-              border-2 border-dashed rounded-lg transition-colors min-h-24 sm:min-h-28 md:min-h-32 lg:min-h-40
-              ${isEditMode ? 'border-slate-600 bg-slate-800/30' : 'border-transparent'}
-              ${isHighlighted ? 'bg-yellow-500/20 border-yellow-500' : ''}
-            `}
+        className={`
+          border-2 border-dashed rounded-lg transition-colors min-h-24
+          ${isEditMode ? 'border-slate-600 bg-slate-800/30' : 'border-transparent'}
+          ${isHighlighted ? 'bg-yellow-500/20 border-yellow-500' : ''}
+        `}
             style={{
               gridColumn: col,
               gridRow: row
@@ -209,9 +209,9 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
         />
       </div>
 
-            {/* Product grid area */}
-            <div className="flex-1 overflow-y-auto">
-                    <div className="relative w-full h-full p-4">
+	{/* Product grid area */}
+			<div className="flex-1 overflow-y-auto">
+				<div className="@container relative w-full h-full p-4">
                       {/* Available Products Panel in edit mode - placed before the grid */}
                       {isEditMode && currentCategoryId !== 'all' && (
                         <div className="mb-6 z-20">
@@ -267,14 +267,13 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                         </div>
                       )}
             
-                      {/* Product grid */}
-                      <div
-                        className="relative grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 z-10 min-h-24 sm:min-h-28 md:min-h-32 lg:min-h-40"
-                        style={{
-                          gridTemplateRows: `repeat(${gridRows}, minmax(96px, auto))`,
-                          gridAutoRows: 'minmax(96px, auto)'
-                        }}
-                      >
+{/* Product grid */}
+      <div
+        className="relative grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 z-10"
+        style={{
+          gridAutoRows: 'minmax(96px, 1fr)'
+        }}
+      >
                         {/* Drop zone cells */}
                         {isEditMode && renderGridCells()}
                         
@@ -307,9 +306,9 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                               );
                               
                               return unpositionedItems.length > 0 ? (
-                                <div className="mt-6 pt-6 border-t border-slate-600 col-span-full">
-                                  <h3 className="text-lg font-semibold mb-3 text-amber-400">{t('productGrid.unplacedProducts')}</h3>
-                                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+<div className="mt-6 pt-6 border-t border-slate-600 col-span-full">
+              <h3 className="text-lg font-semibold mb-3 text-amber-400">{t('productGrid.unplacedProducts')}</h3>
+              <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
                                     {unpositionedItems.map(({ product, variant }) => (
                                       <DraggableProductButton
                                         key={`${variant.id}-unplaced`}

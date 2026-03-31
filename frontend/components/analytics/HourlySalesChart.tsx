@@ -127,7 +127,7 @@ export const HourlySalesChart: React.FC<HourlySalesChartProps> = ({
       
       {/* Chart */}
       <div>
-        <div className="flex justify-between items-end h-64 space-x-1">
+        <div className="flex justify-between items-end h-48 sm:h-56 md:h-64 space-x-1">
           {hourlyData.map((hour, index) => (
             <div
               key={index}

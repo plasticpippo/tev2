@@ -192,13 +192,13 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
     return transactions.filter(t => new Date(t.createdAt) >= startDate);
   }, [transactions, dateRange, settings]);
   
-  const DateRangeButton: React.FC<{range: DateRange, label: string}> = ({range, label}) => (
-    <button
-      onClick={() => setDateRange(range)}
-      className={`text-center px-4 py-2 text-sm font-semibold rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
-        {label}
-    </button>
-  );
+const DateRangeButton: React.FC<{range: DateRange, label: string}> = ({range, label}) => (
+<button
+onClick={() => setDateRange(range)}
+className={`text-center px-4 py-2 min-h-11 text-sm font-semibold rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>
+{label}
+</button>
+);
 
   const handlePrimaryDateChange = (date: Date) => {
     setSelectedDate(date);
@@ -274,18 +274,18 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
           
           {/* Quick suggestions */}
           <div className="flex gap-2">
-            <button
-              onClick={() => handleComparisonDateChange(subDays(selectedDate, 1))}
-              className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 rounded transition text-white"
-            >
-              {t('analytics.previousDay')}
-            </button>
-            <button
-              onClick={() => handleComparisonDateChange(subDays(selectedDate, 7))}
-              className="px-2 py-1 text-xs bg-slate-700 hover:bg-slate-600 rounded transition text-white"
-            >
-              {t('analytics.sameDayLastWeek')}
-            </button>
+<button
+onClick={() => handleComparisonDateChange(subDays(selectedDate, 1))}
+className="px-2 py-1 min-h-11 text-xs bg-slate-700 hover:bg-slate-600 rounded transition text-white"
+>
+{t('analytics.previousDay')}
+</button>
+<button
+onClick={() => handleComparisonDateChange(subDays(selectedDate, 7))}
+className="px-2 py-1 min-h-11 text-xs bg-slate-700 hover:bg-slate-600 rounded transition text-white"
+>
+{t('analytics.sameDayLastWeek')}
+</button>
           </div>
         </div>
       )}

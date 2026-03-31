@@ -44,10 +44,10 @@ export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], 
         });
     }, [tills, transactions, users, settings, t]);
 
-    return (
-        <div className="bg-slate-900 p-4 rounded-lg">
-            <h2 className="text-xl font-bold text-slate-300 mb-3">{t('dashboard.tillStatus')}</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+return (
+    <div className="@container bg-slate-900 p-4 rounded-lg">
+      <h2 className="text-xl font-bold text-slate-300 mb-3">{t('dashboard.tillStatus')}</h2>
+      <div className="grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-4">
                 {tillData.map(till => (
                     <div key={till.id} className="bg-slate-800 p-4 rounded-lg flex flex-col justify-between">
                         <div>

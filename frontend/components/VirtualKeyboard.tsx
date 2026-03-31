@@ -3,22 +3,22 @@ import { useTranslation } from 'react-i18next';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 
 const Key: React.FC<{
-  value: string;
-  label?: string;
-  onClick: (value: string) => void;
-  className?: string;
+value: string;
+label?: string;
+onClick: (value: string) => void;
+className?: string;
 }> = ({ value, label, onClick, className = '' }) => (
-  <button
-    type="button"
-    onClick={(e) => {
-        e.preventDefault();
-        onClick(value);
-    }}
-    className={`h-10 rounded shadow-sm flex items-center justify-center font-semibold text-base transition transform active:scale-95 ${className}`}
-    aria-label={label || value}
-  >
-    {label || value}
-  </button>
+<button
+type="button"
+onClick={(e) => {
+e.preventDefault();
+onClick(value);
+}}
+className={`h-11 min-h-11 rounded shadow-sm flex items-center justify-center font-semibold text-base transition transform active:scale-95 ${className}`}
+aria-label={label || value}
+>
+{label || value}
+</button>
 );
 
 const NumpadLayout: React.FC = () => {
@@ -29,12 +29,12 @@ const NumpadLayout: React.FC = () => {
             <Key value="1" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="2" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="3" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-10 rounded shadow-sm font-semibold text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
+            <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-11 min-h-11 rounded shadow-sm font-semibold text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
 
             <Key value="4" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="5" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="6" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
-            <button onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 h-10 rounded shadow-sm font-semibold text-xl row-span-2 flex items-center justify-center" aria-label={t('virtualKeyboard.backspace')}>⌫</button>
+            <button onClick={handleBackspace} className="bg-red-700 hover:bg-red-600 h-11 min-h-11 rounded shadow-sm font-semibold text-xl row-span-2 flex items-center justify-center" aria-label={t('virtualKeyboard.backspace')}>⌫</button>
 
             <Key value="7" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
             <Key value="8" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500" />
@@ -81,14 +81,14 @@ const FullKeyboardLayout: React.FC = () => {
                 {keys.row2.split('').map(k => <Key key={k} value={applyCase(k)} onClick={() => handleKeyClick(k)} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
             </div>
             <div className="flex gap-1 justify-center">
-                <button onClick={toggleShift} className={`h-10 rounded shadow-sm px-2 font-semibold text-base transition ${isShift ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.shift')}>⇧</button>
+                <button onClick={toggleShift} className={`h-11 min-h-11 rounded shadow-sm px-2 font-semibold text-base transition ${isShift ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.shift')}>⇧</button>
                 {keys.row3.split('').map(k => <Key key={k} value={applyCase(k)} onClick={() => handleKeyClick(k)} className="bg-slate-600 hover:bg-slate-500 flex-1" />)}
-                <button onClick={toggleCaps} className={`h-10 rounded shadow-sm px-2 font-semibold text-base transition ${isCaps ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.capsLock')}>⇪</button>
+                <button onClick={toggleCaps} className={`h-11 min-h-11 rounded shadow-sm px-2 font-semibold text-base transition ${isCaps ? 'bg-amber-500' : 'bg-slate-700 hover:bg-slate-600'}`} aria-label={t('virtualKeyboard.capsLock')}>⇪</button>
             </div>
             <div className="flex gap-1 justify-center">
                 <Key value="Enter" label="↵" onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-1" />
                 <Key value=" " label={t('virtualKeyboard.space')} onClick={handleKeyPress} className="bg-slate-600 hover:bg-slate-500 flex-grow-[3]" />
-                <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-10 rounded shadow-sm font-semibold px-2 text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
+                <button onClick={closeKeyboard} className="bg-sky-700 hover:bg-sky-600 h-11 min-h-11 rounded shadow-sm font-semibold px-2 text-base" aria-label={t('virtualKeyboard.done')}>{t('virtualKeyboard.done')}</button>
             </div>
         </div>
     );

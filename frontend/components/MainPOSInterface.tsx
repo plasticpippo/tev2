@@ -107,13 +107,13 @@ export const MainPOSInterface: React.FC = () => {
     );
   }
   
-  return (
+return (
     <>
-      <div className="w-screen h-screen bg-slate-800 text-white flex flex-col p-4 gap-4">
+    <div className="w-screen h-screen bg-slate-800 text-white flex flex-col p-4 gap-4 min-w-[320px]">
         {currentUser.role === 'Admin' && (
           <button
             onClick={() => setIsAdminPanelOpen(true)}
-            className="absolute top-2 right-2 bg-purple-700 hover:bg-purple-60 text-white font-bold py-2 px-4 rounded-md z-30"
+            className="absolute top-2 right-2 bg-purple-700 hover:bg-purple-60 text-white font-bold py-2 px-4 min-h-11 rounded-md z-30"
           >
             {t('pos:admin.panel')}
           </button>
@@ -123,23 +123,23 @@ export const MainPOSInterface: React.FC = () => {
           {assignedTillId ? (
             <LayoutProvider tillId={assignedTillId} initialCategoryId={'favourites'}>
               <>
-                {/* Desktop/Tablet: Show both panels side by side */}
-                <div className="hidden md:flex w-full h-full min-w-0">
-                  <div className="w-full lg:w-[calc(100%-384px)] h-full flex flex-col min-w-0">
-                    {/* Product Grid with Layout System */}
-                    <div className="flex-1 overflow-y-auto bg-slate-900">
-                      <ProductGridLayout
-                        products={appData.products}
-                        categories={appData.categories}
-                        onAddToCart={handleAddToCart}
-                        makableVariantIds={makableVariantIds}
-                        assignedTillId={assignedTillId}
-                      />
-                    </div>
-                  </div>
-                  
-                  <div className="w-full lg:w-96 h-full flex-shrink-0">
-                    <OrderPanel
+ {/* Desktop/Tablet: Show both panels side by side */}
+ <div className="hidden md:flex flex-row h-full w-full">
+ <div className="flex-1 min-w-0 h-full flex flex-col">
+ {/* Product Grid with Layout System */}
+ <div className="flex-1 overflow-y-auto bg-slate-900">
+ <ProductGridLayout
+ products={appData.products}
+ categories={appData.categories}
+ onAddToCart={handleAddToCart}
+ makableVariantIds={makableVariantIds}
+ assignedTillId={assignedTillId}
+ />
+ </div>
+ </div>
+
+ <div className="w-full md:w-80 lg:w-96 h-full flex-shrink-0">
+ <OrderPanel
                       orderItems={orderItems}
                       user={currentUser}
                       onUpdateQuantity={handleUpdateQuantity}

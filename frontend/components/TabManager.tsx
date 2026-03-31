@@ -37,10 +37,10 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-lg p-6 border border-slate-700 max-h-[90vh] flex flex-col">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-lg p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">{t('tabs.manageTabs')}</h2>
-          <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close tab manager">&times;</button>
+          <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 transition" aria-label="Close tab manager">&times;</button>
         </div>
         
         <div className="flex-grow overflow-y-auto pb-4">
@@ -91,14 +91,14 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
                       {canAddToTabs ? (
                         <button
                           onClick={() => onAddToTab(tab.id)}
-                          className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
                         >
                           {t('tabs.addToTab')}
                         </button>
                       ) : tab.items.length === 0 ? (
                         <button
                           onClick={() => onCloseTab(tab.id)}
-                          className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                          className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
                         >
                           {t('tabs.closeTab')}
                         </button>
@@ -106,13 +106,13 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
                         <>
                           <button
                             onClick={() => onOpenTransfer(tab.id)}
-                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
                           >
                             {t('tabs.transfer')}
                           </button>
                           <button
                             onClick={() => onLoadTab(tab.id)}
-                            className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 rounded-md text-sm transition"
+                            className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
                           >
                             {t('tabs.loadTab')}
                           </button>

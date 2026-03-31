@@ -640,30 +640,30 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
       
       <div className="flex-shrink-0 mb-4">
         <div className="flex border-b border-slate-700">
-          <button
-            className={`btn ${activeTab === 'layout' ? 'btn-primary' : 'btn-secondary'} text-sm`}
-            onClick={() => setActiveTab('layout')}
-            title={t('tables.manageTableLayouts')}
-          >
-            {t('tables.layout')}
-            <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">L</span>
-          </button>
-          <button
-            className={`btn ${activeTab === 'rooms' ? 'btn-primary' : 'btn-secondary'} text-sm`}
-            onClick={() => setActiveTab('rooms')}
-            title={t('tables.manageRoomOrganization')}
-          >
-            {t('tables.rooms')}
-            <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">M</span>
-          </button>
-          <button
-            className={`btn ${activeTab === 'tables' ? 'btn-primary' : 'btn-secondary'} text-sm`}
-            onClick={() => setActiveTab('tables')}
-            title={t('tables.manageIndividualTables')}
-          >
-            {t('tables.tables')}
-            <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">T</span>
-          </button>
+<button
+className={`btn min-h-11 ${activeTab === 'layout' ? 'btn-primary' : 'btn-secondary'} text-sm`}
+onClick={() => setActiveTab('layout')}
+title={t('tables.manageTableLayouts')}
+>
+{t('tables.layout')}
+<span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">L</span>
+</button>
+<button
+className={`btn min-h-11 ${activeTab === 'rooms' ? 'btn-primary' : 'btn-secondary'} text-sm`}
+onClick={() => setActiveTab('rooms')}
+title={t('tables.manageRoomOrganization')}
+>
+{t('tables.rooms')}
+<span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">M</span>
+</button>
+<button
+className={`btn min-h-11 ${activeTab === 'tables' ? 'btn-primary' : 'btn-secondary'} text-sm`}
+onClick={() => setActiveTab('tables')}
+title={t('tables.manageIndividualTables')}
+>
+{t('tables.tables')}
+<span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center">T</span>
+</button>
         </div>
       </div>
 

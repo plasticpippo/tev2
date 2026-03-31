@@ -45,23 +45,23 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-      <div className="bg-bg-primary rounded-lg p-spacing-xl w-1/3">
+      <div className="bg-bg-primary rounded-lg p-spacing-xl w-full max-w-sm sm:max-w-md">
         <h3 className="text-xl font-bold mb-4 text-accent-primary">{title}</h3>
         <p className="mb-4">{message}</p>
         <div className="flex justify-end gap-2">
-          <button
-            onClick={onCancel}
-            className="bg-slate-60 hover:bg-slate-700 text-white py-2 px-4 rounded"
-          >
-            {cancelLabel}
-          </button>
-          <button
-            onClick={onConfirm}
-            disabled={disabled}
-            className={`${getConfirmButtonClass()} text-white py-2 px-4 rounded ${disabled ? 'opacity-75 cursor-not-allowed' : ''}`}
-          >
-            {confirmLabel}
-          </button>
+<button
+onClick={onCancel}
+className="bg-slate-60 hover:bg-slate-700 text-white py-2 px-4 min-h-11 rounded"
+>
+{cancelLabel}
+</button>
+<button
+onClick={onConfirm}
+disabled={disabled}
+className={`${getConfirmButtonClass()} text-white py-2 px-4 min-h-11 rounded ${disabled ? 'opacity-75 cursor-not-allowed' : ''}`}
+>
+{confirmLabel}
+</button>
         </div>
       </div>
     </div>

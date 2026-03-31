@@ -132,18 +132,18 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-5xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
+      <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-5xl lg:max-w-7xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
         {/* Header */}
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-2xl font-bold text-amber-400">{t('tableAssignmentModal.title')}</h2>
-          <button
-            onClick={onClose}
-            className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
-            aria-label={t('tableAssignmentModal.close')}
-            disabled={isAssigning}
-          >
-            &times;
-          </button>
+<button
+onClick={onClose}
+className="text-slate-400 hover:text-white text-3xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
+aria-label={t('tableAssignmentModal.close')}
+disabled={isAssigning}
+>
+&times;
+</button>
         </div>
 
         {/* Room Selector */}
@@ -223,20 +223,20 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
                     const isCurrent = currentTableId === table.id;
                     
                     return (
-                      <button
-                        key={table.id}
-                        onClick={() => setSelectedTableId(table.id)}
-                        className={`
-                          absolute w-16 h-16 rounded-full flex items-center justify-center
-                          text-white font-bold border-4 transition-all duration-150
-                          ${getStatusColor(table.status)}
-                          ${table.status === 'available' || table.status === 'reserved'
-                            ? 'cursor-pointer hover:shadow-lg hover:shadow-amber-500/50 hover:scale-110'
-                            : 'cursor-not-allowed opacity-60'
-                          }
-                          ${isSelected ? 'ring-4 ring-amber-400 shadow-2xl shadow-amber-500/70 scale-110 z-20' : 'z-10'}
-                          ${isCurrent ? 'ring-4 ring-blue-400' : ''}
-                        `}
+<button
+key={table.id}
+onClick={() => setSelectedTableId(table.id)}
+className={`
+absolute w-16 h-16 min-h-16 min-w-16 rounded-full flex items-center justify-center
+text-white font-bold border-4 transition-all duration-150
+${getStatusColor(table.status)}
+${table.status === 'available' || table.status === 'reserved'
+? 'cursor-pointer hover:shadow-lg hover:shadow-amber-500/50 hover:scale-110'
+: 'cursor-not-allowed opacity-60'
+}
+${isSelected ? 'ring-4 ring-amber-400 shadow-2xl shadow-amber-500/70 scale-110 z-20' : 'z-10'}
+${isCurrent ? 'ring-4 ring-blue-400' : ''}
+`}
                         style={{
                           left: `${table.x - canvasBounds.minX}px`,
                           top: `${table.y - canvasBounds.minY}px`
@@ -351,7 +351,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
               <button
                 onClick={handleClear}
                 disabled={isAssigning}
-                className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
+                className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
               >
                 {isAssigning ? t('tableAssignmentModal.clearing') : t('tableAssignmentModal.clearTable')}
               </button>
@@ -359,7 +359,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
             <button
               onClick={onClose}
               disabled={isAssigning}
-              className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 rounded-md transition"
+              className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
             >
               {t('buttons.cancel')}
             </button>
@@ -367,11 +367,11 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
           <button
             onClick={handleConfirm}
             disabled={!selectedTableId || isAssigning}
-            className={`font-bold py-2 px-6 rounded-md transition ${
-              selectedTableId && !isAssigning
-                ? 'bg-amber-600 hover:bg-amber-500 text-white'
-                : 'bg-slate-700 text-slate-500 cursor-not-allowed'
-            }`}
+className={`font-bold py-2 px-6 min-h-11 rounded-md transition ${
+selectedTableId && !isAssigning
+? 'bg-amber-600 hover:bg-amber-500 text-white'
+: 'bg-slate-700 text-slate-500 cursor-not-allowed'
+}`}
           >
             {isAssigning ? t('tableAssignmentModal.assigning') : t('tableAssignmentModal.assignToTable')}
           </button>

@@ -112,14 +112,14 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
 
     return (
       <div className="fixed inset-0 bg-slate-900 bg-opacity-70 flex items-center justify-center z-50 p-6">
-       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-3xl max-h-[90vh] flex flex-col border border-slate-700">
+       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-lg max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 flex-shrink-0">
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-amber-500">{t('transferItemsModal.title')}</h2>
                     <p className="text-base text-slate-300">{t('transferItemsModal.fromTab')} <span className="font-semibold text-white">{sourceTab.name}</span></p>
                 </div>
-                <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200" aria-label={t('transferItemsModal.close')}>&times;</button>
+                <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200" aria-label={t('transferItemsModal.close')}>&times;</button>
             </div>
         </div>
 
@@ -140,7 +140,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                   <button
                                     onClick={() => handleQuantityChange(item.id, -1)}
                                     disabled={(transferQuantities[item.id] || 0) === 0}
-                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
+                                    className="w-11 h-11 min-h-11 min-w-11 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                     aria-label={t('transferItemsModal.decreaseQuantity', { itemName: getItemDisplayName(item) })}
                                   >
                                     -
@@ -149,7 +149,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                   <button
                                     onClick={() => handleQuantityChange(item.id, 1)}
                                     disabled={(transferQuantities[item.id] || 0) >= item.quantity}
-                                    className="w-10 h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
+                                    className="w-11 h-11 min-h-11 min-w-11 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-600 focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                     aria-label={t('transferItemsModal.increaseQuantity', { itemName: getItemDisplayName(item) })}
                                   >
                                     +
@@ -205,7 +205,7 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
                                 <button
                                     onClick={handleConfirm}
                                     disabled={destination?.type === 'new' && !newTabName.trim()}
-                                    className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
+                                    className="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-4 min-h-11 rounded-md disabled:bg-slate-700 disabled:opacity-50 disabled:cursor-not-allowed text-base focus:ring-2 focus:ring-amber-500 focus:ring-offset-2 focus:ring-offset-slate-800 transition duration-200"
                                 >
                                     {t('transferItemsModal.confirmTabName')}
                                 </button>

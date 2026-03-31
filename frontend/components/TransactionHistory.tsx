@@ -85,17 +85,17 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
         return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
     }, [filteredTransactions]);
     
-    const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
-        <button
-            onClick={() => setDateRange(preset)}
-            className={`px-3 py-2 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
-            aria-pressed={dateRange === preset}
-            aria-label={t('transactions.ariaLabels.filterBy', { label })}
-            data-testid={`date-range-${preset}`}
-        >
-            {label}
-        </button>
-    );
+const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
+<button
+onClick={() => setDateRange(preset)}
+className={`px-3 py-2 min-h-11 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
+aria-pressed={dateRange === preset}
+aria-label={t('transactions.ariaLabels.filterBy', { label })}
+data-testid={`date-range-${preset}`}
+>
+{label}
+</button>
+);
     
     return (
         <div className="h-full flex flex-col">
@@ -108,14 +108,14 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
                     <DateRangeButton preset="yesterday" label={t('transactions.dateRange.yesterday')}/>
                     <DateRangeButton preset="7days" label={t('transactions.dateRange.last7Days')}/>
                     <DateRangeButton preset="30days" label={t('transactions.dateRange.last30Days')}/>
-                    <button
-                        onClick={() => setDateRange('custom')}
-                        className={`px-3 py-2 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
-                        aria-label={t('transactions.ariaLabels.filterByCustomDateRange')}
-                        aria-pressed={dateRange === 'custom'}
-                    >
-                        {t('transactions.dateRange.custom')}
-                    </button>
+<button
+onClick={() => setDateRange('custom')}
+className={`px-3 py-2 min-h-11 text-sm rounded-md transition ${dateRange === 'custom' ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
+aria-label={t('transactions.ariaLabels.filterByCustomDateRange')}
+aria-pressed={dateRange === 'custom'}
+>
+{t('transactions.dateRange.custom')}
+</button>
                 </div>
 
                 {/* Additional Filters */}

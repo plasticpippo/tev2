@@ -191,13 +191,13 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
       <div className="bg-slate-800 rounded-lg p-6 w-11/12 h-5/6 max-w-xs sm:max-w-4xl overflow-auto">
         <div className="flex justify-between items-center mb-4">
           <h2 id="templates-title" className="text-2xl font-bold text-amber-300">{t('gridTemplates.title')}</h2>
-          <button
-            onClick={onCancel}
-            className="text-white bg-red-600 hover:bg-red-700 rounded-full w-8 h-8 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-slate-800 transition-colors duration-200"
-            aria-label={t('gridTemplates.close')}
-          >
-            &times;
-          </button>
+<button
+onClick={onCancel}
+className="text-white bg-red-600 hover:bg-red-700 rounded-full w-11 h-11 min-h-11 min-w-11 flex items-center justify-center focus:outline-none focus:ring-2 focus:ring-red-400 focus:ring-offset-2 focus:ring-offset-slate-800 transition-colors duration-200"
+aria-label={t('gridTemplates.close')}
+>
+&times;
+</button>
         </div>
 
         <div className="mb-4">

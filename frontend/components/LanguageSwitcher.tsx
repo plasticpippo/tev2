@@ -34,11 +34,11 @@ export const LanguageSwitcher: React.FC = () => {
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-md transition-colors"
-        aria-label={t('common.languageSwitcher.changeLanguage')}
-      >
+<button
+onClick={() => setIsOpen(!isOpen)}
+className="flex items-center gap-2 px-3 py-2 min-h-11 text-sm font-medium text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-md transition-colors"
+aria-label={t('common.languageSwitcher.changeLanguage')}
+>
         <span className="font-bold text-xs">{currentLangInfo.flag}</span>
         <svg
           className={`w-4 h-4 transition-transform ${isOpen ? 'rotate-180' : ''}`}
@@ -57,15 +57,15 @@ export const LanguageSwitcher: React.FC = () => {
             const isActive = lang === currentLanguage;
 
             return (
-              <button
-                key={lang}
-                onClick={() => changeLanguage(lang)}
-                className={`w-full flex items-center gap-3 px-4 py-2 text-sm text-left transition-colors ${
-                  isActive
-                    ? 'bg-amber-600 text-white'
-                    : 'text-slate-300 hover:bg-slate-600 hover:text-white'
-                }`}
-              >
+<button
+key={lang}
+onClick={() => changeLanguage(lang)}
+className={`w-full flex items-center gap-3 px-4 py-2 min-h-11 text-sm text-left transition-colors ${
+isActive
+? 'bg-amber-600 text-white'
+: 'text-slate-300 hover:bg-slate-600 hover:text-white'
+}`}
+>
                 <span className="font-bold text-xs w-6">{langInfo.flag}</span>
                 <span>{langInfo.name}</span>
                 {isActive && (

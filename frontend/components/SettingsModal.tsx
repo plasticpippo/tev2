@@ -65,11 +65,11 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`px-6 py-3 font-semibold transition border-b-2 ${
-                            activeTab === tab.id
-                                ? 'border-amber-500 text-amber-400'
-                                : 'border-transparent text-slate-400 hover:text-slate-200'
-                        }`}
+className={`px-6 py-3 min-h-11 font-semibold transition border-b-2 ${
+activeTab === tab.id
+? 'border-amber-500 text-amber-400'
+: 'border-transparent text-slate-400 hover:text-slate-200'
+}`}
                     >
                         {tab.label}
                     </button>

@@ -41,10 +41,10 @@ export const DatePicker: React.FC<DatePickerProps> = ({
   
   return (
     <div className="relative">
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-md text-white transition"
-      >
+<button
+onClick={() => setIsOpen(!isOpen)}
+className="flex items-center gap-2 px-4 py-2 min-h-11 bg-slate-700 hover:bg-slate-600 rounded-md text-white transition"
+>
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
             d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -57,13 +57,13 @@ export const DatePicker: React.FC<DatePickerProps> = ({
           {/* Quick select buttons */}
           <div className="grid grid-cols-2 gap-2 mb-4">
             {quickSelectOptions.map((option) => (
-              <button
-                key={option.days}
-                onClick={() => handleQuickSelect(option.days)}
-                className="px-3 py-2 text-sm bg-slate-700 hover:bg-slate-600 rounded transition text-white"
-              >
-                {option.label}
-              </button>
+<button
+key={option.days}
+onClick={() => handleQuickSelect(option.days)}
+className="px-3 py-2 min-h-11 text-sm bg-slate-700 hover:bg-slate-600 rounded transition text-white"
+>
+{option.label}
+</button>
             ))}
           </div>
           

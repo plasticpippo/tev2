@@ -113,20 +113,20 @@ export const ItemisedConsumptionFilter: React.FC<FilterProps> = ({
         </div>
       </div>
       
-      <div className="flex gap-3 mt-4">
-        <button
-          onClick={handleApplyFilters}
-          className="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 rounded-md transition"
-        >
-          {t('itemisedConsumption.applyFilters')}
-        </button>
-        <button
-          onClick={handleResetFilters}
-          className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 px-4 rounded-md transition"
-        >
-          {t('itemisedConsumption.resetFilters')}
-        </button>
-      </div>
+<div className="flex gap-3 mt-4">
+<button
+onClick={handleApplyFilters}
+className="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 min-h-11 rounded-md transition"
+>
+{t('itemisedConsumption.applyFilters')}
+</button>
+<button
+onClick={handleResetFilters}
+className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 px-4 min-h-11 rounded-md transition"
+>
+{t('itemisedConsumption.resetFilters')}
+</button>
+</div>
     </div>
   );
 };

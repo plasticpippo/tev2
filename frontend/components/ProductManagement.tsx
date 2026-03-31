@@ -88,7 +88,7 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                  <div className="flex items-center gap-4">
                     <div className="flex flex-wrap gap-2 flex-grow max-h-40 overflow-y-auto p-2 border border-slate-600 rounded-md bg-slate-900 bg-opacity-50">
                         {availableColors.map(color => (
-                            <button type="button" key={color} onClick={() => onUpdate({ ...variant, backgroundColor: color, textColor: getContrastingTextColor(color) })} className={`w-8 h-8 rounded-full border border-slate-400 p-0 ${color} ${variant.backgroundColor === color ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-white`} title={color}></button>
+                            <button type="button" key={color} onClick={() => onUpdate({ ...variant, backgroundColor: color, textColor: getContrastingTextColor(color) })} className={`w-11 h-11 min-h-11 min-w-11 rounded-full border border-slate-400 p-0 ${color} ${variant.backgroundColor === color ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-white`} title={color}></button>
                         ))}
                     </div>
                     <div className={`${variant.backgroundColor || 'bg-slate-600'} ${variant.textColor || 'text-white'} rounded-md p-3 text-center w-32 h-20 flex flex-col justify-center`}>
@@ -247,7 +247,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-xs sm:max-w-2xl max-h-[90vh] flex flex-col border border-slate-700">
+      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg sm:max-w-2xl lg:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 border-b border-slate-700">
             <h3 className="text-xl font-bold text-amber-400">{product ? t('products.editProduct') : t('products.addProduct')}</h3>
             <p className="text-sm text-slate-400">{t('products.productDescription')}</p>

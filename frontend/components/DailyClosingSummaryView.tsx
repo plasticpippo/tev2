@@ -182,15 +182,15 @@ export const DailyClosingSummaryView: React.FC<DailyClosingSummaryViewProps> = (
             />
           </div>
           <div className="flex items-end">
-            <button
-              onClick={() => {
-                setDateFilter('');
-                setDateToFilter('');
-              }}
-              className="w-full py-2 px-4 bg-slate-700 text-white rounded-md hover:bg-slate-600 transition"
-            >
-              {t('dailyClosing.filters.clearFilters')}
-            </button>
+<button
+onClick={() => {
+setDateFilter('');
+setDateToFilter('');
+}}
+className="w-full py-2 px-4 min-h-11 bg-slate-700 text-white rounded-md hover:bg-slate-600 transition"
+>
+{t('dailyClosing.filters.clearFilters')}
+</button>
           </div>
         </div>
       </div>

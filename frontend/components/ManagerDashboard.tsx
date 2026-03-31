@@ -54,10 +54,10 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
         return <div className="text-center text-slate-400">{t('managerDashboard.loadingDashboard')}</div>;
     }
     
-    return (
-        <div className="h-full flex flex-col gap-6">
-            <TotalSalesTicker transactions={transactions} settings={settings} />
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+return (
+    <div className="@container h-full flex flex-col gap-6">
+      <TotalSalesTicker transactions={transactions} settings={settings} />
+      <div className="grid grid-cols-1 @sm:grid-cols-2 gap-4 @md:gap-6">
                 <div className="bg-slate-800 p-4 rounded-lg">
                     <h2 className="text-lg font-bold text-slate-300 mb-3 text-center">{t('managerDashboard.businessDayManagement')}</h2>
                     <DailyClosingButton
@@ -86,7 +86,7 @@ export const ManagerDashboard: React.FC<ManagerDashboardProps> = ({ transactions
                     )}
                 </div>
             </div>
-            <div className="flex-grow grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="@container flex-grow grid grid-cols-1 @sm:grid-cols-2 @md:grid-cols-3 gap-4 @md:gap-6">
                 <div className="lg:col-span-3 h-full flex flex-col gap-6 overflow-hidden">
                     <TillStatus tills={tills} transactions={transactions} users={users} settings={settings} />
                     <UnifiedOpenTabs tabs={tabs} />

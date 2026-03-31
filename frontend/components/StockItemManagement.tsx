@@ -223,13 +223,13 @@ const StockItemModal: React.FC<StockItemModalProps> = ({ item, onClose, onSave, 
                        </div>
                    ))}
               </div>
-              <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">{t('stockItems.addPurchasingUnit')}</button>
+              <button type="button" onClick={handleAddPurchasingUnit} className="mt-3 w-full min-h-11 bg-sky-700 hover:bg-sky-600 text-white font-bold py-2 rounded-md text-sm">{t('stockItems.addPurchasingUnit')}</button>
           </div>
 
         </div>
         <div className="flex justify-end gap-2 mt-auto p-6 pt-4 border-t border-slate-700">
-          <button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">{t('stockItems.cancel')}</button>
-          <button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
+<button type="button" onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 min-h-11 rounded-md">{t('stockItems.cancel')}</button>
+<button type="submit" disabled={isSaving} className={`bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 min-h-11 rounded-md ${isSaving ? 'opacity-75 cursor-not-allowed' : ''}`}>
             {isSaving ? (
               <span className="flex items-center">
                 <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -295,7 +295,7 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
                 <h3 className="text-xl font-bold text-slate-300">{t('stockItems.stockItems')}</h3>
                 <button
                     onClick={() => { setEditingItem(undefined); setIsModalOpen(true); }}
-                    className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 rounded-md"
+                    className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 min-h-11 rounded-md"
                 >
                     {t('stockItems.addStockItem')}
                 </button>

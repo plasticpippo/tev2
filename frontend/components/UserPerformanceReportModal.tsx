@@ -189,9 +189,9 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
         </div>
     );
     
-    const DateRangeButton: React.FC<{range: typeof dateRange, label: string}> = ({range, label}) => (
-        <button onClick={() => { setDateRange(range); if (range !== 'custom') { setCustomStartDate(''); setCustomEndDate(''); } }} className={`px-3 py-1 text-sm rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>{label}</button>
-    );
+const DateRangeButton: React.FC<{range: typeof dateRange, label: string}> = ({range, label}) => (
+<button onClick={() => { setDateRange(range); if (range !== 'custom') { setCustomStartDate(''); setCustomEndDate(''); } }} className={`px-3 py-2 min-h-11 text-sm rounded-md transition ${dateRange === range ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}>{label}</button>
+);
 
     const FilterDropdown: React.FC<{
         label: string;
@@ -215,7 +215,7 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
 
     return (
         <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-            <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
+            <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-lg sm:max-w-2xl lg:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
                 <div className="p-6 pb-4 border-b border-slate-700">
                     <div className="flex justify-between items-start mb-4">
                         <div>
@@ -228,7 +228,7 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
                              <DateRangeButton range="month" label={t('performanceReport.thisMonth')} />
                              <DateRangeButton range="all" label={t('performanceReport.allTime')} />
                              <DateRangeButton range="custom" label={t('performanceReport.custom')} />
-                             <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-10 h-10 flex items-center justify-center rounded-full hover:bg-slate-700 transition ml-4">&times;</button>
+                             <button onClick={onClose} className="text-slate-400 hover:text-white text-3xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 transition ml-4">&times;</button>
                         </div>
                     </div>
 
@@ -358,7 +358,7 @@ export const UserPerformanceReportModal: React.FC<UserPerformanceReportModalProp
                 </div>
 
                 <div className="flex justify-end p-6 pt-4 mt-auto border-t border-slate-700">
-                    <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 rounded-md">{t('performanceReport.close')}</button>
+                    <button onClick={onClose} className="bg-slate-600 hover:bg-slate-500 text-white font-bold py-2 px-4 min-h-11 rounded-md">{t('performanceReport.close')}</button>
                 </div>
             </div>
         </div>

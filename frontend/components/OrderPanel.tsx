@@ -54,10 +54,9 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             </div>
             <div className="flex items-center gap-2 md:gap-3">
               {/* Fix: item.id is a string, and onUpdateQuantity now correctly accepts it. */}
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="w-12 h-12 md:w-10 md:h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">-</button>
-              <span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
-              {/* Fix: item.id is a string, and onUpdateQuantity now correctly accepts it. */}
-              <button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="w-12 h-12 md:w-10 md:h-10 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">+</button>
+<button onClick={() => onUpdateQuantity(item.id, item.quantity - 1)} className="w-11 h-11 min-h-11 min-w-11 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">-</button>
+<span className="w-8 text-center font-bold text-lg">{item.quantity}</span>
+<button onClick={() => onUpdateQuantity(item.id, item.quantity + 1)} className="w-11 h-11 min-h-11 min-w-11 bg-slate-700 rounded-full text-lg font-bold flex-shrink-0 flex items-center justify-center active:bg-slate-600 transition">+</button>
             </div>
           </div>
         ))}
@@ -70,15 +69,15 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
    */
   const renderActiveTabButtons = () => (
     <>
-      <button
-        onClick={onSaveTab}
-        className="btn btn-primary w-full"
-      >
+<button
+	onClick={onSaveTab}
+	className="btn btn-primary w-full min-h-11"
+>
         {t('pos:cart.saveTabStartNew')}
       </button>
       
       {orderItems.length > 0 && (
-        <button onClick={onPayment} className="btn btn-success w-full">
+        <button onClick={onPayment} className="btn btn-success w-full min-h-11">
           {t('pos:cart.payment')}
         </button>
       )}
@@ -91,14 +90,14 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
   const renderNoTabButtons = () => (
     <>
       <div className="grid grid-cols-2 gap-2">
-        <button
-          onClick={onOpenTabs}
-          className={`btn btn-info w-full ${orderItems.length === 0 ? 'col-span-2' : ''}`}
-        >
+<button
+	onClick={onOpenTabs}
+	className={`btn btn-info w-full min-h-11 ${orderItems.length === 0 ? 'col-span-2' : ''}`}
+>
           {orderItems.length > 0 ? t('pos:tabs.title') : t('pos:tabs.viewOpenTabs')}
         </button>
         {orderItems.length > 0 && (
-          <button onClick={onClearOrder} className="btn btn-danger w-full">
+          <button onClick={onClearOrder} className="btn btn-danger w-full min-h-11">
             {t('pos:cart.clearOrder')}
           </button>
         )}
@@ -107,23 +106,23 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
       <div className="space-y-2">
         {/* Assign to Table button - only show when there are items */}
         {orderItems.length > 0 && (
-          <button
-            onClick={onOpenTableAssignment}
-            className={`btn w-full ${
-              assignedTable
-                ? 'btn-primary'
-                : 'btn-secondary'
-            }`}
-          >
+<button
+	onClick={onOpenTableAssignment}
+	className={`btn w-full min-h-11 ${
+		assignedTable
+			? 'btn-primary'
+			: 'btn-secondary'
+	}`}
+>
             {assignedTable ? t('pos:order.tableLabel', { name: assignedTable.name }).toUpperCase() : t('pos:table.assignTable').toUpperCase()}
           </button>
         )}
         
         {orderItems.length > 0 && (
-          <button
-            onClick={onPayment}
-            className="btn btn-success w-full"
-          >
+<button
+	onClick={onPayment}
+	className="btn btn-success w-full min-h-11"
+>
             {t('pos:cart.payment')}
           </button>
         )}
@@ -132,7 +131,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
   );
 
   return (
-    <div className="w-full md:w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full min-w-[300px]">
+    <div className="w-full md:w-80 lg:w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full min-w-0">
       {/* Header section - stays at top */}
       <div className="p-4 border-b border-slate-700 flex-shrink-0 flex justify-between items-start">
         <div>
@@ -144,7 +143,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             </span>
           </p>
         </div>
-        <button onClick={onLogout} className="btn btn-danger btn-sm">
+        <button onClick={onLogout} className="btn btn-danger btn-sm min-h-11 min-w-11">
           {t('common:buttons.logout')}
         </button>
       </div>
@@ -163,10 +162,10 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
             <p className="font-bold text-green-200">{t('pos:order.tableLabel', { name: assignedTable.name })}</p>
             <p className="text-xs text-green-300">{t(`pos:table.status.${assignedTable.status}`)}</p>
           </div>
-          <button
-            onClick={onOpenTableAssignment}
-            className="btn btn-primary btn-sm"
-          >
+<button
+	onClick={onOpenTableAssignment}
+	className="btn btn-primary btn-sm min-h-11 min-w-11"
+>
             {t('pos:table.changeTable')}
           </button>
         </div>

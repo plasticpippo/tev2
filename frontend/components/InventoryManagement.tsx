@@ -162,12 +162,12 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
         <div className="flex flex-col h-full">
             <div className="flex-shrink-0 space-y-4">
                 <div className="flex gap-2">
-                    <button onClick={() => setActiveTab('ingredients')} className={`btn ${activeTab === 'ingredients' ? 'btn-primary' : 'btn-secondary'}`}>
-                        {t('inventoryManagement.ingredients')}
-                    </button>
-                    <button onClick={() => setActiveTab('goods')} className={`btn ${activeTab === 'goods' ? 'btn-primary' : 'btn-secondary'}`}>
-                        {t('inventoryManagement.sellableGoods')}
-                    </button>
+<button onClick={() => setActiveTab('ingredients')} className={`btn min-h-11 ${activeTab === 'ingredients' ? 'btn-primary' : 'btn-secondary'}`}>
+{t('inventoryManagement.ingredients')}
+</button>
+<button onClick={() => setActiveTab('goods')} className={`btn min-h-11 ${activeTab === 'goods' ? 'btn-primary' : 'btn-secondary'}`}>
+{t('inventoryManagement.sellableGoods')}
+</button>
                 </div>
                 <div className="bg-slate-800 p-2 rounded-md flex gap-2 items-center">
                     <input type="text" placeholder={t('inventoryManagement.searchByName')} value={searchTerm} onChange={e => setSearchTerm(e.target.value)} className="flex-grow p-2 bg-slate-900 border border-slate-700 rounded-md text-sm" />
@@ -175,9 +175,9 @@ export const InventoryManagement: React.FC<InventoryManagementProps> = ({ stockI
                         <option value="all">{t('inventoryManagement.allCategories')}</option>
                         {categories.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
                     </select>
-                    <button onClick={() => setStockLevelFilter('all')} className={`btn ${stockLevelFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.all')}</button>
-                    <button onClick={() => setStockLevelFilter('low')} className={`btn ${stockLevelFilter === 'low' ? 'btn-warning' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.low')}</button>
-                    <button onClick={() => setStockLevelFilter('out')} className={`btn ${stockLevelFilter === 'out' ? 'btn-danger' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.out')}</button>
+<button onClick={() => setStockLevelFilter('all')} className={`btn min-h-11 ${stockLevelFilter === 'all' ? 'btn-primary' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.all')}</button>
+<button onClick={() => setStockLevelFilter('low')} className={`btn min-h-11 ${stockLevelFilter === 'low' ? 'btn-warning' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.low')}</button>
+<button onClick={() => setStockLevelFilter('out')} className={`btn min-h-11 ${stockLevelFilter === 'out' ? 'btn-danger' : 'btn-secondary'} btn-sm`}>{t('inventoryManagement.out')}</button>
                 </div>
             </div>
             
