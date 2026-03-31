@@ -281,7 +281,11 @@
     "fetchFailed": "Failed to fetch settings",
     "invalidDefaultTaxRate": "Invalid default tax rate ID",
     "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
-    "backupFailed": "Failed to create database backup. Please try again later."
+    "backupFailed": "Failed to create database backup. Please try again later.",
+    "emailConfigIncomplete": "Email configuration is incomplete. SMTP host, user, and sender address are required when email is enabled.",
+    "invalidSmtpPort": "Invalid SMTP port. Must be between 1 and 65535.",
+    "invalidReceiptNumberLength": "Invalid receipt number length. Must be between 1 and 20.",
+    "invalidReceiptStartNumber": "Invalid receipt start number. Must be at least 1."
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",

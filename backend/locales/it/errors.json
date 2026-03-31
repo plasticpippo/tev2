@@ -281,7 +281,11 @@
     "fetchFailed": "Impossibile recuperare le impostazioni",
     "invalidDefaultTaxRate": "ID aliquota IVA predefinita non valido",
     "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita",
-    "backupFailed": "Impossibile creare il backup del database. Riprova piu tardi."
+    "backupFailed": "Impossibile creare il backup del database. Riprova piu tardi.",
+    "emailConfigIncomplete": "Configurazione email incompleta. Host SMTP, utente e indirizzo mittente sono obbligatori quando l'email e abilitata.",
+    "invalidSmtpPort": "Porta SMTP non valida. Deve essere compresa tra 1 e 65535.",
+    "invalidReceiptNumberLength": "Lunghezza numero ricevuta non valida. Deve essere compresa tra 1 e 20.",
+    "invalidReceiptStartNumber": "Numero iniziale ricevuta non valido. Deve essere almeno 1."
   },
   "dailyClosings": {
     "notFound": "Chiusura giornaliera non trovata",

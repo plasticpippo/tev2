@@ -218,14 +218,42 @@ model OrderActivityLog {
 }
 
 model Settings {
-  id                  Int       @id @default(autoincrement())
-  taxMode             String
-  autoStartTime       String
-  businessDayEndHour  String    @default("06:00") // Format: "HH:MM" - when business day ends (for midnight-crossing)
-  autoCloseEnabled    Boolean   @default(false) // Enable automatic business day closing
-  lastManualClose     DateTime?
-  defaultTaxRateId    Int?
-  defaultTaxRate      TaxRate?  @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
+  id Int @id @default(autoincrement())
+  taxMode String
+  autoStartTime String
+  businessDayEndHour String @default("06:00")
+  autoCloseEnabled Boolean @default(false)
+  lastManualClose DateTime?
+  defaultTaxRateId Int?
+  defaultTaxRate TaxRate? @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
+
+  // Business Information Fields
+  businessName String?
+  businessAddress String?
+  businessCity String?
+  businessPostalCode String? @map("business_postal_code")
+  businessCountry String?
+  businessPhone String?
+  businessEmail String?
+  vatNumber String? @map("vat_number")
+
+  // Receipt Configuration Fields
+  receiptPrefix String @default("R") @map("receipt_prefix")
+  receiptNumberLength Int @default(6) @map("receipt_number_length")
+  receiptStartNumber Int @default(1) @map("receipt_start_number")
+  receiptSequenceYear Boolean @default(false) @map("receipt_sequence_year")
+  receiptCurrentYear Int? @map("receipt_current_year")
+  receiptCurrentNumber Int @default(0) @map("receipt_current_number")
+
+  // Email Configuration Fields
+  emailSmtpHost String? @map("email_smtp_host")
+  emailSmtpPort Int @default(587) @map("email_smtp_port")
+  emailSmtpUser String? @map("email_smtp_user")
+  emailSmtpPassword String? @map("email_smtp_password")
+  emailFromAddress String? @map("email_from_address")
+  emailFromName String? @map("email_from_name")
+  emailSmtpSecure Boolean @default(false) @map("email_smtp_secure")
+  emailEnabled Boolean @default(false) @map("email_enabled")
 
   @@index([defaultTaxRateId])
   @@map("settings")

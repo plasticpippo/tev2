@@ -41,11 +41,11 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
         defaultTaxRate: true,
       },
     }) as SettingsWithTaxRate | null;
-    
+
     if (!settings) {
       // If no settings exist, return default values
       res.json({
-        tax: { 
+        tax: {
           mode: 'none',
           defaultTaxRateId: null,
           defaultTaxRate: null,
@@ -55,17 +55,45 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
           businessDayEndHour: '06:00',
           lastManualClose: null,
           autoCloseEnabled: false
+        },
+        business: {
+          name: null,
+          address: null,
+          city: null,
+          postalCode: null,
+          country: null,
+          phone: null,
+          email: null,
+          vatNumber: null
+        },
+        receipt: {
+          prefix: 'R',
+          numberLength: 6,
+          startNumber: 1,
+          sequenceYear: false,
+          currentYear: null,
+          currentNumber: 0
+        },
+        email: {
+          smtpHost: null,
+          smtpPort: 587,
+          smtpUser: null,
+          smtpPassword: null,
+          fromAddress: null,
+          fromName: null,
+          smtpSecure: false,
+          enabled: false
         }
       });
       return;
     }
-    
+
     // Format the default tax rate if present
     const defaultTaxRate = formatTaxRate(settings.defaultTaxRate);
-    
+
     // Convert the database format to the expected format
     const result: Settings = {
-      tax: { 
+      tax: {
         mode: settings.taxMode as 'inclusive' | 'exclusive' | 'none',
         defaultTaxRateId: settings.defaultTaxRateId,
         defaultTaxRate: defaultTaxRate,
@@ -75,9 +103,37 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
         businessDayEndHour: settings.businessDayEndHour,
         lastManualClose: settings.lastManualClose?.toISOString() || null,
         autoCloseEnabled: settings.autoCloseEnabled ?? false
+      },
+      business: {
+        name: settings.businessName,
+        address: settings.businessAddress,
+        city: settings.businessCity,
+        postalCode: settings.businessPostalCode,
+        country: settings.businessCountry,
+        phone: settings.businessPhone,
+        email: settings.businessEmail,
+        vatNumber: settings.vatNumber
+      },
+      receipt: {
+        prefix: settings.receiptPrefix,
+        numberLength: settings.receiptNumberLength,
+        startNumber: settings.receiptStartNumber,
+        sequenceYear: settings.receiptSequenceYear,
+        currentYear: settings.receiptCurrentYear,
+        currentNumber: settings.receiptCurrentNumber
+      },
+      email: {
+        smtpHost: settings.emailSmtpHost,
+        smtpPort: settings.emailSmtpPort,
+        smtpUser: settings.emailSmtpUser,
+        smtpPassword: settings.emailSmtpPassword,
+        fromAddress: settings.emailFromAddress,
+        fromName: settings.emailFromName,
+        smtpSecure: settings.emailSmtpSecure,
+        enabled: settings.emailEnabled
       }
     };
-    
+
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching settings', {
@@ -90,30 +146,54 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
 // PUT /api/settings - Update settings (requires admin role)
 settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { tax, businessDay } = req.body as Settings;
-    
+    const { tax, businessDay, business, receipt, email } = req.body as Settings;
+
     // Validate defaultTaxRateId if provided
     if (tax?.defaultTaxRateId !== undefined && tax.defaultTaxRateId !== null) {
       const taxRate = await prisma.taxRate.findFirst({
         where: { id: tax.defaultTaxRateId },
       });
-      
+
       if (!taxRate) {
         res.status(400).json({ error: req.t('errors:settings.invalidDefaultTaxRate') });
         return;
       }
-      
+
       if (!taxRate.isActive) {
         res.status(400).json({ error: req.t('errors:settings.cannotSetInactiveAsDefault') });
         return;
       }
     }
-    
+
+    // Validate email configuration if email is enabled
+    if (email?.enabled) {
+      if (!email.smtpHost || !email.smtpUser || !email.fromAddress) {
+        res.status(400).json({ error: req.t('errors:settings.emailConfigIncomplete') });
+        return;
+      }
+      if (email.smtpPort < 1 || email.smtpPort > 65535) {
+        res.status(400).json({ error: req.t('errors:settings.invalidSmtpPort') });
+        return;
+      }
+    }
+
+    // Validate receipt configuration
+    if (receipt) {
+      if (receipt.numberLength < 1 || receipt.numberLength > 20) {
+        res.status(400).json({ error: req.t('errors:settings.invalidReceiptNumberLength') });
+        return;
+      }
+      if (receipt.startNumber < 1) {
+        res.status(400).json({ error: req.t('errors:settings.invalidReceiptStartNumber') });
+        return;
+      }
+    }
+
     // Get the first settings record or create one if it doesn't exist
     const existingSettings = await prisma.settings.findFirst();
-    
+
     let settings: SettingsWithTaxRate;
-    
+
     if (existingSettings) {
       // Update existing settings
       settings = await prisma.settings.update({
@@ -124,7 +204,29 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           autoStartTime: businessDay?.autoStartTime,
           businessDayEndHour: businessDay?.businessDayEndHour,
           autoCloseEnabled: businessDay?.autoCloseEnabled ?? false,
-          lastManualClose: businessDay?.lastManualClose ? new Date(businessDay.lastManualClose) : null
+          lastManualClose: businessDay?.lastManualClose ? new Date(businessDay.lastManualClose) : null,
+          businessName: business?.name !== undefined ? business.name : existingSettings.businessName,
+          businessAddress: business?.address !== undefined ? business.address : existingSettings.businessAddress,
+          businessCity: business?.city !== undefined ? business.city : existingSettings.businessCity,
+          businessPostalCode: business?.postalCode !== undefined ? business.postalCode : existingSettings.businessPostalCode,
+          businessCountry: business?.country !== undefined ? business.country : existingSettings.businessCountry,
+          businessPhone: business?.phone !== undefined ? business.phone : existingSettings.businessPhone,
+          businessEmail: business?.email !== undefined ? business.email : existingSettings.businessEmail,
+          vatNumber: business?.vatNumber !== undefined ? business.vatNumber : existingSettings.vatNumber,
+          receiptPrefix: receipt?.prefix !== undefined ? receipt.prefix : existingSettings.receiptPrefix,
+          receiptNumberLength: receipt?.numberLength !== undefined ? receipt.numberLength : existingSettings.receiptNumberLength,
+          receiptStartNumber: receipt?.startNumber !== undefined ? receipt.startNumber : existingSettings.receiptStartNumber,
+          receiptSequenceYear: receipt?.sequenceYear !== undefined ? receipt.sequenceYear : existingSettings.receiptSequenceYear,
+          receiptCurrentYear: receipt?.currentYear !== undefined ? receipt.currentYear : existingSettings.receiptCurrentYear,
+          receiptCurrentNumber: receipt?.currentNumber !== undefined ? receipt.currentNumber : existingSettings.receiptCurrentNumber,
+          emailSmtpHost: email?.smtpHost !== undefined ? email.smtpHost : existingSettings.emailSmtpHost,
+          emailSmtpPort: email?.smtpPort !== undefined ? email.smtpPort : existingSettings.emailSmtpPort,
+          emailSmtpUser: email?.smtpUser !== undefined ? email.smtpUser : existingSettings.emailSmtpUser,
+          emailSmtpPassword: email?.smtpPassword !== undefined ? email.smtpPassword : existingSettings.emailSmtpPassword,
+          emailFromAddress: email?.fromAddress !== undefined ? email.fromAddress : existingSettings.emailFromAddress,
+          emailFromName: email?.fromName !== undefined ? email.fromName : existingSettings.emailFromName,
+          emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSettings.emailSmtpSecure,
+          emailEnabled: email?.enabled !== undefined ? email.enabled : existingSettings.emailEnabled,
         },
         include: {
           defaultTaxRate: true,
@@ -139,24 +241,46 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           autoStartTime: businessDay?.autoStartTime ?? '06:00',
           businessDayEndHour: businessDay?.businessDayEndHour ?? '06:00',
           autoCloseEnabled: businessDay?.autoCloseEnabled ?? false,
-          lastManualClose: businessDay?.lastManualClose ? new Date(businessDay.lastManualClose) : null
+          lastManualClose: businessDay?.lastManualClose ? new Date(businessDay.lastManualClose) : null,
+          businessName: business?.name ?? null,
+          businessAddress: business?.address ?? null,
+          businessCity: business?.city ?? null,
+          businessPostalCode: business?.postalCode ?? null,
+          businessCountry: business?.country ?? null,
+          businessPhone: business?.phone ?? null,
+          businessEmail: business?.email ?? null,
+          vatNumber: business?.vatNumber ?? null,
+          receiptPrefix: receipt?.prefix ?? 'R',
+          receiptNumberLength: receipt?.numberLength ?? 6,
+          receiptStartNumber: receipt?.startNumber ?? 1,
+          receiptSequenceYear: receipt?.sequenceYear ?? false,
+          receiptCurrentYear: receipt?.currentYear ?? null,
+          receiptCurrentNumber: receipt?.currentNumber ?? 0,
+          emailSmtpHost: email?.smtpHost ?? null,
+          emailSmtpPort: email?.smtpPort ?? 587,
+          emailSmtpUser: email?.smtpUser ?? null,
+          emailSmtpPassword: email?.smtpPassword ?? null,
+          emailFromAddress: email?.fromAddress ?? null,
+          emailFromName: email?.fromName ?? null,
+          emailSmtpSecure: email?.smtpSecure ?? false,
+          emailEnabled: email?.enabled ?? false,
         },
         include: {
           defaultTaxRate: true,
         },
       }) as SettingsWithTaxRate;
     }
-    
+
     // Clear the scheduler's settings cache so it picks up the new settings
     clearSettingsCache();
     logInfo('Settings updated, scheduler cache cleared');
-    
+
     // Format the default tax rate if present
     const defaultTaxRate = formatTaxRate(settings.defaultTaxRate);
-    
+
     // Convert the database format to the expected format
     const result: Settings = {
-      tax: { 
+      tax: {
         mode: settings.taxMode as 'inclusive' | 'exclusive' | 'none',
         defaultTaxRateId: settings.defaultTaxRateId,
         defaultTaxRate: defaultTaxRate,
@@ -166,9 +290,37 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
         businessDayEndHour: settings.businessDayEndHour,
         lastManualClose: settings.lastManualClose?.toISOString() || null,
         autoCloseEnabled: settings.autoCloseEnabled ?? false
+      },
+      business: {
+        name: settings.businessName,
+        address: settings.businessAddress,
+        city: settings.businessCity,
+        postalCode: settings.businessPostalCode,
+        country: settings.businessCountry,
+        phone: settings.businessPhone,
+        email: settings.businessEmail,
+        vatNumber: settings.vatNumber
+      },
+      receipt: {
+        prefix: settings.receiptPrefix,
+        numberLength: settings.receiptNumberLength,
+        startNumber: settings.receiptStartNumber,
+        sequenceYear: settings.receiptSequenceYear,
+        currentYear: settings.receiptCurrentYear,
+        currentNumber: settings.receiptCurrentNumber
+      },
+      email: {
+        smtpHost: settings.emailSmtpHost,
+        smtpPort: settings.emailSmtpPort,
+        smtpUser: settings.emailSmtpUser,
+        smtpPassword: settings.emailSmtpPassword,
+        fromAddress: settings.emailFromAddress,
+        fromName: settings.emailFromName,
+        smtpSecure: settings.emailSmtpSecure,
+        enabled: settings.emailEnabled
       }
     };
-    
+
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating settings', {

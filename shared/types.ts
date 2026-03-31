@@ -102,6 +102,34 @@ export interface Settings {
     lastManualClose: string | null; // ISO string
     autoCloseEnabled: boolean; // Enable automatic business day closing
   };
+  business?: {
+    name: string | null;
+    address: string | null;
+    city: string | null;
+    postalCode: string | null;
+    country: string | null;
+    phone: string | null;
+    email: string | null;
+    vatNumber: string | null;
+  };
+  receipt?: {
+    prefix: string;
+    numberLength: number;
+    startNumber: number;
+    sequenceYear: boolean;
+    currentYear: number | null;
+    currentNumber: number;
+  };
+  email?: {
+    smtpHost: string | null;
+    smtpPort: number;
+    smtpUser: string | null;
+    smtpPassword: string | null;
+    fromAddress: string | null;
+    fromName: string | null;
+    smtpSecure: boolean;
+    enabled: boolean;
+  };
 }
 
 export interface Till {

@@ -107,14 +107,48 @@ export interface TaxSettings {
   defaultTaxRate: TaxRate | null;
 }
 
+export interface BusinessSettings {
+  name: string | null;
+  address: string | null;
+  city: string | null;
+  postalCode: string | null;
+  country: string | null;
+  phone: string | null;
+  email: string | null;
+  vatNumber: string | null;
+}
+
+export interface ReceiptConfig {
+  prefix: string;
+  numberLength: number;
+  startNumber: number;
+  sequenceYear: boolean;
+  currentYear: number | null;
+  currentNumber: number;
+}
+
+export interface EmailConfig {
+  smtpHost: string | null;
+  smtpPort: number;
+  smtpUser: string | null;
+  smtpPassword: string | null;
+  fromAddress: string | null;
+  fromName: string | null;
+  smtpSecure: boolean;
+  enabled: boolean;
+}
+
 export interface Settings {
   tax: TaxSettings;
   businessDay: {
-    autoStartTime: string; // e.g., "06:00"
-    businessDayEndHour: string; // e.g., "04:00" - when business day ends (for overnight business days)
-    lastManualClose: string | null; // ISO string
-    autoCloseEnabled: boolean; // Enable automatic business day closing
+    autoStartTime: string;
+    businessDayEndHour: string;
+    lastManualClose: string | null;
+    autoCloseEnabled: boolean;
   };
+  business: BusinessSettings;
+  receipt: ReceiptConfig;
+  email: EmailConfig;
 }
 
 export interface Till {
