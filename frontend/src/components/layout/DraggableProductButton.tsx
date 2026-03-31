@@ -73,7 +73,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
         relative
         ${variant.backgroundColor}
         rounded-lg
-        p-3
+        p-2 sm:p-3
         flex
         flex-col
         justify-between
@@ -82,7 +82,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
         ${isDragging ? 'opacity-50' : 'opacity-100'}
         ${isEditMode ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''}
         ${!isMakable && !isEditMode ? 'opacity-50' : ''}
-        min-h-24
+        min-h-[72px] sm:min-h-20
         aspect-[4/3]
         w-full
         shadow-md
@@ -90,7 +90,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     >
       {/* Edit mode indicator */}
       {isEditMode && (
-        <div className="absolute top-1 right-1 text-yellow-400 text-xs font-bold">
+        <div className="absolute top-1 right-1 text-yellow-400 text-[10px] sm:text-xs font-bold">
           ⋮⋮
         </div>
       )}
@@ -105,16 +105,16 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       )}
 
       {/* Product name */}
-      <p className={`font-bold ${variant.textColor} text-lg sm:text-xl md:text-2xl truncate`}>
+      <p className={`font-bold ${variant.textColor} text-base sm:text-lg md:text-xl lg:text-2xl truncate`}>
         {product.name}
       </p>
 
       {/* Variant info */}
       <div>
-        <p className={`text-sm sm:text-base md:text-lg font-semibold ${variant.textColor} truncate`}>
+        <p className={`text-xs sm:text-sm md:text-base lg:text-lg font-semibold ${variant.textColor} truncate`}>
           {variant.name}
         </p>
-        <p className={`text-sm sm:text-base md:text-lg ${variant.textColor} opacity-80`}>
+        <p className={`text-xs sm:text-sm md:text-base lg:text-lg ${variant.textColor} opacity-80`}>
           {formatCurrency(variant.price)}
         </p>
       </div>
@@ -122,7 +122,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       {/* Favourite indicator */}
       {variant.isFavourite && !isEditMode && (
         <div className="absolute top-1 left-1">
-          <span className="text-yellow-400 text-sm">FAV</span>
+          <span className="text-yellow-400 text-[10px] sm:text-xs font-bold">FAV</span>
         </div>
       )}
     </div>

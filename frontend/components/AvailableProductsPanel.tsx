@@ -34,12 +34,12 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
   const { t } = useTranslation();
 
   return (
-    <div className="bg-slate-700 p-4 rounded-lg" role="region" aria-labelledby="available-products-heading">
+    <div className="@container bg-slate-700 p-4 rounded-lg" role="region" aria-labelledby="available-products-heading">
       <div className="flex justify-between items-center mb-2">
-        <h3 id="available-products-heading" className="text-lg font-semibold text-amber-200">{t('availableProductsPanel.title') as string}</h3>
+        <h3 id="available-products-heading" className="text-base sm:text-lg font-semibold text-amber-200">{t('availableProductsPanel.title') as string}</h3>
         <HelpGuide feature="available-products" title={t('availableProductsPanel.helpTitle') as string} description={t('availableProductsPanel.helpDescription') as string} position="left" />
       </div>
-      <div className="flex flex-wrap gap-2 mb-4" role="group" aria-label={t('availableProductsPanel.filterOptionsAriaLabel') as string}>
+      <div className="flex gap-2 mb-4 overflow-x-auto touch-pan-x pb-2" role="group" aria-label={t('availableProductsPanel.filterOptionsAriaLabel') as string}>
         <button
           onClick={() => {
             const newShowFavorites = !showFavoritesOnly;
@@ -54,7 +54,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
               setSelectedCategory(0); // Update selected category state
             }
           }}
-          className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${showFavoritesOnly ? 'bg-amber-50 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+          className={`min-h-11 px-3 sm:px-4 flex items-center text-xs sm:text-sm font-semibold rounded-md transition whitespace-nowrap ${showFavoritesOnly ? 'bg-amber-50 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
           aria-label={showFavoritesOnly ? t('availableProductsPanel.turnOffFavoritesFilter') as string : t('availableProductsPanel.turnOnFavoritesFilter') as string}
         >
           {t('availableProductsPanel.favoritesButton') as string} {showFavoritesOnly ? t('availableProductsPanel.favoritesOn') as string : t('availableProductsPanel.favoritesOff') as string}
@@ -67,7 +67,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
             setActiveFilterType('all');
             setActiveCategoryId(0); // Special "All Products" category
           }}
-          className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === 0 ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+          className={`min-h-11 px-3 sm:px-4 flex items-center text-xs sm:text-sm font-semibold rounded-md transition whitespace-nowrap ${selectedCategory === 0 ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
           aria-label={t('availableProductsPanel.showAllProducts') as string}
         >
           {t('availableProductsPanel.allProducts') as string}
@@ -87,14 +87,14 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
                 setActiveCategoryId(0); // Special "All Products" category
               }
             }}
-            className={`px-4 h-12 flex items-center text-sm font-semibold rounded-md transition ${selectedCategory === category.id ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
+            className={`min-h-11 px-3 sm:px-4 flex items-center text-xs sm:text-sm font-semibold rounded-md transition whitespace-nowrap ${selectedCategory === category.id ? 'bg-amber-500 text-white' : 'bg-slate-600 hover:bg-slate-500 text-slate-200'}`}
             aria-label={t('availableProductsPanel.filterByCategory', { categoryName: category.name }) as string}
           >
             {category.name}
           </button>
         ))}
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-40 overflow-y-auto p-2 bg-slate-600 rounded" role="list" aria-label={t('availableProductsPanel.productsListAriaLabel') as string}>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-32 sm:max-h-40 md:max-h-48 overflow-y-auto p-2 bg-slate-600 rounded" role="list" aria-label={t('availableProductsPanel.productsListAriaLabel') as string}>
         {(() => {
           let filteredProducts = products;
           
@@ -117,7 +117,7 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
               <button
                 key={`${product.id}-${variant.id}`}
                 onClick={() => handleAddItemToGrid(product, variant)}
-                className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-32 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
+                className={`rounded-lg p-2 sm:p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-20 sm:h-24 md:h-28 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
                 aria-label={t('availableProductsPanel.addToGrid', { productName: product.name, variantName: variant.name }) as string}
                 role="listitem"
               >

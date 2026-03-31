@@ -7,6 +7,7 @@ import { ProductGridLayout } from '../src/components/layout/ProductGridLayout';
 import { LoginScreen } from './LoginScreen';
 import { OrderPanel } from './OrderPanel';
 import { AdminPanel } from './AdminPanel';
+import { EditLayoutButton } from '../src/components/EditLayoutButton';
 import { PaymentModal } from './PaymentModal';
 import { TabManager } from './TabManager';
 import { TransferItemsModal } from './TransferItemsModal';
@@ -163,19 +164,24 @@ return (
                 <div className="flex md:hidden flex-col h-full">
                   {/* Content area - shows either grid or cart based on active tab */}
                   <div className="flex-1 overflow-hidden">
-                    {activeMobileTab === 'grid' ? (
-                      <div className="h-full flex flex-col">
-                        <div className="flex-1 overflow-y-auto bg-slate-900">
-                          <ProductGridLayout
-                            products={appData.products}
-                            categories={appData.categories}
-                            onAddToCart={handleAddToCart}
-                            makableVariantIds={makableVariantIds}
-                            assignedTillId={assignedTillId}
-                          />
-                        </div>
-                      </div>
-                    ) : (
+{activeMobileTab === 'grid' ? (
+                            <div className="h-full flex flex-col">
+                                <div className="flex-1 overflow-y-auto bg-slate-900">
+                                    <ProductGridLayout
+                                        products={appData.products}
+                                        categories={appData.categories}
+                                        onAddToCart={handleAddToCart}
+                                        makableVariantIds={makableVariantIds}
+                                        assignedTillId={assignedTillId}
+                                    />
+                                </div>
+                                {currentUser.role === 'Admin' && (
+                                    <div className="p-4 border-t border-slate-700 flex-shrink-0 bg-slate-900">
+                                        <EditLayoutButton userRole="admin" />
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
                       <div className="h-full">
                         <OrderPanel
                           orderItems={orderItems}

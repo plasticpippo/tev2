@@ -1,0 +1,389 @@
+- generic [ref=e7]:
+  - generic [ref=e8]:
+    - button "Enter fullscreen" [ref=e9] [cursor=pointer]:
+      - img [ref=e10]
+    - button "Admin Panel" [ref=e12] [cursor=pointer]
+  - main [ref=e13]:
+    - generic [ref=e14]:
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - heading "Products" [level=2] [ref=e19]
+          - generic [ref=e20]:
+            - button "Favourites" [ref=e21] [cursor=pointer]
+            - button "Shots" [ref=e22] [cursor=pointer]
+            - button "Beer" [ref=e23] [cursor=pointer]
+            - button "Cocktails" [ref=e24] [cursor=pointer]
+            - button "Soft Drinks" [ref=e25] [cursor=pointer]
+            - button "Vino" [ref=e26] [cursor=pointer]
+            - button "All" [ref=e27] [cursor=pointer]
+        - generic [ref=e29]:
+          - region "Available Products" [ref=e606]:
+            - generic [ref=e607]:
+              - heading "Available Products" [level=3] [ref=e608]
+              - button "Help for available-products" [ref=e611]: "?"
+            - group "Product filtering options" [ref=e612]:
+              - button "Turn on favorites filter" [ref=e613] [cursor=pointer]: FAV Favourites OFF
+              - button "Show all products" [ref=e614] [cursor=pointer]: All Products
+              - button "Filter by Shots category" [ref=e615] [cursor=pointer]: Shots
+              - button "Filter by Beer category" [ref=e616] [cursor=pointer]: Beer
+              - button "Filter by Cocktails category" [ref=e617] [cursor=pointer]: Cocktails
+              - button "Filter by Soft Drinks category" [ref=e618] [cursor=pointer]: Soft Drinks
+              - button "Filter by Entrata category" [ref=e619] [cursor=pointer]: Entrata
+              - button "Filter by Vino category" [ref=e620] [cursor=pointer]: Vino
+            - list "List of available products to add to the grid" [ref=e621]:
+              - listitem "Add Gin Tonic Standard to grid" [ref=e622] [cursor=pointer]:
+                - paragraph [ref=e623]: Gin Tonic
+                - generic [ref=e624]:
+                  - paragraph [ref=e625]: Standard
+                  - paragraph [ref=e626]: €8,00
+              - listitem "Add Gin Tonic Carico to grid" [ref=e627] [cursor=pointer]:
+                - paragraph [ref=e628]: Gin Tonic
+                - generic [ref=e629]:
+                  - paragraph [ref=e630]: Carico
+                  - paragraph [ref=e631]: €10,00
+              - listitem "Add Gin Lemon Standard to grid" [ref=e632] [cursor=pointer]:
+                - paragraph [ref=e633]: Gin Lemon
+                - generic [ref=e634]:
+                  - paragraph [ref=e635]: Standard
+                  - paragraph [ref=e636]: €8,00
+              - listitem "Add Gin Lemon Carico to grid" [ref=e637] [cursor=pointer]:
+                - paragraph [ref=e638]: Gin Lemon
+                - generic [ref=e639]:
+                  - paragraph [ref=e640]: Carico
+                  - paragraph [ref=e641]: €10,00
+              - listitem "Add Vodka Tonic Standard to grid" [ref=e642] [cursor=pointer]:
+                - paragraph [ref=e643]: Vodka Tonic
+                - generic [ref=e644]:
+                  - paragraph [ref=e645]: Standard
+                  - paragraph [ref=e646]: €8,00
+              - listitem "Add Vodka Tonic Carico to grid" [ref=e647] [cursor=pointer]:
+                - paragraph [ref=e648]: Vodka Tonic
+                - generic [ref=e649]:
+                  - paragraph [ref=e650]: Carico
+                  - paragraph [ref=e651]: €10,00
+              - listitem "Add Sipsmith Tonic Standard to grid" [ref=e652] [cursor=pointer]:
+                - paragraph [ref=e653]: Sipsmith Tonic
+                - generic [ref=e654]:
+                  - paragraph [ref=e655]: Standard
+                  - paragraph [ref=e656]: €12,00
+              - listitem "Add Sipsmith Lemon Standard to grid" [ref=e657] [cursor=pointer]:
+                - paragraph [ref=e658]: Sipsmith Lemon
+                - generic [ref=e659]:
+                  - paragraph [ref=e660]: Standard
+                  - paragraph [ref=e661]: €12,00
+              - listitem "Add Wuhrer 66cl to grid" [ref=e662] [cursor=pointer]:
+                - paragraph [ref=e663]: Wuhrer
+                - generic [ref=e664]:
+                  - paragraph [ref=e665]: 66cl
+                  - paragraph [ref=e666]: €6,00
+              - listitem "Add Acqua 50cl to grid" [ref=e667] [cursor=pointer]:
+                - paragraph [ref=e668]: Acqua
+                - generic [ref=e669]:
+                  - paragraph [ref=e670]: 50cl
+                  - paragraph [ref=e671]: €2,00
+              - listitem "Add Lemonsoda Standard to grid" [ref=e672] [cursor=pointer]:
+                - paragraph [ref=e673]: Lemonsoda
+                - generic [ref=e674]:
+                  - paragraph [ref=e675]: Standard
+                  - paragraph [ref=e676]: €3,00
+              - listitem "Add Ginger Beer Bottiglia 200ml to grid" [ref=e677] [cursor=pointer]:
+                - paragraph [ref=e678]: Ginger Beer
+                - generic [ref=e679]:
+                  - paragraph [ref=e680]: Bottiglia 200ml
+                  - paragraph [ref=e681]: €4,00
+              - listitem "Add Vodka Ginger Beer Standard to grid" [ref=e682] [cursor=pointer]:
+                - paragraph [ref=e683]: Vodka Ginger Beer
+                - generic [ref=e684]:
+                  - paragraph [ref=e685]: Standard
+                  - paragraph [ref=e686]: €8,00
+              - listitem "Add Gin Ginger Beer Standard to grid" [ref=e687] [cursor=pointer]:
+                - paragraph [ref=e688]: Gin Ginger Beer
+                - generic [ref=e689]:
+                  - paragraph [ref=e690]: Standard
+                  - paragraph [ref=e691]: €8,00
+              - listitem "Add Shot Vodka Standard to grid" [ref=e692] [cursor=pointer]:
+                - paragraph [ref=e693]: Shot Vodka
+                - generic [ref=e694]:
+                  - paragraph [ref=e695]: Standard
+                  - paragraph [ref=e696]: €3,00
+              - listitem "Add Shot Gin Gordon's Standard to grid" [ref=e697] [cursor=pointer]:
+                - paragraph [ref=e698]: Shot Gin Gordon's
+                - generic [ref=e699]:
+                  - paragraph [ref=e700]: Standard
+                  - paragraph [ref=e701]: €3,00
+              - listitem "Add Shot Campari Standard to grid" [ref=e702] [cursor=pointer]:
+                - paragraph [ref=e703]: Shot Campari
+                - generic [ref=e704]:
+                  - paragraph [ref=e705]: Standard
+                  - paragraph [ref=e706]: €3,00
+              - listitem "Add Shot Sipsmith Standard to grid" [ref=e707] [cursor=pointer]:
+                - paragraph [ref=e708]: Shot Sipsmith
+                - generic [ref=e709]:
+                  - paragraph [ref=e710]: Standard
+                  - paragraph [ref=e711]: €5,00
+              - listitem "Add Coca Cola Can to grid" [ref=e712] [cursor=pointer]:
+                - paragraph [ref=e713]: Coca Cola
+                - generic [ref=e714]:
+                  - paragraph [ref=e715]: Can
+                  - paragraph [ref=e716]: €3,00
+              - listitem "Add Shot Hierbas Standard to grid" [ref=e717] [cursor=pointer]:
+                - paragraph [ref=e718]: Shot Hierbas
+                - generic [ref=e719]:
+                  - paragraph [ref=e720]: Standard
+                  - paragraph [ref=e721]: €3,00
+              - listitem "Add Gratis Standard to grid" [ref=e722] [cursor=pointer]:
+                - paragraph [ref=e723]: Gratis
+                - generic [ref=e724]:
+                  - paragraph [ref=e725]: Standard
+                  - paragraph [ref=e726]: €0,00
+              - listitem "Add Entrata Standard to grid" [ref=e727] [cursor=pointer]:
+                - paragraph [ref=e728]: Entrata
+                - generic [ref=e729]:
+                  - paragraph [ref=e730]: Standard
+                  - paragraph [ref=e731]: €10,00
+              - listitem "Add Vino Bianco Bicchiere to grid" [ref=e732] [cursor=pointer]:
+                - paragraph [ref=e733]: Vino Bianco
+                - generic [ref=e734]:
+                  - paragraph [ref=e735]: Bicchiere
+                  - paragraph [ref=e736]: €5,00
+              - listitem "Add Vino Bianco Bottiglia to grid" [ref=e737] [cursor=pointer]:
+                - paragraph [ref=e738]: Vino Bianco
+                - generic [ref=e739]:
+                  - paragraph [ref=e740]: Bottiglia
+                  - paragraph [ref=e741]: €25,00
+              - listitem "Add Coca Rum Standard to grid" [ref=e742] [cursor=pointer]:
+                - paragraph [ref=e743]: Coca Rum
+                - generic [ref=e744]:
+                  - paragraph [ref=e745]: Standard
+                  - paragraph [ref=e746]: €8,00
+              - listitem "Add Tonica Standard to grid" [ref=e747] [cursor=pointer]:
+                - paragraph [ref=e748]: Tonica
+                - generic [ref=e749]:
+                  - paragraph [ref=e750]: Standard
+                  - paragraph [ref=e751]: €4,00
+              - listitem "Add Shot Rum Standard to grid" [ref=e752] [cursor=pointer]:
+                - paragraph [ref=e753]: Shot Rum
+                - generic [ref=e754]:
+                  - paragraph [ref=e755]: Standard
+                  - paragraph [ref=e756]: €3,00
+              - listitem "Add Pirlo Campari Standard to grid" [ref=e757] [cursor=pointer]:
+                - paragraph [ref=e758]: Pirlo Campari
+                - generic [ref=e759]:
+                  - paragraph [ref=e760]: Standard
+                  - paragraph [ref=e761]: €5,00
+              - listitem "Add Tessera Standard to grid" [ref=e762] [cursor=pointer]:
+                - paragraph [ref=e763]: Tessera
+                - generic [ref=e764]:
+                  - paragraph [ref=e765]: Standard
+                  - paragraph [ref=e766]: €10,00
+              - listitem "Add Industry Pass Standard to grid" [ref=e767] [cursor=pointer]:
+                - paragraph [ref=e768]: Industry Pass
+                - generic [ref=e769]:
+                  - paragraph [ref=e770]: Standard
+                  - paragraph [ref=e771]: €0,00
+              - listitem "Add Shot Tequila Standard to grid" [ref=e772] [cursor=pointer]:
+                - paragraph [ref=e773]: Shot Tequila
+                - generic [ref=e774]:
+                  - paragraph [ref=e775]: Standard
+                  - paragraph [ref=e776]: €3,00
+              - listitem "Add 5 Euro (1am) Standard to grid" [ref=e777] [cursor=pointer]:
+                - paragraph [ref=e778]: 5 Euro (1am)
+                - generic [ref=e779]:
+                  - paragraph [ref=e780]: Standard
+                  - paragraph [ref=e781]: €5,00
+              - listitem "Add Americano Standard to grid" [ref=e782] [cursor=pointer]:
+                - paragraph [ref=e783]: Americano
+                - generic [ref=e784]:
+                  - paragraph [ref=e785]: Standard
+                  - paragraph [ref=e786]: €8,00
+              - listitem "Add Negroni Standard to grid" [ref=e787] [cursor=pointer]:
+                - paragraph [ref=e788]: Negroni
+                - generic [ref=e789]:
+                  - paragraph [ref=e790]: Standard
+                  - paragraph [ref=e791]: €8,00
+              - listitem "Add Vodka Lemon Standard to grid" [ref=e792] [cursor=pointer]:
+                - paragraph [ref=e793]: Vodka Lemon
+                - generic [ref=e794]:
+                  - paragraph [ref=e795]: Standard
+                  - paragraph [ref=e796]: €8,00
+              - listitem "Add Vodka Lemon Carico to grid" [ref=e797] [cursor=pointer]:
+                - paragraph [ref=e798]: Vodka Lemon
+                - generic [ref=e799]:
+                  - paragraph [ref=e800]: Carico
+                  - paragraph [ref=e801]: €10,00
+              - listitem "Add Beck's 33cl to grid" [ref=e802] [cursor=pointer]:
+                - paragraph [ref=e803]: Beck's
+                - generic [ref=e804]:
+                  - paragraph [ref=e805]: 33cl
+                  - paragraph [ref=e806]: €4,00
+              - listitem "Add Paloma Standard to grid" [ref=e807] [cursor=pointer]:
+                - paragraph [ref=e808]: Paloma
+                - generic [ref=e809]:
+                  - paragraph [ref=e810]: Standard
+                  - paragraph [ref=e811]: €8,00
+          - generic:
+            - generic: 4-Column Grid • Favourites
+          - generic [ref=e30]:
+            - generic [ref=e31]:
+              - generic [ref=e832]: ⋮⋮
+              - paragraph [ref=e32]: Gin Tonic
+              - generic [ref=e33]:
+                - paragraph [ref=e34]: Standard
+                - paragraph [ref=e35]: €8,00
+            - generic [ref=e37]:
+              - generic [ref=e833]: ⋮⋮
+              - paragraph [ref=e38]: Gin Lemon
+              - generic [ref=e39]:
+                - paragraph [ref=e40]: Standard
+                - paragraph [ref=e41]: €8,00
+            - generic [ref=e43]:
+              - generic [ref=e834]: ⋮⋮
+              - paragraph [ref=e44]: Vodka Tonic
+              - generic [ref=e45]:
+                - paragraph [ref=e46]: Standard
+                - paragraph [ref=e47]: €8,00
+            - generic [ref=e49]:
+              - generic [ref=e835]: ⋮⋮
+              - paragraph [ref=e50]: Wuhrer
+              - generic [ref=e51]:
+                - paragraph [ref=e52]: 66cl
+                - paragraph [ref=e53]: €6,00
+            - generic [ref=e55]:
+              - generic [ref=e836]: ⋮⋮
+              - paragraph [ref=e56]: Acqua
+              - generic [ref=e57]:
+                - paragraph [ref=e58]: 50cl
+                - paragraph [ref=e59]: €2,00
+            - generic [ref=e61]:
+              - generic [ref=e837]: ⋮⋮
+              - paragraph [ref=e62]: Shot Vodka
+              - generic [ref=e63]:
+                - paragraph [ref=e64]: Standard
+                - paragraph [ref=e65]: €3,00
+            - generic [ref=e67]:
+              - generic [ref=e838]: ⋮⋮
+              - paragraph [ref=e68]: Shot Hierbas
+              - generic [ref=e69]:
+                - paragraph [ref=e70]: Standard
+                - paragraph [ref=e71]: €3,00
+            - generic [ref=e73]:
+              - generic [ref=e839]: ⋮⋮
+              - paragraph [ref=e74]: Pirlo Campari
+              - generic [ref=e75]:
+                - paragraph [ref=e76]: Standard
+                - paragraph [ref=e77]: €5,00
+            - generic [ref=e79]:
+              - generic [ref=e840]: ⋮⋮
+              - paragraph [ref=e80]: Shot Tequila
+              - generic [ref=e81]:
+                - paragraph [ref=e82]: Standard
+                - paragraph [ref=e83]: €3,00
+            - generic [ref=e85]:
+              - generic [ref=e841]: ⋮⋮
+              - paragraph [ref=e86]: Vodka Lemon
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Standard
+                - paragraph [ref=e89]: €8,00
+            - generic [ref=e91]:
+              - generic [ref=e842]: ⋮⋮
+              - paragraph [ref=e92]: Beck's
+              - generic [ref=e93]:
+                - paragraph [ref=e94]: 33cl
+                - paragraph [ref=e95]: €4,00
+            - generic [ref=e843]:
+              - heading "Unplaced Products - Drag to Grid" [level=3] [ref=e844]
+              - generic [ref=e845]:
+                - generic [ref=e846]:
+                  - generic [ref=e847]: ⋮⋮
+                  - paragraph [ref=e848]: Gin Tonic
+                  - generic [ref=e849]:
+                    - paragraph [ref=e850]: Standard
+                    - paragraph [ref=e851]: €8,00
+                - generic [ref=e852]:
+                  - generic [ref=e853]: ⋮⋮
+                  - paragraph [ref=e854]: Gin Lemon
+                  - generic [ref=e855]:
+                    - paragraph [ref=e856]: Standard
+                    - paragraph [ref=e857]: €8,00
+                - generic [ref=e858]:
+                  - generic [ref=e859]: ⋮⋮
+                  - paragraph [ref=e860]: Vodka Tonic
+                  - generic [ref=e861]:
+                    - paragraph [ref=e862]: Standard
+                    - paragraph [ref=e863]: €8,00
+                - generic [ref=e864]:
+                  - generic [ref=e865]: ⋮⋮
+                  - paragraph [ref=e866]: Wuhrer
+                  - generic [ref=e867]:
+                    - paragraph [ref=e868]: 66cl
+                    - paragraph [ref=e869]: €6,00
+                - generic [ref=e870]:
+                  - generic [ref=e871]: ⋮⋮
+                  - paragraph [ref=e872]: Acqua
+                  - generic [ref=e873]:
+                    - paragraph [ref=e874]: 50cl
+                    - paragraph [ref=e875]: €2,00
+                - generic [ref=e876]:
+                  - generic [ref=e877]: ⋮⋮
+                  - paragraph [ref=e878]: Shot Vodka
+                  - generic [ref=e879]:
+                    - paragraph [ref=e880]: Standard
+                    - paragraph [ref=e881]: €3,00
+                - generic [ref=e882]:
+                  - generic [ref=e883]: ⋮⋮
+                  - paragraph [ref=e884]: Shot Hierbas
+                  - generic [ref=e885]:
+                    - paragraph [ref=e886]: Standard
+                    - paragraph [ref=e887]: €3,00
+                - generic [ref=e888]:
+                  - generic [ref=e889]: ⋮⋮
+                  - paragraph [ref=e890]: Pirlo Campari
+                  - generic [ref=e891]:
+                    - paragraph [ref=e892]: Standard
+                    - paragraph [ref=e893]: €5,00
+                - generic [ref=e894]:
+                  - generic [ref=e895]: ⋮⋮
+                  - paragraph [ref=e896]: Shot Tequila
+                  - generic [ref=e897]:
+                    - paragraph [ref=e898]: Standard
+                    - paragraph [ref=e899]: €3,00
+                - generic [ref=e900]:
+                  - generic [ref=e901]: ⋮⋮
+                  - paragraph [ref=e902]: Vodka Lemon
+                  - generic [ref=e903]:
+                    - paragraph [ref=e904]: Standard
+                    - paragraph [ref=e905]: €8,00
+                - generic [ref=e906]:
+                  - generic [ref=e907]: ⋮⋮
+                  - paragraph [ref=e908]: Beck's
+                  - generic [ref=e909]:
+                    - paragraph [ref=e910]: 33cl
+                    - paragraph [ref=e911]: €4,00
+      - generic [ref=e98]:
+        - generic [ref=e99]:
+          - generic [ref=e100]:
+            - paragraph [ref=e101]: "Logged in as:"
+            - paragraph [ref=e102]:
+              - text: Admin User
+              - generic [ref=e103]: (Admin)
+          - button "Logout" [ref=e104] [cursor=pointer]
+        - generic [ref=e105]:
+          - heading "Current Order" [level=2] [ref=e106]
+          - generic [ref=e108]: Select products to add them here.
+          - generic [ref=e913]:
+            - generic [ref=e914]:
+              - heading "EDIT MODE" [level=2] [ref=e915]
+              - paragraph [ref=e916]: Drag product buttons to reposition them in the grid
+            - generic [ref=e917]:
+              - heading "Instructions:" [level=3] [ref=e918]
+              - list [ref=e919]:
+                - listitem [ref=e920]: Click and drag buttons to reposition
+                - listitem [ref=e921]: Buttons snap to a 4-column grid
+                - listitem [ref=e922]: Changes apply to current category only
+                - listitem [ref=e923]: Click Save to keep your changes
+            - generic [ref=e924]:
+              - button "✓ Saved" [disabled] [ref=e925]
+              - button "RESET to Default" [ref=e926] [cursor=pointer]
+              - button "CANCEL & Exit" [ref=e927] [cursor=pointer]
+            - paragraph [ref=e929]: "Grid: 4 columns • Fixed button size"
+        - button "View Open Tabs" [ref=e115] [cursor=pointer]
