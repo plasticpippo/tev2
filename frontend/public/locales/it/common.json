@@ -664,5 +664,9 @@
   },
   "languageSwitcher": {
     "changeLanguage": "Cambia lingua"
+  },
+  "fullscreen": {
+    "enter": "Schermo intero",
+    "exit": "Esci schermo intero"
   }
 }

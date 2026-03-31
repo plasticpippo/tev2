@@ -13,6 +13,7 @@ import { TransferItemsModal } from './TransferItemsModal';
 import { TillSetupScreen } from './TillSetupScreen';
 import { VirtualKeyboard } from './VirtualKeyboard';
 import { TableAssignmentModal } from './TableAssignmentModal';
+import FullscreenToggle from './FullscreenToggle';
 
 export const MainPOSInterface: React.FC = () => {
   const { t } = useTranslation(['pos', 'common']);
@@ -108,16 +109,19 @@ export const MainPOSInterface: React.FC = () => {
   }
   
 return (
-    <>
-    <div className="w-screen h-screen bg-slate-800 text-white flex flex-col p-4 gap-4 min-w-[320px]">
-        {currentUser.role === 'Admin' && (
-          <button
-            onClick={() => setIsAdminPanelOpen(true)}
-            className="absolute top-2 right-2 bg-purple-700 hover:bg-purple-60 text-white font-bold py-2 px-4 min-h-11 rounded-md z-30"
-          >
-            {t('pos:admin.panel')}
-          </button>
-        )}
+ <>
+ <div className="w-screen h-screen bg-slate-800 text-white flex flex-col p-4 gap-4 min-w-[320px]">
+ <div className="absolute top-2 right-2 flex items-center gap-2 z-30">
+ <FullscreenToggle />
+ {currentUser.role === 'Admin' && (
+ <button
+ onClick={() => setIsAdminPanelOpen(true)}
+ className="bg-purple-700 hover:bg-purple-600 text-white font-bold py-2 px-4 min-h-11 rounded-md"
+ >
+ {t('pos:admin.panel')}
+ </button>
+ )}
+ </div>
         
         <main className="flex-grow flex flex-col lg:flex-row gap-4 overflow-hidden min-h-0">
           {assignedTillId ? (

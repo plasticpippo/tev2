@@ -664,5 +664,9 @@
   },
   "languageSwitcher": {
     "changeLanguage": "Change language"
+  },
+  "fullscreen": {
+    "enter": "Enter fullscreen",
+    "exit": "Exit fullscreen"
   }
 }
