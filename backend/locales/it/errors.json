@@ -395,5 +395,26 @@
     "cannotDeleteDefault": "Impossibile disattivare l'aliquota IVA predefinita",
     "cannotSetInactiveAsDefault": "Impossibile impostare un'aliquota IVA inattiva come predefinita",
     "setDefaultFailed": "Impossibile impostare l'aliquota IVA predefinita"
+  },
+  "receipts": {
+    "notFound": "Ricevuta non trovata",
+    "fetchFailed": "Impossibile recuperare le ricevute",
+    "createFailed": "Impossibile creare la ricevuta",
+    "updateFailed": "Impossibile aggiornare la ricevuta",
+    "issueFailed": "Impossibile emettere la ricevuta",
+    "voidFailed": "Impossibile annullare la ricevuta",
+    "alreadyExists": "Esiste gia una ricevuta per questa transazione",
+    "transactionIdRequired": "L'ID della transazione e obbligatorio",
+    "onlyDraftCanBeIssued": "Solo le ricevute in bozza possono essere emesse",
+    "onlyIssuedCanBeVoided": "Solo le ricevute emesse possono essere annullate",
+    "onlyDraftCanBeUpdated": "Solo le ricevute in bozza possono essere aggiornate",
+    "voidReasonRequired": "Il motivo dell'annullamento e obbligatorio",
+    "pdfNotGenerated": "Il PDF non e stato ancora generato",
+    "pdfFileNotFound": "File PDF non trovato",
+    "pdfRetrieveFailed": "Impossibile recuperare il PDF",
+    "pdfDownloadFailed": "Impossibile scaricare il PDF",
+    "pdfRegenerateFailed": "Impossibile rigenerare il PDF",
+    "pdfRegenerated": "PDF rigenerato con successo",
+    "cannotGeneratePdfForVoided": "Impossibile generare il PDF per le ricevute annullate"
   }
 }

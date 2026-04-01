@@ -47,7 +47,7 @@ export const initI18n = async (): Promise<void> => {
       },
       
 // Default namespace and additional namespaces
-  ns: ['common', 'errors', 'api', 'receipt'],
+  ns: ['common', 'errors', 'api', 'receipt', 'email'],
   defaultNS: 'common',
       
       // Load all languages

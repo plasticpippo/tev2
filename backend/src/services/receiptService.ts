@@ -17,6 +17,8 @@ import {
 } from '../types/receipt';
 import { Prisma } from '@prisma/client';
 import { generateNextReceiptNumber } from './receiptNumberService';
+import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
+import { savePDFToStorage, deletePDFFromStorage } from './pdfService';
 
 async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
   const settings = await prisma.settings.findFirst();
@@ -298,6 +300,7 @@ export async function issueDraftReceipt(
     customerSnapshot = await getCustomerSnapshot(input.customerId);
   }
   
+  // First update to issued status with receipt number
   const updatedReceipt = await prisma.receipt.update({
     where: { id },
     data: {
@@ -312,7 +315,29 @@ export async function issueDraftReceipt(
     },
   });
   
-  return toReceiptDTO(updatedReceipt);
+  // Generate PDF automatically on issue
+  try {
+    const receiptDTO = toReceiptDTO(updatedReceipt);
+    const templateData = prepareReceiptTemplateData(receiptDTO);
+    const pdfResult = await renderReceiptPDF(templateData);
+    const savedPath = await savePDFToStorage(pdfResult.buffer, pdfResult.filename);
+    
+    // Update receipt with PDF path
+    const finalReceipt = await prisma.receipt.update({
+      where: { id },
+      data: {
+        pdfPath: pdfResult.filename,
+        pdfGeneratedAt: pdfResult.generatedAt,
+        version: { increment: 1 },
+      },
+    });
+    
+    return toReceiptDTO(finalReceipt);
+  } catch (pdfError) {
+    // Log error but don't fail the issuance - PDF can be regenerated later
+    console.error('Failed to generate PDF on receipt issue:', pdfError);
+    return toReceiptDTO(updatedReceipt);
+  }
 }
 
 export async function voidReceipt(
@@ -346,6 +371,16 @@ export async function voidReceipt(
       version: { increment: 1 },
     },
   });
+  
+  // Clean up PDF file when voiding (optional - can be kept for archival)
+  if (receipt.pdfPath) {
+    try {
+      await deletePDFFromStorage(receipt.pdfPath);
+    } catch (error) {
+      // Log error but don't fail the void operation
+      console.error('Failed to delete PDF on void:', error);
+    }
+  }
   
   return toReceiptDTO(updatedReceipt);
 }
@@ -395,4 +430,20 @@ export async function checkForConcurrentUpdate(
   });
   
   return receipt?.version === expectedVersion;
+}
+
+export async function updateReceiptPdfPath(
+  id: number,
+  pdfPath: string,
+  pdfGeneratedAt: Date
+): Promise<ReceiptResponseDTO> {
+  const receipt = await prisma.receipt.update({
+    where: { id },
+    data: {
+      pdfPath,
+      pdfGeneratedAt,
+    },
+  });
+  
+  return toReceiptDTO(receipt);
 }

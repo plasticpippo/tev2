@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="{{locale}}" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="x-apple-disable-message-reformatting">
+  <title>{{t 'email.receipt.subject'}}</title>
+  <!--[if mso]>
+  <noscript>
+    <xml>
+      <o:OfficeDocumentSettings>
+        <o:PixelsPerInch>96</o:PixelsPerInch>
+      </o:OfficeDocumentSettings>
+    </xml>
+  </noscript>
+  <![endif]-->
+</head>
+<body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
+  <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
+    <tr>
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+          <tr>
+            <td style="padding: 0;">
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td style="background-color: #1a1a2e; padding: 30px 40px; border-radius: 8px 8px 0 0; text-align: center;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; line-height: 1.3;">{{business.name}}</h1>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 40px 40px 20px 40px;">
+                    <h2 style="margin: 0 0 10px 0; color: #1a1a2e; font-size: 20px; font-weight: 600;">{{t 'email.receipt.greeting' name=customer.name}}</h2>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 0 40px 30px 40px;">
+                    <p style="margin: 0 0 20px 0; color: #555555; font-size: 15px; line-height: 1.6;">{{t 'email.receipt.body'}}</p>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 0 40px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; background-color: #f8f9fa; border-radius: 8px;">
+                      <tr>
+                        <td style="padding: 25px;">
+                          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                            <tr>
+                              <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.receiptNumber'}}</span>
+                              </td>
+                              <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 15px; font-weight: 600;">{{receipt.number}}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.date'}}</span>
+                              </td>
+                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 15px;">{{receipt.date}}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
+                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.itemsCount'}}</span>
+                              </td>
+                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 15px;">{{receipt.itemsCount}}</span>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td style="padding-top: 15px;">
+                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.total'}}</span>
+                              </td>
+                              <td style="padding-top: 15px; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 18px; font-weight: 700;">{{receipt.total}}</span>
+                              </td>
+                            </tr>
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 30px 40px 40px 40px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                      <tr>
+                        <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
+                          <p style="margin: 0; color: #1a1a2e; font-size: 14px; font-weight: 600;">{{t 'email.receipt.thankYou'}}</p>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td style="padding-top: 20px;">
+                          <p style="margin: 0 0 5px 0; color: #555555; font-size: 13px; line-height: 1.5;">
+                            <strong style="color: #1a1a2e;">{{business.name}}</strong>
+                          </p>
+                          {{#if business.address}}
+                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.address}}</p>
+                          {{/if}}
+                          {{#if business.city}}
+                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.city}}{{#if business.country}}, {{business.country}}{{/if}}</p>
+                          {{else if business.country}}
+                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.country}}</p>
+                          {{/if}}
+                          {{#if business.phone}}
+                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.phone'}}: {{business.phone}}</p>
+                          {{/if}}
+                          {{#if business.email}}
+                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.email'}}: <a href="mailto:{{business.email}}" style="color: #4f46e5; text-decoration: none;">{{business.email}}</a></p>
+                          {{/if}}
+                          {{#if business.vatNumber}}
+                          <p style="margin: 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.vatNumber'}}: {{business.vatNumber}}</p>
+                          {{/if}}
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+          <tr>
+            <td style="padding: 30px 40px; text-align: center;">
+              <p style="margin: 0 0 10px 0; color: #888888; font-size: 12px; line-height: 1.5;">{{t 'email.receipt.footer' businessName=business.name}}</p>
+              <p style="margin: 0; color: #aaaaaa; font-size: 11px; line-height: 1.5;">{{t 'email.receipt.disclaimer'}}</p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

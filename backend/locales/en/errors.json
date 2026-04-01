@@ -395,5 +395,26 @@
     "cannotDeleteDefault": "Cannot deactivate the default tax rate",
     "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
     "setDefaultFailed": "Failed to set default tax rate"
+  },
+  "receipts": {
+    "notFound": "Receipt not found",
+    "fetchFailed": "Failed to fetch receipts",
+    "createFailed": "Failed to create receipt",
+    "updateFailed": "Failed to update receipt",
+    "issueFailed": "Failed to issue receipt",
+    "voidFailed": "Failed to void receipt",
+    "alreadyExists": "A receipt already exists for this transaction",
+    "transactionIdRequired": "Transaction ID is required",
+    "onlyDraftCanBeIssued": "Only draft receipts can be issued",
+    "onlyIssuedCanBeVoided": "Only issued receipts can be voided",
+    "onlyDraftCanBeUpdated": "Only draft receipts can be updated",
+    "voidReasonRequired": "Void reason is required",
+    "pdfNotGenerated": "PDF has not been generated yet",
+    "pdfFileNotFound": "PDF file not found",
+    "pdfRetrieveFailed": "Failed to retrieve PDF",
+    "pdfDownloadFailed": "Failed to download PDF",
+    "pdfRegenerateFailed": "Failed to regenerate PDF",
+    "pdfRegenerated": "PDF regenerated successfully",
+    "cannotGeneratePdfForVoided": "Cannot generate PDF for voided receipts"
   }
 }

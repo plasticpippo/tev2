@@ -1,0 +1,17 @@
+{
+  "receipt": {
+    "subject": "Receipt {{receiptNumber}} from {{businessName}}",
+    "greeting": "Dear {{name}},",
+    "body": "Thank you for your purchase. Your receipt is attached to this email.",
+    "receiptNumber": "Receipt Number",
+    "date": "Date",
+    "itemsCount": "Items",
+    "total": "Total",
+    "thankYou": "Thank you for your business!",
+    "phone": "Phone",
+    "email": "Email",
+    "vatNumber": "VAT",
+    "footer": "{{businessName}} - All rights reserved",
+    "disclaimer": "This email was sent to you as a customer of {{businessName}}. If you have any questions, please contact us."
+  }
+}

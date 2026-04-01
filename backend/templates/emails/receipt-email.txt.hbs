@@ -1,0 +1,33 @@
+{{t 'email.receipt.subject'}}
+==========================================
+
+{{business.name}}
+------------------------------------------
+
+{{t 'email.receipt.greeting' name=customer.name}}
+
+{{t 'email.receipt.body'}}
+
+RECEIPT SUMMARY
+------------------------------------------
+{{t 'email.receipt.receiptNumber'}}: {{receipt.number}}
+{{t 'email.receipt.date'}}:          {{receipt.date}}
+{{t 'email.receipt.itemsCount'}}:    {{receipt.itemsCount}}
+{{t 'email.receipt.total'}}:         {{receipt.total}}
+
+------------------------------------------
+{{t 'email.receipt.thankYou'}}
+
+{{business.name}}
+{{#if business.address}}{{business.address}}
+{{/if}}{{#if business.city}}{{business.city}}{{#if business.country}}, {{business.country}}{{/if}}
+{{else if business.country}}{{business.country}}
+{{/if}}{{#if business.phone}}{{t 'email.receipt.phone'}}: {{business.phone}}
+{{/if}}{{#if business.email}}{{t 'email.receipt.email'}}: {{business.email}}
+{{/if}}{{#if business.vatNumber}}{{t 'email.receipt.vatNumber'}}: {{business.vatNumber}}
+{{/if}}
+
+------------------------------------------
+{{t 'email.receipt.footer' businessName=business.name}}
+
+{{t 'email.receipt.disclaimer'}}

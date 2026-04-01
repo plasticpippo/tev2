@@ -400,6 +400,14 @@ enum EmailStatus {
   bounced
 }
 
+enum EmailJobStatus {
+  pending
+  processing
+  sent
+  failed
+  cancelled
+}
+
 model Receipt {
   id Int @id @default(autoincrement())
   receiptNumber String @unique @map("receipt_number")
@@ -449,6 +457,8 @@ model Receipt {
   issuedByUser User @relation("ReceiptIssuedBy", fields: [issuedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
   voidedByUser User? @relation("ReceiptVoidedBy", fields: [voidedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
+  emailJobs EmailQueue[]
+
   @@index([receiptNumber])
   @@index([transactionId])
   @@index([customerId])
@@ -456,4 +466,32 @@ model Receipt {
   @@index([issuedAt])
   @@index([createdAt])
   @@map("receipts")
+}
+
+model EmailQueue {
+  id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  receiptId Int @map("receipt_id")
+  recipientEmail String @map("recipient_email")
+  subject String
+  htmlContent String @db.Text @map("html_content")
+  textContent String @db.Text @map("text_content")
+  attachmentPath String? @map("attachment_path")
+  attachmentFilename String? @map("attachment_filename")
+  status EmailJobStatus @default(pending)
+  priority Int @default(0)
+  attempts Int @default(0)
+  maxAttempts Int @default(5) @map("max_attempts")
+  nextAttemptAt DateTime? @map("next_attempt_at")
+  lastError String? @db.Text @map("last_error")
+  createdAt DateTime @default(now()) @map("created_at")
+  processedAt DateTime? @map("processed_at")
+  sentAt DateTime? @map("sent_at")
+
+  receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([status, priority])
+  @@index([nextAttemptAt])
+  @@index([receiptId])
+  @@index([createdAt])
+  @@map("email_queue")
 }
