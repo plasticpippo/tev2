@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="{{locale}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{t 'receipt.title'}} - {{receipt.receiptNumber}}</title>
+<style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-size: 11px;
+      line-height: 1.5;
+      color: #1a1a1a;
+      background: #fff;
+    }
+
+    .receipt-container {
+      width: 100%;
+      max-width: 210mm;
+      margin: 0 auto;
+      padding: 10mm;
+    }
+
+    .section-title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 6px;
+      padding-bottom: 3px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .receipt-header {
+      text-align: center;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #333;
+    }
+
+    .business-logo {
+      max-height: 60px;
+      margin-bottom: 8px;
+    }
+
+    .business-name {
+      font-size: 20px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .business-details {
+      font-size: 10px;
+      color: #555;
+      line-height: 1.6;
+    }
+
+    .business-address, .business-city, .business-country,
+    .business-phone, .business-email, .business-vat {
+      margin: 2px 0;
+    }
+
+    .receipt-info-section {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .receipt-number-display {
+      text-align: left;
+    }
+
+    .receipt-label {
+      font-size: 10px;
+      color: #666;
+    }
+
+    .receipt-number-value {
+      font-size: 16px;
+      font-weight: 700;
+      color: #1a1a1a;
+      display: block;
+    }
+
+    .receipt-datetime {
+      text-align: right;
+      font-size: 10px;
+      color: #555;
+    }
+
+    .receipt-datetime .label {
+      color: #888;
+    }
+
+    .status-indicator {
+      margin-top: 8px;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+
+    .draft-status .status-badge {
+      background: #fff3cd;
+      color: #856404;
+      border: 1px solid #ffc107;
+    }
+
+    .issued-status .status-badge {
+      background: #d4edda;
+      color: #155724;
+      border: 1px solid #28a745;
+    }
+
+    .voided-status .status-badge {
+      background: #f8d7da;
+      color: #721c24;
+      border: 1px solid #dc3545;
+    }
+
+    .emailed-status .status-badge {
+      background: #cce5ff;
+      color: #004085;
+      border: 1px solid #007bff;
+    }
+
+    .customer-section {
+      margin-bottom: 15px;
+      padding: 10px;
+      background: #f8f9fa;
+      border-radius: 4px;
+    }
+
+    .customer-name {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 4px;
+    }
+
+    .customer-vat, .customer-address, .customer-city,
+    .customer-email, .customer-phone {
+      font-size: 10px;
+      color: #555;
+      margin: 2px 0;
+    }
+
+    .customer-details .label {
+      color: #888;
+    }
+
+    .line-items-section {
+      margin-bottom: 15px;
+    }
+
+    .line-items {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .line-items th {
+      background: #f0f0f0;
+      padding: 8px 6px;
+      text-align: left;
+      font-size: 10px;
+      font-weight: 600;
+      color: #333;
+      border-bottom: 1px solid #ccc;
+    }
+
+    .line-items td {
+      padding: 8px 6px;
+      font-size: 10px;
+      border-bottom: 1px solid #eee;
+      vertical-align: top;
+    }
+
+    .col-qty, .col-unit-price, .col-total {
+      text-align: right;
+    }
+
+    .col-item {
+      width: 45%;
+    }
+
+    .item-name-text {
+      word-wrap: break-word;
+      max-width: 200px;
+    }
+
+    .item-tax-rate {
+      font-size: 9px;
+      color: #888;
+      margin-top: 2px;
+    }
+
+    .tax-breakdown-section {
+      margin-bottom: 15px;
+      page-break-inside: avoid;
+    }
+
+    .tax-breakdown-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+    }
+
+    .tax-breakdown-table th {
+      background: #f8f9fa;
+      padding: 6px;
+      text-align: left;
+      border-bottom: 1px solid #ddd;
+    }
+
+    .tax-breakdown-table td {
+      padding: 6px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .tax-breakdown-table .col-taxable,
+    .tax-breakdown-table .col-tax-amount {
+      text-align: right;
+    }
+
+    .totals-section {
+      margin-bottom: 15px;
+      page-break-inside: avoid;
+    }
+
+    .totals-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .totals-table td {
+      padding: 6px 0;
+      font-size: 11px;
+    }
+
+    .totals-table .value {
+      text-align: right;
+    }
+
+    .discount-value {
+      color: #dc3545;
+    }
+
+    .grand-total-row td {
+      font-size: 14px;
+      padding-top: 10px;
+      border-top: 2px solid #333;
+      border-bottom: 2px solid #333;
+    }
+
+    .discount-reason {
+      font-size: 9px;
+      color: #888;
+      font-style: italic;
+    }
+
+    .receipt-footer {
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ccc;
+      page-break-inside: avoid;
+    }
+
+    .payment-info {
+      margin-bottom: 10px;
+      font-size: 10px;
+    }
+
+    .payment-method-display {
+      font-weight: 600;
+    }
+
+    .footer-notes {
+      margin-bottom: 10px;
+      font-size: 10px;
+      color: #555;
+      font-style: italic;
+    }
+
+    .legal-text {
+      font-size: 9px;
+      color: #888;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    .thank-you-message {
+      text-align: center;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1a1a1a;
+      margin-top: 15px;
+    }
+
+    .page-info {
+      text-align: center;
+      font-size: 9px;
+      color: #aaa;
+      margin-top: 10px;
+    }
+
+    .watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-45deg);
+      font-size: 100px;
+      font-weight: bold;
+      color: rgba(200, 200, 200, 0.25);
+      pointer-events: none;
+      z-index: 1000;
+      letter-spacing: 20px;
+    }
+
+    .stamp-overlay {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) rotate(-15deg);
+      font-size: 50px;
+      font-weight: bold;
+      color: rgba(180, 0, 0, 0.35);
+      border: 6px solid rgba(180, 0, 0, 0.35);
+      padding: 15px 30px;
+      pointer-events: none;
+      z-index: 1000;
+      text-transform: uppercase;
+      letter-spacing: 8px;
+    }
+
+    @media print {
+      .watermark, .stamp-overlay {
+        position: fixed;
+      }
+    }
+  </style>
+</head>
+<body>
+  {{#eq receipt.status 'draft'}}
+  <div class="watermark">{{t 'receipt.status.draft'}}</div>
+  {{/eq}}
+
+  {{#eq receipt.status 'voided'}}
+  <div class="stamp-overlay">{{t 'receipt.status.voided'}}</div>
+  {{/eq}}
+
+  <div class="receipt-container">
+    {{> header}}
+
+    {{> receipt-info}}
+
+    {{> customer}}
+
+    {{> line-items}}
+
+    {{> tax-breakdown}}
+
+    {{> totals}}
+
+    {{> footer}}
+  </div>
+</body>
+</html>

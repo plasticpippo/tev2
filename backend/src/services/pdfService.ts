@@ -61,7 +61,6 @@ function mapToPuppeteerOptions(options: PDFOptions): PuppeteerPDFOptions {
 
   if (options.format === 'Receipt') {
     puppeteerOpts.width = options.width || '80mm';
-    puppeteerOpts.height = 'auto';
   } else if (options.format) {
     puppeteerOpts.format = options.format;
   }

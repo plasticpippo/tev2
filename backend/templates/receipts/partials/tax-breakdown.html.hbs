@@ -1,0 +1,29 @@
+{{#if receipt.taxBreakdown}}
+<div class="tax-breakdown-section">
+  <h4 class="section-title">{{t 'receipt.taxBreakdown'}}</h4>
+  <table class="tax-breakdown-table">
+    <thead>
+      <tr>
+        <th class="col-rate-name">{{t 'receipt.taxRate'}}</th>
+        <th class="col-taxable">{{t 'receipt.taxableAmount'}}</th>
+        <th class="col-tax-amount">{{t 'receipt.taxAmount'}}</th>
+      </tr>
+    </thead>
+    <tbody>
+      {{#each receipt.taxBreakdown}}
+      <tr class="tax-row">
+        <td class="rate-name">{{this.rateName}} ({{this.ratePercent}}%)</td>
+        <td class="taxable-amount">{{formatCurrency this.taxableAmount}}</td>
+        <td class="tax-amount">{{formatCurrency this.taxAmount}}</td>
+      </tr>
+      {{/each}}
+    </tbody>
+    <tfoot>
+      <tr class="tax-total-row">
+        <td colspan="2" class="label"><strong>{{t 'receipt.totalTax'}}</strong></td>
+        <td class="value"><strong>{{formatCurrency receipt.tax}}</strong></td>
+      </tr>
+    </tfoot>
+  </table>
+</div>
+{{/if}}

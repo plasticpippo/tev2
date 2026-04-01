@@ -1,0 +1,43 @@
+{{#if receipt.customer}}
+<div class="customer-section">
+  <h3 class="section-title">{{t 'receipt.customer'}}</h3>
+  <div class="customer-details">
+    <div class="customer-name">{{receipt.customer.name}}</div>
+    
+    {{#if receipt.customer.vatNumber}}
+    <div class="customer-vat">
+      <span class="label">{{t 'receipt.vatNumber'}}:</span>
+      <span class="value">{{receipt.customer.vatNumber}}</span>
+    </div>
+    {{/if}}
+
+    {{#if receipt.customer.address}}
+    <div class="customer-address">
+      <span class="label">{{t 'receipt.address'}}:</span>
+      <span class="value">{{receipt.customer.address}}</span>
+    </div>
+    {{/if}}
+
+    {{#if receipt.customer.city}}
+    <div class="customer-city">
+      {{#if receipt.customer.postalCode}}{{receipt.customer.postalCode}} {{/if}}{{receipt.customer.city}}
+      {{#if receipt.customer.country}}, {{receipt.customer.country}}{{/if}}
+    </div>
+    {{/if}}
+
+    {{#if receipt.customer.email}}
+    <div class="customer-email">
+      <span class="label">{{t 'receipt.email'}}:</span>
+      <span class="value">{{receipt.customer.email}}</span>
+    </div>
+    {{/if}}
+
+    {{#if receipt.customer.phone}}
+    <div class="customer-phone">
+      <span class="label">{{t 'receipt.phone'}}:</span>
+      <span class="value">{{receipt.customer.phone}}</span>
+    </div>
+    {{/if}}
+  </div>
+</div>
+{{/if}}

@@ -1,10 +1,29 @@
 <footer class="receipt-footer">
-  <div class="footer-content">
-    <p class="thank-you">{{t 'receipt.thankYou'}}</p>
-    <p class="receipt-number">{{t 'receipt.number'}}: {{receipt.receiptNumber}}</p>
-    <p class="receipt-date">{{formatDate receipt.issuedAt 'long'}}</p>
-    {{#if receipt.business.vatNumber}}
-    <p class="tax-info">{{t 'receipt.taxInfo'}}</p>
-    {{/if}}
+  <div class="payment-info">
+    <span class="label">{{t 'receipt.paymentMethod'}}:</span>
+    <span class="payment-method-display">{{receipt.paymentMethod}}</span>
+  </div>
+
+  {{#if receipt.notes}}
+  <div class="footer-notes">
+    <span class="label">{{t 'receipt.notes'}}:</span>
+    <span>{{receipt.notes}}</span>
+  </div>
+  {{/if}}
+
+  {{#if receipt.legalText}}
+  <div class="legal-text">{{receipt.legalText}}</div>
+  {{else}}
+  <div class="legal-text">
+    {{t 'receipt.legalDisclaimer'}}
+  </div>
+  {{/if}}
+
+  <div class="thank-you-message">
+    {{t 'receipt.thankYou'}}
+  </div>
+
+  <div class="page-info">
+    <span>{{t 'receipt.page'}} <span class="page-number"></span> {{t 'receipt.of'}} <span class="page-count"></span></span>
   </div>
 </footer>

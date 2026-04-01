@@ -1,0 +1,48 @@
+<div class="receipt-info-section">
+  <div class="receipt-number-display">
+    <span class="receipt-label">{{t 'receipt.number'}}:</span>
+    <span class="receipt-number-value">{{receipt.receiptNumber}}</span>
+  </div>
+  
+  <div class="receipt-datetime">
+    <div class="receipt-date">
+      <span class="label">{{t 'receipt.date'}}:</span>
+      <span class="value">{{formatDate receipt.issuedAt 'short'}}</span>
+    </div>
+    <div class="receipt-time">
+      <span class="label">{{t 'receipt.time'}}:</span>
+      <span class="value">{{formatTime receipt.issuedAt}}</span>
+    </div>
+  </div>
+
+  {{#if receipt.transactionRef}}
+  <div class="transaction-ref">
+    <span class="label">{{t 'receipt.transactionRef'}}:</span>
+    <span class="value">{{receipt.transactionRef}}</span>
+  </div>
+  {{/if}}
+
+  {{#eq receipt.status 'draft'}}
+  <div class="status-indicator draft-status">
+    <span class="status-badge">{{t 'receipt.status.draft'}}</span>
+  </div>
+  {{/eq}}
+
+  {{#eq receipt.status 'issued'}}
+  <div class="status-indicator issued-status">
+    <span class="status-badge">{{t 'receipt.status.issued'}}</span>
+  </div>
+  {{/eq}}
+
+  {{#eq receipt.status 'voided'}}
+  <div class="status-indicator voided-status">
+    <span class="status-badge">{{t 'receipt.status.voided'}}</span>
+  </div>
+  {{/eq}}
+
+  {{#eq receipt.status 'emailed'}}
+  <div class="status-indicator emailed-status">
+    <span class="status-badge">{{t 'receipt.status.emailed'}}</span>
+  </div>
+  {{/eq}}
+</div>

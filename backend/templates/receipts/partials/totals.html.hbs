@@ -5,10 +5,10 @@
         <td class="label">{{t 'receipt.subtotal'}}</td>
         <td class="value">{{formatCurrency receipt.subtotal}}</td>
       </tr>
-      
+
       {{#if receipt.taxBreakdown}}
         {{#each receipt.taxBreakdown}}
-        <tr class="tax-row">
+        <tr class="tax-detail-row">
           <td class="label">{{this.rateName}} ({{this.ratePercent}}%)</td>
           <td class="value">{{formatCurrency this.taxAmount}}</td>
         </tr>
@@ -21,30 +21,31 @@
         </tr>
         {{/gt}}
       {{/if}}
-      
+
       {{#gt receipt.discount 0}}
       <tr class="discount-row">
-        <td class="label">{{t 'receipt.discount'}}{{#if receipt.discountReason}} ({{receipt.discountReason}}){{/if}}</td>
-        <td class="value">-{{formatCurrency receipt.discount}}</td>
+        <td class="label">
+          {{t 'receipt.discount'}}
+          {{#if receipt.discountReason}}
+          <span class="discount-reason">({{receipt.discountReason}})</span>
+          {{/if}}
+        </td>
+        <td class="value discount-value">-{{formatCurrency receipt.discount}}</td>
       </tr>
       {{/gt}}
-      
+
       {{#gt receipt.tip 0}}
       <tr class="tip-row">
         <td class="label">{{t 'receipt.tip'}}</td>
         <td class="value">{{formatCurrency receipt.tip}}</td>
       </tr>
       {{/gt}}
-      
-      <tr class="total-row">
-        <td class="label"><strong>{{t 'receipt.total'}}</strong></td>
+    </tbody>
+    <tfoot>
+      <tr class="grand-total-row">
+        <td class="label"><strong>{{t 'receipt.grandTotal'}}</strong></td>
         <td class="value"><strong>{{formatCurrency receipt.total}}</strong></td>
       </tr>
-      
-      <tr class="payment-row">
-        <td class="label">{{t 'receipt.paymentMethod'}}</td>
-        <td class="value">{{receipt.paymentMethod}}</td>
-      </tr>
-    </tbody>
+    </tfoot>
   </table>
 </div>
