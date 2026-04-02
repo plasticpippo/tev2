@@ -1,11 +1,14 @@
 export interface OrderItem {
-  id: string; 
+  id: string;
   variantId: number;
   productId: number;
   name: string;
   price: number;
   quantity: number;
   effectiveTaxRate: number;
+  taxRateId?: number | null;
+  taxRateName: string;
+  taxRatePercent: number;
 }
 
 export interface ProductVariant {

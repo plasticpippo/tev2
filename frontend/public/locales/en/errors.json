@@ -97,6 +97,25 @@
       "deleteFailed": "Failed to delete tax rate",
       "deleteDefault": "Cannot delete the default tax rate",
       "fetchFailed": "Failed to load tax rates"
+    },
+    "customers": {
+      "notFound": "Customer not found",
+      "createFailed": "Failed to create customer",
+      "updateFailed": "Failed to update customer",
+      "deleteFailed": "Failed to delete customer",
+      "fetchFailed": "Failed to load customers",
+      "duplicateEmail": "A customer with this email already exists"
+    },
+    "receipts": {
+      "notFound": "Receipt not found",
+      "createFailed": "Failed to create receipt",
+      "updateFailed": "Failed to update receipt",
+      "issueFailed": "Failed to issue receipt",
+      "voidFailed": "Failed to void receipt",
+      "emailFailed": "Failed to send receipt email",
+      "pdfFailed": "Failed to generate PDF",
+      "fetchFailed": "Failed to load receipt",
+      "transactionHasReceipt": "A receipt already exists for this transaction"
     }
   },
   "boundary": {

@@ -1,0 +1,174 @@
+- generic [ref=e2]:
+  - generic [ref=e655]:
+    - banner [ref=e656]:
+      - generic [ref=e658]:
+        - heading "Admin Panel" [level=1] [ref=e659]
+        - paragraph [ref=e660]: Logged in as Admin User
+      - generic [ref=e661]:
+        - button "Switch to POS" [ref=e662] [cursor=pointer]
+        - button "Logout" [ref=e663] [cursor=pointer]
+    - generic [ref=e664]:
+      - navigation [ref=e665]:
+        - button "Collapse sidebar" [ref=e667] [cursor=pointer]:
+          - img [ref=e668]
+        - button "Dashboard" [ref=e670] [cursor=pointer]:
+          - img [ref=e672]
+          - generic [ref=e674]: Dashboard
+        - button "Analytics" [ref=e675] [cursor=pointer]:
+          - img [ref=e677]
+          - generic [ref=e679]: Analytics
+        - button "Transactions" [ref=e681] [cursor=pointer]:
+          - img [ref=e683]
+          - generic [ref=e685]: Transactions
+        - button "Activity Log" [ref=e686] [cursor=pointer]:
+          - img [ref=e688]
+          - generic [ref=e690]: Activity Log
+        - button "Daily Closing Summary" [ref=e691] [cursor=pointer]:
+          - img [ref=e693]
+          - generic [ref=e695]: Daily Closing Summary
+        - button "Products" [ref=e697] [cursor=pointer]:
+          - img [ref=e699]
+          - generic [ref=e701]: Products
+        - button "Categories" [ref=e702] [cursor=pointer]:
+          - img [ref=e704]
+          - generic [ref=e706]: Categories
+        - button "Stock Items" [ref=e707] [cursor=pointer]:
+          - img [ref=e709]
+          - generic [ref=e711]: Stock Items
+        - button "Inventory" [ref=e712] [cursor=pointer]:
+          - img [ref=e714]
+          - generic [ref=e716]: Inventory
+        - button "Users" [ref=e718] [cursor=pointer]:
+          - img [ref=e720]
+          - generic [ref=e722]: Users
+        - button "Tills" [ref=e723] [cursor=pointer]:
+          - img [ref=e725]
+          - generic [ref=e727]: Tills
+        - button "Tables & Layout" [ref=e728] [cursor=pointer]:
+          - img [ref=e730]
+          - generic [ref=e732]: Tables & Layout
+        - button "Itemised Consumption" [ref=e733] [cursor=pointer]:
+          - img [ref=e735]
+          - generic [ref=e737]: Itemised Consumption
+        - button "Settings" [ref=e739] [cursor=pointer]:
+          - img [ref=e741]
+          - generic [ref=e744]: Settings
+      - main [ref=e745]:
+        - generic [ref=e746]:
+          - generic [ref=e747]:
+            - heading "Current Business Day Sales (All Tills)" [level=2] [ref=e748]
+            - generic [ref=e749]:
+              - generic [ref=e750]:
+                - paragraph [ref=e751]: Gross Sales
+                - paragraph [ref=e752]: 8,00 €
+              - generic [ref=e753]:
+                - paragraph [ref=e754]: Total Discounts
+                - paragraph [ref=e755]: 0,00 €
+              - generic [ref=e756]:
+                - paragraph [ref=e757]: Net Sales
+                - paragraph [ref=e758]: 8,00 €
+              - generic [ref=e759]:
+                - paragraph [ref=e760]: Total Cash
+                - paragraph [ref=e761]: 8,00 €
+              - generic [ref=e762]:
+                - paragraph [ref=e763]: Total Card
+                - paragraph [ref=e764]: 0,00 €
+              - generic [ref=e765]:
+                - paragraph [ref=e766]: Total Tax
+                - paragraph [ref=e767]: 1,28 €
+              - generic [ref=e768]:
+                - paragraph [ref=e769]: Total Tips
+                - paragraph [ref=e770]: 0,00 €
+          - generic [ref=e771]:
+            - generic [ref=e772]:
+              - heading "Business Day Management" [level=2] [ref=e773]
+              - button "Close Current Business Day" [ref=e775] [cursor=pointer]
+            - generic [ref=e776]:
+              - heading "Recent Daily Closings" [level=2] [ref=e777]
+              - generic [ref=e778]:
+                - generic [ref=e779]:
+                  - generic [ref=e780]: Apr 01, 11:00
+                  - generic [ref=e781]: Admin User
+                  - generic [ref=e782]: 0 txns
+                  - generic [ref=e783]: €0.00
+                - generic [ref=e784]:
+                  - generic [ref=e785]: Mar 31, 11:00
+                  - generic [ref=e786]: Admin User
+                  - generic [ref=e787]: 0 txns
+                  - generic [ref=e788]: €0.00
+                - generic [ref=e789]:
+                  - generic [ref=e790]: Mar 29, 11:00
+                  - generic [ref=e791]: Admin User
+                  - generic [ref=e792]: 0 txns
+                  - generic [ref=e793]: €0.00
+                - generic [ref=e794]:
+                  - generic [ref=e795]: Mar 28, 10:00
+                  - generic [ref=e796]: Admin User
+                  - generic [ref=e797]: 34 txns
+                  - generic [ref=e798]: €0.00
+                - generic [ref=e799]:
+                  - generic [ref=e800]: Mar 27, 10:00
+                  - generic [ref=e801]: Admin User
+                  - generic [ref=e802]: 0 txns
+                  - generic [ref=e803]: €0.00
+          - generic [ref=e805]:
+            - generic [ref=e806]:
+              - heading "Till Status" [level=2] [ref=e807]
+              - generic [ref=e808]:
+                - generic [ref=e809]:
+                  - generic [ref=e810]:
+                    - generic [ref=e811]:
+                      - heading "Main Bar" [level=3] [ref=e812]
+                      - generic [ref=e813]: Active
+                    - paragraph [ref=e814]: "User: Admin User"
+                  - generic [ref=e815]:
+                    - paragraph [ref=e816]: Current Day Sales
+                    - paragraph [ref=e817]: 8,00 €
+                    - generic [ref=e818]:
+                      - generic [ref=e819]:
+                        - generic [ref=e820]: "Cash:"
+                        - generic [ref=e821]: 8,00 €
+                      - generic [ref=e822]:
+                        - generic [ref=e823]: "Card:"
+                        - generic [ref=e824]: 0,00 €
+                - generic [ref=e825]:
+                  - generic [ref=e826]:
+                    - generic [ref=e827]:
+                      - heading "Entrata" [level=3] [ref=e828]
+                      - generic [ref=e829]: Idle
+                    - paragraph [ref=e830]: "User: No Activity"
+                  - generic [ref=e831]:
+                    - paragraph [ref=e832]: Current Day Sales
+                    - paragraph [ref=e833]: 0,00 €
+                    - generic [ref=e834]:
+                      - generic [ref=e835]:
+                        - generic [ref=e836]: "Cash:"
+                        - generic [ref=e837]: 0,00 €
+                      - generic [ref=e838]:
+                        - generic [ref=e839]: "Card:"
+                        - generic [ref=e840]: 0,00 €
+            - generic [ref=e841]:
+              - heading "All Open Tabs" [level=2] [ref=e842]
+              - generic [ref=e844]:
+                - generic [ref=e845]:
+                  - generic [ref=e846]:
+                    - paragraph [ref=e847]: primo drink
+                    - paragraph [ref=e848]: on Placeholder Till Name
+                  - paragraph [ref=e849]: €200,00
+                - generic [ref=e850]:
+                  - generic [ref=e851]:
+                    - paragraph [ref=e852]: djs
+                    - paragraph [ref=e853]: on Placeholder Till Name
+                  - paragraph [ref=e854]: €26,00
+                - generic [ref=e855]:
+                  - generic [ref=e856]:
+                    - paragraph [ref=e857]: staff
+                    - paragraph [ref=e858]: on Placeholder Till Name
+                  - paragraph [ref=e859]: €102,00
+                - generic [ref=e860]:
+                  - generic [ref=e861]:
+                    - paragraph [ref=e862]: Sbagli Buttati
+                    - paragraph [ref=e863]: on Placeholder Till Name
+                  - paragraph [ref=e864]: €0,00
+  - button "Enable virtual keyboard" [ref=e116] [cursor=pointer]:
+    - img [ref=e117]

@@ -28,6 +28,7 @@ model User {
   customers Customer[]
   issuedReceipts Receipt[] @relation("ReceiptIssuedBy")
   voidedReceipts Receipt[] @relation("ReceiptVoidedBy")
+  receiptAuditLogs ReceiptAuditLog[]
 
   @@map("users")
 }
@@ -408,6 +409,16 @@ enum EmailJobStatus {
   cancelled
 }
 
+enum ReceiptAuditAction {
+  create
+  issue
+  email
+  email_retry
+  void
+  regenerate_pdf
+  update
+}
+
 model Receipt {
   id Int @id @default(autoincrement())
   receiptNumber String @unique @map("receipt_number")
@@ -458,6 +469,7 @@ model Receipt {
   voidedByUser User? @relation("ReceiptVoidedBy", fields: [voidedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   emailJobs EmailQueue[]
+  auditLogs ReceiptAuditLog[]
 
   @@index([receiptNumber])
   @@index([transactionId])
@@ -494,4 +506,36 @@ model EmailQueue {
   @@index([receiptId])
   @@index([createdAt])
   @@map("email_queue")
+}
+
+model ReceiptAuditLog {
+  id Int @id @default(autoincrement())
+  receiptId Int @map("receipt_id")
+  action ReceiptAuditAction
+
+  // Data snapshots (what changed)
+  oldValues Json? @map("old_values")
+  newValues Json? @map("new_values")
+
+  // Actor information
+  userId Int @map("user_id")
+  userName String @map("user_name") @db.Text
+
+  // Request context
+  ipAddress String? @map("ip_address") @db.Text
+  userAgent String? @map("user_agent") @db.Text
+
+  // Timestamp
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([receiptId])
+  @@index([action])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([receiptId, createdAt])
+  @@map("receipt_audit_logs")
 }

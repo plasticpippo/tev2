@@ -1,0 +1,122 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e329] [cursor=pointer]:
+          - img [ref=e331]
+          - generic [ref=e333]: Dashboard
+        - button "Analytics" [ref=e334] [cursor=pointer]:
+          - img [ref=e336]
+          - generic [ref=e338]: Analytics
+        - button "Transactions" [ref=e339] [cursor=pointer]:
+          - img [ref=e341]
+          - generic [ref=e343]: Transactions
+        - button "Activity Log" [ref=e344] [cursor=pointer]:
+          - img [ref=e346]
+          - generic [ref=e348]: Activity Log
+        - button "Daily Closing Summary" [ref=e349] [cursor=pointer]:
+          - img [ref=e351]
+          - generic [ref=e353]: Daily Closing Summary
+        - button "Products" [ref=e354] [cursor=pointer]:
+          - img [ref=e356]
+          - generic [ref=e358]: Products
+        - button "Categories" [ref=e359] [cursor=pointer]:
+          - img [ref=e361]
+          - generic [ref=e363]: Categories
+        - button "Stock Items" [ref=e364] [cursor=pointer]:
+          - img [ref=e366]
+          - generic [ref=e368]: Stock Items
+        - button "Inventory" [ref=e369] [cursor=pointer]:
+          - img [ref=e371]
+          - generic [ref=e373]: Inventory
+        - button "Users" [ref=e374] [cursor=pointer]:
+          - img [ref=e376]
+          - generic [ref=e378]: Users
+        - button "Tills" [ref=e379] [cursor=pointer]:
+          - img [ref=e381]
+          - generic [ref=e383]: Tills
+        - button "Tables & Layout" [ref=e384] [cursor=pointer]:
+          - img [ref=e386]
+          - generic [ref=e388]: Tables & Layout
+        - button "Itemised Consumption" [ref=e389] [cursor=pointer]:
+          - img [ref=e391]
+          - generic [ref=e393]: Itemised Consumption
+        - button "Settings" [ref=e394] [cursor=pointer]:
+          - img [ref=e396]
+          - generic [ref=e399]: Settings
+      - main [ref=e209]:
+        - generic [ref=e400]:
+          - generic [ref=e401]:
+            - button "Language" [ref=e402] [cursor=pointer]
+            - button "Tax Settings" [active] [ref=e403] [cursor=pointer]
+            - button "Business Day" [ref=e404] [cursor=pointer]
+            - button "Backup" [ref=e405] [cursor=pointer]
+          - generic [ref=e417]:
+            - heading "Tax Settings" [level=3] [ref=e418]
+            - generic [ref=e419]:
+              - paragraph [ref=e420]: How should taxes be handled?
+              - generic [ref=e421]:
+                - generic [ref=e422] [cursor=pointer]:
+                  - radio "Tax Exclusive Tax is added on top of the product price. (e.g., $10.00 + 7% = $10.70)" [ref=e423]
+                  - generic [ref=e424]:
+                    - text: Tax Exclusive
+                    - paragraph [ref=e425]: Tax is added on top of the product price. (e.g., $10.00 + 7% = $10.70)
+                - generic [ref=e426] [cursor=pointer]:
+                  - radio "Tax Inclusive Product price already includes tax. (e.g., $10.00 is $9.35 + $0.65 tax)" [checked] [ref=e427]
+                  - generic [ref=e428]:
+                    - text: Tax Inclusive
+                    - paragraph [ref=e429]: Product price already includes tax. (e.g., $10.00 is $9.35 + $0.65 tax)
+                - generic [ref=e430] [cursor=pointer]:
+                  - radio "No Tax No taxes are calculated or applied." [ref=e431]
+                  - generic [ref=e432]:
+                    - text: No Tax
+                    - paragraph [ref=e433]: No taxes are calculated or applied.
+            - generic [ref=e435]:
+              - generic [ref=e436]:
+                - heading "Tax Rates" [level=3] [ref=e437]
+                - button "Add Tax Rate" [ref=e438] [cursor=pointer]
+              - generic [ref=e439]:
+                - generic [ref=e441]:
+                  - generic [ref=e442]:
+                    - paragraph [ref=e444]: Zero Rate (0%)
+                    - paragraph [ref=e445]: 0% tax rate
+                  - generic [ref=e446]:
+                    - button "Set as Default" [ref=e447] [cursor=pointer]
+                    - button "Edit" [ref=e448] [cursor=pointer]
+                    - button "Delete" [ref=e449] [cursor=pointer]
+                - generic [ref=e451]:
+                  - generic [ref=e452]:
+                    - paragraph [ref=e454]: Reduced Rate (10%)
+                    - paragraph [ref=e455]: 10% tax rate
+                  - generic [ref=e456]:
+                    - button "Set as Default" [ref=e457] [cursor=pointer]
+                    - button "Edit" [ref=e458] [cursor=pointer]
+                    - button "Delete" [ref=e459] [cursor=pointer]
+                - generic [ref=e461]:
+                  - generic [ref=e462]:
+                    - generic [ref=e463]:
+                      - paragraph [ref=e464]: Standard Rate (19%)
+                      - generic [ref=e465]: Default
+                    - paragraph [ref=e466]: 19% tax rate
+                  - generic [ref=e467]:
+                    - button "Edit" [ref=e468] [cursor=pointer]
+                    - button "Delete" [ref=e469] [cursor=pointer]
+                - generic [ref=e471]:
+                  - generic [ref=e472]:
+                    - paragraph [ref=e474]: Luxury Rate (22%)
+                    - paragraph [ref=e475]: 22% tax rate
+                  - generic [ref=e476]:
+                    - button "Set as Default" [ref=e477] [cursor=pointer]
+                    - button "Edit" [ref=e478] [cursor=pointer]
+                    - button "Delete" [ref=e479] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e116] [cursor=pointer]:
+    - img [ref=e117]

@@ -32,6 +32,7 @@
   "taxableAmount": "Imponibile",
   "taxAmount": "Imposta",
   "totalTax": "Totale IVA",
+  "auditFetchFailed": "Impossibile recuperare il registro di audit della ricevuta",
   "status": {
     "draft": "BOZZA",
     "issued": "EMESSA",

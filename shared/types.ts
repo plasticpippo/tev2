@@ -246,6 +246,203 @@ export interface ConsumptionReportTotal {
 }
 
 export interface ConsumptionReportResponse {
-    details: ConsumptionReportItem[];
-    totals: ConsumptionReportTotal[];
+  details: ConsumptionReportItem[];
+  totals: ConsumptionReportTotal[];
+}
+
+// ============================================================================
+// RECEIPT INVOICING TYPES
+// ============================================================================
+
+export type ReceiptStatus = 'draft' | 'issued' | 'voided' | 'emailed';
+export type EmailStatus = 'pending' | 'sent' | 'failed' | 'bounced';
+
+export interface Customer {
+  id: number;
+  name: string;
+  email: string | null;
+  phone: string | null;
+  vatNumber: string | null;
+  address: string | null;
+  city: string | null;
+  postalCode: string | null;
+  country: string | null;
+  notes: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+  createdBy: {
+    id: number;
+    name: string;
+  };
+}
+
+export interface CreateCustomerInput {
+  name: string;
+  email?: string | null;
+  phone?: string | null;
+  vatNumber?: string | null;
+  address?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  notes?: string | null;
+}
+
+export interface UpdateCustomerInput {
+  name?: string;
+  email?: string | null;
+  phone?: string | null;
+  vatNumber?: string | null;
+  address?: string | null;
+  city?: string | null;
+  postalCode?: string | null;
+  country?: string | null;
+  notes?: string | null;
+  isActive?: boolean;
+}
+
+export interface TaxBreakdownItem {
+  rateName: string;
+  ratePercent: number;
+  taxableAmount: number;
+  taxAmount: number;
+}
+
+export interface ReceiptItemSnapshot {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
+  effectiveTaxRate: number;
+}
+
+export interface BusinessSnapshot {
+  name: string | null;
+  address: string | null;
+  city: string | null;
+  postalCode: string | null;
+  country: string | null;
+  phone: string | null;
+  email: string | null;
+  vatNumber: string | null;
+}
+
+export interface CustomerSnapshot {
+  name: string;
+  email: string | null;
+  vatNumber: string | null;
+  address: string | null;
+  city: string | null;
+}
+
+export interface Receipt {
+  id: number;
+  receiptNumber: string;
+  transactionId: number;
+  customerId: number | null;
+  status: ReceiptStatus;
+  businessSnapshot: BusinessSnapshot;
+  customerSnapshot: CustomerSnapshot | null;
+  itemsSnapshot: ReceiptItemSnapshot[];
+  subtotal: number;
+  tax: number;
+  taxBreakdown: TaxBreakdownItem[] | null;
+  discount: number;
+  discountReason: string | null;
+  tip: number;
+  total: number;
+  paymentMethod: string;
+  notes: string | null;
+  internalNotes: string | null;
+  pdfPath: string | null;
+  pdfGeneratedAt: string | null;
+  issuedAt: string | null;
+  issuedBy: {
+    id: number;
+    name: string;
+  };
+  emailedAt: string | null;
+  emailRecipient: string | null;
+  emailStatus: EmailStatus | null;
+  voidedAt: string | null;
+  voidReason: string | null;
+  voidedBy: {
+    id: number;
+    name: string;
+  } | null;
+  createdAt: string;
+  updatedAt: string;
+  customer: Customer | null;
+  transaction: {
+    id: number;
+    createdAt: string;
+    tillName: string;
+  };
+  canIssue: boolean;
+  canVoid: boolean;
+  canEmail: boolean;
+  canEdit: boolean;
+}
+
+export interface CreateReceiptInput {
+  transactionId: number;
+  customerId?: number | null;
+  notes?: string;
+  internalNotes?: string;
+}
+
+export interface UpdateReceiptInput {
+  customerId?: number | null;
+  notes?: string | null;
+  internalNotes?: string | null;
+}
+
+export interface IssueReceiptInput {
+  generatePdf?: boolean;
+  language?: string;
+}
+
+export interface VoidReceiptInput {
+  reason: string;
+}
+
+export interface SendReceiptEmailInput {
+  email: string;
+  includePdf?: boolean;
+  message?: string;
+}
+
+export interface ReceiptListFilters {
+  page?: number;
+  pageSize?: number;
+  status?: ReceiptStatus;
+  customerId?: number;
+  startDate?: string;
+  endDate?: string;
+  receiptNumber?: string;
+  search?: string;
+  sortBy?: 'createdAt' | 'issuedAt' | 'receiptNumber' | 'total';
+  sortOrder?: 'asc' | 'desc';
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  pagination: {
+    page: number;
+    pageSize: number;
+    totalItems: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export interface CustomerListFilters {
+  page?: number;
+  pageSize?: number;
+  search?: string;
+  isActive?: boolean;
+  sortBy?: 'name' | 'createdAt';
+  sortOrder?: 'asc' | 'desc';
 }

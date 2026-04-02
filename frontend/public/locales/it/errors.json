@@ -97,6 +97,25 @@
       "deleteFailed": "Impossibile eliminare l'aliquota",
       "deleteDefault": "Impossibile eliminare l'aliquota predefinita",
       "fetchFailed": "Impossibile caricare le aliquote"
+    },
+    "customers": {
+      "notFound": "Cliente non trovato",
+      "createFailed": "Impossibile creare il cliente",
+      "updateFailed": "Impossibile aggiornare il cliente",
+      "deleteFailed": "Impossibile eliminare il cliente",
+      "fetchFailed": "Impossibile caricare i clienti",
+      "duplicateEmail": "Esiste gia un cliente con questa email"
+    },
+    "receipts": {
+      "notFound": "Scontrino non trovato",
+      "createFailed": "Impossibile creare lo scontrino",
+      "updateFailed": "Impossibile aggiornare lo scontrino",
+      "issueFailed": "Impossibile emettere lo scontrino",
+      "voidFailed": "Impossibile annullare lo scontrino",
+      "emailFailed": "Impossibile inviare email scontrino",
+      "pdfFailed": "Impossibile generare il PDF",
+      "fetchFailed": "Impossibile caricare lo scontrino",
+      "transactionHasReceipt": "Esiste gia uno scontrino per questa transazione"
     }
   },
   "boundary": {

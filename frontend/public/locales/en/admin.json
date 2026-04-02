@@ -751,5 +751,88 @@
     }
   },
   "taxRate": "Tax Rate",
-  "taxRateDefault": "None (use default)"
+  "taxRateDefault": "None (use default)",
+  "receipts": {
+    "generate": {
+      "title": "Generate Receipt",
+      "button": "Generate Receipt",
+      "preview": "Preview Receipt"
+    },
+    "preview": {
+      "title": "Receipt Preview",
+      "receipt": "Receipt",
+      "item": "Item",
+      "qty": "Qty",
+      "price": "Price",
+      "total": "Total",
+      "issueNote": "Review the receipt preview above. Click 'Issue Receipt' to generate the final receipt."
+    },
+    "success": {
+      "title": "Receipt Issued",
+      "issued": "Receipt successfully issued!",
+      "transactionId": "Transaction ID",
+      "downloadPdf": "Download PDF"
+    },
+    "errors": {
+      "failedToCreate": "Failed to create receipt draft. Please try again.",
+      "failedToIssue": "Failed to issue receipt. Please try again.",
+      "failedToDownload": "Failed to download PDF. Please try again."
+    },
+    "transactionSummary": "Transaction Summary",
+    "paymentMethod": "Payment Method",
+    "transactionDate": "Transaction Date",
+    "vatNumber": "VAT Number",
+    "notes": {
+      "title": "Receipt Notes",
+      "placeholder": "Optional notes to appear on the receipt..."
+    },
+    "close": "Close",
+    "generating": "Generating...",
+    "issuing": "Issuing...",
+    "issue": "Issue Receipt",
+    "customer": {
+      "title": "Customer",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "vatNumber": "VAT Number",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "notes": "Notes",
+      "namePlaceholder": "Customer name",
+      "emailPlaceholder": "customer@example.com",
+      "phonePlaceholder": "+39 02 1234567",
+      "vatNumberPlaceholder": "IT12345678901",
+      "addressPlaceholder": "Street address",
+      "cityPlaceholder": "City",
+      "postalCodePlaceholder": "Postal code",
+      "countryPlaceholder": "IT",
+      "notesPlaceholder": "Additional notes...",
+      "selectOrCreate": "Select or Create Customer",
+      "searchPlaceholder": "Search Customers",
+      "searchHint": "Type at least 2 characters to search",
+      "searchMinChars": "Enter at least 2 characters to search",
+      "searchResults": "Search Results",
+      "noResults": "No customers found",
+      "createInstead": "Create a new customer instead",
+      "createNew": "Create New Customer",
+      "selectCustomer": "Select Customer",
+      "change": "Change",
+      "skip": "Skip (No Customer)",
+      "confirm": "Confirm Selection",
+      "validation": {
+        "nameRequired": "Customer name is required",
+        "nameMaxLength": "Name must be 200 characters or less",
+        "emailInvalid": "Please enter a valid email address",
+        "vatNumberMaxLength": "VAT number must be 50 characters or less",
+        "phoneMaxLength": "Phone must be 50 characters or less",
+        "addressMaxLength": "Address must be 500 characters or less",
+        "cityMaxLength": "City must be 100 characters or less",
+        "postalCodeMaxLength": "Postal code must be 20 characters or less",
+        "notesMaxLength": "Notes must be 1000 characters or less"
+      }
+    }
+  }
 }

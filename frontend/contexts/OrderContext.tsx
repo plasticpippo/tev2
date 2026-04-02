@@ -55,18 +55,20 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         setIsLoadingOrderSession(true);
         isInitialLoadRef.current = true;
         
-        try {
-          const session = await api.getOrderSession();
-          if (session && session.items) {
-            // Store the session ID to track which session we loaded
-            lastLoadedSessionIdRef.current = session.id || null;
-            const sanitizedItems = session.items.map(item => ({
-              ...item,
-              price: Number(item.price),
-              quantity: Number(item.quantity),
-              effectiveTaxRate: Number(item.effectiveTaxRate) || 0,
-            }));
-            setOrderItems(sanitizedItems);
+      try {
+        const session = await api.getOrderSession();
+        if (session && session.items) {
+          lastLoadedSessionIdRef.current = session.id || null;
+          const sanitizedItems = session.items.map(item => ({
+            ...item,
+            price: Number(item.price),
+            quantity: Number(item.quantity),
+            effectiveTaxRate: Number(item.effectiveTaxRate) || 0,
+            taxRateId: item.taxRateId ?? null,
+            taxRateName: item.taxRateName || 'Standard',
+            taxRatePercent: item.taxRatePercent || Math.round((Number(item.effectiveTaxRate) || 0) * 100),
+          }));
+          setOrderItems(sanitizedItems);
           } else {
             // No session found, clear the ref
             lastLoadedSessionIdRef.current = null;
@@ -137,6 +139,8 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
     if (existingItem) {
       handleUpdateQuantity(existingItem.id, existingItem.quantity + 1);
     } else {
+      const effectiveRate = resolveEffectiveTaxRate(variant);
+      const taxRate = variant.taxRate || appData.settings?.tax?.defaultTaxRate;
       const newOrderItem: OrderItem = {
         id: uuidv4(),
         variantId: variant.id,
@@ -144,7 +148,10 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
         name: `${product.name} - ${variant.name}`,
         price: Number(variant.price),
         quantity: 1,
-        effectiveTaxRate: resolveEffectiveTaxRate(variant),
+        effectiveTaxRate: effectiveRate,
+        taxRateId: taxRate?.id ?? null,
+        taxRateName: taxRate?.name ?? 'Standard',
+        taxRatePercent: Math.round(effectiveRate * 100),
       };
       // Ensure the name is not empty or undefined
       if (!newOrderItem.name || newOrderItem.name.trim() === '') {

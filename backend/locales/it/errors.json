@@ -415,6 +415,14 @@
     "pdfDownloadFailed": "Impossibile scaricare il PDF",
     "pdfRegenerateFailed": "Impossibile rigenerare il PDF",
     "pdfRegenerated": "PDF rigenerato con successo",
-    "cannotGeneratePdfForVoided": "Impossibile generare il PDF per le ricevute annullate"
+    "cannotGeneratePdfForVoided": "Impossibile generare il PDF per le ricevute annullate",
+    "emailRequired": "L'indirizzo email e obbligatorio",
+    "invalidEmail": "Formato email non valido",
+    "cannotEmailDraft": "Impossibile inviare una ricevuta in bozza. Emettere prima la ricevuta.",
+    "cannotEmailVoided": "Impossibile inviare una ricevuta annullata",
+    "emailServiceDisabled": "Il servizio email non e configurato. Contattare l'amministratore.",
+    "emailFailed": "Impossibile inviare l'email della ricevuta",
+    "emailQueued": "L'email della ricevuta e stata accodata per l'invio",
+    "messageTooLong": "Il messaggio deve essere di massimo 1000 caratteri"
   }
 }

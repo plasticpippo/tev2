@@ -751,5 +751,88 @@
     }
   },
   "taxRate": "Aliquota IVA",
-  "taxRateDefault": "Nessuna (usa predefinita)"
+  "taxRateDefault": "Nessuna (usa predefinita)",
+  "receipts": {
+    "generate": {
+      "title": "Genera Scontrino",
+      "button": "Genera Scontrino",
+      "preview": "Anteprima Scontrino"
+    },
+    "preview": {
+      "title": "Anteprima Scontrino",
+      "receipt": "Scontrino",
+      "item": "Articolo",
+      "qty": "Qta",
+      "price": "Prezzo",
+      "total": "Totale",
+      "issueNote": "Controlla l'anteprima dello scontrino sopra. Clicca 'Emetti Scontrino' per generare lo scontrino finale."
+    },
+    "success": {
+      "title": "Scontrino Emesso",
+      "issued": "Scontrino emesso con successo!",
+      "transactionId": "ID Transazione",
+      "downloadPdf": "Scarica PDF"
+    },
+    "errors": {
+      "failedToCreate": "Impossibile creare la bozza dello scontrino. Riprova.",
+      "failedToIssue": "Impossibile emettere lo scontrino. Riprova.",
+      "failedToDownload": "Impossibile scaricare il PDF. Riprova."
+    },
+    "transactionSummary": "Riepilogo Transazione",
+    "paymentMethod": "Metodo di Pagamento",
+    "transactionDate": "Data Transazione",
+    "vatNumber": "Partita IVA",
+    "notes": {
+      "title": "Note Scontrino",
+      "placeholder": "Note opzionali da mostrare sullo scontrino..."
+    },
+    "close": "Chiudi",
+    "generating": "Generazione...",
+    "issuing": "Emissione...",
+    "issue": "Emetti Scontrino",
+    "customer": {
+      "title": "Cliente",
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefono",
+      "vatNumber": "Partita IVA",
+      "address": "Indirizzo",
+      "city": "Citta",
+      "postalCode": "CAP",
+      "country": "Paese",
+      "notes": "Note",
+      "namePlaceholder": "Nome cliente",
+      "emailPlaceholder": "cliente@esempio.com",
+      "phonePlaceholder": "+39 02 1234567",
+      "vatNumberPlaceholder": "IT12345678901",
+      "addressPlaceholder": "Indirizzo",
+      "cityPlaceholder": "Citta",
+      "postalCodePlaceholder": "CAP",
+      "countryPlaceholder": "IT",
+      "notesPlaceholder": "Note aggiuntive...",
+      "selectOrCreate": "Seleziona o Crea Cliente",
+      "searchPlaceholder": "Cerca Clienti",
+      "searchHint": "Digita almeno 2 caratteri per cercare",
+      "searchMinChars": "Inserisci almeno 2 caratteri per cercare",
+      "searchResults": "Risultati Ricerca",
+      "noResults": "Nessun cliente trovato",
+      "createInstead": "Crea invece un nuovo cliente",
+      "createNew": "Crea Nuovo Cliente",
+      "selectCustomer": "Seleziona Cliente",
+      "change": "Cambia",
+      "skip": "Salta (Nessun Cliente)",
+      "confirm": "Conferma Selezione",
+      "validation": {
+        "nameRequired": "Il nome cliente e obbligatorio",
+        "nameMaxLength": "Il nome deve essere di massimo 200 caratteri",
+        "emailInvalid": "Inserisci un indirizzo email valido",
+        "vatNumberMaxLength": "La partita IVA deve essere di massimo 50 caratteri",
+        "phoneMaxLength": "Il telefono deve essere di massimo 50 caratteri",
+        "addressMaxLength": "L'indirizzo deve essere di massimo 500 caratteri",
+        "cityMaxLength": "La citta deve essere di massimo 100 caratteri",
+        "postalCodeMaxLength": "Il CAP deve essere di massimo 20 caratteri",
+        "notesMaxLength": "Le note devono essere di massimo 1000 caratteri"
+      }
+    }
+  }
 }

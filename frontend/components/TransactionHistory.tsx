@@ -1,8 +1,9 @@
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Transaction, User, Till, Settings } from '../../shared/types';
+import type { Transaction, User, Till, Settings, Receipt } from '../../shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
+import { ReceiptGenerationModal } from './ReceiptGenerationModal';
 
 interface TransactionHistoryProps {
     transactions: Transaction[];
@@ -14,15 +15,19 @@ interface TransactionHistoryProps {
 type DateRangePreset = 'today' | 'yesterday' | '7days' | '30days' | 'custom';
 
 export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, users, tills, settings }) => {
-    const { t } = useTranslation('admin');
-    const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
-    const [dateRange, setDateRange] = useState<DateRangePreset>('30days');
-    const [customStart, setCustomStart] = useState('');
-    const [customEnd, setCustomEnd] = useState('');
-    const [customStartTime, setCustomStartTime] = useState('00:00');
-    const [customEndTime, setCustomEndTime] = useState('23:59');
-    const [selectedTillId, setSelectedTillId] = useState<'all' | number>('all');
-    const [selectedUserId, setSelectedUserId] = useState<'all' | number>('all');
+  const { t } = useTranslation('admin');
+  const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
+  const [dateRange, setDateRange] = useState<DateRangePreset>('30days');
+  const [customStart, setCustomStart] = useState('');
+  const [customEnd, setCustomEnd] = useState('');
+  const [customStartTime, setCustomStartTime] = useState('00:00');
+  const [customEndTime, setCustomEndTime] = useState('23:59');
+  const [selectedTillId, setSelectedTillId] = useState<'all' | number>('all');
+  const [selectedUserId, setSelectedUserId] = useState<'all' | number>('all');
+  
+  // Receipt generation state
+  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [transactionForReceipt, setTransactionForReceipt] = useState<Transaction | null>(null);
 
     const filteredTransactions = useMemo(() => {
         let items = [...transactions];
@@ -81,9 +86,19 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
         return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
     }, [transactions, dateRange, customStart, customEnd, customStartTime, customEndTime, selectedTillId, selectedUserId, settings]);
     
-    const totalFilteredSales = useMemo(() => {
-        return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
-    }, [filteredTransactions]);
+  const totalFilteredSales = useMemo(() => {
+    return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
+  }, [filteredTransactions]);
+
+  const handleGenerateReceipt = (transaction: Transaction) => {
+    setTransactionForReceipt(transaction);
+    setShowReceiptModal(true);
+  };
+
+  const handleReceiptGenerated = (receipt: Receipt) => {
+    // Optionally refresh data or show success message
+    console.log('Receipt generated:', receipt.receiptNumber);
+  };
     
 const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
 <button
@@ -97,9 +112,10 @@ data-testid={`date-range-${preset}`}
 </button>
 );
     
-    return (
-        <div className="h-full flex flex-col">
-            <h2 className="text-2xl font-bold text-slate-300 mb-4 flex-shrink-0">{t('transactions.title')}</h2>
+return (
+    <>
+      <div className="h-full flex flex-col">
+        <h2 className="text-2xl font-bold text-slate-300 mb-4 flex-shrink-0">{t('transactions.title')}</h2>
             
             <div className="bg-slate-800 p-4 rounded-lg mb-4 flex-shrink-0 space-y-4">
                 {/* Row 1: Date Presets */}
@@ -256,30 +272,53 @@ aria-pressed={dateRange === 'custom'}
                                     </div>
                                 ))}
                             </div>
-                            <div className="border-t border-slate-700 pt-2 space-y-1 text-sm">
-                                <div className="flex justify-between"><span>{t('transactions.details.subtotal')}</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
-                                <div className="flex justify-between"><span>{t('transactions.details.tax')}</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>
-                                {selectedTransaction.discount > 0 && (
-                                    <div className="flex justify-between text-purple-400">
-                                        <span>{t('transactions.details.discount')}</span>
-                                        <span>-{formatCurrency(selectedTransaction.discount)}</span>
-                                    </div>
-                                )}
-                                {selectedTransaction.discountReason && (
-                                    <div className="flex justify-between text-xs text-slate-500 italic">
-                                        <span>{t('transactions.details.discountReason')}:</span>
-                                        <span>{selectedTransaction.discountReason}</span>
-                                    </div>
-                                )}
-                                <div className="flex justify-between"><span>{t('transactions.details.tip')}</span><span>{formatCurrency(selectedTransaction.tip)}</span></div>
-                                <div className="flex justify-between font-bold text-base mt-2"><span>{t('transactions.details.total')}</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
-                            </div>
-                        </div>
+            <div className="border-t border-slate-700 pt-2 space-y-1 text-sm">
+              <div className="flex justify-between"><span>{t('transactions.details.subtotal')}</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
+              <div className="flex justify-between"><span>{t('transactions.details.tax')}</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>
+              {selectedTransaction.discount > 0 && (
+                <div className="flex justify-between text-purple-400">
+                  <span>{t('transactions.details.discount')}</span>
+                  <span>-{formatCurrency(selectedTransaction.discount)}</span>
+                </div>
+              )}
+              {selectedTransaction.discountReason && (
+                <div className="flex justify-between text-xs text-slate-500 italic">
+                  <span>{t('transactions.details.discountReason')}:</span>
+                  <span>{selectedTransaction.discountReason}</span>
+                </div>
+              )}
+              <div className="flex justify-between"><span>{t('transactions.details.tip')}</span><span>{formatCurrency(selectedTransaction.tip)}</span></div>
+              <div className="flex justify-between font-bold text-base mt-2"><span>{t('transactions.details.total')}</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
+            </div>
+            
+            {/* Generate Receipt Button */}
+            <div className="mt-4 pt-4 border-t border-slate-700">
+              <button
+                onClick={() => handleGenerateReceipt(selectedTransaction)}
+                className="w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
+                aria-label={t('receipts.generate.title')}
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                {t('receipts.generate.button')}
+              </button>
+            </div>
+          </div>
                     ) : (
                         <p className="text-slate-500 text-center pt-16">{t('transactions.selectTransaction')}</p>
-                    )}
-                </div>
-            </div>
-        </div>
-    );
+)}
+</div>
+</div>
+</div>
+
+{/* Receipt Generation Modal */}
+<ReceiptGenerationModal
+  isOpen={showReceiptModal}
+  onClose={() => setShowReceiptModal(false)}
+  transaction={transactionForReceipt}
+  onReceiptGenerated={handleReceiptGenerated}
+/>
+</>
+);
 };

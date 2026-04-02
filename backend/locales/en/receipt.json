@@ -32,6 +32,7 @@
   "taxableAmount": "Taxable Amount",
   "taxAmount": "Tax Amount",
   "totalTax": "Total Tax",
+  "auditFetchFailed": "Failed to fetch receipt audit logs",
   "status": {
     "draft": "DRAFT",
     "issued": "ISSUED",

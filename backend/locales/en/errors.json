@@ -415,6 +415,14 @@
     "pdfDownloadFailed": "Failed to download PDF",
     "pdfRegenerateFailed": "Failed to regenerate PDF",
     "pdfRegenerated": "PDF regenerated successfully",
-    "cannotGeneratePdfForVoided": "Cannot generate PDF for voided receipts"
+    "cannotGeneratePdfForVoided": "Cannot generate PDF for voided receipts",
+    "emailRequired": "Email address is required",
+    "invalidEmail": "Invalid email format",
+    "cannotEmailDraft": "Cannot email a draft receipt. Please issue the receipt first.",
+    "cannotEmailVoided": "Cannot email a voided receipt",
+    "emailServiceDisabled": "Email service is not configured. Please contact the administrator.",
+    "emailFailed": "Failed to send receipt email",
+    "emailQueued": "Receipt email has been queued for delivery",
+    "messageTooLong": "Message must be 1000 characters or less"
   }
 }

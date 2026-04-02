@@ -1,0 +1,74 @@
+- generic [ref=e2]:
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - button "Enter fullscreen" [ref=e9] [cursor=pointer]:
+        - img [ref=e10]
+      - button "Admin Panel" [ref=e12] [cursor=pointer]
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - heading "Products" [level=2] [ref=e19]
+            - generic [ref=e20]:
+              - button "Favourites" [ref=e21] [cursor=pointer]
+              - button "Shots" [ref=e22] [cursor=pointer]
+              - button "Beer" [ref=e23] [cursor=pointer]
+              - button "Cocktails" [ref=e24] [cursor=pointer]
+              - button "Soft Drinks" [ref=e25] [cursor=pointer]
+              - button "Vino" [ref=e26] [cursor=pointer]
+              - button "All" [ref=e27] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e49] [cursor=pointer]:
+              - paragraph [ref=e50]: Wuhrer
+              - generic [ref=e51]:
+                - paragraph [ref=e52]: 66cl
+                - paragraph [ref=e53]: €6,00
+              - generic [ref=e54]: FAV
+            - generic [ref=e91] [cursor=pointer]:
+              - paragraph [ref=e92]: Beck's
+              - generic [ref=e93]:
+                - paragraph [ref=e94]: 33cl
+                - paragraph [ref=e95]: €4,00
+              - generic [ref=e96]: FAV
+        - generic [ref=e98]:
+          - generic [ref=e99]:
+            - generic [ref=e100]:
+              - paragraph [ref=e101]: "Logged in as:"
+              - paragraph [ref=e102]:
+                - text: Admin User
+                - generic [ref=e103]: (Admin)
+            - button "Logout" [ref=e104] [cursor=pointer]
+          - generic [ref=e105]:
+            - heading "Current Order" [level=2] [ref=e106]
+            - generic [ref=e109]:
+              - generic [ref=e110]:
+                - generic [ref=e111]:
+                  - paragraph [ref=e112]: Shot Hierbas - Standard
+                  - paragraph [ref=e113]: €3,00
+                - generic [ref=e114]:
+                  - button "-" [ref=e115] [cursor=pointer]
+                  - generic [ref=e116]: "1"
+                  - button "+" [ref=e117] [cursor=pointer]
+              - generic [ref=e135]:
+                - generic [ref=e136]:
+                  - paragraph [ref=e137]: Beck's - 33cl
+                  - paragraph [ref=e138]: €4,00
+                - generic [ref=e139]:
+                  - button "-" [ref=e140] [cursor=pointer]
+                  - generic [ref=e141]: "1"
+                  - button "+" [ref=e142] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e119] [cursor=pointer]:
+            - generic [ref=e120]: EDIT
+            - generic [ref=e121]: Edit Layout
+          - generic [ref=e122]:
+            - generic [ref=e123]:
+              - generic [ref=e124]: Subtotal
+              - generic [ref=e125]: €7,00
+            - generic [ref=e126]:
+              - button "Manage Tabs" [ref=e127] [cursor=pointer]
+              - button "Clear" [ref=e128] [cursor=pointer]
+            - generic [ref=e129]:
+              - button "ASSIGN TABLE" [ref=e130] [cursor=pointer]
+              - button "Payment" [ref=e131] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e132] [cursor=pointer]:
+    - img [ref=e133]

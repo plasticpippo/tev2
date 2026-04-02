@@ -25,6 +25,9 @@ export interface OrderItem {
   price: number;
   quantity: number;
   effectiveTaxRate: number;
+  taxRateId?: number | null;
+  taxRateName: string;
+  taxRatePercent: number;
 }
 
 export interface ProductVariant {

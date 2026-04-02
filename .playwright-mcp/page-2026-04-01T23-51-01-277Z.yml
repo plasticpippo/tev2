@@ -1,0 +1,32 @@
+- generic [ref=e2]:
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - button "Enter fullscreen" [ref=e9] [cursor=pointer]:
+        - img [ref=e10]
+      - button "Admin Panel" [ref=e12] [cursor=pointer]
+    - main [ref=e13]:
+      - generic [ref=e14]:
+        - generic [ref=e17]:
+          - generic [ref=e18]:
+            - heading "Products" [level=2] [ref=e19]
+            - generic [ref=e20]:
+              - button "Favourites" [ref=e21] [cursor=pointer]
+              - button "All" [ref=e22] [cursor=pointer]
+          - generic [ref=e25]: No products in this category
+        - generic [ref=e27]:
+          - generic [ref=e28]:
+            - generic [ref=e29]:
+              - paragraph [ref=e30]: "Logged in as:"
+              - paragraph [ref=e31]:
+                - text: Admin User
+                - generic [ref=e32]: (Admin)
+            - button "Logout" [ref=e33] [cursor=pointer]
+          - generic [ref=e34]:
+            - heading "Current Order" [level=2] [ref=e35]
+            - generic [ref=e37]: Select products to add them here.
+          - button "EDIT Edit Layout" [ref=e39] [cursor=pointer]:
+            - generic [ref=e40]: EDIT
+            - generic [ref=e41]: Edit Layout
+          - button "View Open Tabs" [ref=e44] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e45] [cursor=pointer]:
+    - img [ref=e46]

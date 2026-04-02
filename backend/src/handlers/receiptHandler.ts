@@ -16,6 +16,13 @@ import {
   ReceiptPagination,
   toReceiptDTO,
 } from '../types/receipt';
+import {
+  logReceiptAudit,
+  extractAuditContext,
+  captureReceiptState,
+  getReceiptAuditLogs,
+  listAuditLogs,
+} from '../services/receiptAuditService';
 
 export const receiptsRouter = express.Router();
 
@@ -85,7 +92,7 @@ receiptsRouter.get('/number/:number', authenticateToken, async (req: Request, re
       return res.status(404).json({ error: i18n.t('receipts.notFound') });
     }
 
-    res.json(receipt);
+    res.json({ data: receipt });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching receipt by number', {
       correlationId: (req as any).correlationId,
@@ -103,7 +110,7 @@ receiptsRouter.get('/transaction/:transactionId', authenticateToken, async (req:
       return res.status(404).json({ error: i18n.t('receipts.notFound') });
     }
 
-    res.json(receipt);
+    res.json({ data: receipt });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching receipt by transaction', {
       correlationId: (req as any).correlationId,
@@ -121,7 +128,7 @@ receiptsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
       return res.status(404).json({ error: i18n.t('receipts.notFound') });
     }
 
-    res.json(receipt);
+    res.json({ data: receipt });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching receipt', {
       correlationId: (req as any).correlationId,
@@ -153,10 +160,16 @@ receiptsRouter.post('/', authenticateToken, async (req: Request, res: Response) 
 
     const receipt = await receiptService.createReceiptFromTransaction(transactionId, userId, input);
 
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(receipt.id, 'create', auditContext, {
+      newValues: captureReceiptState(receipt),
+    });
+
     logDataAccess('receipt', receipt.id, 'CREATE', userId, req.user?.username);
 
-    res.status(201).json(receipt);
-  } catch (error) {
+  res.status(201).json({ data: receipt });
+} catch (error) {
     logError(error instanceof Error ? error : 'Error creating receipt', {
       correlationId: (req as any).correlationId,
     });
@@ -189,12 +202,25 @@ receiptsRouter.post('/:id/issue', authenticateToken, async (req: Request, res: R
       notes: notes?.trim() || undefined,
     };
 
+    // Get old state for audit
+    const oldReceipt = await receiptService.getReceiptById(Number(id));
+    if (!oldReceipt) {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+
     const receipt = await receiptService.issueDraftReceipt(Number(id), userId, input);
 
-    logDataAccess('receipt', receipt.id, 'UPDATE', userId, req.user?.username);
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'issue', auditContext, {
+      oldValues: captureReceiptState(oldReceipt),
+      newValues: captureReceiptState(receipt),
+    });
 
-    res.json(receipt);
-  } catch (error) {
+  logDataAccess('receipt', receipt.id, 'UPDATE', userId, req.user?.username);
+
+  res.json({ data: receipt });
+} catch (error) {
     logError(error instanceof Error ? error : 'Error issuing receipt', {
       correlationId: (req as any).correlationId,
     });
@@ -230,12 +256,28 @@ receiptsRouter.post('/:id/void', authenticateToken, requireAdmin, async (req: Re
       reason: reason.trim(),
     };
 
+    // Get old state for audit
+    const oldReceipt = await receiptService.getReceiptById(Number(id));
+    if (!oldReceipt) {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+
     const receipt = await receiptService.voidReceipt(Number(id), userId, input);
 
-    logDataAccess('receipt', receipt.id, 'DELETE', userId, req.user?.username);
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'void', auditContext, {
+      oldValues: captureReceiptState(oldReceipt),
+      newValues: {
+        ...captureReceiptState(receipt),
+        voidReason: reason.trim(),
+      },
+    });
 
-    res.json(receipt);
-  } catch (error) {
+  logDataAccess('receipt', receipt.id, 'DELETE', userId, req.user?.username);
+
+  res.json({ data: receipt });
+} catch (error) {
     logError(error instanceof Error ? error : 'Error voiding receipt', {
       correlationId: (req as any).correlationId,
     });
@@ -269,12 +311,25 @@ receiptsRouter.put('/:id', authenticateToken, async (req: Request, res: Response
       ...(internalNotes !== undefined && { internalNotes: internalNotes?.trim() || null }),
     };
 
+    // Get old state for audit
+    const oldReceipt = await receiptService.getReceiptById(Number(id));
+    if (!oldReceipt) {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+
     const receipt = await receiptService.updateDraftReceipt(Number(id), input);
 
-    logDataAccess('receipt', receipt.id, 'UPDATE', userId, req.user?.username);
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'update', auditContext, {
+      oldValues: captureReceiptState(oldReceipt),
+      newValues: captureReceiptState(receipt),
+    });
 
-    res.json(receipt);
-  } catch (error) {
+  logDataAccess('receipt', receipt.id, 'UPDATE', userId, req.user?.username);
+
+  res.json({ data: receipt });
+} catch (error) {
     logError(error instanceof Error ? error : 'Error updating receipt', {
       correlationId: (req as any).correlationId,
     });
@@ -379,6 +434,8 @@ receiptsRouter.post('/:id/regenerate-pdf', authenticateToken, async (req: Reques
       return res.status(400).json({ error: i18n.t('receipts.cannotGeneratePdfForVoided') });
     }
 
+    const oldPdfPath = receipt.pdfPath;
+
     // Delete old PDF if exists
     if (receipt.pdfPath) {
       try {
@@ -396,7 +453,7 @@ receiptsRouter.post('/:id/regenerate-pdf', authenticateToken, async (req: Reques
 
     // Import the template service and prepare data
     const { renderReceiptPDF, prepareReceiptTemplateData } = await import('../services/receiptTemplateService');
-    
+
     const templateData = prepareReceiptTemplateData(fullReceipt);
     const pdfResult = await renderReceiptPDF(templateData);
 
@@ -406,6 +463,13 @@ receiptsRouter.post('/:id/regenerate-pdf', authenticateToken, async (req: Reques
 
     // Update receipt with new PDF path
     const updatedReceipt = await receiptService.updateReceiptPdfPath(Number(id), pdfResult.filename, new Date());
+
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'regenerate_pdf', auditContext, {
+      oldValues: { pdfPath: oldPdfPath },
+      newValues: { pdfPath: pdfResult.filename },
+    });
 
     logDataAccess('receipt', Number(id), 'UPDATE', req.user?.id, req.user?.username);
 
@@ -419,6 +483,154 @@ receiptsRouter.post('/:id/regenerate-pdf', authenticateToken, async (req: Reques
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('receipts.pdfRegenerateFailed') });
+  }
+});
+
+// POST /api/receipts/:id/email - Send receipt via email
+receiptsRouter.post('/:id/email', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+    }
+
+    const { email, includePdf = true, message } = req.body;
+
+    if (!email || typeof email !== 'string') {
+      return res.status(400).json({ error: i18n.t('receipts.emailRequired') });
+    }
+
+    if (message && typeof message === 'string' && message.length > 1000) {
+      return res.status(400).json({ error: i18n.t('receipts.messageTooLong') });
+    }
+
+    const input = {
+      email: email.trim(),
+      includePdf: includePdf === true,
+      message: message?.trim() || undefined,
+    };
+
+    const result = await receiptService.sendReceiptEmail(Number(id), input, userId);
+
+    // Audit logging
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'email', auditContext, {
+      newValues: {
+        recipientEmail: email.trim(),
+        includePdf: includePdf === true,
+        jobId: result.jobId,
+      },
+    });
+
+    logDataAccess('receipt', Number(id), 'EXPORT', userId, req.user?.username);
+
+    res.status(202).json({
+      message: i18n.t('receipts.emailQueued'),
+      job: result,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error sending receipt email', {
+      correlationId: (req as any).correlationId,
+    });
+
+    const errorMessage = error instanceof Error ? error.message : '';
+
+    if (errorMessage === 'Receipt not found') {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+    if (errorMessage === 'RECEIPT_NOT_ISSUED') {
+      return res.status(400).json({ error: i18n.t('receipts.cannotEmailDraft') });
+    }
+    if (errorMessage === 'RECEIPT_VOIDED') {
+      return res.status(400).json({ error: i18n.t('receipts.cannotEmailVoided') });
+    }
+    if (errorMessage === 'EMAIL_SERVICE_DISABLED') {
+      return res.status(400).json({ error: i18n.t('receipts.emailServiceDisabled') });
+    }
+    if (errorMessage === 'INVALID_EMAIL') {
+      return res.status(400).json({ error: i18n.t('receipts.invalidEmail') });
+    }
+
+    res.status(500).json({ error: i18n.t('receipts.emailFailed') });
+  }
+});
+
+// GET /api/receipts/:id/audit - Get audit logs for a specific receipt
+receiptsRouter.get('/:id/audit', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { page = '1', limit = '50' } = req.query;
+
+    // Verify receipt exists
+    const receipt = await receiptService.getReceiptById(Number(id));
+    if (!receipt) {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+
+    const result = await getReceiptAuditLogs(Number(id), {
+      page: parseInt(String(page), 10) || 1,
+      limit: parseInt(String(limit), 10) || 50,
+    });
+
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching receipt audit logs', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('receipts.auditFetchFailed') });
+  }
+});
+
+// GET /api/receipts/audit - Get audit logs across all receipts (Admin only)
+receiptsRouter.get('/audit', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const {
+      receiptId,
+      action,
+      userId,
+      dateFrom,
+      dateTo,
+      page = '1',
+      limit = '50',
+    } = req.query;
+
+    const filters: any = {};
+
+    if (receiptId) {
+      filters.receiptId = Number(receiptId);
+    }
+
+    if (action) {
+      // Support comma-separated actions
+      const actions = String(action).split(',').map((a) => a.trim() as any);
+      filters.action = actions.length === 1 ? actions[0] : actions;
+    }
+
+    if (userId) {
+      filters.userId = Number(userId);
+    }
+
+    if (dateFrom) {
+      filters.dateFrom = new Date(String(dateFrom));
+    }
+
+    if (dateTo) {
+      filters.dateTo = new Date(String(dateTo));
+    }
+
+    const result = await listAuditLogs(filters, {
+      page: parseInt(String(page), 10) || 1,
+      limit: Math.min(parseInt(String(limit), 10) || 50, 100), // Max 100
+    });
+
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching audit logs', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('receipts.auditFetchFailed') });
   }
 });
 
