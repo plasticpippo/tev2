@@ -758,15 +758,20 @@
       "button": "Genera Scontrino",
       "preview": "Anteprima Scontrino"
     },
-    "preview": {
-      "title": "Anteprima Scontrino",
-      "receipt": "Scontrino",
-      "item": "Articolo",
-      "qty": "Qta",
-      "price": "Prezzo",
-      "total": "Totale",
-      "issueNote": "Controlla l'anteprima dello scontrino sopra. Clicca 'Emetti Scontrino' per generare lo scontrino finale."
+    "view": {
+      "title": "Visualizza Scontrino",
+      "button": "Visualizza Scontrino"
     },
+"preview": {
+  "title": "Anteprima Scontrino",
+  "button": "Anteprima ed Emissione",
+  "receipt": "Scontrino",
+  "item": "Articolo",
+  "qty": "Qta",
+  "price": "Prezzo",
+  "total": "Totale",
+  "issueNote": "Controlla l'anteprima dello scontrino sopra. Clicca 'Emetti Scontrino' per generare lo scontrino finale."
+},
     "success": {
       "title": "Scontrino Emesso",
       "issued": "Scontrino emesso con successo!",

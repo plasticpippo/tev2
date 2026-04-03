@@ -8,6 +8,7 @@ import {
   updateReceipt,
   downloadReceiptPdf,
   createCustomer,
+  getReceipt,
 } from '../services/receiptService';
 import { CustomerSelectionModal } from './CustomerSelectionModal';
 
@@ -41,26 +42,57 @@ export const ReceiptGenerationModal: React.FC<ReceiptGenerationModalProps> = ({
   // Modal state
   const [showCustomerModal, setShowCustomerModal] = useState(false);
 
-  // Reset state when modal opens
-  useEffect(() => {
-    if (isOpen) {
-      setStep('details');
-      setDraftReceipt(null);
-      setSelectedCustomer(null);
-      setNotes('');
-      setIssuedReceipt(null);
-      setError(null);
-      setIsLoading(false);
-    }
-  }, [isOpen]);
-
-  const handleCreateDraft = async () => {
-    if (!transaction) return;
-
-    setIsLoading(true);
+// Reset state when modal opens
+useEffect(() => {
+  if (isOpen) {
+    setStep('details');
+    setDraftReceipt(null);
+    setSelectedCustomer(null);
+    setNotes('');
+    setIssuedReceipt(null);
     setError(null);
+    setIsLoading(false);
 
-    try {
+    // If transaction already has a draft receipt, fetch and load it
+    if (transaction?.receipt?.status === 'draft') {
+      setIsLoading(true);
+      getReceipt(transaction.receipt.id)
+        .then((fullReceipt) => {
+          setDraftReceipt(fullReceipt);
+          setStep('preview');
+          // Pre-populate notes if any
+          if (fullReceipt.notes) {
+            setNotes(fullReceipt.notes);
+          }
+        })
+        .catch((err) => {
+          setError(err instanceof Error ? err.message : 'Failed to load draft receipt');
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
+    }
+  }
+}, [isOpen, transaction]);
+
+const handleCreateDraft = async () => {
+  if (!transaction) return;
+
+  setIsLoading(true);
+  setError(null);
+
+  try {
+    // Check if there's already an existing draft receipt
+    if (transaction.receipt?.status === 'draft') {
+      // Update existing draft instead of creating new one
+      const receipt = await updateReceipt(transaction.receipt.id, {
+        customerId: selectedCustomer?.id || null,
+        notes: notes || null,
+      });
+      setDraftReceipt(receipt);
+      setStep('preview');
+    } else {
+      // Create new draft receipt
       const receipt = await createReceipt({
         transactionId: transaction.id,
         customerId: selectedCustomer?.id || undefined,
@@ -68,12 +100,13 @@ export const ReceiptGenerationModal: React.FC<ReceiptGenerationModalProps> = ({
       });
       setDraftReceipt(receipt);
       setStep('preview');
-    } catch (err) {
-      setError(err instanceof Error ? err.message : t('receipts.errors.failedToCreate'));
-    } finally {
-      setIsLoading(false);
     }
-  };
+  } catch (err) {
+    setError(err instanceof Error ? err.message : t('receipts.errors.failedToCreate'));
+  } finally {
+    setIsLoading(false);
+  }
+};
 
   const handleIssueReceipt = async () => {
     if (!draftReceipt) return;

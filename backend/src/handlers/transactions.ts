@@ -469,19 +469,38 @@ transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res
 transactionsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
     const transactions = await prisma.transaction.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        receipts: {
+          select: {
+            id: true,
+            receiptNumber: true,
+            status: true,
+            issuedAt: true
+          }
+        }
+      }
     });
     // Parse the items JSON string back to array and convert Decimal to number
-    const transactionsWithParsedItems = transactions.map((transaction: PrismaTransaction) => ({
-      ...transaction,
-      subtotal: decimalToNumber(transaction.subtotal),
-      tax: decimalToNumber(transaction.tax),
-      tip: decimalToNumber(transaction.tip),
-      total: decimalToNumber(transaction.total),
-      discount: decimalToNumber(transaction.discount),
-      items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
-      createdAt: transaction.createdAt.toISOString() // Ensure createdAt is in string format
-    }));
+    const transactionsWithParsedItems = transactions.map((transaction: PrismaTransaction & { receipts?: { id: number; receiptNumber: string; status: string; issuedAt: Date | null }[] }) => {
+      const receipt = transaction.receipts && transaction.receipts.length > 0 ? transaction.receipts[0] : null;
+      return {
+        ...transaction,
+        subtotal: decimalToNumber(transaction.subtotal),
+        tax: decimalToNumber(transaction.tax),
+        tip: decimalToNumber(transaction.tip),
+        total: decimalToNumber(transaction.total),
+        discount: decimalToNumber(transaction.discount),
+        items: safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }),
+        createdAt: transaction.createdAt.toISOString(),
+        receipt: receipt ? {
+          id: receipt.id,
+          receiptNumber: receipt.receiptNumber,
+          status: receipt.status,
+          issuedAt: receipt.issuedAt?.toISOString() || null
+        } : null
+      };
+    });
     res.json(transactionsWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : i18n.t('transactions.log.fetchError'), {

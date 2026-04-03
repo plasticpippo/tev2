@@ -4,6 +4,9 @@ import type { Transaction, User, Till, Settings, Receipt } from '../../shared/ty
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
 import { ReceiptGenerationModal } from './ReceiptGenerationModal';
+import { getAuthHeaders } from '../services/apiBase';
+
+const API_BASE = import.meta.env.VITE_API_BASE || '';
 
 interface TransactionHistoryProps {
     transactions: Transaction[];
@@ -98,6 +101,32 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
   const handleReceiptGenerated = (receipt: Receipt) => {
     // Optionally refresh data or show success message
     console.log('Receipt generated:', receipt.receiptNumber);
+  };
+
+  const handleViewReceipt = async (transaction: Transaction) => {
+    if (!transaction.receipt) return;
+    try {
+      const headers = getAuthHeaders();
+      const response = await fetch(`${API_BASE}/api/receipts/${transaction.receipt.id}/pdf`, {
+        method: 'GET',
+        headers: headers,
+        credentials: 'include'
+      });
+      if (response.ok) {
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        window.open(url, '_blank');
+      } else if (response.status === 401) {
+        // Session expired - redirect to login
+        console.error('Session expired. Please log in again.');
+        window.location.href = '/login';
+      } else {
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('Failed to view receipt:', errorData.error);
+      }
+    } catch (error) {
+      console.error('Failed to view receipt:', error);
+    }
   };
     
 const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
@@ -244,12 +273,19 @@ aria-pressed={dateRange === 'custom'}
                                         <span className="text-green-400">{t('transactions.details.table', { name: tx.tableName })}</span>
                                     </div>
                                 )}
-                                {tx.status === 'complimentary' && (
-                                    <div className="flex justify-between items-center text-xs mt-1">
-                                        <span className="text-purple-400">{t('transactions.details.complimentary')}</span>
-                                    </div>
-                                )}
-                            </button>
+                {tx.status === 'complimentary' && (
+                  <div className="flex justify-between items-center text-xs mt-1">
+                    <span className="text-purple-400">{t('transactions.details.complimentary')}</span>
+                  </div>
+                )}
+                {tx.receipt && (
+                  <div className="flex justify-between items-center text-xs mt-1">
+                    <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">
+                      Receipt #{tx.receipt.receiptNumber}
+                    </span>
+                  </div>
+                )}
+              </button>
                           </div>
                         ))
                     )}
@@ -291,19 +327,48 @@ aria-pressed={dateRange === 'custom'}
               <div className="flex justify-between font-bold text-base mt-2"><span>{t('transactions.details.total')}</span><span>{formatCurrency(selectedTransaction.total)}</span></div>
             </div>
             
-            {/* Generate Receipt Button */}
-            <div className="mt-4 pt-4 border-t border-slate-700">
-              <button
-                onClick={() => handleGenerateReceipt(selectedTransaction)}
-                className="w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
-                aria-label={t('receipts.generate.title')}
-              >
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                {t('receipts.generate.button')}
-              </button>
-            </div>
+{/* Generate/View Receipt Button */}
+<div className="mt-4 pt-4 border-t border-slate-700">
+{selectedTransaction.receipt ? (
+  selectedTransaction.receipt.status === 'draft' ? (
+    // Draft receipt - open preview modal to issue
+    <button
+      onClick={() => handleGenerateReceipt(selectedTransaction)}
+      className="w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
+      aria-label={t('receipts.preview.button')}
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      {t('receipts.preview.button')}
+    </button>
+  ) : (
+    // Issued receipt - view PDF
+    <button
+      onClick={() => handleViewReceipt(selectedTransaction)}
+      className="w-full bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
+      aria-label={t('receipts.view.title')}
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+      </svg>
+      {t('receipts.view.button')}
+    </button>
+  )
+) : (
+  <button
+    onClick={() => handleGenerateReceipt(selectedTransaction)}
+    className="w-full bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
+    aria-label={t('receipts.generate.title')}
+  >
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+    {t('receipts.generate.button')}
+  </button>
+)}
+</div>
           </div>
                     ) : (
                         <p className="text-slate-500 text-center pt-16">{t('transactions.selectTransaction')}</p>

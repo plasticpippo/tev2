@@ -758,15 +758,20 @@
       "button": "Generate Receipt",
       "preview": "Preview Receipt"
     },
-    "preview": {
-      "title": "Receipt Preview",
-      "receipt": "Receipt",
-      "item": "Item",
-      "qty": "Qty",
-      "price": "Price",
-      "total": "Total",
-      "issueNote": "Review the receipt preview above. Click 'Issue Receipt' to generate the final receipt."
+    "view": {
+      "title": "View Receipt",
+      "button": "View Receipt"
     },
+"preview": {
+  "title": "Receipt Preview",
+  "button": "Preview & Issue",
+  "receipt": "Receipt",
+  "item": "Item",
+  "qty": "Qty",
+  "price": "Price",
+  "total": "Total",
+  "issueNote": "Review the receipt preview above. Click 'Issue Receipt' to generate the final receipt."
+},
     "success": {
       "title": "Receipt Issued",
       "issued": "Receipt successfully issued!",

@@ -68,6 +68,13 @@ export interface User {
   role: 'Admin' | 'Cashier';
 }
 
+export interface TransactionReceiptInfo {
+  id: number;
+  receiptNumber: string;
+  status: string;
+  issuedAt: string | null;
+}
+
 export interface Transaction {
   id: number;
   items: OrderItem[];
@@ -75,7 +82,7 @@ export interface Transaction {
   tax: number;
   tip: number;
   total: number;
- paymentMethod: string;
+  paymentMethod: string;
   userId: number;
   userName: string;
   tillId: number;
@@ -86,6 +93,7 @@ export interface Transaction {
   discountReason?: string;
   status: 'completed' | 'complimentary';
   createdAt: string;
+  receipt?: TransactionReceiptInfo | null;
 }
 
 export interface TaxSettings {

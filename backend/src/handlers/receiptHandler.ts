@@ -356,25 +356,46 @@ receiptsRouter.get('/:id/pdf', authenticateToken, async (req: Request, res: Resp
       return res.status(404).json({ error: i18n.t('receipts.notFound') });
     }
 
-    if (!receipt.pdfPath) {
-      return res.status(404).json({ error: i18n.t('receipts.pdfNotGenerated') });
+    // If receipt is voided, don't allow PDF access
+    if (receipt.status === 'voided') {
+      return res.status(400).json({ error: i18n.t('receipts.cannotViewVoidedPdf') });
     }
 
-    const filePath = await getPDFPath(receipt.pdfPath);
+    // If PDF already exists and file is accessible, serve it
+    if (receipt.pdfPath) {
+      const filePath = await getPDFPath(receipt.pdfPath);
 
-    // Check if file exists
-    try {
-      await fs.access(filePath);
-    } catch {
-      return res.status(404).json({ error: i18n.t('receipts.pdfFileNotFound') });
+      // Check if file exists
+      try {
+        await fs.access(filePath);
+        // Send the existing PDF file
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `inline; filename="${receipt.receiptNumber}.pdf"`);
+        const fileBuffer = await fs.readFile(filePath);
+        return res.send(fileBuffer);
+      } catch {
+        // File doesn't exist, fall through to regenerate
+      }
     }
 
-    // Send the PDF file
+    // Generate PDF on-the-fly for drafts or issued receipts without PDF
+    const { prepareReceiptTemplateData } = await import('../types/receipt-template');
+    const { renderReceiptPDF } = await import('../services/receiptTemplateService');
+    const { savePDFToStorage } = await import('../services/pdfService');
+
+    const templateData = prepareReceiptTemplateData(receipt);
+    const pdfResult = await renderReceiptPDF(templateData);
+
+    // Save the PDF for future use
+    await savePDFToStorage(pdfResult.buffer, pdfResult.filename);
+
+    // Update receipt with PDF path
+    await receiptService.updateReceiptPdfPath(Number(id), pdfResult.filename, new Date());
+
+    // Send the generated PDF
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', `inline; filename="${receipt.receiptNumber}.pdf"`);
-    
-    const fileBuffer = await fs.readFile(filePath);
-    res.send(fileBuffer);
+    return res.send(pdfResult.buffer);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error retrieving PDF', {
       correlationId: (req as any).correlationId,

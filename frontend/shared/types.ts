@@ -45,6 +45,13 @@ export interface User {
   role: 'Admin' | 'Cashier';
 }
 
+export interface TransactionReceiptInfo {
+  id: number;
+  receiptNumber: string;
+  status: string;
+  issuedAt: string | null;
+}
+
 export interface Transaction {
   id: number;
   items: OrderItem[];
@@ -63,6 +70,7 @@ export interface Transaction {
   tableId?: string;
   tableName?: string;
   createdAt: string;
+  receipt?: TransactionReceiptInfo | null;
 }
 
 export interface TaxSettings {
