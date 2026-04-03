@@ -1,0 +1,4 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: Loading POS...
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

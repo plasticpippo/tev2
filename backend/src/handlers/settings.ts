@@ -1,15 +1,28 @@
 import express, { Request, Response } from 'express';
+import rateLimit from 'express-rate-limit';
 import { prisma } from '../prisma';
 import type { Settings } from '../types';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import { logError, logInfo } from '../utils/logger';
+import { logError, logInfo, logWarn, logAuditEvent } from '../utils/logger';
 import i18n from '../i18n';
 import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayScheduler';
 import { Settings as PrismaSettings, TaxRate as PrismaTaxRate } from '@prisma/client';
 import { spawn } from 'child_process';
+import { testSmtpConnection, getEmailConfig } from '../services/emailService';
 
 export const settingsRouter = express.Router();
+
+const emailTestRateLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many email test requests. Please try again later.' },
+  keyGenerator: (req: any) => {
+    return req.user?.id?.toString() || req.ip;
+  },
+});
 
 // Type for settings with included defaultTaxRate relation
 type SettingsWithTaxRate = PrismaSettings & {
@@ -489,6 +502,92 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:settings.backupFailed') });
+  }
+});
+
+settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRateLimiter, async (req: Request, res: Response) => {
+  try {
+    const { recipient } = req.body;
+
+    const config = await getEmailConfig();
+
+    let testRecipient: string | undefined;
+    if (recipient) {
+      if (typeof recipient !== 'string') {
+        res.status(400).json({ error: 'Invalid recipient email format' });
+        return;
+      }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(recipient)) {
+        res.status(400).json({ error: 'Invalid recipient email address' });
+        return;
+      }
+      testRecipient = recipient;
+    } else if (config.fromAddress) {
+      testRecipient = config.fromAddress;
+    }
+
+    if (!config.enabled) {
+      res.status(400).json({
+        success: false,
+        message: 'Email service is disabled in settings',
+        error: 'EMAIL_DISABLED',
+      });
+      return;
+    }
+
+    logInfo('SMTP test requested', {
+      userId: (req as any).user?.id,
+      hasCustomRecipient: !!recipient,
+      correlationId: (req as any).correlationId,
+    });
+
+    const result = await testSmtpConnection(testRecipient);
+
+    logAuditEvent(
+      'CONFIG_CHANGED',
+      'SMTP configuration test',
+      {
+        success: result.success,
+        host: config.host,
+        port: config.port,
+        responseTime: result.details?.responseTime,
+      },
+      result.success ? 'low' : 'medium',
+      {
+        userId: (req as any).user?.id,
+        username: (req as any).user?.username,
+        correlationId: (req as any).correlationId,
+      }
+    );
+
+    if (result.success) {
+      res.json({
+        success: true,
+        message: result.message,
+        details: result.details,
+      });
+    } else {
+      const statusCode = result.error === 'SMTP_AUTH_FAILED' ? 401 :
+                         result.error === 'SMTP_CONNECTION_FAILED' ? 503 :
+                         result.error === 'SMTP_TIMEOUT' ? 504 :
+                         400;
+      res.status(statusCode).json({
+        success: false,
+        message: result.message,
+        error: result.error,
+      });
+    }
+  } catch (error) {
+    logError('SMTP test endpoint error', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({
+      success: false,
+      message: 'Failed to test SMTP connection',
+      error: 'INTERNAL_ERROR',
+    });
   }
 });
 

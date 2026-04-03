@@ -50,9 +50,9 @@ i18n
       caches: ['localStorage'],
     },
     
-    // Default namespace
-    ns: ['common'],
-    defaultNS: 'common',
+  // Namespaces
+  ns: ['common', 'admin'],
+  defaultNS: 'common',
     
     // Load all languages
     load: 'languageOnly',

@@ -6,6 +6,7 @@ import { LanguageSettings } from './LanguageSettings';
 import { TaxSettings } from './TaxSettings';
 import { BusinessDaySettings } from './BusinessDaySettings';
 import { BackupSettings } from './BackupSettings';
+import { EmailSettings } from './EmailSettings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -14,7 +15,7 @@ interface SettingsModalProps {
   onUpdate: (settings: Settings) => void;
 }
 
-type SettingsTab = 'language' | 'tax' | 'businessDay' | 'backup';
+type SettingsTab = 'language' | 'tax' | 'businessDay' | 'backup' | 'email';
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdate }) => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('language');
@@ -27,35 +28,42 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
         onUpdate({ ...settings, tax: taxSettings });
     };
 
-    const handleBusinessDayUpdate = (businessDaySettings: Settings['businessDay']) => {
-        onUpdate({ ...settings, businessDay: businessDaySettings });
-    }
+  const handleBusinessDayUpdate = (businessDaySettings: Settings['businessDay']) => {
+    onUpdate({ ...settings, businessDay: businessDaySettings });
+  }
+
+  const handleEmailUpdate = (emailSettings: Settings['email']) => {
+    onUpdate({ ...settings, email: emailSettings });
+  };
 
     if (!isOpen) {
         return null;
     }
 
-    const tabs: { id: SettingsTab; label: string }[] = [
-        { id: 'language', label: 'Language' },
-        { id: 'tax', label: 'Tax Settings' },
-        { id: 'businessDay', label: 'Business Day' },
-        { id: 'backup', label: 'Backup' },
-    ];
+  const tabs: { id: SettingsTab; label: string }[] = [
+    { id: 'language', label: 'Language' },
+    { id: 'tax', label: 'Tax Settings' },
+    { id: 'businessDay', label: 'Business Day' },
+    { id: 'backup', label: 'Backup' },
+    { id: 'email', label: 'Email' },
+  ];
 
-    const renderTabContent = () => {
-        switch (activeTab) {
-            case 'language':
-                return <LanguageSettings />;
-            case 'tax':
-                return <TaxSettings settings={settings.tax} onUpdate={handleTaxUpdate} />;
-            case 'businessDay':
-                return <BusinessDaySettings settings={settings.businessDay} onUpdate={handleBusinessDayUpdate} />;
-            case 'backup':
-                return <BackupSettings />;
-            default:
-                return null;
-        }
-    };
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'language':
+        return <LanguageSettings />;
+      case 'tax':
+        return <TaxSettings settings={settings.tax} onUpdate={handleTaxUpdate} />;
+      case 'businessDay':
+        return <BusinessDaySettings settings={settings.businessDay} onUpdate={handleBusinessDayUpdate} />;
+      case 'backup':
+        return <BackupSettings />;
+      case 'email':
+        return <EmailSettings settings={settings.email} onUpdate={handleEmailUpdate} />;
+      default:
+        return null;
+    }
+  };
 
     return (
         <div className="flex flex-col h-full">

@@ -1,0 +1,75 @@
+- generic [ref=e30]:
+  - generic [ref=e31]:
+    - banner [ref=e32]:
+      - generic [ref=e34]:
+        - heading "Admin Panel" [level=1] [ref=e35]
+        - paragraph [ref=e36]: Logged in as Admin User
+      - generic [ref=e37]:
+        - button "Switch to POS" [ref=e38] [cursor=pointer]
+        - button "Logout" [ref=e39] [cursor=pointer]
+    - generic [ref=e40]:
+      - navigation [ref=e41]:
+        - button "Collapse sidebar" [ref=e43] [cursor=pointer]:
+          - img [ref=e44]
+        - button "Dashboard" [ref=e246] [cursor=pointer]:
+          - img [ref=e248]
+          - generic [ref=e250]: Dashboard
+        - button "Analytics" [ref=e251] [cursor=pointer]:
+          - img [ref=e253]
+          - generic [ref=e255]: Analytics
+        - button "Transactions" [ref=e256] [cursor=pointer]:
+          - img [ref=e258]
+          - generic [ref=e260]: Transactions
+        - button "Receipts" [ref=e261] [cursor=pointer]:
+          - img [ref=e263]
+          - generic [ref=e265]: Receipts
+        - button "Activity Log" [ref=e266] [cursor=pointer]:
+          - img [ref=e268]
+          - generic [ref=e270]: Activity Log
+        - button "Daily Closing Summary" [ref=e271] [cursor=pointer]:
+          - img [ref=e273]
+          - generic [ref=e275]: Daily Closing Summary
+        - button "Products" [ref=e276] [cursor=pointer]:
+          - img [ref=e278]
+          - generic [ref=e280]: Products
+        - button "Categories" [ref=e281] [cursor=pointer]:
+          - img [ref=e283]
+          - generic [ref=e285]: Categories
+        - button "Stock Items" [ref=e286] [cursor=pointer]:
+          - img [ref=e288]
+          - generic [ref=e290]: Stock Items
+        - button "Inventory" [ref=e291] [cursor=pointer]:
+          - img [ref=e293]
+          - generic [ref=e295]: Inventory
+        - button "Users" [ref=e296] [cursor=pointer]:
+          - img [ref=e298]
+          - generic [ref=e300]: Users
+        - button "Tills" [ref=e301] [cursor=pointer]:
+          - img [ref=e303]
+          - generic [ref=e305]: Tills
+        - button "Tables & Layout" [ref=e306] [cursor=pointer]:
+          - img [ref=e308]
+          - generic [ref=e310]: Tables & Layout
+        - button "Itemised Consumption" [ref=e311] [cursor=pointer]:
+          - img [ref=e313]
+          - generic [ref=e315]: Itemised Consumption
+        - button "Settings" [ref=e316] [cursor=pointer]:
+          - img [ref=e318]
+          - generic [ref=e321]: Settings
+      - main [ref=e126]:
+        - generic [ref=e322]:
+          - generic [ref=e323]:
+            - button "Language" [ref=e324] [cursor=pointer]
+            - button "Tax Settings" [ref=e325] [cursor=pointer]
+            - button "Business Day" [ref=e326] [cursor=pointer]
+            - button "Backup" [ref=e327] [cursor=pointer]
+            - button "Email" [ref=e328] [cursor=pointer]
+          - generic [ref=e330]:
+            - heading "Language" [level=3] [ref=e331]
+            - generic [ref=e332]:
+              - paragraph [ref=e333]: Select your preferred language for the admin panel.
+              - button "common.languageSwitcher.changeLanguage" [ref=e336] [cursor=pointer]:
+                - generic [ref=e337]: EN
+                - img [ref=e338]
+  - button "Enable virtual keyboard" [ref=e17] [cursor=pointer]:
+    - img [ref=e18]

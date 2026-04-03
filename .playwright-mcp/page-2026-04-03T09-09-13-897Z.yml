@@ -1,0 +1,97 @@
+- generic [ref=e2]:
+  - generic [ref=e135]:
+    - banner [ref=e136]:
+      - generic [ref=e138]:
+        - heading "Admin Panel" [level=1] [ref=e139]
+        - paragraph [ref=e140]: Logged in as Admin User
+      - generic [ref=e141]:
+        - button "Switch to POS" [ref=e142] [cursor=pointer]
+        - button "Logout" [ref=e143] [cursor=pointer]
+    - generic [ref=e144]:
+      - navigation [ref=e145]:
+        - button "Collapse sidebar" [ref=e147] [cursor=pointer]:
+          - img [ref=e148]
+        - button "Dashboard" [ref=e350] [cursor=pointer]:
+          - img [ref=e352]
+          - generic [ref=e354]: Dashboard
+        - button "Analytics" [ref=e355] [cursor=pointer]:
+          - img [ref=e357]
+          - generic [ref=e359]: Analytics
+        - button "Transactions" [ref=e360] [cursor=pointer]:
+          - img [ref=e362]
+          - generic [ref=e364]: Transactions
+        - button "Receipts" [ref=e365] [cursor=pointer]:
+          - img [ref=e367]
+          - generic [ref=e369]: Receipts
+        - button "Activity Log" [ref=e370] [cursor=pointer]:
+          - img [ref=e372]
+          - generic [ref=e374]: Activity Log
+        - button "Daily Closing Summary" [ref=e375] [cursor=pointer]:
+          - img [ref=e377]
+          - generic [ref=e379]: Daily Closing Summary
+        - button "Products" [ref=e380] [cursor=pointer]:
+          - img [ref=e382]
+          - generic [ref=e384]: Products
+        - button "Categories" [ref=e385] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e389]: Categories
+        - button "Stock Items" [ref=e390] [cursor=pointer]:
+          - img [ref=e392]
+          - generic [ref=e394]: Stock Items
+        - button "Inventory" [ref=e395] [cursor=pointer]:
+          - img [ref=e397]
+          - generic [ref=e399]: Inventory
+        - button "Users" [ref=e400] [cursor=pointer]:
+          - img [ref=e402]
+          - generic [ref=e404]: Users
+        - button "Tills" [ref=e405] [cursor=pointer]:
+          - img [ref=e407]
+          - generic [ref=e409]: Tills
+        - button "Tables & Layout" [ref=e410] [cursor=pointer]:
+          - img [ref=e412]
+          - generic [ref=e414]: Tables & Layout
+        - button "Itemised Consumption" [ref=e415] [cursor=pointer]:
+          - img [ref=e417]
+          - generic [ref=e419]: Itemised Consumption
+        - button "Settings" [ref=e420] [cursor=pointer]:
+          - img [ref=e422]
+          - generic [ref=e425]: Settings
+      - main [ref=e230]:
+        - generic [ref=e426]:
+          - generic [ref=e427]:
+            - button "Language" [ref=e428] [cursor=pointer]
+            - button "Tax Settings" [ref=e429] [cursor=pointer]
+            - button "Business Day" [ref=e430] [cursor=pointer]
+            - button "Backup" [ref=e431] [cursor=pointer]
+            - button "Email" [active] [ref=e432] [cursor=pointer]
+          - generic [ref=e444]:
+            - heading "Email Settings" [level=3] [ref=e445]
+            - paragraph [ref=e446]: Configure SMTP settings for sending receipt invoices via email.
+            - generic [ref=e447]:
+              - generic [ref=e448]:
+                - checkbox "Enable Email" [ref=e449]
+                - generic [ref=e450]: Enable Email
+              - generic [ref=e451]:
+                - generic [ref=e452]: SMTP Host
+                - textbox "e.g., smtp.gmail.com" [ref=e453]: mail.poipp
+              - generic [ref=e454]:
+                - generic [ref=e455]: SMTP Port
+                - spinbutton [ref=e456]: "587"
+              - generic [ref=e457]:
+                - checkbox "Use TLS/Secure Connection" [ref=e458]
+                - generic [ref=e459]: Use TLS/Secure Connection
+              - generic [ref=e460]:
+                - generic [ref=e461]: SMTP Username
+                - textbox [ref=e462]: i
+              - generic [ref=e463]:
+                - generic [ref=e464]: SMTP Password
+                - textbox [ref=e465]
+              - generic [ref=e466]:
+                - generic [ref=e467]: From Email Address
+                - textbox [ref=e468]
+              - generic [ref=e469]:
+                - generic [ref=e470]: From Name
+                - textbox [ref=e471]: ojj
+              - button "Test Connection" [ref=e472] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e132] [cursor=pointer]:
+    - img [ref=e133]
