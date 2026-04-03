@@ -599,6 +599,7 @@
     "ascending": "CRESC",
     "descending": "DECR",
     "selectDate": "Seleziona Data",
+    "clearDate": "Cancella Data",
     "daysAgo": "{{count}} giorni fa",
     "lastWeek": "Ultima Settimana",
     "comparisonMode": "Modalita Confronto",

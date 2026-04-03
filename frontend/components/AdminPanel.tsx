@@ -16,6 +16,7 @@ import { TableManagement } from './TableManagement';
 import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
+import { ReceiptManagement } from './ReceiptManagement';
 import TableErrorBoundary from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
@@ -50,7 +51,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -116,9 +117,11 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         );
       case 'dailyClosingSummary':
         return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
-      case 'itemisedConsumption':
-        return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
-      default:
+case 'itemisedConsumption':
+      return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
+    case 'receipts':
+      return <ReceiptManagement onDataUpdate={onDataUpdate} />;
+    default:
         return <p>Select a view</p>;
     }
   };
@@ -212,6 +215,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
     </svg>
   );
 
+  const ReceiptsIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+    </svg>
+  );
+
   const SettingsIcon = () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -284,8 +293,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
           <NavButton view="dashboard" label={t('navigation.dashboard')} isFirst icon={<DashboardIcon />} />
           <NavButton view="analytics" label={t('navigation.analytics')} icon={<AnalyticsIcon />} />
           <div className="pt-2"></div>
-          <NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />
-          <NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
+<NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />
+      <NavButton view="receipts" label={t('navigation.receipts')} icon={<ReceiptsIcon />} />
+      <NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
           <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />
           <div className="pt-2"></div>
           <NavButton view="products" label={t('navigation.products')} isFirst icon={<ProductsIcon />} />

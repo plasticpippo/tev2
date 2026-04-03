@@ -4,6 +4,7 @@
     "dashboard": "Dashboard",
     "analytics": "Analytics",
     "transactions": "Transactions",
+    "receipts": "Receipts",
     "activity": "Activity Log",
     "dailyClosingSummary": "Daily Closing Summary",
     "products": "Products",
@@ -599,6 +600,7 @@
     "ascending": "ASC",
     "descending": "DESC",
     "selectDate": "Select Date",
+    "clearDate": "Clear Date",
     "daysAgo": "{{count}} days ago",
     "lastWeek": "Last Week",
     "comparisonMode": "Comparison Mode",
@@ -838,6 +840,86 @@
         "postalCodeMaxLength": "Postal code must be 20 characters or less",
         "notesMaxLength": "Notes must be 1000 characters or less"
       }
-    }
+    },
+    "management": {
+      "title": "Receipt Management"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Receipt number or customer...",
+      "status": "Status",
+      "allStatuses": "All Statuses",
+      "dateFrom": "From Date",
+      "dateTo": "To Date"
+    },
+    "status": {
+      "draft": "Draft",
+      "issued": "Issued",
+      "voided": "Voided",
+      "emailed": "Emailed"
+    },
+    "buttons": {
+      "search": "Search",
+      "clearFilters": "Clear Filters",
+      "download": "Download PDF",
+      "email": "Send Email",
+      "sending": "Sending..."
+    },
+    "table": {
+      "receiptNumber": "Receipt #",
+      "transactionId": "Transaction",
+      "customer": "Customer",
+      "status": "Status",
+      "total": "Total",
+      "issuedDate": "Issued Date",
+      "actions": "Actions"
+    },
+"actions": {
+      "view": "View Details",
+      "download": "Download PDF",
+      "email": "Send Email",
+      "issue": "Issue Receipt"
+    },
+    "issue": {
+      "confirm": "Issue this receipt? This action cannot be undone.",
+      "success": "Receipt issued successfully!"
+    },
+    "buttons": {
+      "search": "Search",
+      "clearFilters": "Clear Filters",
+      "download": "Download PDF",
+      "email": "Send Email",
+      "sending": "Sending...",
+      "issue": "Issue Receipt",
+      "issuing": "Issuing..."
+    },
+    "pagination": {
+      "showing": "Showing {{count}} of {{total}} receipts",
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{current}} of {{total}}"
+    },
+    "detail": {
+      "title": "Receipt {{number}}",
+      "transaction": "Transaction #{{id}}",
+      "business": "Business",
+      "customer": "Customer",
+      "vatNumber": "VAT Number",
+      "items": "Items",
+      "item": "Item",
+      "qty": "Qty",
+      "price": "Price",
+      "total": "Total",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "discount": "Discount",
+      "tip": "Tip"
+    },
+    "email": {
+      "success": "Email sent successfully"
+    },
+    "loading": "Loading receipts...",
+    "noReceipts": "No receipts found",
+    "noCustomer": "No Customer"
   }
 }

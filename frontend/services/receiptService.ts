@@ -117,11 +117,11 @@ export const searchCustomers = async (searchTerm: string, limit: number = 10): P
 export const getReceipts = async (filters?: ReceiptListFilters): Promise<PaginatedResponse<Receipt>> => {
   const params = new URLSearchParams();
   if (filters?.page) params.append('page', String(filters.page));
-  if (filters?.pageSize) params.append('pageSize', String(filters.pageSize));
+  if (filters?.pageSize) params.append('limit', String(filters.pageSize));
   if (filters?.status) params.append('status', filters.status);
   if (filters?.customerId) params.append('customerId', String(filters.customerId));
-  if (filters?.startDate) params.append('startDate', filters.startDate);
-  if (filters?.endDate) params.append('endDate', filters.endDate);
+  if (filters?.startDate) params.append('issuedAtFrom', filters.startDate);
+  if (filters?.endDate) params.append('issuedAtTo', filters.endDate);
   if (filters?.receiptNumber) params.append('receiptNumber', filters.receiptNumber);
   if (filters?.search) params.append('search', filters.search);
   if (filters?.sortBy) params.append('sortBy', filters.sortBy);
@@ -132,7 +132,17 @@ export const getReceipts = async (filters?: ReceiptListFilters): Promise<Paginat
 
   try {
     const result = await makeApiRequest(url);
-    return result;
+    return {
+      data: result.receipts || [],
+      pagination: {
+        page: result.pagination?.page || 1,
+        pageSize: result.pagination?.limit || 20,
+        totalItems: result.pagination?.totalCount || 0,
+        totalPages: result.pagination?.totalPages || 0,
+        hasNextPage: result.pagination?.hasNextPage || false,
+        hasPrevPage: result.pagination?.hasPrevPage || false,
+      },
+    };
   } catch (error) {
     console.error(i18n.t('receiptService.errorFetchingReceipts'), error);
     throw error;
