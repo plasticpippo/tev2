@@ -25,8 +25,7 @@ export const TestLayoutComponents: React.FC = () => {
           price: 2.50,
           isFavourite: true,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-800',
-          textColor: 'text-white'
+          themeColor: 'amber'
         }
       ]
     },
@@ -42,8 +41,7 @@ export const TestLayoutComponents: React.FC = () => {
           price: 3.20,
           isFavourite: false,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-700',
-          textColor: 'text-white'
+          themeColor: 'amber'
         }
       ]
     }

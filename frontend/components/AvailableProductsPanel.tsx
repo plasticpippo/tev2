@@ -114,19 +114,20 @@ const AvailableProductsPanel: React.FC<AvailableProductsPanelProps> = ({
           
           return filteredProducts.map((product: Product) => (
                        product.variants.map((variant: ProductVariant) => (
-              <button
-                key={`${product.id}-${variant.id}`}
-                onClick={() => handleAddItemToGrid(product, variant)}
-                className={`rounded-lg p-2 sm:p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-20 sm:h-24 md:h-28 flex flex-col justify-between ${variant.backgroundColor} hover:brightness-110`}
-                aria-label={t('availableProductsPanel.addToGrid', { productName: product.name, variantName: variant.name }) as string}
-                role="listitem"
-              >
-                <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
-                <div>
-                  <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
-                  <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
-                </div>
-              </button>
+      <button
+        key={`${product.id}-${variant.id}`}
+        onClick={() => handleAddItemToGrid(product, variant)}
+        data-theme-color={variant.themeColor}
+        className="product-variant-btn rounded-lg p-2 sm:p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 h-20 sm:h-24 md:h-28 flex flex-col justify-between hover:brightness-110"
+        aria-label={t('availableProductsPanel.addToGrid', { productName: product.name, variantName: variant.name }) as string}
+        role="listitem"
+      >
+        <p className="font-bold">{product.name}</p>
+        <div>
+          <p className="text-sm font-semibold">{variant.name}</p>
+          <p className="text-sm opacity-80">{formatCurrency(variant.price)}</p>
+        </div>
+      </button>
             ))
           ));
         })()}

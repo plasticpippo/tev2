@@ -3,37 +3,168 @@
 @tailwind utilities;
 
 :root {
-  /* Color Variables */
-  --bg-primary: #1e293b;        /* slate-800 equivalent */
-  --bg-secondary: #0f172a;      /* slate-900 equivalent */
-  --bg-tertiary: #334155;       /* slate-700 equivalent */
-  --text-primary: #ffffff;
-  --text-secondary: #cbd5e1;    /* slate-300 equivalent */
-  --text-muted: #94a3b8;        /* slate-400 equivalent */
-  --accent-primary: #f59e0b;    /* amber-500 equivalent */
-  --accent-primary-hover: #d97706; /* amber-600 equivalent */
-  --accent-success: #22c55e;    /* green-500 equivalent */
-  --accent-warning: #f97316;    /* orange-500 equivalent */
-  --accent-danger: #ef4444;     /* red-500 equivalent */
-  
-  /* Spacing Variables */
-  --spacing-xs: 0.25rem;        /* 4px */
-  --spacing-sm: 0.5rem;         /* 8px */
-  --spacing-md: 0.75rem;        /* 12px */
-  --spacing-lg: 1rem;           /* 16px */
-  --spacing-xl: 1.5rem;         /* 24px */
-  --spacing-2xl: 2rem;          /* 32px */
-  --spacing-3xl: 3rem;          /* 48px */
-  
-  /* Z-Index Scale */
-  --z-dropdown: 10;
-  --z-sticky: 20;
-  --z-fixed: 30;
-  --z-overlay: 40;
-  --z-modal: 50;
-  --z-popover: 60;
-  --z-tooltip: 70;
-  --z-top: 100;
+/* Color Variables */
+--bg-primary: #1e293b; /* slate-800 equivalent */
+--bg-secondary: #0f172a; /* slate-900 equivalent */
+--bg-tertiary: #334155; /* slate-700 equivalent */
+--text-primary: #ffffff;
+--text-secondary: #cbd5e1; /* slate-300 equivalent */
+--text-muted: #94a3b8; /* slate-400 equivalent */
+--accent-primary: #f59e0b; /* amber-500 equivalent */
+--accent-primary-hover: #d97706; /* amber-600 equivalent */
+--accent-success: #22c55e; /* green-500 equivalent */
+--accent-warning: #f97316; /* orange-500 equivalent */
+--accent-danger: #ef4444; /* red-500 equivalent */
+
+/* Product Variant Theme Colors */
+--variant-bg: #334155;
+--variant-text: #ffffff;
+
+/* Spacing Variables */
+--spacing-xs: 0.25rem; /* 4px */
+--spacing-sm: 0.5rem; /* 8px */
+--spacing-md: 0.75rem; /* 12px */
+--spacing-lg: 1rem; /* 16px */
+--spacing-xl: 1.5rem; /* 24px */
+--spacing-2xl: 2rem; /* 32px */
+--spacing-3xl: 3rem; /* 48px */
+
+/* Z-Index Scale */
+--z-dropdown: 10;
+--z-sticky: 20;
+--z-fixed: 30;
+--z-overlay: 40;
+--z-modal: 50;
+--z-popover: 60;
+--z-tooltip: 70;
+--z-top: 100;
+}
+
+/* Product Variant Theme Colors - 24 Colors */
+[data-theme-color="slate"] {
+  --variant-bg: #475569;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="gray"] {
+  --variant-bg: #4b5563;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="zinc"] {
+  --variant-bg: #52525b;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="neutral"] {
+  --variant-bg: #525252;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="stone"] {
+  --variant-bg: #57534e;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="red"] {
+  --variant-bg: #dc2626;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="orange"] {
+  --variant-bg: #ea580c;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="amber"] {
+  --variant-bg: #d97706;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="yellow"] {
+  --variant-bg: #eab308;
+  --variant-text: #1c1917;
+}
+
+[data-theme-color="lime"] {
+  --variant-bg: #65a30d;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="green"] {
+  --variant-bg: #16a34a;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="emerald"] {
+  --variant-bg: #059669;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="teal"] {
+  --variant-bg: #0d9488;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="cyan"] {
+  --variant-bg: #0891b2;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="sky"] {
+  --variant-bg: #0284c7;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="blue"] {
+  --variant-bg: #2563eb;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="indigo"] {
+  --variant-bg: #4f46e5;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="violet"] {
+  --variant-bg: #7c3aed;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="purple"] {
+  --variant-bg: #9333ea;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="fuchsia"] {
+  --variant-bg: #c026d3;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="pink"] {
+  --variant-bg: #db2777;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="rose"] {
+  --variant-bg: #e11d48;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="warmGray"] {
+  --variant-bg: #57534e;
+  --variant-text: #ffffff;
+}
+
+[data-theme-color="coolGray"] {
+  --variant-bg: #4b5563;
+  --variant-text: #ffffff;
+}
+
+/* Product Variant Button Styles */
+.product-variant-btn {
+  background-color: var(--variant-bg);
+  color: var(--variant-text);
 }
 
 body {

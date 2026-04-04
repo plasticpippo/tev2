@@ -80,19 +80,20 @@ export const ProductGrid: React.FC<ProductGridProps> = ({ products, categories, 
             {itemsToRender.map(({ product, variant }) => {
               const isMakable = makableVariantIds.has(variant.id);
               return (
-                <button
-                  key={variant.id}
-                  onClick={() => onAddToCart(variant, product)}
-                  disabled={!isMakable}
-                  className={`rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden h-32 flex flex-col justify-between ${variant.backgroundColor} ${isMakable ? 'hover:brightness-110' : 'opacity-50 cursor-not-allowed'}`}
-                >
-                  <p className={`font-bold ${variant.textColor}`}>{product.name}</p>
-                  <div>
-                    <p className={`text-sm font-semibold ${variant.textColor}`}>{variant.name}</p>
-                    <p className={`text-sm ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
-                  </div>
-                   {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">{t('productGrid.outOfStock')}</span></div>}
-                </button>
+      <button
+        key={variant.id}
+        onClick={() => onAddToCart(variant, product)}
+        disabled={!isMakable}
+        data-theme-color={variant.themeColor}
+        className={`product-variant-btn rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden h-32 flex flex-col justify-between ${isMakable ? 'hover:brightness-110' : 'opacity-50 cursor-not-allowed'}`}
+      >
+        <p className="font-bold">{product.name}</p>
+        <div>
+          <p className="text-sm font-semibold">{variant.name}</p>
+          <p className="text-sm opacity-80">{formatCurrency(variant.price)}</p>
+        </div>
+        {!isMakable && <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center"><span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">{t('productGrid.outOfStock')}</span></div>}
+      </button>
               )
             })}
           </div>

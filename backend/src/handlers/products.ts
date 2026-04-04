@@ -19,8 +19,7 @@ function formatProductVariant(variant: ProductVariant & { stockConsumption: Stoc
     name: variant.name,
     price: Number(variant.price),
     isFavourite: variant.isFavourite,
-    backgroundColor: variant.backgroundColor,
-    textColor: variant.textColor,
+    themeColor: variant.themeColor,
     stockConsumption: variant.stockConsumption || [],
     taxRateId: variant.taxRateId,
     taxRate: variant.taxRate ? {
@@ -191,8 +190,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
             name: v.name,
             price: v.price,
             isFavourite: v.isFavourite || false,
-            backgroundColor: v.backgroundColor,
-            textColor: v.textColor,
+            themeColor: (v as any).themeColor || 'slate',
             taxRateId: (v as any).taxRateId || null,
             stockConsumption: {
               create: v.stockConsumption.map((sc: { stockItemId: string; quantity: number }) => ({
@@ -382,20 +380,19 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           where: { id: Number(id) },
           data: {
             variants: {
-              create: variants.map(v => ({
-                name: v.name,
-                price: v.price,
-                isFavourite: v.isFavourite || false,
-                backgroundColor: v.backgroundColor,
-                textColor: v.textColor,
-                taxRateId: (v as any).taxRateId || null,
-                stockConsumption: {
-                  create: v.stockConsumption.map((sc) => ({
-                    stockItemId: sc.stockItemId,
-                    quantity: sc.quantity
-                  }))
-                }
-              }))
+      create: variants.map(v => ({
+              name: v.name,
+              price: v.price,
+              isFavourite: v.isFavourite || false,
+              themeColor: (v as any).themeColor || 'slate',
+              taxRateId: (v as any).taxRateId || null,
+              stockConsumption: {
+                create: v.stockConsumption.map((sc) => ({
+                  stockItemId: sc.stockItemId,
+                  quantity: sc.quantity
+                }))
+              }
+            }))
             }
           },
           include: {

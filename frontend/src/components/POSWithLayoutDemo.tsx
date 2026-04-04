@@ -32,8 +32,7 @@ const POSContent: React.FC = () => {
           price: 2.50,
           isFavourite: true,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-800',
-          textColor: 'text-white'
+          themeColor: 'amber'
         }
       ]
     },
@@ -49,8 +48,7 @@ const POSContent: React.FC = () => {
           price: 3.20,
           isFavourite: true,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-700',
-          textColor: 'text-white'
+          themeColor: 'amber'
         }
       ]
     },
@@ -66,8 +64,7 @@ const POSContent: React.FC = () => {
           price: 3.80,
           isFavourite: false,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-200',
-          textColor: 'text-gray-900'
+          themeColor: 'amber'
         }
       ]
     },
@@ -83,8 +80,7 @@ const POSContent: React.FC = () => {
           price: 8.50,
           isFavourite: true,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-900',
-          textColor: 'text-white'
+          themeColor: 'amber'
         },
         {
           id: 5,
@@ -93,8 +89,7 @@ const POSContent: React.FC = () => {
           price: 8.00,
           isFavourite: false,
           stockConsumption: [],
-          backgroundColor: 'bg-amber-800',
-          textColor: 'text-white'
+          themeColor: 'amber'
         }
       ]
     }

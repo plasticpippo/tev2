@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useVirtualKeyboard } from './VirtualKeyboardContext';
 
@@ -105,125 +105,141 @@ export const VirtualKeyboard: React.FC = () => {
     const keyboardRef = useRef<HTMLDivElement>(null);
     const focusedInputRef = useRef<HTMLInputElement | null>(null);
 
-    // Track the currently focused input element
-    useEffect(() => {
-        const handleFocus = (e: FocusEvent) => {
-            const target = e.target as HTMLElement;
-            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-                focusedInputRef.current = target as HTMLInputElement;
-                updateKeyboardPosition();
-            }
-        };
+  // Ref to track debounce timeout for cleanup
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-        const handleBlur = (e: FocusEvent) => {
-            const target = e.target as HTMLElement;
-            if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
-                focusedInputRef.current = null;
-            }
-        };
+  // Memoized function to update keyboard position
+  const updateKeyboardPosition = useCallback(() => {
+    const input = focusedInputRef.current;
+    if (!input || !keyboardRef.current) return;
 
-        document.addEventListener('focusin', handleFocus);
-        document.addEventListener('focusout', handleBlur);
+    // First, ensure the input is scrolled into view
+    input.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
-        return () => {
-            document.removeEventListener('focusin', handleFocus);
-            document.removeEventListener('focusout', handleBlur);
-        };
-    }, []);
+    // Use requestAnimationFrame to ensure scroll completes before calculating position
+    // This is more reliable than setTimeout as it syncs with the browser's render cycle
+    const calculatePosition = () => {
+      const input = focusedInputRef.current;
+      const keyboardElement = keyboardRef.current;
+      if (!input || !keyboardElement) return;
 
-    // Update keyboard position when it opens or when window resizes
-    useEffect(() => {
-        if (isOpen) {
-            updateKeyboardPosition();
+      const inputRect = input.getBoundingClientRect();
+      const keyboardRect = keyboardElement.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      const viewportWidth = window.innerWidth;
+
+      const padding = 8; // Space between input and keyboard
+      const keyboardHeight = keyboardRect.height || 300; // Default height if not measured
+      const keyboardWidth = keyboardRect.width || 400; // Default width if not measured
+
+      // Calculate vertical position
+      let top: number;
+      let positionAbove = false;
+
+      // Try to position below the input first
+      const spaceBelow = viewportHeight - inputRect.bottom - padding;
+      const spaceAbove = inputRect.top - padding;
+
+      if (spaceBelow >= keyboardHeight) {
+        // Enough space below, position keyboard below input
+        top = inputRect.bottom + padding;
+        positionAbove = false;
+      } else if (spaceAbove >= keyboardHeight) {
+        // Not enough space below, but enough above, position keyboard above input
+        top = inputRect.top - keyboardHeight - padding;
+        positionAbove = true;
+      } else {
+        // Not enough space in either direction, position where there's more space
+        // but ensure we don't cover the input by scrolling the page
+        if (spaceBelow > spaceAbove) {
+          top = inputRect.bottom + padding;
+          positionAbove = false;
+          // Scroll the page up to make room
+          window.scrollBy({ top: keyboardHeight - spaceBelow + padding, behavior: 'smooth' });
+        } else {
+          top = inputRect.top - keyboardHeight - padding;
+          positionAbove = true;
+          // Scroll the page down to make room
+          window.scrollBy({ top: -(keyboardHeight - spaceAbove + padding), behavior: 'smooth' });
         }
-    }, [isOpen]);
+      }
 
-    // Recalculate position on window resize
-    useEffect(() => {
-        const handleResize = () => {
-            if (isOpen) {
-                updateKeyboardPosition();
-            }
-        };
+      // Calculate horizontal position - center the keyboard under the input
+      let left = inputRect.left + (inputRect.width / 2) - (keyboardWidth / 2);
 
-        window.addEventListener('resize', handleResize);
-        return () => window.removeEventListener('resize', handleResize);
-    }, [isOpen]);
+      // Ensure keyboard stays within viewport bounds horizontally
+      if (left < padding) {
+        left = padding;
+      } else if (left + keyboardWidth > viewportWidth - padding) {
+        left = viewportWidth - keyboardWidth - padding;
+      }
 
-    const updateKeyboardPosition = () => {
-        const input = focusedInputRef.current;
-        if (!input || !keyboardRef.current) return;
-
-        // First, ensure the input is scrolled into view
-        input.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        
-        // Use requestAnimationFrame to ensure scroll completes before calculating position
-        // This is more reliable than setTimeout as it syncs with the browser's render cycle
-        const calculatePosition = () => {
-            const input = focusedInputRef.current;
-            const keyboardElement = keyboardRef.current;
-            if (!input || !keyboardElement) return;
-            
-            const inputRect = input.getBoundingClientRect();
-            const keyboardRect = keyboardElement.getBoundingClientRect();
-            const viewportHeight = window.innerHeight;
-            const viewportWidth = window.innerWidth;
-
-            const padding = 8; // Space between input and keyboard
-            const keyboardHeight = keyboardRect.height || 300; // Default height if not measured
-            const keyboardWidth = keyboardRect.width || 400; // Default width if not measured
-
-            // Calculate vertical position
-            let top: number;
-            let positionAbove = false;
-
-            // Try to position below the input first
-            const spaceBelow = viewportHeight - inputRect.bottom - padding;
-            const spaceAbove = inputRect.top - padding;
-
-            if (spaceBelow >= keyboardHeight) {
-                // Enough space below, position keyboard below input
-                top = inputRect.bottom + padding;
-                positionAbove = false;
-            } else if (spaceAbove >= keyboardHeight) {
-                // Not enough space below, but enough above, position keyboard above input
-                top = inputRect.top - keyboardHeight - padding;
-                positionAbove = true;
-            } else {
-                // Not enough space in either direction, position where there's more space
-                // but ensure we don't cover the input by scrolling the page
-                if (spaceBelow > spaceAbove) {
-                    top = inputRect.bottom + padding;
-                    positionAbove = false;
-                    // Scroll the page up to make room
-                    window.scrollBy({ top: keyboardHeight - spaceBelow + padding, behavior: 'smooth' });
-                } else {
-                    top = inputRect.top - keyboardHeight - padding;
-                    positionAbove = true;
-                    // Scroll the page down to make room
-                    window.scrollBy({ top: -(keyboardHeight - spaceAbove + padding), behavior: 'smooth' });
-                }
-            }
-
-            // Calculate horizontal position - center the keyboard under the input
-            let left = inputRect.left + (inputRect.width / 2) - (keyboardWidth / 2);
-
-            // Ensure keyboard stays within viewport bounds horizontally
-            if (left < padding) {
-                left = padding;
-            } else if (left + keyboardWidth > viewportWidth - padding) {
-                left = viewportWidth - keyboardWidth - padding;
-            }
-
-            setKeyboardPosition({ top, left, positionAbove });
-        };
-
-        // Use requestAnimationFrame to wait for scroll to complete
-        // This typically runs after the next paint, ensuring scrollIntoView has completed
-        requestAnimationFrame(() => {
-            requestAnimationFrame(calculatePosition);
-        });
+      setKeyboardPosition({ top, left, positionAbove });
     };
+
+    // Use requestAnimationFrame to wait for scroll to complete
+    // This typically runs after the next paint, ensuring scrollIntoView has completed
+    requestAnimationFrame(() => {
+      requestAnimationFrame(calculatePosition);
+    });
+  }, []);
+
+  // Track the currently focused input element
+  useEffect(() => {
+    const handleFocus = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        focusedInputRef.current = target as HTMLInputElement;
+        updateKeyboardPosition();
+      }
+    };
+
+    const handleBlur = (e: FocusEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
+        focusedInputRef.current = null;
+      }
+    };
+
+    document.addEventListener('focusin', handleFocus);
+    document.addEventListener('focusout', handleBlur);
+
+    return () => {
+      document.removeEventListener('focusin', handleFocus);
+      document.removeEventListener('focusout', handleBlur);
+    };
+  }, [updateKeyboardPosition]);
+
+  // Update keyboard position when it opens
+  useEffect(() => {
+    if (isOpen) {
+      updateKeyboardPosition();
+    }
+  }, [isOpen, updateKeyboardPosition]);
+
+  // Recalculate position on window resize with debounce
+  useEffect(() => {
+    const handleResize = () => {
+      // Clear any pending debounce timeout
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+      // Debounce the resize handler by 100ms
+      debounceTimeoutRef.current = setTimeout(() => {
+        if (isOpen) {
+          updateKeyboardPosition();
+        }
+      }, 100);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      if (debounceTimeoutRef.current) {
+        clearTimeout(debounceTimeoutRef.current);
+      }
+    };
+  }, [isOpen, updateKeyboardPosition]);
 
     if (!isOpen) {
         return null;

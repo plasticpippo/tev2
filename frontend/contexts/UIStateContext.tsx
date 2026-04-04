@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useMemo } from 'react';
 import type { Tab } from '../../shared/types';
 
 interface UIStateContextType {
@@ -27,7 +27,7 @@ export const UIStateProvider: React.FC<UIStateProviderProps> = ({ children }) =>
   const [isTableAssignmentModalOpen, setIsTableAssignmentModalOpen] = useState(false);
   const [transferSourceTab, setTransferSourceTab] = useState<Tab | null>(null);
 
-  const value: UIStateContextType = {
+  const value: UIStateContextType = useMemo(() => ({
     isPaymentModalOpen,
     setIsPaymentModalOpen,
     isTabsModalOpen,
@@ -38,7 +38,7 @@ export const UIStateProvider: React.FC<UIStateProviderProps> = ({ children }) =>
     setIsTableAssignmentModalOpen,
     transferSourceTab,
     setTransferSourceTab
-  };
+  }), [isPaymentModalOpen, isTabsModalOpen, isTransferModalOpen, isTableAssignmentModalOpen, transferSourceTab]);
 
   return (
     <UIStateContext.Provider value={value}>

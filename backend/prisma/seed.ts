@@ -175,121 +175,112 @@ async function seedDatabase() {
 
       if (redWineCategory && beerCategory && cocktailCategory && whiskeyCategory && softDrinksCategory) {
         // Create products and their variants
-        const wineProduct = await prisma.product.create({
-          data: {
-            name: 'Cabernet Sauvignon',
-            categoryId: redWineCategory.id,
-            variants: {
-              create: [
-                {
-                  name: 'Glass',
-                  price: 8.50,
-                  isFavourite: true,
-                  backgroundColor: '#8B0000',
-                  textColor: '#FFFFFF'
-                },
-                {
-                  name: 'Bottle',
-                  price: 32.00,
-                  backgroundColor: '#A52A2A',
-                  textColor: '#FFFFFF'
-                }
-              ]
-            }
+const wineProduct = await prisma.product.create({
+        data: {
+          name: 'Cabernet Sauvignon',
+          categoryId: redWineCategory.id,
+          variants: {
+            create: [
+              {
+                name: 'Glass',
+                price: 8.50,
+                isFavourite: true,
+                themeColor: 'red'
+              },
+              {
+                name: 'Bottle',
+                price: 32.00,
+                themeColor: 'rose'
+              }
+            ]
           }
-        });
+        }
+      });
 
-        const beerProduct = await prisma.product.create({
-          data: {
-            name: 'IPA',
-            categoryId: beerCategory.id,
-            variants: {
-              create: [
-                {
-                  name: 'Draft',
-                  price: 6.00,
-                  isFavourite: true,
-                  backgroundColor: '#DAA520',
-                  textColor: '#000000'
-                },
-                {
-                  name: 'Bottle',
-                  price: 7.00,
-                  backgroundColor: '#DEB887',
-                  textColor: '#000000'
-                }
-              ]
-            }
+      const beerProduct = await prisma.product.create({
+        data: {
+          name: 'IPA',
+          categoryId: beerCategory.id,
+          variants: {
+            create: [
+              {
+                name: 'Draft',
+                price: 6.00,
+                isFavourite: true,
+                themeColor: 'amber'
+              },
+              {
+                name: 'Bottle',
+                price: 7.00,
+                themeColor: 'orange'
+              }
+            ]
           }
-        });
+        }
+      });
 
-        const cocktailProduct = await prisma.product.create({
-          data: {
-            name: 'Mojito',
-            categoryId: cocktailCategory.id,
-            variants: {
-              create: [
-                {
-                  name: 'Regular',
-                  price: 12.00,
-                  isFavourite: true,
-                  backgroundColor: '#32CD32',
-                  textColor: '#FFFFFF'
-                }
-              ]
-            }
+      const cocktailProduct = await prisma.product.create({
+        data: {
+          name: 'Mojito',
+          categoryId: cocktailCategory.id,
+          variants: {
+            create: [
+              {
+                name: 'Regular',
+                price: 12.00,
+                isFavourite: true,
+                themeColor: 'emerald'
+              }
+            ]
           }
-        });
+        }
+      });
 
-        const whiskeyProduct = await prisma.product.create({
-          data: {
-            name: 'Scotch Whiskey',
-            categoryId: whiskeyCategory.id,
-            variants: {
-              create: [
-                {
-                  name: 'Neat',
-                  price: 10.00,
-                  isFavourite: false,
-                  backgroundColor: '#CD853F',
-                  textColor: '#FFFFFF'
-                },
-                {
-                  name: 'On the Rocks',
-                  price: 10.00,
-                  isFavourite: true,
-                  backgroundColor: '#D2691E',
-                  textColor: '#FFFFFF'
-                }
-              ]
-            }
+      const whiskeyProduct = await prisma.product.create({
+        data: {
+          name: 'Scotch Whiskey',
+          categoryId: whiskeyCategory.id,
+          variants: {
+            create: [
+              {
+                name: 'Neat',
+                price: 10.00,
+                isFavourite: false,
+                themeColor: 'amber'
+              },
+              {
+                name: 'On the Rocks',
+                price: 10.00,
+                isFavourite: true,
+                themeColor: 'orange'
+              }
+            ]
           }
-        });
+        }
+      });
 
-        const sodaProduct = await prisma.product.create({
-          data: {
-            name: 'Coca Cola',
-            categoryId: softDrinksCategory.id,
-            variants: {
-              create: [
-                {
-                  name: 'Can',
-                  price: 3.50,
-                  isFavourite: false,
-                  backgroundColor: '#FF0000',
-                  textColor: '#FFFFFF'
-                },
-                {
-                  name: 'Bottle',
-                  price: 4.00,
-                  isFavourite: false,
-                  backgroundColor: '#8B0000',
-                  textColor: '#FFFFFF'
-                }
-              ]
-            }
+      const sodaProduct = await prisma.product.create({
+        data: {
+          name: 'Coca Cola',
+          categoryId: softDrinksCategory.id,
+          variants: {
+            create: [
+              {
+                name: 'Can',
+                price: 3.50,
+                isFavourite: false,
+                themeColor: 'red'
+              },
+              {
+                name: 'Bottle',
+                price: 4.00,
+                isFavourite: false,
+                themeColor: 'rose'
+              }
+            ]
           }
-        });
+        }
+      });
 
         console.log('Created products and variants:', [wineProduct, beerProduct, cocktailProduct, whiskeyProduct, sodaProduct].length);
       } else {

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Product, ProductVariant, Category, StockItem, TaxRate } from '../../shared/types';
+import type { Product, ProductVariant, Category, StockItem, TaxRate, ThemeColor } from '../../shared/types';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
 import ErrorMessage from './ErrorMessage';
-import { availableColors, getContrastingTextColor } from '../utils/color';
+import { themeColorOptions, getDefaultThemeColor } from '../utils/color';
 import { formatCurrency } from '../utils/formatting';
 import { getTaxRateLabel } from '../utils/taxRateUtils';
 import { v4 as uuidv4 } from 'uuid';
@@ -83,20 +83,29 @@ const VariantForm: React.FC<VariantFormProps> = ({ variant, onUpdate, onRemove, 
                     <span className="text-sm font-medium text-slate-400">{t('products.markAsFavourite')}</span>
                 </label>
             </div>
-             <div>
-                <label className="block text-sm font-medium text-slate-400 mb-2">{t('products.buttonColor')}</label>
-                 <div className="flex items-center gap-4">
-                    <div className="flex flex-wrap gap-2 flex-grow max-h-40 overflow-y-auto p-2 border border-slate-600 rounded-md bg-slate-900 bg-opacity-50">
-                        {availableColors.map(color => (
-                            <button type="button" key={color} onClick={() => onUpdate({ ...variant, backgroundColor: color, textColor: getContrastingTextColor(color) })} className={`w-11 h-11 min-h-11 min-w-11 rounded-full border border-slate-400 p-0 ${color} ${variant.backgroundColor === color ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-white`} title={color}></button>
-                        ))}
-                    </div>
-                    <div className={`${variant.backgroundColor || 'bg-slate-600'} ${variant.textColor || 'text-white'} rounded-md p-3 text-center w-32 h-20 flex flex-col justify-center`}>
-                        <p className="font-bold text-sm">{t('products.preview')}</p>
-                        <p className="text-xs">{variant.name}</p>
-                    </div>
-                 </div>
+      <div>
+        <label className="block text-sm font-medium text-slate-400 mb-2">{t('products.buttonColor')}</label>
+        <div className="flex items-center gap-4">
+<div className="grid grid-cols-6 gap-2 flex-grow max-h-40 overflow-y-auto p-2 border border-slate-600 rounded-md bg-slate-900 bg-opacity-50">
+              {themeColorOptions.map(option => (
+                <button
+                  type="button"
+                  key={option.value}
+                  onClick={() => onUpdate({ ...variant, themeColor: option.value })}
+                  className={`w-9 h-9 min-h-9 min-w-9 rounded-full border border-slate-400 p-0 ${option.bgClass} ${variant.themeColor === option.value ? 'ring-2 ring-offset-2 ring-offset-slate-700 ring-white' : ''} transition focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-slate-700 focus:ring-white`}
+                  title={option.label}
+                ></button>
+              ))}
             </div>
+          <div 
+            data-theme-color={variant.themeColor || 'slate'}
+            className="product-variant-btn rounded-md p-3 text-center w-32 h-20 flex flex-col justify-center"
+          >
+            <p className="font-bold text-sm">{t('products.preview')}</p>
+            <p className="text-xs">{variant.name}</p>
+          </div>
+        </div>
+      </div>
             <div className="border-t border-slate-600 pt-4">
                 <h5 className="text-sm font-medium text-slate-400 mb-2">{t('products.stockConsumption')}</h5>
                 <p className="text-xs text-slate-500 mb-3">{t('products.stockConsumptionDescription')}</p>
@@ -133,7 +142,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const { t } = useTranslation('admin');
   const [name, setName] = useState(product?.name || '');
   const [categoryId, setCategoryId] = useState<number | ''>(product?.categoryId || '');
-  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+  const [variants, setVariants] = useState<Partial<ProductVariant>[]>(product?.variants || [{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], themeColor: getDefaultThemeColor() }]);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
@@ -148,7 +157,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const { closeKeyboard } = useVirtualKeyboard();
 
   const handleAddVariant = () => {
-    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+    setVariants([...variants, { id: Date.now() * -1, name: '', price: 0, isFavourite: false, stockConsumption: [], themeColor: getDefaultThemeColor() }]);
   };
 
   const handleUpdateVariant = (index: number, updatedVariant: Partial<ProductVariant>) => {
@@ -219,7 +228,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
   const handleClearForm = () => {
     setName('');
     setCategoryId('');
-    setVariants([{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], backgroundColor: 'bg-slate-700', textColor: getContrastingTextColor('bg-slate-700') }]);
+    setVariants([{ id: Date.now() * -1, name: 'Standard', price: 0, isFavourite: false, stockConsumption: [], themeColor: getDefaultThemeColor() }]);
     setErrors({});
     setApiError(null);
   };
@@ -458,13 +467,9 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
           message={deleteError}
           type="error"
           onRetry={handleRetryDelete}
-          showRetry={true}
-        />
-      )}
-      {/* Hidden elements to ensure Tailwind includes all color classes in the build */}
-      <div className="hidden">
-        <div className={availableColors.join(' ')}></div>
-      </div>
-    </div>
+      showRetry={true}
+      />
+    )}
+  </div>
   );
 };

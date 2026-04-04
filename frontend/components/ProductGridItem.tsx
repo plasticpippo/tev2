@@ -36,10 +36,11 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
     <button
       onClick={onClick}
       disabled={disabled || !isMakable}
+      data-theme-color={variant.themeColor}
       className={`
+        product-variant-btn
         rounded-lg p-3 text-left shadow-md transition focus:outline-none focus:ring-2 focus:ring-amber-500 relative overflow-hidden
         flex flex-col justify-between
-        ${variant.backgroundColor}
         ${isMakable ? 'hover:brightness-110' : 'opacity-50 cursor-not-allowed'}
         ${className}
       `}
@@ -52,10 +53,10 @@ const ProductGridItem: React.FC<ProductGridItemProps> = ({
         })
       }}
     >
-      <p className={`font-bold ${variant.textColor} text-lg`}>{product.name}</p>
+      <p className="font-bold text-lg">{product.name}</p>
       <div>
-        <p className={`text-base font-semibold ${variant.textColor}`}>{variant.name}</p>
-        <p className={`text-base ${variant.textColor} opacity-80`}>{formatCurrency(variant.price)}</p>
+        <p className="text-base font-semibold">{variant.name}</p>
+        <p className="text-base opacity-80">{formatCurrency(variant.price)}</p>
       </div>
       {!isMakable && (
         <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">

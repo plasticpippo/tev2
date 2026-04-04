@@ -1,9 +1,8 @@
-import React, { Suspense } from 'react';
+import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
-import './src/i18n'; // Initialize i18next
+import { i18nReady } from './src/i18n';
 
-// Loading component shown while translations are loading
 const LoadingFallback = () => (
   <div className="flex items-center justify-center min-h-screen bg-slate-900">
     <div className="text-center">
@@ -13,10 +12,24 @@ const LoadingFallback = () => (
   </div>
 );
 
+const I18nLoader = ({ children }: { children: React.ReactNode }) => {
+  const [isReady, setIsReady] = useState(false);
+
+  useEffect(() => {
+    i18nReady.then(() => setIsReady(true)).catch(() => setIsReady(true));
+  }, []);
+
+  if (!isReady) {
+    return <LoadingFallback />;
+  }
+
+  return <>{children}</>;
+};
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Suspense fallback={<LoadingFallback />}>
+    <I18nLoader>
       <App />
-    </Suspense>
+    </I18nLoader>
   </React.StrictMode>,
 );

@@ -37,7 +37,7 @@ export const LanguageSwitcher: React.FC = () => {
 <button
 onClick={() => setIsOpen(!isOpen)}
 className="flex items-center gap-2 px-3 py-2 min-h-11 text-sm font-medium text-slate-300 hover:text-white bg-slate-700 hover:bg-slate-600 rounded-md transition-colors"
-aria-label={t('common.languageSwitcher.changeLanguage')}
+aria-label={t('languageSwitcher.changeLanguage')}
 >
         <span className="font-bold text-xs">{currentLangInfo.flag}</span>
         <svg

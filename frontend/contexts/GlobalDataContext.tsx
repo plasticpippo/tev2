@@ -218,7 +218,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     return appData.tills.find(t => t.id === assignedTillId)?.name || t('globalDataContext.unknownTill');
   }, [assignedTillId, appData.tills, t]);
 
-  const value: GlobalDataContextType = {
+  const value: GlobalDataContextType = useMemo(() => ({
     appData,
     isLoading,
     setIsLoading,
@@ -226,7 +226,7 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     currentTillName,
     fetchData,
     debouncedFetchData
-  };
+  }), [appData, isLoading, makableVariantIds, currentTillName, fetchData, debouncedFetchData]);
 
   return (
     <GlobalDataContext.Provider value={value}>

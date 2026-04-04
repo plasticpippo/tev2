@@ -69,9 +69,10 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       onDragEnd={handleDragEnd}
       onClick={handleClick}
       style={gridStyle}
+      data-theme-color={variant.themeColor}
       className={`
+        product-variant-btn
         relative
-        ${variant.backgroundColor}
         rounded-lg
         p-2 sm:p-3
         flex
@@ -105,16 +106,16 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       )}
 
       {/* Product name */}
-      <p className={`font-bold ${variant.textColor} text-base sm:text-lg md:text-xl lg:text-2xl truncate`}>
+      <p className="font-bold text-base sm:text-lg md:text-xl lg:text-2xl truncate">
         {product.name}
       </p>
 
       {/* Variant info */}
       <div>
-        <p className={`text-xs sm:text-sm md:text-base lg:text-lg font-semibold ${variant.textColor} truncate`}>
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate">
           {variant.name}
         </p>
-        <p className={`text-xs sm:text-sm md:text-base lg:text-lg ${variant.textColor} opacity-80`}>
+        <p className="text-xs sm:text-sm md:text-base lg:text-lg opacity-80">
           {formatCurrency(variant.price)}
         </p>
       </div>

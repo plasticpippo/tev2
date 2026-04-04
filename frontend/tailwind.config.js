@@ -5,6 +5,30 @@ export default {
     "./src/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    'bg-slate-600',
+    'bg-gray-600',
+    'bg-zinc-600',
+    'bg-neutral-600',
+    'bg-stone-600',
+    'bg-red-600',
+    'bg-orange-600',
+    'bg-amber-600',
+    'bg-yellow-500',
+    'bg-lime-600',
+    'bg-green-600',
+    'bg-emerald-600',
+    'bg-teal-600',
+    'bg-cyan-600',
+    'bg-sky-600',
+    'bg-blue-600',
+    'bg-indigo-600',
+    'bg-violet-600',
+    'bg-purple-600',
+    'bg-fuchsia-600',
+    'bg-pink-600',
+    'bg-rose-600',
+  ],
   theme: {
     extend: {
       containers: {
@@ -19,19 +43,5 @@ export default {
   },
   plugins: [
     require('@tailwindcss/container-queries'),
-  ],
-  safelist: [
-    // Safelist all the color classes that might be used dynamically
-    {
-      pattern: /(bg|text)-(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
-    // Safelist all the border classes that might be used with colors
-    {
-      pattern: /border-(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
-    // Safelist all the ring classes that might be used with colors
-    {
-      pattern: /ring-(slate|gray|red|orange|amber|yellow|lime|green|emerald|teal|cyan|sky|blue|indigo|violet|purple|fuchsia|pink|rose)-(50|100|200|300|400|500|600|700|800|900)/,
-    },
   ],
 }

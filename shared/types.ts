@@ -31,18 +31,19 @@ export interface UpdateTaxRateInput {
   description?: string | null;
 }
 
+export type ThemeColor = 'slate' | 'gray' | 'zinc' | 'neutral' | 'stone' | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald' | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple' | 'fuchsia' | 'pink' | 'rose' | 'warmGray' | 'coolGray';
+
 export interface ProductVariant {
   id: number;
   productId: number;
-  name: string; 
+  name: string;
   price: number;
   isFavourite?: boolean;
   stockConsumption: {
-      stockItemId: string;
-      quantity: number;
+    stockItemId: string;
+    quantity: number;
   }[];
-  backgroundColor: string;
-  textColor: string;
+  themeColor: ThemeColor;
   taxRateId?: number | null;
   taxRate?: TaxRate | null;
 }

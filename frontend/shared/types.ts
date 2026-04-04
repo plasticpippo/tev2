@@ -11,18 +11,19 @@ export interface OrderItem {
   taxRatePercent: number;
 }
 
+export type ThemeColor = 'slate' | 'amber' | 'red' | 'green' | 'blue' | 'purple';
+
 export interface ProductVariant {
   id: number;
   productId: number;
-  name: string; 
+  name: string;
   price: number;
   isFavourite?: boolean;
   stockConsumption: {
-      stockItemId: string;
-      quantity: number;
+    stockItemId: string;
+    quantity: number;
   }[];
-  backgroundColor: string;
-  textColor: string; 
+  themeColor: ThemeColor;
 }
 
 export interface Product {
