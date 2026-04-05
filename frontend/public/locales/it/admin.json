@@ -4,6 +4,7 @@
     "dashboard": "Dashboard",
     "analytics": "Analisi",
     "transactions": "Transazioni",
+    "receipts": "Scontrini",
     "activity": "Registro Attività",
     "dailyClosingSummary": "Riepilogo Chiusura Giornaliera",
     "products": "Prodotti",
@@ -449,8 +450,43 @@
       "defaultSelectedLabel": "Selezionato di default",
       "defaultSelectedDescription": "Se abilitato, l'opzione scontrino sarà selezionata di default nella modale di pagamento.",
       "issueModeLabel": "Modalità emissione",
-      "issueModeImmediate": "Immediata - Emetti scontrino immediatamente al pagamento",
-      "issueModeDraft": "Bozza - Crea scontrino come bozza per revisione successiva"
+"issueModeImmediate": "Immediata - Emetti scontrino immediatamente al pagamento",
+    "issueModeDraft": "Bozza - Crea scontrino come bozza per revisione successiva"
+      }
+    },
+    "receipts": {
+      "statusBadge": {
+        "title": "{{count}} scontrino(i) richiedono attenzione"
+      },
+      "filters": {
+        "search": "Cerca",
+        "searchPlaceholder": "Numero scontrino o cliente...",
+        "status": "Stato",
+        "allStatuses": "Tutti gli Stati",
+        "generationStatus": "Generazione",
+        "allGenerationStatuses": "Tutti gli Stati Generazione",
+        "dateFrom": "Da Data",
+        "dateTo": "A Data"
+      },
+      "generationStatus": {
+        "pending": "In Attesa",
+        "completed": "Completato",
+        "failed": "Fallito"
+      },
+      "generation": {
+        "retry": "Riprova Generazione",
+        "confirmRetry": "Riprova generazione scontrino? Verra tentata nuovamente la generazione dello scontrino.",
+        "retryFailed": "Impossibile riprovare la generazione. Riprova."
+      },
+      "table": {
+        "receiptNumber": "Scontrino #",
+        "transactionId": "Transazione",
+        "customer": "Cliente",
+        "status": "Stato",
+        "generationStatus": "Generazione",
+        "total": "Totale",
+        "issuedDate": "Data Emissione",
+        "actions": "Azioni"
+      }
     }
   }
-}

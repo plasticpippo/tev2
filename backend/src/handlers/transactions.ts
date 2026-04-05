@@ -9,6 +9,7 @@ import { safeJsonParse } from '../utils/jsonParser';
 import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber } from '../utils/money';
 import i18n from '../i18n';
 import { requireRole } from '../middleware/authorization';
+import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
 
 export const transactionsRouter = express.Router();
 
@@ -55,26 +56,26 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       logError('Failed to fetch settings for tax mode', { correlationId });
     }
 
-    // Extract and validate idempotency key
-    const { idempotencyKey: rawIdempotencyKey, ...paymentData } = req.body;
-    const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
+  // Extract and validate idempotency key
+  const { idempotencyKey: rawIdempotencyKey, issueReceipt, ...paymentData } = req.body;
+  const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
 
-    const {
-      items,
-      subtotal,
-      tax,
-      tip,
-      paymentMethod,
-      userId,
-      userName,
-      tillId,
-      tillName,
-      discount,
-      discountReason,
-      activeTabId,
-      tableId,
-      tableName
-    } = paymentData;
+  const {
+    items,
+    subtotal,
+    tax,
+    tip,
+    paymentMethod,
+    userId,
+    userName,
+    tillId,
+    tillName,
+    discount,
+    discountReason,
+    activeTabId,
+    tableId,
+    tableName
+  } = paymentData;
     
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
@@ -293,40 +294,63 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       return transaction as IdempotentResult;
     });
   
-    // Handle the result - check if it's a duplicate or new transaction
-    const isDuplicate = 'isDuplicate' in result && result.isDuplicate;
-    // Extract the actual transaction object - TypeScript needs explicit type assertion
-    const transaction: PrismaTransaction = isDuplicate
-      ? (result as { isDuplicate: true; transaction: PrismaTransaction }).transaction
-      : result as PrismaTransaction;
-  
-    // Set appropriate response headers for idempotent replays
-    if (isDuplicate) {
-      res.setHeader('X-Idempotent-Replay', 'true');
-      res.setHeader('X-Original-Timestamp', transaction.createdAt.toISOString());
-    }
-  
-    // Log payment success
-    logPaymentEvent('PROCESSED', finalTotal, 'EUR', true, {
-      orderId: transaction.id,
-      paymentMethod,
-      itemCount: items.length,
-      correlationId,
-      idempotentReplay: isDuplicate || undefined,
+  // Handle the result - check if it's a duplicate or new transaction
+  const isDuplicate = 'isDuplicate' in result && result.isDuplicate;
+  // Extract the actual transaction object - TypeScript needs explicit type assertion
+  const transaction: PrismaTransaction = isDuplicate
+  ? (result as { isDuplicate: true; transaction: PrismaTransaction }).transaction
+  : result as PrismaTransaction;
+
+  // Set appropriate response headers for idempotent replays
+  if (isDuplicate) {
+  res.setHeader('X-Idempotent-Replay', 'true');
+  res.setHeader('X-Original-Timestamp', transaction.createdAt.toISOString());
+  }
+
+  // Log payment success
+  logPaymentEvent('PROCESSED', finalTotal, 'EUR', true, {
+  orderId: transaction.id,
+  paymentMethod,
+  itemCount: items.length,
+  correlationId,
+  idempotentReplay: isDuplicate || undefined,
+  });
+
+  // Handle receipt creation if requested
+  let receiptResult: { id: number; number?: string; status: string; pdfUrl?: string } | undefined;
+  if (issueReceipt && !isDuplicate) {
+  try {
+    const settings = await prisma.settings.findFirst();
+    const issueMode = (settings?.receiptIssueMode || 'immediate') as 'immediate' | 'draft';
+    const receiptCreationResult = await createReceiptFromPayment({
+    transactionId: transaction.id,
+    userId: authenticatedUserId,
+    issueMode,
     });
-  
-    // Return the transaction with converted decimals
-    // Use 200 for idempotent replays, 201 for new transactions
-    const statusCode = isDuplicate ? 200 : 201;
-    res.status(statusCode).json({
-      ...transaction,
-      subtotal: decimalToNumber(transaction.subtotal),
-      tax: decimalToNumber(transaction.tax),
-      tip: decimalToNumber(transaction.tip),
-      total: decimalToNumber(transaction.total),
-      discount: decimalToNumber(transaction.discount),
-      _meta: isDuplicate ? { idempotent: true } : undefined,
+    receiptResult = receiptCreationResult.receipt;
+  } catch (receiptError) {
+    logError('Failed to create receipt from payment', {
+    correlationId,
+    transactionId: transaction.id,
+    error: receiptError instanceof Error ? receiptError.message : 'Unknown error',
     });
+    // Payment still succeeds, receipt creation failure is logged but not blocking
+  }
+  }
+
+  // Return the transaction with converted decimals
+  // Use 200 for idempotent replays, 201 for new transactions
+  const statusCode = isDuplicate ? 200 : 201;
+  res.status(statusCode).json({
+  ...transaction,
+  subtotal: decimalToNumber(transaction.subtotal),
+  tax: decimalToNumber(transaction.tax),
+  tip: decimalToNumber(transaction.tip),
+  total: decimalToNumber(transaction.total),
+  discount: decimalToNumber(transaction.discount),
+  receipt: receiptResult,
+  _meta: isDuplicate ? { idempotent: true } : undefined,
+  });
     
 	} catch (error) {
 		logPaymentEvent('FAILED', req.body?.total || 0, 'EUR', false, {

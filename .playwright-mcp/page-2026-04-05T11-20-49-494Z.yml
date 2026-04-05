@@ -1,0 +1,76 @@
+- generic [ref=e2]:
+  - generic [ref=e246]:
+    - banner [ref=e247]:
+      - generic [ref=e249]:
+        - heading "Admin Panel" [level=1] [ref=e250]
+        - paragraph [ref=e251]: Logged in as Admin User
+      - generic [ref=e252]:
+        - button "Switch to POS" [ref=e253] [cursor=pointer]
+        - button "Logout" [ref=e254] [cursor=pointer]
+    - generic [ref=e255]:
+      - navigation [ref=e256]:
+        - button "Collapse sidebar" [ref=e258] [cursor=pointer]:
+          - img [ref=e259]
+        - button "Dashboard" [ref=e578] [cursor=pointer]:
+          - img [ref=e580]
+          - generic [ref=e582]: Dashboard
+        - button "Analytics" [ref=e583] [cursor=pointer]:
+          - img [ref=e585]
+          - generic [ref=e587]: Analytics
+        - button "Transactions" [ref=e588] [cursor=pointer]:
+          - img [ref=e590]
+          - generic [ref=e592]: Transactions
+        - button "Receipts" [ref=e593] [cursor=pointer]:
+          - img [ref=e595]
+          - generic [ref=e597]: Receipts
+        - button "Activity Log" [ref=e598] [cursor=pointer]:
+          - img [ref=e600]
+          - generic [ref=e602]: Activity Log
+        - button "Daily Closing Summary" [ref=e603] [cursor=pointer]:
+          - img [ref=e605]
+          - generic [ref=e607]: Daily Closing Summary
+        - button "Products" [ref=e608] [cursor=pointer]:
+          - img [ref=e610]
+          - generic [ref=e612]: Products
+        - button "Categories" [ref=e613] [cursor=pointer]:
+          - img [ref=e615]
+          - generic [ref=e617]: Categories
+        - button "Stock Items" [ref=e618] [cursor=pointer]:
+          - img [ref=e620]
+          - generic [ref=e622]: Stock Items
+        - button "Inventory" [ref=e623] [cursor=pointer]:
+          - img [ref=e625]
+          - generic [ref=e627]: Inventory
+        - button "Users" [ref=e628] [cursor=pointer]:
+          - img [ref=e630]
+          - generic [ref=e632]: Users
+        - button "Tills" [ref=e633] [cursor=pointer]:
+          - img [ref=e635]
+          - generic [ref=e637]: Tills
+        - button "Tables & Layout" [ref=e638] [cursor=pointer]:
+          - img [ref=e640]
+          - generic [ref=e642]: Tables & Layout
+        - button "Itemised Consumption" [ref=e643] [cursor=pointer]:
+          - img [ref=e645]
+          - generic [ref=e647]: Itemised Consumption
+        - button "Settings" [ref=e648] [cursor=pointer]:
+          - img [ref=e650]
+          - generic [ref=e653]: Settings
+      - main [ref=e341]:
+        - generic [ref=e537]:
+          - generic [ref=e538]:
+            - button "Language" [ref=e539] [cursor=pointer]
+            - button "Tax Settings" [ref=e540] [cursor=pointer]
+            - button "Business Day" [ref=e541] [cursor=pointer]
+            - button "Backup" [ref=e542] [cursor=pointer]
+            - button "Email" [ref=e543] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e544] [cursor=pointer]
+          - generic [ref=e556]:
+            - heading "Receipt from Payment" [level=3] [ref=e557]
+            - generic [ref=e559]:
+              - generic [ref=e560]:
+                - text: Allow receipt from payment modal
+                - paragraph [ref=e561]: Enable the option to issue receipts directly from the payment modal.
+              - switch "Allow receipt from payment modal" [active] [ref=e562] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e116] [cursor=pointer]:
+    - img [ref=e117]

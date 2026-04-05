@@ -1,0 +1,91 @@
+- generic [ref=e2]:
+  - generic [ref=e246]:
+    - banner [ref=e247]:
+      - generic [ref=e249]:
+        - heading "Admin Panel" [level=1] [ref=e250]
+        - paragraph [ref=e251]: Logged in as Admin User
+      - generic [ref=e252]:
+        - button "Switch to POS" [ref=e253] [cursor=pointer]
+        - button "Logout" [ref=e254] [cursor=pointer]
+    - generic [ref=e255]:
+      - navigation [ref=e256]:
+        - button "Collapse sidebar" [ref=e258] [cursor=pointer]:
+          - img [ref=e259]
+        - button "Dashboard" [ref=e654] [cursor=pointer]:
+          - img [ref=e656]
+          - generic [ref=e658]: Dashboard
+        - button "Analytics" [ref=e659] [cursor=pointer]:
+          - img [ref=e661]
+          - generic [ref=e663]: Analytics
+        - button "Transactions" [ref=e664] [cursor=pointer]:
+          - img [ref=e666]
+          - generic [ref=e668]: Transactions
+        - button "Receipts" [ref=e669] [cursor=pointer]:
+          - img [ref=e671]
+          - generic [ref=e673]: Receipts
+        - button "Activity Log" [ref=e674] [cursor=pointer]:
+          - img [ref=e676]
+          - generic [ref=e678]: Activity Log
+        - button "Daily Closing Summary" [ref=e679] [cursor=pointer]:
+          - img [ref=e681]
+          - generic [ref=e683]: Daily Closing Summary
+        - button "Products" [ref=e684] [cursor=pointer]:
+          - img [ref=e686]
+          - generic [ref=e688]: Products
+        - button "Categories" [ref=e689] [cursor=pointer]:
+          - img [ref=e691]
+          - generic [ref=e693]: Categories
+        - button "Stock Items" [ref=e694] [cursor=pointer]:
+          - img [ref=e696]
+          - generic [ref=e698]: Stock Items
+        - button "Inventory" [ref=e699] [cursor=pointer]:
+          - img [ref=e701]
+          - generic [ref=e703]: Inventory
+        - button "Users" [ref=e704] [cursor=pointer]:
+          - img [ref=e706]
+          - generic [ref=e708]: Users
+        - button "Tills" [ref=e709] [cursor=pointer]:
+          - img [ref=e711]
+          - generic [ref=e713]: Tills
+        - button "Tables & Layout" [ref=e714] [cursor=pointer]:
+          - img [ref=e716]
+          - generic [ref=e718]: Tables & Layout
+        - button "Itemised Consumption" [ref=e719] [cursor=pointer]:
+          - img [ref=e721]
+          - generic [ref=e723]: Itemised Consumption
+        - button "Settings" [ref=e724] [cursor=pointer]:
+          - img [ref=e726]
+          - generic [ref=e729]: Settings
+      - main [ref=e341]:
+        - generic [ref=e537]:
+          - generic [ref=e538]:
+            - button "Language" [ref=e539] [cursor=pointer]
+            - button "Tax Settings" [ref=e540] [cursor=pointer]
+            - button "Business Day" [ref=e541] [cursor=pointer]
+            - button "Backup" [ref=e542] [cursor=pointer]
+            - button "Email" [ref=e543] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e544] [cursor=pointer]
+          - generic [ref=e556]:
+            - heading "Receipt from Payment" [level=3] [ref=e557]
+            - generic [ref=e558]:
+              - generic [ref=e559]:
+                - generic [ref=e560]:
+                  - text: Allow receipt from payment modal
+                  - paragraph [ref=e561]: Enable the option to issue receipts directly from the payment modal.
+                - switch "Allow receipt from payment modal" [checked] [active] [ref=e562] [cursor=pointer]
+              - generic [ref=e730]:
+                - generic [ref=e731]:
+                  - text: Default selected
+                  - paragraph [ref=e732]: When enabled, the receipt option will be selected by default in the payment modal.
+                - switch "Default selected" [checked] [ref=e733] [cursor=pointer]
+              - generic [ref=e735]:
+                - generic [ref=e736]: Issue mode
+                - generic [ref=e737]:
+                  - generic [ref=e738] [cursor=pointer]:
+                    - radio "Immediate - Issue receipt immediately upon payment" [checked] [ref=e739]
+                    - generic [ref=e740]: Immediate - Issue receipt immediately upon payment
+                  - generic [ref=e741] [cursor=pointer]:
+                    - radio "Draft - Create receipt as draft for later review" [ref=e742]
+                    - generic [ref=e743]: Draft - Create receipt as draft for later review
+  - button "Enable virtual keyboard" [ref=e116] [cursor=pointer]:
+    - img [ref=e117]

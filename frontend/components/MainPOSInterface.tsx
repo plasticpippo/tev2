@@ -252,14 +252,15 @@ return (
         </main>
       </div>
 
-      <PaymentModal
-        isOpen={isPaymentModalOpen}
-        onClose={() => setIsPaymentModalOpen(false)}
-        orderItems={orderItems}
-        taxSettings={appData.settings!.tax}
-        onConfirmPayment={handleConfirmPayment}
-        assignedTable={assignedTable}
-      />
+<PaymentModal
+          isOpen={isPaymentModalOpen}
+          onClose={() => setIsPaymentModalOpen(false)}
+          orderItems={orderItems}
+          taxSettings={appData.settings!.tax}
+          settings={appData.settings}
+          onConfirmPayment={handleConfirmPayment}
+          assignedTable={assignedTable}
+        />
       
       <TabManager
         isOpen={isTabsModalOpen}

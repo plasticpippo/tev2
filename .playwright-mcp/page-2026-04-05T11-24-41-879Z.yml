@@ -1,0 +1,168 @@
+- generic [ref=e2]:
+  - generic [ref=e820]:
+    - generic [ref=e821]:
+      - button "fullscreen.enter" [ref=e822] [cursor=pointer]:
+        - img [ref=e823]
+      - button "Admin Panel" [ref=e825] [cursor=pointer]
+    - main [ref=e826]:
+      - generic [ref=e827]:
+        - generic [ref=e830]:
+          - generic [ref=e831]:
+            - heading "Products" [level=2] [ref=e832]
+            - generic [ref=e833]:
+              - button "Favourites" [ref=e834] [cursor=pointer]
+              - button "Shots" [ref=e835] [cursor=pointer]
+              - button "Beer" [ref=e836] [cursor=pointer]
+              - button "Cocktails" [ref=e837] [cursor=pointer]
+              - button "Soft Drinks" [ref=e838] [cursor=pointer]
+              - button "Vino" [ref=e839] [cursor=pointer]
+              - button "All" [ref=e840] [cursor=pointer]
+          - generic [ref=e843]:
+            - generic [ref=e844] [cursor=pointer]:
+              - paragraph [ref=e845]: Vodka Tonic
+              - generic [ref=e846]:
+                - paragraph [ref=e847]: Standard
+                - paragraph [ref=e848]: €8,00
+              - generic [ref=e849]: FAV
+            - generic [ref=e850] [cursor=pointer]:
+              - paragraph [ref=e851]: Shot Vodka
+              - generic [ref=e852]:
+                - paragraph [ref=e853]: Standard
+                - paragraph [ref=e854]: €3,00
+              - generic [ref=e855]: FAV
+            - generic [ref=e856] [cursor=pointer]:
+              - paragraph [ref=e857]: Pirlo Campari
+              - generic [ref=e858]:
+                - paragraph [ref=e859]: Standard
+                - paragraph [ref=e860]: €5,00
+              - generic [ref=e861]: FAV
+            - generic [ref=e862] [cursor=pointer]:
+              - paragraph [ref=e863]: Shot Tequila
+              - generic [ref=e864]:
+                - paragraph [ref=e865]: Standard
+                - paragraph [ref=e866]: €3,00
+              - generic [ref=e867]: FAV
+            - generic [ref=e868] [cursor=pointer]:
+              - paragraph [ref=e869]: Vodka Lemon
+              - generic [ref=e870]:
+                - paragraph [ref=e871]: Standard
+                - paragraph [ref=e872]: €8,00
+              - generic [ref=e873]: FAV
+            - generic [ref=e874] [cursor=pointer]:
+              - paragraph [ref=e875]: Beck's
+              - generic [ref=e876]:
+                - paragraph [ref=e877]: 33cl
+                - paragraph [ref=e878]: €4,00
+              - generic [ref=e879]: FAV
+            - generic [ref=e880] [cursor=pointer]:
+              - paragraph [ref=e881]: Gin Tonic
+              - generic [ref=e882]:
+                - paragraph [ref=e883]: Standard
+                - paragraph [ref=e884]: €8,00
+              - generic [ref=e885]: FAV
+            - generic [ref=e886] [cursor=pointer]:
+              - paragraph [ref=e887]: Gin Lemon
+              - generic [ref=e888]:
+                - paragraph [ref=e889]: Standard
+                - paragraph [ref=e890]: €8,00
+              - generic [ref=e891]: FAV
+            - generic [ref=e892] [cursor=pointer]:
+              - paragraph [ref=e893]: Acqua
+              - generic [ref=e894]:
+                - paragraph [ref=e895]: 50cl
+                - paragraph [ref=e896]: €2,00
+              - generic [ref=e897]: FAV
+            - generic [ref=e898] [cursor=pointer]:
+              - paragraph [ref=e899]: Wuhrer
+              - generic [ref=e900]:
+                - paragraph [ref=e901]: 66cl
+                - paragraph [ref=e902]: €6,00
+              - generic [ref=e903]: FAV
+            - generic [ref=e904] [cursor=pointer]:
+              - paragraph [ref=e905]: Shot Hierbas
+              - generic [ref=e906]:
+                - paragraph [ref=e907]: Standard
+                - paragraph [ref=e908]: €3,00
+              - generic [ref=e909]: FAV
+        - generic [ref=e911]:
+          - generic [ref=e912]:
+            - generic [ref=e913]:
+              - paragraph [ref=e914]: "Logged in as:"
+              - paragraph [ref=e915]:
+                - text: Admin User
+                - generic [ref=e916]: (Admin)
+            - button "Logout" [ref=e917] [cursor=pointer]
+          - generic [ref=e918]:
+            - heading "Current Order" [level=2] [ref=e919]
+            - generic [ref=e999]:
+              - generic [ref=e1000]:
+                - paragraph [ref=e1001]: Shot Vodka - Standard
+                - paragraph [ref=e1002]: €3,00
+              - generic [ref=e1003]:
+                - button "-" [ref=e1004] [cursor=pointer]
+                - generic [ref=e1005]: "1"
+                - button "+" [ref=e1006] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e923] [cursor=pointer]:
+            - generic [ref=e924]: EDIT
+            - generic [ref=e925]: Edit Layout
+          - generic [ref=e926]:
+            - generic [ref=e1007]:
+              - generic [ref=e1008]: Subtotal
+              - generic [ref=e1009]: €3,00
+            - generic [ref=e927]:
+              - button "Manage Tabs" [ref=e1010] [cursor=pointer]
+              - button "Clear" [ref=e1011] [cursor=pointer]
+            - generic [ref=e943]:
+              - button "ASSIGN TABLE" [ref=e1012] [cursor=pointer]
+              - button "Payment" [active] [ref=e1013] [cursor=pointer]
+  - generic [ref=e1015]:
+    - generic [ref=e1016]:
+      - heading "Complete Payment" [level=2] [ref=e1017]
+      - button "Close" [ref=e1018] [cursor=pointer]: ×
+    - generic [ref=e1019]:
+      - generic [ref=e1020]:
+        - generic [ref=e1022]: Discount
+        - generic [ref=e1023]:
+          - generic [ref=e1024]: Discount Amount
+          - generic [ref=e1025]:
+            - button "Decrease discount" [ref=e1026] [cursor=pointer]: "-"
+            - generic [ref=e1027]: €0,00
+            - button "Increase discount" [ref=e1028] [cursor=pointer]: +
+          - paragraph [ref=e1029]: "Max: €3,00"
+        - generic [ref=e1030]:
+          - generic [ref=e1031]: Quick Add
+          - generic [ref=e1032]:
+            - button "Quick Add 10" [ref=e1033] [cursor=pointer]: "10"
+            - button "Quick Add 20" [ref=e1034] [cursor=pointer]: "20"
+            - button "Quick Add 50" [ref=e1035] [cursor=pointer]: "50"
+        - generic [ref=e1036]:
+          - generic [ref=e1037]: Reason (optional)
+          - textbox "Enter reason for discount..." [ref=e1038]
+      - generic [ref=e1039]:
+        - generic [ref=e1040]: Tip Amount
+        - generic [ref=e1041]:
+          - button "Decrease tip" [ref=e1042] [cursor=pointer]: "-"
+          - generic [ref=e1043]: €0,00
+          - button "Increase tip" [ref=e1044] [cursor=pointer]: +
+      - generic [ref=e1045]:
+        - generic [ref=e1046]:
+          - generic [ref=e1047]: Subtotal
+          - generic [ref=e1048]: €2,46
+        - generic [ref=e1049]:
+          - generic [ref=e1050]: Tax
+          - generic [ref=e1051]: €0,54
+        - generic [ref=e1052]:
+          - generic [ref=e1053]: Tip
+          - generic [ref=e1054]: €0,00
+        - generic [ref=e1055]:
+          - generic [ref=e1056]: Final Total
+          - generic [ref=e1057]: €3,00
+    - generic [ref=e1058]:
+      - generic [ref=e1059] [cursor=pointer]:
+        - checkbox "Issue Receipt" [checked] [ref=e1060]
+        - generic [ref=e1061]: Issue Receipt
+      - generic [ref=e1062]:
+        - button "Pay with CASH" [ref=e1063] [cursor=pointer]
+        - button "Pay with CARD" [ref=e1064] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e116] [cursor=pointer]:
+    - img [ref=e117]

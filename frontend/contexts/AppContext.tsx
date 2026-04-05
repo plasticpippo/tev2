@@ -75,7 +75,7 @@ interface AppContextType {
   handleAddToCart: (variant: ProductVariant, product: Product) => void;
   handleUpdateQuantity: (orderItemId: string, newQuantity: number) => void;
   clearOrder: (logActivity?: boolean) => void;
-  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => Promise<void>;
+  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string, issueReceipt?: boolean) => Promise<void>;
   handleCreateTab: (name: string) => Promise<void>;
   handleAddToTab: (tabId: number) => Promise<void>;
   handleLoadTab: (tabId: number) => void;

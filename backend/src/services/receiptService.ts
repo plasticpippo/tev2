@@ -243,7 +243,15 @@ export async function listReceipts(
   if (filters.emailStatus) {
     where.emailStatus = filters.emailStatus;
   }
-  
+
+  if (filters.generationStatus) {
+    if (Array.isArray(filters.generationStatus)) {
+      where.generationStatus = { in: filters.generationStatus };
+    } else {
+      where.generationStatus = filters.generationStatus;
+    }
+  }
+
   if (filters.issuedAtFrom || filters.issuedAtTo) {
     where.issuedAt = {};
     if (filters.issuedAtFrom) {

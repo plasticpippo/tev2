@@ -11,7 +11,7 @@ import { useTableAssignmentContext } from './TableAssignmentContext';
 import { useUIStateContext } from './UIStateContext';
 
 interface PaymentContextType {
-  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => Promise<void>;
+  handleConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string, issueReceipt?: boolean) => Promise<void>;
 }
 
 const PaymentContext = createContext<PaymentContextType | undefined>(undefined);
@@ -28,7 +28,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
   const { assignedTable, clearTableAssignment } = useTableAssignmentContext();
   const { setIsPaymentModalOpen } = useUIStateContext();
 
-  const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => {
+  const handleConfirmPayment = async (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string, issueReceipt?: boolean) => {
     // Check if user is logged in
     if (!currentUser) {
       alert(t('errors.api.auth.authenticationFailed'));
@@ -91,7 +91,7 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       
     // Use atomic payment processing - handles transaction + stock + session + tab in one call
     // If ANY step fails, ALL changes are rolled back
-    await processPayment({
+const result = await processPayment({
       items: itemsToSave,
       subtotal: subtotal,
       tax: tax,
@@ -106,16 +106,33 @@ export const PaymentProvider: React.FC<PaymentProviderProps> = ({ children }) =>
       activeTabId: activeTab?.id,
       tableId: assignedTable?.id,
       tableName: assignedTable?.name,
-      idempotencyKey: idempotencyKey
+      idempotencyKey: idempotencyKey,
+      issueReceipt: issueReceipt
     });
-      
-      // Clear table assignment after successful payment
-      if (assignedTable) {
-        clearTableAssignment();
+
+    if (result.receipt) {
+      const receipt = result.receipt;
+      if (receipt.status === 'issued' && receipt.number) {
+        alert(t('paymentContext.paymentSuccessWithReceipt', { receiptNumber: receipt.number }));
+      } else if (receipt.status === 'pending' || receipt.status === 'queued') {
+        alert(t('paymentContext.paymentSuccessReceiptQueued'));
+      } else if (receipt.status === 'draft') {
+        alert(t('paymentContext.paymentSuccessReceiptDraft'));
+      } else {
+        alert(t('paymentContext.paymentSuccess'));
       }
-      
-      clearOrder(false);
-      setIsPaymentModalOpen(false);
+    } else if (issueReceipt) {
+      alert(t('paymentContext.paymentSuccessReceiptError'));
+    } else {
+      alert(t('paymentContext.paymentSuccess'));
+    }
+
+    if (assignedTable) {
+      clearTableAssignment();
+    }
+
+    clearOrder(false);
+    setIsPaymentModalOpen(false);
     } catch (error) {
       console.error(t('paymentContext.paymentProcessingFailed'), error);
       alert(error instanceof Error ? error.message : t('paymentContext.paymentProcessingFailedMessage'));

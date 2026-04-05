@@ -1,6 +1,6 @@
-import React, { useState, useMemo, useRef } from 'react';
+import React, { useState, useMemo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { OrderItem, TaxSettings } from '../../shared/types';
+import type { OrderItem, TaxSettings, Settings } from '../../shared/types';
 import { formatCurrency } from '../utils/formatting';
 import { useSessionContext } from '../contexts/SessionContext';
 import { isMoneyValid, roundMoney, addMoney, subtractMoney, multiplyMoney, divideMoney } from '../utils/money';
@@ -11,23 +11,31 @@ interface PaymentModalProps {
   onClose: () => void;
   orderItems: OrderItem[];
   taxSettings: TaxSettings;
-  onConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string) => void;
+  settings: Settings | null;
+  onConfirmPayment: (paymentMethod: string, tip: number, discount: number, discountReason: string, idempotencyKey: string, issueReceipt?: boolean) => void;
   assignedTable?: { name: string } | null;
 }
 
-export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, orderItems, taxSettings, onConfirmPayment, assignedTable }) => {
+export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, orderItems, taxSettings, settings, onConfirmPayment, assignedTable }) => {
   const { t } = useTranslation('pos');
   const { currentUser } = useSessionContext();
   const isAdmin = currentUser?.role === 'Admin';
 
-	const [tip, setTip] = useState(0);
-	const [discount, setDiscount] = useState(0);
-	const [discountReason, setDiscountReason] = useState('');
-	const [isProcessing, setIsProcessing] = useState(false);
-	// Use a ref to synchronously block concurrent payment attempts
-	// React state updates are batched and async, so isProcessing=false 
-	// may still be read by a rapid second click before the first update completes
-	const isProcessingRef = useRef(false);
+  const [tip, setTip] = useState(0);
+  const [discount, setDiscount] = useState(0);
+  const [discountReason, setDiscountReason] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [issueReceipt, setIssueReceipt] = useState(false);
+  const isProcessingRef = useRef(false);
+
+  const allowReceiptFromPaymentModal = settings?.receiptFromPaymentModal?.allowReceiptFromPaymentModal ?? false;
+  const receiptIssueDefaultSelected = settings?.receiptFromPaymentModal?.receiptIssueDefaultSelected ?? false;
+
+  useEffect(() => {
+    if (isOpen && allowReceiptFromPaymentModal) {
+      setIssueReceipt(receiptIssueDefaultSelected);
+    }
+  }, [isOpen, allowReceiptFromPaymentModal, receiptIssueDefaultSelected]);
   
   const { subtotal, tax } = useMemo(() => {
     let subtotal = 0;
@@ -84,22 +92,20 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
 
   const isComplimentary = finalTotal === 0 && discount > 0;
 
-	const handlePayment = async (paymentMethod: string) => {
-		// Synchronous check using ref - prevents race conditions from rapid clicks
-		if (isProcessingRef.current) return;
-		isProcessingRef.current = true;
-		
-		// Also set state for UI feedback
-		if (isProcessing) return; // Prevent double-clicks
-		setIsProcessing(true);
-		try {
-			const idempotencyKey = generateIdempotencyKey(orderItems);
-			await onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey);
-		} finally {
-			setIsProcessing(false);
-			isProcessingRef.current = false;
-		}
-	};
+  const handlePayment = async (paymentMethod: string) => {
+    if (isProcessingRef.current) return;
+    isProcessingRef.current = true;
+
+    if (isProcessing) return;
+    setIsProcessing(true);
+    try {
+      const idempotencyKey = generateIdempotencyKey(orderItems);
+      await onConfirmPayment(paymentMethod, tip, discount, discountReason, idempotencyKey, allowReceiptFromPaymentModal ? issueReceipt : undefined);
+    } finally {
+      setIsProcessing(false);
+      isProcessingRef.current = false;
+    }
+  };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -220,23 +226,46 @@ aria-label={t('payment.increaseTip')}
         </div>
         </div>
 
-        <div className="pt-4 border-t border-slate-700 flex-shrink-0">
-          <div className="flex gap-3">
-            <button
-              onClick={() => handlePayment('Cash')}
-              disabled={isProcessing}
-              className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'} text-white font-bold py-4 text-lg rounded-md transition`}
-            >
-              {isProcessing ? 'Processing...' : t('payment.payWithCash')}
-            </button>
-            <button
-              onClick={() => handlePayment('Card')}
-              disabled={isProcessing}
-              className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'} text-white font-bold py-4 text-lg rounded-md transition`}
-            >
-              {isProcessing ? 'Processing...' : t('payment.payWithCard')}
-            </button>
-          </div>
+<div className="pt-4 border-t border-slate-700 flex-shrink-0">
+        {allowReceiptFromPaymentModal && (
+          <label className="flex items-center gap-3 mb-4 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={issueReceipt}
+              onChange={(e) => setIssueReceipt(e.target.checked)}
+              className="w-5 h-5 rounded border-slate-600 bg-slate-900 text-amber-500 focus:ring-amber-500 focus:ring-offset-slate-800"
+            />
+            <span className="text-slate-300 font-medium">{t('payment.issueReceipt')}</span>
+          </label>
+        )}
+        <div className="flex gap-3">
+          <button
+            onClick={() => handlePayment('Cash')}
+            disabled={isProcessing}
+            className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-green-600 hover:bg-green-500'} text-white font-bold py-4 text-lg rounded-md transition flex items-center justify-center gap-2`}
+          >
+            {isProcessing && (
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
+            {isProcessing ? (issueReceipt ? t('payment.processingWithReceipt') : 'Processing...') : t('payment.payWithCash')}
+          </button>
+          <button
+            onClick={() => handlePayment('Card')}
+            disabled={isProcessing}
+            className={`flex-1 ${isProcessing ? 'bg-gray-500 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-500'} text-white font-bold py-4 text-lg rounded-md transition flex items-center justify-center gap-2`}
+          >
+            {isProcessing && (
+              <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            )}
+            {isProcessing ? (issueReceipt ? t('payment.processingWithReceipt') : 'Processing...') : t('payment.payWithCard')}
+          </button>
+        </div>
         </div>
       </div>
     </div>

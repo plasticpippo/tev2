@@ -6,11 +6,14 @@ import { formatCurrency, formatDate } from '../utils/formatting';
 import * as receiptService from '../services/receiptService';
 import { DatePicker } from './analytics/DatePicker';
 
+type GenerationStatus = 'pending' | 'completed' | 'failed';
+
 interface ReceiptManagementProps {
   onDataUpdate?: () => void;
 }
 
 const STATUS_OPTIONS: ReceiptStatus[] = ['draft', 'issued', 'voided'];
+const GENERATION_STATUS_OPTIONS: GenerationStatus[] = ['pending', 'completed', 'failed'];
 
 export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpdate }) => {
   const { t } = useTranslation('admin');
@@ -29,6 +32,7 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
   
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState<ReceiptStatus | 'all'>('all');
+  const [generationStatusFilter, setGenerationStatusFilter] = useState<GenerationStatus | 'all'>('all');
   const [dateFrom, setDateFrom] = useState<Date | null>(null);
   const [dateTo, setDateTo] = useState<Date | null>(null);
   const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
@@ -37,28 +41,30 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
   const [emailResult, setEmailResult] = useState<{ success: boolean; message?: string } | null>(null);
   const [issuingReceipt, setIssuingReceipt] = useState<Receipt | null>(null);
   const [issueResult, setIssueResult] = useState<{ success: boolean; message?: string } | null>(null);
+  const [retryingReceipt, setRetryingReceipt] = useState<number | null>(null);
   
   const fetchReceipts = useCallback(async () => {
     setLoading(true);
     setError(null);
-    
+
     const result = await receiptService.getReceipts({
       page: pagination.page,
       pageSize: pagination.pageSize,
       status: statusFilter === 'all' ? undefined : statusFilter,
+      generationStatus: generationStatusFilter === 'all' ? undefined : generationStatusFilter,
       search: search || undefined,
-    startDate: dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined,
-    endDate: dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined,
+      startDate: dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined,
+      endDate: dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined,
       sortBy: 'createdAt',
       sortOrder: 'desc'
     });
-    
+
     if (result) {
       setReceipts(result.data);
       setPagination(result.pagination);
     }
     setLoading(false);
-  }, [pagination.page, pagination.pageSize, statusFilter, search, dateFrom, dateTo]);
+  }, [pagination.page, pagination.pageSize, statusFilter, generationStatusFilter, search, dateFrom, dateTo]);
   
   useEffect(() => {
     fetchReceipts();
@@ -72,6 +78,7 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
   const handleClearFilters = () => {
     setSearch('');
     setStatusFilter('all');
+    setGenerationStatusFilter('all');
     setDateFrom(null);
     setDateTo(null);
     setPagination(prev => ({ ...prev, page: 1 }));
@@ -152,6 +159,36 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
         return 'bg-slate-100 text-slate-800';
     }
   };
+
+  const getGenerationStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'completed':
+        return 'bg-green-100 text-green-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-slate-100 text-slate-800';
+    }
+  };
+
+  const handleRetryGeneration = async (receipt: Receipt) => {
+    if (!confirm(t('receipts.generation.confirmRetry'))) {
+      return;
+    }
+
+    setRetryingReceipt(receipt.id);
+    try {
+      await receiptService.retryReceiptGeneration(receipt.id);
+      fetchReceipts();
+      onDataUpdate?.();
+    } catch (err) {
+      setError(t('receipts.generation.retryFailed'));
+    } finally {
+      setRetryingReceipt(null);
+    }
+  };
   
   const filteredReceipts = useMemo(() => receipts, [receipts]);
   
@@ -176,22 +213,39 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
             />
           </div>
           
-          <div className="w-40">
-            <label htmlFor="receipt-status" className="block text-sm font-medium text-slate-400 mb-1">
-              {t('receipts.filters.status')}
-            </label>
-            <select
-              id="receipt-status"
-              value={statusFilter}
-              onChange={e => setStatusFilter(e.target.value as ReceiptStatus | 'all')}
-              className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm"
-            >
-              <option value="all">{t('receipts.filters.allStatuses')}</option>
-              {STATUS_OPTIONS.map(status => (
-                <option key={status} value={status}>{t(`receipts.status.${status}`)}</option>
-              ))}
-            </select>
-          </div>
+              <div className="w-40">
+                <label htmlFor="receipt-status" className="block text-sm font-medium text-slate-400 mb-1">
+                  {t('receipts.filters.status')}
+                </label>
+                <select
+                  id="receipt-status"
+                  value={statusFilter}
+                  onChange={e => setStatusFilter(e.target.value as ReceiptStatus | 'all')}
+                  className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm"
+                >
+                  <option value="all">{t('receipts.filters.allStatuses')}</option>
+                  {STATUS_OPTIONS.map(status => (
+                    <option key={status} value={status}>{t(`receipts.status.${status}`)}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="w-40">
+                <label htmlFor="generation-status" className="block text-sm font-medium text-slate-400 mb-1">
+                  {t('receipts.filters.generationStatus')}
+                </label>
+                <select
+                  id="generation-status"
+                  value={generationStatusFilter}
+                  onChange={e => setGenerationStatusFilter(e.target.value as GenerationStatus | 'all')}
+                  className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm"
+                >
+                  <option value="all">{t('receipts.filters.allGenerationStatuses')}</option>
+                  {GENERATION_STATUS_OPTIONS.map(status => (
+                    <option key={status} value={status}>{t(`receipts.generationStatus.${status}`)}</option>
+                  ))}
+                </select>
+              </div>
           
 <div className="w-auto">
         <label className="block text-sm font-medium text-slate-400 mb-1">
@@ -271,6 +325,9 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                     <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">
                       {t('receipts.table.status')}
                     </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">
+                      {t('receipts.table.generationStatus')}
+                    </th>
                     <th className="px-4 py-3 text-right text-sm font-medium text-slate-400">
                       {t('receipts.table.total')}
                     </th>
@@ -282,14 +339,14 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                     </th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-700">
-                  {filteredReceipts.length === 0 ? (
-                    <tr>
-                      <td colSpan={7} className="px-4 py-8 text-center text-slate-500">
-                        {t('receipts.noReceipts')}
-                      </td>
-                    </tr>
-                  ) : (
+          <tbody className="divide-y divide-slate-700">
+            {filteredReceipts.length === 0 ? (
+              <tr>
+                <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                  {t('receipts.noReceipts')}
+                </td>
+              </tr>
+            ) : (
                     filteredReceipts.map(receipt => (
                       <tr key={receipt.id} className="hover:bg-slate-800/50">
                         <td className="px-4 py-3 text-sm font-medium text-amber-400">
@@ -301,14 +358,63 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                         <td className="px-4 py-3 text-sm text-slate-300">
                           {receipt.customerSnapshot?.name || t('receipts.noCustomer')}
                         </td>
-                        <td className="px-4 py-3">
-                          <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeClass(receipt.status)}`}>
-                            {t(`receipts.status.${receipt.status}`)}
+                    <td className="px-4 py-3">
+                      <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeClass(receipt.status)}`}>
+                        {t(`receipts.status.${receipt.status}`)}
+                      </span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        {(receipt as any).generationStatus === 'pending' && (
+                          <>
+                            <svg className="w-4 h-4 animate-spin text-yellow-500" fill="none" viewBox="0 0 24 24">
+                              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 2.198.803 4.212 2.14 5.77l1.86-2.479z"></path>
+                            </svg>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getGenerationStatusBadgeClass((receipt as any).generationStatus)}`}>
+                              {t(`receipts.generationStatus.${(receipt as any).generationStatus}`)}
+                            </span>
+                          </>
+                        )}
+                        {(receipt as any).generationStatus === 'completed' && (
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getGenerationStatusBadgeClass((receipt as any).generationStatus)}`}>
+                            {t(`receipts.generationStatus.${(receipt as any).generationStatus}`)}
                           </span>
-                        </td>
-                        <td className="px-4 py-3 text-sm text-slate-300 text-right">
-                          {formatCurrency(receipt.total)}
-                        </td>
+                        )}
+                        {(receipt as any).generationStatus === 'failed' && (
+                          <>
+                            <span className={`px-2 py-1 rounded text-xs font-medium ${getGenerationStatusBadgeClass((receipt as any).generationStatus)}`}>
+                              {t(`receipts.generationStatus.${(receipt as any).generationStatus}`)}
+                            </span>
+                            <button
+                              onClick={() => handleRetryGeneration(receipt)}
+                              disabled={retryingReceipt === receipt.id}
+                              className="p-1 bg-red-600 hover:bg-red-500 disabled:opacity-50 disabled:cursor-not-allowed rounded transition"
+                              title={t('receipts.generation.retry')}
+                            >
+                              {retryingReceipt === receipt.id ? (
+                                <svg className="w-3 h-3 animate-spin" fill="none" viewBox="0 0 24 24">
+                                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 2.198.803 4.212 2.14 5.77l1.86-2.479z"></path>
+                                </svg>
+                              ) : (
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m0 0H9" />
+                                </svg>
+                              )}
+                            </button>
+                          </>
+                        )}
+                        {!(receipt as any).generationStatus && (
+                          <span className="px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                            {t('receipts.generationStatus.completed')}
+                          </span>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-sm text-slate-300 text-right">
+                      {formatCurrency(receipt.total)}
+                    </td>
                         <td className="px-4 py-3 text-sm text-slate-400">
                           {receipt.issuedAt ? formatDate(receipt.issuedAt) : '-'}
                         </td>

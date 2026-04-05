@@ -17,6 +17,7 @@ import { TableProvider } from './TableContext';
 import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
 import { ReceiptManagement } from './ReceiptManagement';
+import { ReceiptStatusBadge } from './ReceiptStatusBadge';
 import TableErrorBoundary from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
@@ -126,14 +127,18 @@ case 'itemisedConsumption':
     }
   };
 
-  const NavButton: React.FC<{ view: AdminView; label: string; isFirst?: boolean; icon: React.ReactNode }> = ({ view, label, isFirst = false, icon }) => (
+  const NavButton: React.FC<{ view: AdminView; label: string; isFirst?: boolean; icon: React.ReactNode; badge?: React.ReactNode }> = ({ view, label, isFirst = false, icon, badge }) => (
     <button
       onClick={() => handleNavClick(view)}
       className={`w-full text-left p-3 rounded-md font-semibold transition flex items-center gap-3 ${isFirst ? '' : 'mt-1'} ${activeView === view ? 'bg-amber-600 text-white' : 'hover:bg-slate-700'}`}
       title={sidebarCollapsed ? label : undefined}
     >
-      <span className="flex-shrink-0">{icon}</span>
-      {!sidebarCollapsed && <span className="truncate">{label}</span>}
+      <span className="flex-shrink-0 relative">
+        {icon}
+        {sidebarCollapsed && badge}
+      </span>
+      {!sidebarCollapsed && <span className="truncate flex-1">{label}</span>}
+      {!sidebarCollapsed && badge}
     </button>
   );
 
@@ -294,7 +299,12 @@ case 'itemisedConsumption':
           <NavButton view="analytics" label={t('navigation.analytics')} icon={<AnalyticsIcon />} />
           <div className="pt-2"></div>
 <NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />
-      <NavButton view="receipts" label={t('navigation.receipts')} icon={<ReceiptsIcon />} />
+      <NavButton 
+        view="receipts" 
+        label={t('navigation.receipts')} 
+        icon={<ReceiptsIcon />} 
+        badge={<ReceiptStatusBadge onClick={() => handleNavClick('receipts')} collapsed={sidebarCollapsed} />}
+      />
       <NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
           <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />
           <div className="pt-2"></div>

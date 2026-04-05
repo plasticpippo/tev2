@@ -735,41 +735,54 @@
     "management": {
       "title": "Receipt Management"
     },
-    "filters": {
-      "search": "Search",
-      "searchPlaceholder": "Receipt number or customer...",
-      "status": "Status",
-      "allStatuses": "All Statuses",
-      "dateFrom": "From Date",
-      "dateTo": "To Date"
-    },
-    "status": {
-      "draft": "Draft",
-      "issued": "Issued",
-      "voided": "Voided",
-      "emailed": "Emailed"
-    },
-    "buttons": {
-      "search": "Search",
-      "clearFilters": "Clear Filters",
-      "download": "Download PDF",
-      "email": "Send Email",
-      "sending": "Sending..."
-    },
-    "table": {
-      "receiptNumber": "Receipt #",
-      "transactionId": "Transaction",
-      "customer": "Customer",
-      "status": "Status",
-      "total": "Total",
-      "issuedDate": "Issued Date",
-      "actions": "Actions"
-    },
-"actions": {
-      "view": "View Details",
-      "download": "Download PDF",
-      "email": "Send Email",
-      "issue": "Issue Receipt"
+  "filters": {
+    "search": "Search",
+    "searchPlaceholder": "Receipt number or customer...",
+    "status": "Status",
+    "allStatuses": "All Statuses",
+    "generationStatus": "Generation",
+    "allGenerationStatuses": "All Generation Statuses",
+    "dateFrom": "From Date",
+    "dateTo": "To Date"
+  },
+  "generationStatus": {
+    "pending": "Pending",
+    "completed": "Completed",
+    "failed": "Failed"
+  },
+  "generation": {
+    "retry": "Retry Generation",
+    "confirmRetry": "Retry receipt generation? This will attempt to generate the receipt again.",
+    "retryFailed": "Failed to retry receipt generation. Please try again."
+  },
+  "table": {
+    "receiptNumber": "Receipt #",
+    "transactionId": "Transaction",
+    "customer": "Customer",
+    "status": "Status",
+    "generationStatus": "Generation",
+    "total": "Total",
+    "issuedDate": "Issued Date",
+    "actions": "Actions"
+  },
+  "status": {
+    "draft": "Draft",
+    "issued": "Issued",
+    "voided": "Voided",
+    "emailed": "Emailed"
+  },
+  "buttons": {
+    "search": "Search",
+    "clearFilters": "Clear Filters",
+    "download": "Download PDF",
+    "email": "Send Email",
+    "sending": "Sending..."
+  },
+  "actions": {
+    "view": "View Details",
+    "download": "Download PDF",
+    "email": "Send Email",
+    "issue": "Issue Receipt"
     },
     "issue": {
       "confirm": "Issue this receipt? This action cannot be undone.",
@@ -806,11 +819,14 @@
       "discount": "Discount",
       "tip": "Tip"
     },
-    "email": {
-      "success": "Email sent successfully"
-    },
-    "loading": "Loading receipts...",
-    "noReceipts": "No receipts found",
-    "noCustomer": "No Customer"
+"email": {
+    "success": "Email sent successfully"
+  },
+  "loading": "Loading receipts...",
+  "noReceipts": "No receipts found",
+  "noCustomer": "No Customer",
+  "statusBadge": {
+    "title": "{{count}} receipt(s) need attention"
   }
+}
 }

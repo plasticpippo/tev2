@@ -119,6 +119,7 @@ export const getReceipts = async (filters?: ReceiptListFilters): Promise<Paginat
   if (filters?.page) params.append('page', String(filters.page));
   if (filters?.pageSize) params.append('limit', String(filters.pageSize));
   if (filters?.status) params.append('status', filters.status);
+  if (filters?.generationStatus) params.append('generationStatus', filters.generationStatus);
   if (filters?.customerId) params.append('customerId', String(filters.customerId));
   if (filters?.startDate) params.append('issuedAtFrom', filters.startDate);
   if (filters?.endDate) params.append('issuedAtTo', filters.endDate);
@@ -334,5 +335,48 @@ export const checkTransactionHasReceipt = async (transactionId: number): Promise
   } catch (error) {
     // If 404, no receipt exists
     return { hasReceipt: false };
+  }
+};
+
+export interface PendingReceipt {
+  id: number;
+  receiptNumber: string;
+  total: number;
+  status: string;
+  generationStatus: 'pending' | 'failed';
+  generationError?: string;
+  createdAt: string;
+  issuedBy: number;
+}
+
+export const getPendingReceipts = async (): Promise<PendingReceipt[]> => {
+  try {
+    const result = await makeApiRequest(apiUrl('/api/receipts/pending'));
+    return result.data || [];
+  } catch (error) {
+    console.error(i18n.t('receiptService.errorFetchingPendingReceipts'), error);
+    return [];
+  }
+};
+
+export const retryReceiptGeneration = async (id: number): Promise<Receipt> => {
+  try {
+    const response = await fetch(apiUrl(`/api/receipts/${id}/retry`), {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || errorData.error || i18n.t('api.httpError', { status: response.status }));
+    }
+
+    const result = await response.json();
+    notifyUpdates();
+    return result.data;
+  } catch (error) {
+    console.error(i18n.t('receiptService.errorRetryingReceipt'), error);
+    throw error;
   }
 };

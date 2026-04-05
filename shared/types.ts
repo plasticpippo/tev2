@@ -356,6 +356,9 @@ export interface Receipt {
   transactionId: number;
   customerId: number | null;
   status: ReceiptStatus;
+  generationStatus?: 'pending' | 'completed' | 'failed';
+  generationError?: string | null;
+  generationAttempts?: number;
   businessSnapshot: BusinessSnapshot;
   customerSnapshot: CustomerSnapshot | null;
   itemsSnapshot: ReceiptItemSnapshot[];
@@ -431,6 +434,7 @@ export interface ReceiptListFilters {
   page?: number;
   pageSize?: number;
   status?: ReceiptStatus;
+  generationStatus?: string;
   customerId?: number;
   startDate?: string;
   endDate?: string;

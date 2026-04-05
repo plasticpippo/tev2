@@ -127,6 +127,7 @@ receiptsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
       customerId,
       status,
       emailStatus,
+      generationStatus,
       issuedAtFrom,
       issuedAtTo,
       createdAtFrom,
@@ -143,6 +144,12 @@ receiptsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
           .map((s) => s.trim() as any)
       : undefined;
 
+    const generationStatusArray = generationStatus
+      ? String(generationStatus)
+          .split(',')
+          .map((s) => s.trim() as any)
+      : undefined;
+
     const filters: ReceiptFilters = {
       ...(search && { search: String(search) }),
       ...(receiptNumber && { receiptNumber: String(receiptNumber) }),
@@ -150,6 +157,7 @@ receiptsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
       ...(customerId && { customerId: Number(customerId) }),
       ...(statusArray && { status: statusArray }),
       ...(emailStatus && { emailStatus: String(emailStatus) as any }),
+      ...(generationStatusArray && { generationStatus: generationStatusArray }),
       ...(issuedAtFrom && { issuedAtFrom: new Date(String(issuedAtFrom)) }),
       ...(issuedAtTo && { issuedAtTo: new Date(String(issuedAtTo)) }),
       ...(createdAtFrom && { createdAtFrom: new Date(String(createdAtFrom)) }),

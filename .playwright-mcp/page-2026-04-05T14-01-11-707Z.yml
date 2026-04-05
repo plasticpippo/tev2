@@ -1,0 +1,10 @@
+- generic [active]:
+  - generic:
+    - generic [ref=e25]:
+      - heading "Terminal Setup" [level=1] [ref=e26]
+      - paragraph [ref=e27]: Select which Till this device will operate as.
+      - generic [ref=e28]:
+        - button "Main Bar" [ref=e29] [cursor=pointer]
+        - button "Entrata" [ref=e30] [cursor=pointer]
+    - button "Enable virtual keyboard" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]

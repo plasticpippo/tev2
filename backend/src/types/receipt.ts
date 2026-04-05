@@ -112,6 +112,7 @@ export interface ReceiptFilters {
   createdAtFrom?: Date;
   createdAtTo?: Date;
   emailStatus?: EmailStatus;
+  generationStatus?: string | string[];
 }
 
 export interface ReceiptPagination {
