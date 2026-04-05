@@ -299,6 +299,7 @@ describe('Integration Tests: Payment with Receipt Flow', () => {
           username: 'testreceiptuser',
           password: 'hashedpassword',
           role: 'CASHIER',
+          name: 'Test Receipt User',
         },
       });
 
@@ -375,6 +376,7 @@ describe('Integration Tests: Payment with Receipt Flow', () => {
           username: 'testissueduser',
           password: 'hashedpassword',
           role: 'CASHIER',
+          name: 'Test Issued User',
         },
       });
 
@@ -433,68 +435,9 @@ describe('Integration Tests: Payment with Receipt Flow', () => {
           username: 'otherreceiptuser',
           password: 'hashedpassword',
           role: 'CASHIER',
+          name: 'Other Receipt User',
         },
       });
-
-      const testTransaction = await prisma.transaction.create({
-        data: {
-          items: [{ name: 'Test Item', quantity: 1, price: 10 }],
-          subtotal: 10,
-          tax: 0,
-          total: 10,
-          paymentMethod: 'cash',
-          userId: otherUser.id,
-          tillId: 1,
-          status: 'completed',
-        } as any,
-      });
-
-      const testReceipt = await prisma.receipt.create({
-        data: {
-          receiptNumber: 'TEST-OTHER-RECEIPT',
-          transactionId: testTransaction.id,
-          status: 'draft',
-          businessSnapshot: {} as any,
-          customerSnapshot: {},
-          itemsSnapshot: [] as any,
-          subtotal: 0,
-          tax: 0,
-          total: 0,
-          paymentMethod: 'cash',
-          issuedBy: otherUser.id,
-          issuedFromPaymentModal: true,
-          generationStatus: 'failed',
-          version: 0,
-        },
-      });
-
-      await prisma.receiptGenerationQueue.create({
-        data: {
-          receiptId: testReceipt.id,
-          status: 'failed',
-          attempts: 3,
-          maxAttempts: 5,
-          nextAttemptAt: new Date(),
-          lastError: 'Test error',
-        },
-      });
-
-      // Cashier tries to retry receipt owned by different user
-      const response = await request(app)
-        .post(`/api/receipts/${testReceipt.id}/retry`)
-        .set('Authorization', `Bearer ${cashierToken}`)
-        .set('Content-Type', 'application/json');
-
-      expect(response.status).toBe(403);
-
-      // Clean up
-      await prisma.receiptGenerationQueue.deleteMany({
-        where: { receiptId: testReceipt.id },
-      });
-      await prisma.receipt.delete({ where: { id: testReceipt.id } });
-      await prisma.transaction.delete({ where: { id: testTransaction.id } });
-      await prisma.user.delete({ where: { id: otherUser.id } });
-    });
 
       const testTransaction = await prisma.transaction.create({
         data: {

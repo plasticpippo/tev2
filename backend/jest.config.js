@@ -9,9 +9,13 @@ module.exports = {
       tsconfig: '<rootDir>/tsconfig.test.json'
     }]
   },
+  // Mock isomorphic-dompurify for tests (ES module compatibility)
+  moduleNameMapper: {
+    '^isomorphic-dompurify$': '<rootDir>/src/__tests__/__mocks__/isomorphic-dompurify.ts',
+  },
   // Allow ES modules from isomorphic-dompurify and its dependencies
   transformIgnorePatterns: [
-    'node_modules/(?!(isomorphic-dompurify|html-encoding-sniffer|@exodus)/)'
+    'node_modules/(?!(isomorphic-dompurify|html-encoding-sniffer|@exodus|jsdom|whatwg-url|web-streams-polyfill|abort-controller|sax|xmlchars|data-urls|formdata-node|node-domexception|rrweb-cssom|cssstyle|parse5)/)'
   ],
   collectCoverageFrom: [
     'src/**/*.ts',
@@ -26,5 +30,5 @@ module.exports = {
       lines: 15,
       statements: 15
     }
- }
+  }
 };
