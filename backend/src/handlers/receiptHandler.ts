@@ -23,8 +23,100 @@ import {
   getReceiptAuditLogs,
   listAuditLogs,
 } from '../services/receiptAuditService';
+import * as receiptQueueService from '../services/receiptQueueService';
+import { prisma } from '../prisma';
 
 export const receiptsRouter = express.Router();
+
+// GET /api/receipts/pending - Get pending/failed receipts for current user
+receiptsRouter.get('/pending', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) {
+      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+    }
+
+    const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+
+    const receipts = await prisma.receipt.findMany({
+      where: {
+        generationStatus: { in: ['pending', 'failed'] },
+        ...(isAdmin ? {} : { issuedBy: userId }),
+      },
+      select: {
+        id: true,
+        receiptNumber: true,
+        total: true,
+        status: true,
+        generationStatus: true,
+        generationError: true,
+        createdAt: true,
+        issuedBy: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    res.json({ data: receipts });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching pending receipts', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('receipts.fetchFailed') });
+  }
+});
+
+// POST /api/receipts/:id/retry - Retry failed receipt generation
+receiptsRouter.post('/:id/retry', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+    const userRole = req.user?.role;
+
+    if (!userId) {
+      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+    }
+
+    const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
+
+    const receipt = await receiptService.getReceiptById(Number(id));
+
+    if (!receipt) {
+      return res.status(404).json({ error: i18n.t('receipts.notFound') });
+    }
+
+    if (!isAdmin && receipt.issuedBy !== userId) {
+      return res.status(403).json({ error: i18n.t('auth.accessDenied') });
+    }
+
+    if (receipt.generationStatus !== 'failed') {
+      return res.status(400).json({ error: i18n.t('receipts.canOnlyRetryFailed') });
+    }
+
+    await prisma.receiptGenerationQueue.updateMany({
+      where: { receiptId: Number(id) },
+      data: {
+        status: 'pending',
+        nextAttemptAt: new Date(),
+      },
+    });
+
+    const updatedReceipt = await receiptService.getReceiptById(Number(id));
+
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'retry', auditContext, {
+      newValues: { generationStatus: 'pending' },
+    });
+
+    res.json({ data: updatedReceipt });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error retrying receipt', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('receipts.retryFailed') });
+  }
+});
 
 receiptsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {

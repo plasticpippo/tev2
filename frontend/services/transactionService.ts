@@ -109,21 +109,22 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
 
 // Atomic payment processing - handles transaction + stock + order session + tab in one call
 export interface ProcessPaymentData {
-	items: Transaction['items'];
-	subtotal: number;
-	tax: number;
-	tip: number;
-	paymentMethod: string;
-	userId: number;
-	userName: string;
-	tillId: number;
-	tillName: string;
-	discount?: number;
-	discountReason?: string;
-	activeTabId?: number;
-	tableId?: string;
-	tableName?: string;
-	idempotencyKey: string;
+  items: Transaction['items'];
+  subtotal: number;
+  tax: number;
+  tip: number;
+  paymentMethod: string;
+  userId: number;
+  userName: string;
+  tillId: number;
+  tillName: string;
+  discount?: number;
+  discountReason?: string;
+  activeTabId?: number;
+  tableId?: string;
+  tableName?: string;
+  idempotencyKey: string;
+  issueReceipt?: boolean;
 }
 
 // Helper to delay execution for retry backoff

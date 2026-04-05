@@ -166,6 +166,10 @@ export interface ReceiptResponseDTO {
   createdAt: Date;
   updatedAt: Date;
   version: number;
+  generationStatus: string;
+  generationError: string | null;
+  generationAttempts: number;
+  lastGenerationAttempt: Date | null;
 }
 
 export function toReceiptDTO(receipt: any): ReceiptResponseDTO {
@@ -202,6 +206,10 @@ export function toReceiptDTO(receipt: any): ReceiptResponseDTO {
     createdAt: receipt.createdAt,
     updatedAt: receipt.updatedAt,
     version: receipt.version,
+    generationStatus: receipt.generationStatus,
+    generationError: receipt.generationError,
+    generationAttempts: receipt.generationAttempts,
+    lastGenerationAttempt: receipt.lastGenerationAttempt,
   };
 }
 

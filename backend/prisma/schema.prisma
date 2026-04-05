@@ -29,6 +29,7 @@ model User {
   issuedReceipts Receipt[] @relation("ReceiptIssuedBy")
   voidedReceipts Receipt[] @relation("ReceiptVoidedBy")
   receiptAuditLogs ReceiptAuditLog[]
+  receiptFromPaymentDefault Boolean?
 
   @@map("users")
 }
@@ -258,6 +259,10 @@ model Settings {
   emailSmtpSecure Boolean @default(false) @map("email_smtp_secure")
   emailEnabled Boolean @default(false) @map("email_enabled")
 
+  allowReceiptFromPaymentModal Boolean @default(false)
+  receiptIssueDefaultSelected Boolean @default(false)
+  receiptIssueMode String @default("immediate")
+
   @@index([defaultTaxRateId])
   @@map("settings")
 }
@@ -416,6 +421,7 @@ enum ReceiptAuditAction {
   void
   regenerate_pdf
   update
+  retry
 }
 
 model Receipt {
@@ -462,6 +468,12 @@ model Receipt {
   updatedAt DateTime @updatedAt @map("updated_at")
   version Int @default(0)
 
+  issuedFromPaymentModal Boolean @default(false) @map("issued_from_payment_modal")
+  generationStatus String @default("pending") @map("generation_status")
+  generationAttempts Int @default(0) @map("generation_attempts")
+  lastGenerationAttempt DateTime? @map("last_generation_attempt")
+  generationError String? @map("generation_error")
+
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
   issuedByUser User @relation("ReceiptIssuedBy", fields: [issuedBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
@@ -469,6 +481,7 @@ model Receipt {
 
   emailJobs EmailQueue[]
   auditLogs ReceiptAuditLog[]
+  generationQueue ReceiptGenerationQueue?
 
   @@index([receiptNumber])
   @@index([transactionId])
@@ -537,4 +550,21 @@ model ReceiptAuditLog {
   @@index([createdAt])
   @@index([receiptId, createdAt])
   @@map("receipt_audit_logs")
+}
+
+model ReceiptGenerationQueue {
+  id Int @id @default(autoincrement())
+  receiptId Int @unique @map("receipt_id")
+  status String @default("pending")
+  attempts Int @default(0)
+  maxAttempts Int @default(5) @map("max_attempts")
+  nextAttemptAt DateTime @default(now()) @map("next_attempt_at")
+  lastError String? @db.Text @map("last_error")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+
+  @@index([status, nextAttemptAt])
+  @@map("receipt_generation_queue")
 }

@@ -335,6 +335,91 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
   }
 });
 
+// GET /api/users/:id/receipt-preference - Get user's receipt preference
+usersRouter.get('/:id/receipt-preference', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const authenticatedUserId = Number(req.user?.id);
+    const authenticatedUserRole = req.user?.role;
+    const targetUserId = Number(id);
+    const isAdmin = authenticatedUserRole === 'ADMIN' || authenticatedUserRole === 'Admin';
+
+    if (!isAdmin && authenticatedUserId !== targetUserId) {
+      return res.status(403).json({ error: i18n.t('errors.authorization.cannotAccessOtherUser') });
+    }
+
+    if (isNaN(targetUserId)) {
+      return res.status(400).json({ error: i18n.t('users.invalidId') });
+    }
+
+    const user = await prisma.user.findUnique({
+      where: { id: targetUserId },
+      select: { receiptFromPaymentDefault: true }
+    });
+
+    if (!user) {
+      return res.status(404).json({ error: i18n.t('users.notFound') });
+    }
+
+    res.json({ receiptFromPaymentDefault: user.receiptFromPaymentDefault });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching receipt preference', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('users.receiptPreferenceFetchFailed') });
+  }
+});
+
+// PUT /api/users/:id/receipt-preference - Update user's receipt preference
+usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const { receiptFromPaymentDefault } = req.body;
+    const authenticatedUserId = Number(req.user?.id);
+    const authenticatedUserRole = req.user?.role;
+    const targetUserId = Number(id);
+    const isAdmin = authenticatedUserRole === 'ADMIN' || authenticatedUserRole === 'Admin';
+
+    if (!isAdmin && authenticatedUserId !== targetUserId) {
+      return res.status(403).json({ error: i18n.t('errors.authorization.cannotModifyOtherUser') });
+    }
+
+    if (isNaN(targetUserId)) {
+      return res.status(400).json({ error: i18n.t('users.invalidId') });
+    }
+
+    if (receiptFromPaymentDefault !== null && receiptFromPaymentDefault !== undefined && typeof receiptFromPaymentDefault !== 'boolean') {
+      return res.status(400).json({ error: i18n.t('users.invalidReceiptPreference') });
+    }
+
+    const existingUser = await prisma.user.findUnique({
+      where: { id: targetUserId }
+    });
+
+    if (!existingUser) {
+      return res.status(404).json({ error: i18n.t('users.notFound') });
+    }
+
+    const user = await prisma.user.update({
+      where: { id: targetUserId },
+      data: { receiptFromPaymentDefault: receiptFromPaymentDefault ?? null }
+    });
+
+    logAuditEvent('USER_UPDATED', 'User receipt preference updated', {
+      targetUserId: user.id,
+      receiptFromPaymentDefault: receiptFromPaymentDefault,
+      correlationId: (req as any).correlationId,
+    }, 'low', { userId: authenticatedUserId, username: req.user?.username });
+
+    res.json({ receiptFromPaymentDefault: user.receiptFromPaymentDefault });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error updating receipt preference', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('users.receiptPreferenceUpdateFailed') });
+  }
+});
+
 // POST /api/auth/revoke-all - Revoke all tokens for a user (admin only)
 usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {

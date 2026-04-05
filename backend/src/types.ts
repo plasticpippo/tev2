@@ -153,6 +153,11 @@ export interface Settings {
   business: BusinessSettings;
   receipt: ReceiptConfig;
   email: EmailConfig;
+  receiptFromPaymentModal: {
+    allowReceiptFromPaymentModal: boolean;
+    receiptIssueDefaultSelected: boolean;
+    receiptIssueMode: 'immediate' | 'draft';
+  };
 }
 
 export interface Till {
@@ -253,9 +258,54 @@ export interface Table {
   height: number;
   status: 'available' | 'occupied' | 'reserved' | 'unavailable';
   roomId: string;
-  items?: any[]; // Added for storing order items directly on tables
+  items?: any[];
   createdAt: string;
   updatedAt: string;
   room: Room;
-  tabs: any[]; // Can be refined later based on actual tab type
+  tabs: any[];
+}
+
+export interface ProcessPaymentRequest {
+  items: OrderItem[];
+  subtotal: number;
+  tax: number;
+  tip: number;
+  paymentMethod: string;
+  userId: number;
+  userName: string;
+  tillId: number;
+  tillName: string;
+  discount: number;
+  discountReason?: string;
+  activeTabId?: number;
+  tableId?: string;
+  tableName?: string;
+  idempotencyKey?: string;
+  issueReceipt?: boolean;
+}
+
+export interface ProcessPaymentResponse {
+  transaction: {
+    id: number;
+    items: OrderItem[];
+    subtotal: number;
+    tax: number;
+    tip: number;
+    total: number;
+    paymentMethod: string;
+    userId: number;
+    userName: string;
+    tillId: number;
+    tillName: string;
+    discount: number;
+    discountReason?: string;
+    status: string;
+    createdAt: string;
+  };
+  receipt?: {
+    id: number;
+    number?: string;
+    status: string;
+    pdfUrl?: string;
+  };
 }

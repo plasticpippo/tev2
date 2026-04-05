@@ -86,6 +86,11 @@ export interface Settings {
     lastManualClose: string | null;
     autoCloseEnabled: boolean;
   };
+  receiptFromPaymentModal: {
+    allowReceiptFromPaymentModal: boolean;
+    receiptIssueDefaultSelected: boolean;
+    receiptIssueMode: "immediate" | "draft";
+  };
 }
 
 export interface Till {

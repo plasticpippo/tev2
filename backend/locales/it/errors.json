@@ -29,6 +29,7 @@
     "verifyLayoutOwnershipFailed": "Impossibile verificare la proprieta del layout",
     "adminPrivilegesRequired": "Accesso negato. Sono richiesti privilegi di amministratore.",
     "cannotModifyOtherUser": "Non e possibile modificare il profilo di un altro utente.",
+    "cannotAccessOtherUser": "Non e possibile accedere ai dati di un altro utente.",
     "verifyAdminPrivilegesFailed": "Impossibile verificare i privilegi di amministratore"
   },
   "validation": {
@@ -145,7 +146,11 @@
     "logoutFailed": "Disconnessione non riuscita a causa di un errore del server. Riprova piu tardi.",
     "userIdRequired": "L'ID utente e obbligatorio",
     "tokensRevoked": "Tutti i token dell'utente sono stati revocati con successo.",
-    "revokeFailed": "Impossibile revocare tutti i token. Riprova piu tardi."
+    "revokeFailed": "Impossibile revocare tutti i token. Riprova piu tardi.",
+    "invalidId": "ID utente non valido",
+    "invalidReceiptPreference": "Valore preferenza ricevuta non valido",
+    "receiptPreferenceFetchFailed": "Impossibile recuperare la preferenza ricevuta",
+    "receiptPreferenceUpdateFailed": "Impossibile aggiornare la preferenza ricevuta"
   },
   "tills": {
     "notFound": "Cassa non trovata",
@@ -285,7 +290,8 @@
     "emailConfigIncomplete": "Configurazione email incompleta. Host SMTP, utente e indirizzo mittente sono obbligatori quando l'email e abilitata.",
     "invalidSmtpPort": "Porta SMTP non valida. Deve essere compresa tra 1 e 65535.",
     "invalidReceiptNumberLength": "Lunghezza numero ricevuta non valida. Deve essere compresa tra 1 e 20.",
-    "invalidReceiptStartNumber": "Numero iniziale ricevuta non valido. Deve essere almeno 1."
+    "invalidReceiptStartNumber": "Numero iniziale ricevuta non valido. Deve essere almeno 1.",
+    "invalidReceiptIssueMode": "Modalita emissione ricevuta non valida. Deve essere 'immediate' o 'draft'."
   },
   "dailyClosings": {
     "notFound": "Chiusura giornaliera non trovata",

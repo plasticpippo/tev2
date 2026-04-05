@@ -139,6 +139,11 @@ export interface Settings {
     smtpSecure: boolean;
     enabled: boolean;
   };
+  receiptFromPaymentModal?: {
+    allowReceiptFromPaymentModal: boolean;
+    receiptIssueDefaultSelected: boolean;
+    receiptIssueMode: "immediate" | "draft";
+  };
 }
 
 export interface Till {

@@ -7,6 +7,7 @@ import { TaxSettings } from './TaxSettings';
 import { BusinessDaySettings } from './BusinessDaySettings';
 import { BackupSettings } from './BackupSettings';
 import { EmailSettings } from './EmailSettings';
+import { ReceiptSettings } from './ReceiptSettings';
 
 interface SettingsModalProps {
   isOpen: boolean;
@@ -15,7 +16,7 @@ interface SettingsModalProps {
   onUpdate: (settings: Settings) => void;
 }
 
-type SettingsTab = 'language' | 'tax' | 'businessDay' | 'backup' | 'email';
+type SettingsTab = 'language' | 'tax' | 'businessDay' | 'backup' | 'email' | 'receipt';
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdate }) => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('language');
@@ -36,6 +37,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     onUpdate({ ...settings, email: emailSettings });
   };
 
+  const handleReceiptUpdate = (receiptSettings: Settings['receiptFromPaymentModal']) => {
+    onUpdate({ ...settings, receiptFromPaymentModal: receiptSettings });
+  };
+
     if (!isOpen) {
         return null;
     }
@@ -46,6 +51,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     { id: 'businessDay', label: 'Business Day' },
     { id: 'backup', label: 'Backup' },
     { id: 'email', label: 'Email' },
+    { id: 'receipt', label: 'Receipt from Payment' },
   ];
 
   const renderTabContent = () => {
@@ -60,6 +66,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
         return <BackupSettings />;
       case 'email':
         return <EmailSettings settings={settings.email} onUpdate={handleEmailUpdate} />;
+      case 'receipt':
+        return <ReceiptSettings settings={settings.receiptFromPaymentModal} onUpdate={handleReceiptUpdate} />;
       default:
         return null;
     }

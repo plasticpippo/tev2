@@ -333,205 +333,71 @@
         "tip4": "Try keyboard shortcut Ctrl+M to quickly switch to rooms tab",
         "tip5": "Remember to assign tables to rooms after creating them"
       },
-      "tables": {
-        "tip1": "Tables must be assigned to a room to appear in layout",
-        "tip2": "Use descriptive names for easy identification (VIP-1, Patio-2)",
-        "tip3": "Set appropriate status (Available, Occupied, Reserved)",
-        "tip4": "Try keyboard shortcut Ctrl+T to quickly switch to tables tab",
-        "tip5": "Update positions in bulk using layout editor"
-      }
+"tables": {
+      "tip1": "Tables must be assigned to a room to appear in layout",
+      "tip2": "Use descriptive names for easy identification (VIP-1, Patio-2)",
+      "tip3": "Set appropriate status (Available, Occupied, Reserved)",
+      "tip4": "Try keyboard shortcut Ctrl+T to quickly switch to tables tab",
+      "tip5": "Update positions in bulk using layout editor"
     }
+  }
   },
-  "transactions": {
-    "title": "Transaction History",
-    "noTransactions": "No transactions found for the selected filters.",
-    "selectTransaction": "Select a transaction to view details.",
-    "receipt": "Receipt #{{id}}",
-    "paymentMethod": "Payment Method",
-    "allTills": "All Tills",
-    "allUsers": "All Users",
-    "found": "Found <strong>{{count}}</strong> transactions totaling <strong>{{total}}</strong>",
-    "dateRange": {
-      "today": "Today",
-      "yesterday": "Yesterday",
-      "last7Days": "Last 7 Days",
-      "last30Days": "Last 30 Days",
-      "custom": "Custom"
-    },
-    "filters": {
-      "till": "Till",
-      "user": "User",
-      "from": "From:",
-      "to": "To:"
-    },
-    "details": {
-      "subtotal": "Subtotal",
-      "tax": "Tax",
-      "tip": "Tip",
-      "discount": "Discount",
-      "discountReason": "Discount Reason",
-      "total": "Total",
-      "table": "Table: {{name}}",
-      "status": "Status",
-      "complimentary": "Complimentary"
-    },
-    "ariaLabels": {
-      "filterBy": "Filter by {{label}}",
-      "filterByCustomDateRange": "Filter by custom date range",
-      "filterByTill": "Filter by till",
-      "filterByUser": "Filter by user",
-      "startTime": "Start time",
-      "endDate": "End date",
-      "endTime": "End time",
-      "transactionDetails": "Transaction {{id}} for {{total}} by {{user}} at {{till}}"
-    }
-  },
-  "activity": {
-    "title": "Activity Log",
-    "noActivity": "No activity logs found",
-    "timestamp": "Timestamp",
-    "user": "User",
-    "action": "Action",
-    "details": "Details"
-  },
-  "dailyClosing": {
-    "title": "Daily Closing Summary",
-    "pageTitle": "Daily Closing Summaries",
-    "pageDescription": "View detailed breakdowns of daily business closings",
-    "generate": "Generate Summary",
-    "selectDate": "Select Date",
-    "noData": "No data available for the selected date",
-    "noRecordsFound": "No daily closing records found for the selected date range",
-    "totalSales": "Total Sales",
-    "totalTransactions": "Total Transactions",
-    "paymentBreakdown": "Payment Breakdown",
-    "cashSales": "Cash Sales",
-    "cardSales": "Card Sales",
-    "totalTips": "Total Tips",
-    "totalTax": "Total Tax",
-    "accessDenied": "Access Denied",
-    "accessDeniedMessage": "Daily closing summaries are only available to administrators.",
-    "loading": "Loading daily closing data...",
-    "error": "Error",
-    "retry": "Retry",
-    "filters": {
-      "fromDate": "From Date",
-      "toDate": "To Date",
-      "clearFilters": "Clear Filters"
-    },
-    "table": {
-      "dateTime": "Date/Time",
-      "user": "User",
-      "transactions": "Transactions",
-      "totalSales": "Total Sales",
-      "actions": "Actions",
-      "viewDetails": "View Details",
-      "hideDetails": "Hide Details"
-    },
-    "details": {
-      "transactionSummary": "Transaction Summary",
-      "paymentMethods": "Payment Methods",
-      "tillSummary": "Till Summary",
-      "additionalDetails": "Additional Details",
-      "closingId": "Closing ID",
-      "closedBy": "Closed By",
-      "closedAt": "Closed At",
-      "transactionsCount": "{{count}} transactions"
-    },
-    "combined": {
-      "paymentMethods": "Combined Payment Methods",
-      "tillSummary": "Combined Till Summary"
-    }
-  },
-  "settings": {
-    "title": "Settings",
-    "general": "General",
+"settings": {
     "language": "Language",
     "languageDescription": "Select your preferred language for the admin panel.",
-    "tax": "Tax Settings",
-    "taxMode": "Tax Mode",
-    "taxRate": "Tax Rate",
-    "taxModes": {
-      "none": "No Tax",
-      "inclusive": "Tax Inclusive",
-      "exclusive": "Tax Exclusive"
+    "tax": {
+      "title": "Tax Settings",
+      "description": "Configure default tax rates for your business.",
+      "defaultTaxRate": "Default Tax Rate",
+      "defaultTaxRateDescription": "Select the default tax rate applied to new products.",
+      "taxIncludedInPrice": "Tax Included in Price",
+      "taxIncludedInPriceDescription": "Enable if prices already include tax.",
+      "saving": "Saving...",
+      "saved": "Settings saved successfully!"
     },
-    "taxModeDescriptions": {
-      "exclusive": "Tax is added on top of the product price. (e.g., $10.00 + 7% = $10.70)",
-      "inclusive": "Product price already includes tax. (e.g., $10.00 is $9.35 + $0.65 tax)",
-      "none": "No taxes are calculated or applied."
+    "businessDay": {
+      "title": "Business Day",
+      "description": "Configure business day start time for reporting.",
+      "startTime": "Business Day Start Time",
+      "startTimeDescription": "Set the time when a new business day begins.",
+      "currentTime": "Current start time: {{time}}",
+      "saving": "Saving...",
+      "saved": "Settings saved successfully!"
     },
-    "howToHandleTaxes": "How should taxes be handled?",
-    "businessHours": "Business Hours",
-    "openingTime": "Opening Time",
-    "closingTime": "Closing Time",
-    "businessDayStart": "Business Day Start Hour",
-    "businessDayManagement": "Business Day Management",
-    "autoStartTimeLabel": "Automatic Start of Business Day",
-    "autoStartTimeDescription": "Set the time a new sales day begins. For a bar closing at 2 AM, a time like 6 AM ensures all sales from the previous night are on the same report.",
-    "manualDayCloseLabel": "Manual Day Close",
-    "manualDayCloseDescription": "Manually end the current reporting period and start a new one. Useful for separating day/night shifts.",
-    "manuallyEndBusinessDay": "Manually End Business Day",
-    "confirmManualCloseTitle": "Confirm Manual Close",
-    "confirmManualCloseMessage": "Are you sure? This will end the current business day for reporting. All new sales will be part of the next day. This action cannot be undone.",
-    "confirmManualCloseButton": "Yes, End Business Day",
-    "closing": "Closing...",
-    "dailyClosingCreateFailed": "Failed to create daily closing record: {{error}}",
-    "currency": "Currency",
-    "currencySymbol": "Currency Symbol",
-    "currencyPosition": "Currency Position",
-    "positions": {
-      "before": "Before Amount",
-      "after": "After Amount"
-    },
-    "saved": "Settings saved successfully",
-    "businessDayEndHourLabel": "Business Day End Hour",
-    "businessDayEndHourDescription": "Set when the business day ends. For overnight business (e.g., 10 PM to 4 AM), select the end time like 04:00.",
-    "autoCloseEnabledLabel": "Automatic Business Day Closing",
-    "autoCloseEnabledDescription": "Automatically close the business day at the specified end time. The system will create a daily closing record.",
-    "currentBusinessDayStatus": "Current Business Day Status",
-    "schedulerRunning": "Scheduler is active",
-    "schedulerNotRunning": "Scheduler is inactive",
-    "closingInProgress": "Closing in progress...",
-    "lastCloseTime": "Last close",
-    "nextScheduledClose": "Next scheduled close",
-    "loading": "Loading...",
-    "statusUnavailable": "Status unavailable",
-"never": "Never",
-      "backup": "Backup",
-      "backupDescription": "Create a full database backup that can be downloaded to your device. The backup file will be in SQL format.",
+    "backup": {
+      "title": "Backup",
+      "description": "Manage data backup and export options.",
       "createBackup": "Create Backup",
-      "creatingBackup": "Creating Backup...",
-      "backupSuccess": "Backup created successfully!",
-      "backupFailed": "Failed to create backup. Please try again.",
+      "createBackupDescription": "Download a complete backup of your data.",
       "lastBackup": "Last Backup",
-      "emailSettings": {
-        "title": "Email Settings",
-        "description": "Configure SMTP settings for sending receipt invoices via email.",
-        "enableEmail": "Enable Email",
-        "smtpHost": "SMTP Host",
-        "smtpHostPlaceholder": "e.g., smtp.gmail.com",
-        "smtpPort": "SMTP Port",
-        "useTls": "Use TLS/Secure Connection",
-        "smtpUsername": "SMTP Username",
-        "smtpPassword": "SMTP Password",
-        "passwordPlaceholder": "********",
-        "fromAddress": "From Email Address",
-        "fromName": "From Name",
-        "testConnection": "Test Connection",
-        "testing": "Testing...",
-        "testSuccess": "Connection successful! Response time: {{responseTime}}ms",
-        "testFailed": "Connection failed",
-        "passwordUnchanged": "Password unchanged",
-        "validation": {
-          "smtpHostRequired": "SMTP host is required when email is enabled",
-          "smtpPortRange": "Port must be between 1 and 65535",
-          "invalidEmail": "Please enter a valid email address",
-          "smtpUserRequired": "SMTP username is required when email is enabled"
-        }
-      }
+      "never": "Never",
+      "creating": "Creating backup..."
     },
-  "itemisedConsumption": {
+    "email": {
+      "title": "Email Settings",
+      "description": "Configure email settings for receipts and notifications.",
+      "smtpServer": "SMTP Server",
+      "smtpPort": "SMTP Port",
+      "smtpUsername": "SMTP Username",
+      "smtpPassword": "SMTP Password",
+      "fromEmail": "From Email",
+      "fromName": "From Name",
+      "saving": "Saving...",
+      "saved": "Settings saved successfully!"
+    },
+    "receiptFromPayment": {
+      "title": "Receipt from Payment",
+      "description": "Configure receipt issuance options from the payment modal.",
+      "allowReceiptLabel": "Allow receipt from payment modal",
+      "allowReceiptDescription": "Enable the option to issue receipts directly from the payment modal.",
+      "defaultSelectedLabel": "Default selected",
+      "defaultSelectedDescription": "When enabled, the receipt option will be selected by default in the payment modal.",
+      "issueModeLabel": "Issue mode",
+      "issueModeImmediate": "Immediate - Issue receipt immediately upon payment",
+      "issueModeDraft": "Draft - Create receipt as draft for later review"
+    }
+  },
+"itemisedConsumption": {
     "title": "Itemised Consumption",
     "selectDateRange": "Select Date Range",
     "generate": "Generate Report",

@@ -29,6 +29,7 @@
     "verifyLayoutOwnershipFailed": "Failed to verify layout ownership",
     "adminPrivilegesRequired": "Access denied. Admin privileges required.",
     "cannotModifyOtherUser": "You cannot modify another user's profile.",
+    "cannotAccessOtherUser": "You cannot access another user's data.",
     "verifyAdminPrivilegesFailed": "Failed to verify admin privileges"
   },
   "validation": {
@@ -145,7 +146,11 @@
     "logoutFailed": "Logout failed due to server error. Please try again later.",
     "userIdRequired": "User ID is required",
     "tokensRevoked": "All tokens for the user have been revoked successfully.",
-    "revokeFailed": "Failed to revoke all tokens. Please try again later."
+    "revokeFailed": "Failed to revoke all tokens. Please try again later.",
+    "invalidId": "Invalid user ID",
+    "invalidReceiptPreference": "Invalid receipt preference value",
+    "receiptPreferenceFetchFailed": "Failed to fetch receipt preference",
+    "receiptPreferenceUpdateFailed": "Failed to update receipt preference"
   },
   "tills": {
     "notFound": "Till not found",
@@ -285,7 +290,8 @@
     "emailConfigIncomplete": "Email configuration is incomplete. SMTP host, user, and sender address are required when email is enabled.",
     "invalidSmtpPort": "Invalid SMTP port. Must be between 1 and 65535.",
     "invalidReceiptNumberLength": "Invalid receipt number length. Must be between 1 and 20.",
-    "invalidReceiptStartNumber": "Invalid receipt start number. Must be at least 1."
+    "invalidReceiptStartNumber": "Invalid receipt start number. Must be at least 1.",
+    "invalidReceiptIssueMode": "Invalid receipt issue mode. Must be 'immediate' or 'draft'."
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",

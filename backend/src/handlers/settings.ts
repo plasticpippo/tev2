@@ -87,16 +87,21 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
           currentYear: null,
           currentNumber: 0
         },
-        email: {
-          smtpHost: null,
-          smtpPort: 587,
-          smtpUser: null,
-          smtpPassword: null,
-          fromAddress: null,
-          fromName: null,
-          smtpSecure: false,
-          enabled: false
-        }
+email: {
+        smtpHost: null,
+        smtpPort: 587,
+        smtpUser: null,
+        smtpPassword: null,
+        fromAddress: null,
+        fromName: null,
+        smtpSecure: false,
+        enabled: false
+      },
+      receiptFromPaymentModal: {
+        allowReceiptFromPaymentModal: false,
+        receiptIssueDefaultSelected: false,
+        receiptIssueMode: 'immediate'
+      }
       });
       return;
     }
@@ -135,21 +140,26 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
         currentYear: settings.receiptCurrentYear,
         currentNumber: settings.receiptCurrentNumber
       },
-      email: {
-        smtpHost: settings.emailSmtpHost,
-        smtpPort: settings.emailSmtpPort,
-        smtpUser: settings.emailSmtpUser,
-        smtpPassword: settings.emailSmtpPassword,
-        fromAddress: settings.emailFromAddress,
-        fromName: settings.emailFromName,
-        smtpSecure: settings.emailSmtpSecure,
-        enabled: settings.emailEnabled
-      }
-    };
+email: {
+      smtpHost: settings.emailSmtpHost,
+      smtpPort: settings.emailSmtpPort,
+      smtpUser: settings.emailSmtpUser,
+      smtpPassword: settings.emailSmtpPassword,
+      fromAddress: settings.emailFromAddress,
+      fromName: settings.emailFromName,
+      smtpSecure: settings.emailSmtpSecure,
+      enabled: settings.emailEnabled
+    },
+    receiptFromPaymentModal: {
+      allowReceiptFromPaymentModal: settings.allowReceiptFromPaymentModal ?? false,
+      receiptIssueDefaultSelected: settings.receiptIssueDefaultSelected ?? false,
+      receiptIssueMode: (settings.receiptIssueMode ?? 'immediate') as 'immediate' | 'draft'
+    }
+  };
 
-    res.json(result);
-  } catch (error) {
-    logError(error instanceof Error ? error : 'Error fetching settings', {
+  res.json(result);
+} catch (error) {
+  logError(error instanceof Error ? error : 'Error fetching settings', {
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
@@ -159,7 +169,15 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
 // PUT /api/settings - Update settings (requires admin role)
 settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   try {
-    const { tax, businessDay, business, receipt, email } = req.body as Settings;
+    const { tax, businessDay, business, receipt, email, receiptFromPaymentModal } = req.body as Settings;
+
+    // Validate receiptIssueMode if provided
+    if (receiptFromPaymentModal?.receiptIssueMode !== undefined) {
+      if (receiptFromPaymentModal.receiptIssueMode !== 'immediate' && receiptFromPaymentModal.receiptIssueMode !== 'draft') {
+        res.status(400).json({ error: req.t('errors:settings.invalidReceiptIssueMode') });
+        return;
+      }
+    }
 
     // Validate defaultTaxRateId if provided
     if (tax?.defaultTaxRateId !== undefined && tax.defaultTaxRateId !== null) {
@@ -238,13 +256,16 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           emailSmtpPassword: email?.smtpPassword !== undefined ? email.smtpPassword : existingSettings.emailSmtpPassword,
           emailFromAddress: email?.fromAddress !== undefined ? email.fromAddress : existingSettings.emailFromAddress,
           emailFromName: email?.fromName !== undefined ? email.fromName : existingSettings.emailFromName,
-          emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSettings.emailSmtpSecure,
-          emailEnabled: email?.enabled !== undefined ? email.enabled : existingSettings.emailEnabled,
-        },
-        include: {
-          defaultTaxRate: true,
-        },
-      }) as SettingsWithTaxRate;
+emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSettings.emailSmtpSecure,
+      emailEnabled: email?.enabled !== undefined ? email.enabled : existingSettings.emailEnabled,
+      allowReceiptFromPaymentModal: receiptFromPaymentModal?.allowReceiptFromPaymentModal !== undefined ? receiptFromPaymentModal.allowReceiptFromPaymentModal : existingSettings.allowReceiptFromPaymentModal,
+      receiptIssueDefaultSelected: receiptFromPaymentModal?.receiptIssueDefaultSelected !== undefined ? receiptFromPaymentModal.receiptIssueDefaultSelected : existingSettings.receiptIssueDefaultSelected,
+      receiptIssueMode: receiptFromPaymentModal?.receiptIssueMode !== undefined ? receiptFromPaymentModal.receiptIssueMode : existingSettings.receiptIssueMode,
+      },
+      include: {
+        defaultTaxRate: true,
+      },
+    }) as SettingsWithTaxRate;
     } else {
       // Create new settings record
       settings = await prisma.settings.create({
@@ -275,13 +296,16 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           emailSmtpPassword: email?.smtpPassword ?? null,
           emailFromAddress: email?.fromAddress ?? null,
           emailFromName: email?.fromName ?? null,
-          emailSmtpSecure: email?.smtpSecure ?? false,
-          emailEnabled: email?.enabled ?? false,
-        },
-        include: {
-          defaultTaxRate: true,
-        },
-      }) as SettingsWithTaxRate;
+emailSmtpSecure: email?.smtpSecure ?? false,
+      emailEnabled: email?.enabled ?? false,
+      allowReceiptFromPaymentModal: receiptFromPaymentModal?.allowReceiptFromPaymentModal ?? false,
+      receiptIssueDefaultSelected: receiptFromPaymentModal?.receiptIssueDefaultSelected ?? false,
+      receiptIssueMode: receiptFromPaymentModal?.receiptIssueMode ?? 'immediate',
+      },
+      include: {
+        defaultTaxRate: true,
+      },
+    }) as SettingsWithTaxRate;
     }
 
     // Clear the scheduler's settings cache so it picks up the new settings
@@ -322,21 +346,26 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
         currentYear: settings.receiptCurrentYear,
         currentNumber: settings.receiptCurrentNumber
       },
-      email: {
-        smtpHost: settings.emailSmtpHost,
-        smtpPort: settings.emailSmtpPort,
-        smtpUser: settings.emailSmtpUser,
-        smtpPassword: settings.emailSmtpPassword,
-        fromAddress: settings.emailFromAddress,
-        fromName: settings.emailFromName,
-        smtpSecure: settings.emailSmtpSecure,
-        enabled: settings.emailEnabled
-      }
-    };
+email: {
+      smtpHost: settings.emailSmtpHost,
+      smtpPort: settings.emailSmtpPort,
+      smtpUser: settings.emailSmtpUser,
+      smtpPassword: settings.emailSmtpPassword,
+      fromAddress: settings.emailFromAddress,
+      fromName: settings.emailFromName,
+      smtpSecure: settings.emailSmtpSecure,
+      enabled: settings.emailEnabled
+    },
+    receiptFromPaymentModal: {
+      allowReceiptFromPaymentModal: settings.allowReceiptFromPaymentModal ?? false,
+      receiptIssueDefaultSelected: settings.receiptIssueDefaultSelected ?? false,
+      receiptIssueMode: (settings.receiptIssueMode ?? 'immediate') as 'immediate' | 'draft'
+    }
+  };
 
-    res.json(result);
-  } catch (error) {
-    logError(error instanceof Error ? error : 'Error updating settings', {
+  res.json(result);
+} catch (error) {
+  logError(error instanceof Error ? error : 'Error updating settings', {
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:settings.updateFailed') });

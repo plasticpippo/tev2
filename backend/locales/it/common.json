@@ -56,6 +56,8 @@
     "onlyIssuedCanBeVoided": "Solo le ricevute emesse possono essere annullate",
     "onlyDraftCanBeUpdated": "Solo le bozze possono essere aggiornate",
     "voidReasonRequired": "Il motivo dell'annullamento è obbligatorio",
+    "canOnlyRetryFailed": "Solo le ricevute fallite possono essere riprovate",
+    "retryFailed": "Impossibile riprovare la generazione della ricevuta",
     "created": "Ricevuta creata con successo",
     "issued": "Ricevuta emessa con successo",
     "voided": "Ricevuta annullata con successo",

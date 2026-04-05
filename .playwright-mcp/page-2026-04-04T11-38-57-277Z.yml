@@ -1,0 +1,14 @@
+- generic [active]:
+  - generic:
+    - generic [ref=e2]:
+      - button "Change language" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: EN
+        - img [ref=e7]
+      - heading "login.title" [level=2] [ref=e9]
+      - paragraph [ref=e10]: "login.till: Unknown Till"
+      - generic [ref=e11]:
+        - generic [ref=e13]: login.username
+        - generic [ref=e15]: login.password
+        - button "login.loginButton" [ref=e16] [cursor=pointer]
+    - button "Enable virtual keyboard" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]

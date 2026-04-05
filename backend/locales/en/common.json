@@ -56,6 +56,8 @@
     "onlyIssuedCanBeVoided": "Only issued receipts can be voided",
     "onlyDraftCanBeUpdated": "Only draft receipts can be updated",
     "voidReasonRequired": "Void reason is required",
+    "canOnlyRetryFailed": "Only failed receipts can be retried",
+    "retryFailed": "Failed to retry receipt generation",
     "created": "Receipt created successfully",
     "issued": "Receipt issued successfully",
     "voided": "Receipt voided successfully",
