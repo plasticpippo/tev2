@@ -7,6 +7,20 @@ import { logError, logDataAccess } from '../utils/logger';
 import i18n from '../i18n';
 import path from 'path';
 import fs from 'fs/promises';
+import { z } from 'zod';
+
+export const createReceiptSchema = z.object({
+  transactionId: z.number(),
+  customerId: z.number().nullable().optional(),
+  notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
+  internalNotes: z.string().optional(),
+});
+
+export const updateReceiptSchema = z.object({
+  customerId: z.number().nullable().optional(),
+  notes: z.string().max(1000, "Notes cannot exceed 1000 characters").optional(),
+  internalNotes: z.string().optional(),
+});
 import {
   CreateReceiptInput,
   UpdateReceiptInput,
@@ -245,11 +259,12 @@ receiptsRouter.post('/', authenticateToken, async (req: Request, res: Response) 
       return res.status(401).json({ error: i18n.t('auth.userNotFound') });
     }
 
-    const { transactionId, customerId, notes, internalNotes } = req.body;
-
-    if (!transactionId || typeof transactionId !== 'number') {
-      return res.status(400).json({ error: i18n.t('receipts.transactionIdRequired') });
+    const validation = createReceiptSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error.errors[0].message });
     }
+
+    const { transactionId, customerId, notes, internalNotes } = validation.data;
 
     const input: CreateReceiptInput = {
       transactionId,
@@ -403,7 +418,12 @@ receiptsRouter.put('/:id', authenticateToken, async (req: Request, res: Response
       return res.status(401).json({ error: i18n.t('auth.userNotFound') });
     }
 
-    const { customerId, notes, internalNotes } = req.body;
+    const validation = updateReceiptSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({ error: validation.error.errors[0].message });
+    }
+
+    const { customerId, notes, internalNotes } = validation.data;
 
     const input: UpdateReceiptInput = {
       ...(customerId !== undefined && { customerId: customerId ?? null }),

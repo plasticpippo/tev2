@@ -615,20 +615,45 @@
     "invalidLayoutName": "Invalid layout name: {{message}}"
   },
 "paymentContext": {
-"invalidItemNames": "Some items have invalid names, correcting them before saving transaction",
-"itemFallbackName": "Item {{variantId}}",
-"invalidStockItemReference": "Invalid stock item reference in variant {{variantId}}: {{stockItemId}}",
-"invalidUuidFormat": " (Invalid UUID format)",
-"stockItemNotExist": " (Stock item does not exist)",
-"orderSessionCompleteFailed": "Order session complete status update failed or user not authenticated",
-"orderSessionStatusUpdateFailed": "Failed to update order session status on payment completion",
-"paymentProcessingFailed": "Payment processing failed",
-"paymentProcessingFailedMessage": "Payment processing failed. Please try again or contact support.",
-"paymentSuccess": "Payment successful!",
-"paymentSuccessWithReceipt": "Payment successful! Receipt: {{receiptNumber}}",
-"paymentSuccessReceiptQueued": "Payment successful! Receipt queued for processing.",
-"paymentSuccessReceiptDraft": "Payment successful! Receipt saved as draft.",
-"paymentSuccessReceiptError": "Payment successful, but receipt creation failed. Please check receipts list.",
-"contextError": "usePaymentContext must be used within a PaymentProvider"
-}
+    "invalidItemNames": "Some items have invalid names, correcting them before saving transaction",
+    "itemFallbackName": "Item {{variantId}}",
+    "invalidStockItemReference": "Invalid stock item reference in variant {{variantId}}: {{stockItemId}}",
+    "invalidUuidFormat": " (Invalid UUID format)",
+    "stockItemNotExist": " (Stock item does not exist)",
+    "orderSessionCompleteFailed": "Order session complete status update failed or user not authenticated",
+    "orderSessionStatusUpdateFailed": "Failed to update order session status on payment completion",
+    "paymentProcessingFailed": "Payment processing failed",
+    "paymentProcessingFailedMessage": "Payment processing failed. Please try again or contact support.",
+    "paymentSuccess": "Payment successful!",
+    "paymentSuccessWithReceipt": "Payment successful! Receipt: {{receiptNumber}}",
+    "paymentSuccessReceiptQueued": "Payment successful! Receipt queued for processing.",
+    "paymentSuccessReceiptDraft": "Payment successful! Receipt saved as draft.",
+    "paymentSuccessReceiptError": "Payment successful, but receipt creation failed. Please check receipts list.",
+    "contextError": "usePaymentContext must be used within a PaymentProvider"
+  },
+  "receiptService": {
+    "errorFetchingCustomers": "Failed to fetch customers",
+    "errorFetchingCustomer": "Failed to fetch customer",
+    "errorCreatingCustomer": "Failed to create customer",
+    "errorUpdatingCustomer": "Failed to update customer",
+    "errorSearchingCustomers": "Failed to search customers",
+    "errorFetchingReceipts": "Failed to fetch receipts",
+    "errorFetchingReceipt": "Failed to fetch receipt",
+    "errorCreatingReceipt": "Failed to create receipt",
+    "errorUpdatingReceipt": "Failed to update receipt",
+    "errorIssuingReceipt": "Failed to issue receipt",
+    "errorVoidingReceipt": "Failed to void receipt",
+    "errorSendingReceiptEmail": "Failed to send receipt email",
+    "errorFetchingReceiptPdf": "Failed to fetch receipt PDF",
+    "errorDownloadingReceiptPdf": "Failed to download receipt PDF",
+    "errorFetchingPendingReceipts": "Failed to fetch pending receipts",
+    "errorRetryingReceipt": "Failed to retry receipt"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Change Language"
+  },
+  "fullscreen": {
+    "enter": "Enter Fullscreen",
+    "exit": "Exit Fullscreen"
+  }
 }

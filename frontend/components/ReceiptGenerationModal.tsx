@@ -17,6 +17,7 @@ interface ReceiptGenerationModalProps {
   onClose: () => void;
   transaction: Transaction | null;
   onReceiptGenerated?: (receipt: Receipt) => void;
+  onViewAllCustomers?: () => void;
 }
 
 type Step = 'details' | 'customer' | 'preview' | 'success';
@@ -26,6 +27,7 @@ export const ReceiptGenerationModal: React.FC<ReceiptGenerationModalProps> = ({
   onClose,
   transaction,
   onReceiptGenerated,
+  onViewAllCustomers,
 }) => {
   const { t } = useTranslation('admin');
 
@@ -505,6 +507,7 @@ const handleCreateDraft = async () => {
         onClose={() => setShowCustomerModal(false)}
         onSelectCustomer={handleSelectCustomer}
         onCreateCustomer={handleCreateNewCustomer}
+        onViewAllCustomers={onViewAllCustomers}
       />
     </>
   );

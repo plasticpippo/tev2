@@ -18,6 +18,7 @@ import { DailyClosingSummaryView } from './DailyClosingSummaryView';
 import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsumptionPanel';
 import { ReceiptManagement } from './ReceiptManagement';
 import { ReceiptStatusBadge } from './ReceiptStatusBadge';
+import { CustomerManagement } from './CustomerManagement';
 import TableErrorBoundary from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
@@ -52,7 +53,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -120,8 +121,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
         return <DailyClosingSummaryView currentUserRole={currentUser.role} />;
 case 'itemisedConsumption':
       return <ItemisedConsumptionPanel categories={categories} stockItems={stockItems} />;
-    case 'receipts':
-      return <ReceiptManagement onDataUpdate={onDataUpdate} />;
+        case 'receipts':
+            return <ReceiptManagement onDataUpdate={onDataUpdate} onNavigateToCustomer={(id) => { setActiveView('customers'); }} />;
+        case 'customers':
+            return <CustomerManagement onDataUpdate={onDataUpdate} />;
     default:
         return <p>Select a view</p>;
     }
@@ -305,10 +308,11 @@ case 'itemisedConsumption':
         icon={<ReceiptsIcon />} 
         badge={<ReceiptStatusBadge onClick={() => handleNavClick('receipts')} collapsed={sidebarCollapsed} />}
       />
-      <NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
-          <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />
-          <div className="pt-2"></div>
-          <NavButton view="products" label={t('navigation.products')} isFirst icon={<ProductsIcon />} />
+<NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
+      <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />
+      <div className="pt-2"></div>
+      <NavButton view="customers" label={t('navigation.customers')} isFirst icon={<UsersIcon />} />
+      <NavButton view="products" label={t('navigation.products')} icon={<ProductsIcon />} />
           <NavButton view="categories" label={t('navigation.categories')} icon={<CategoriesIcon />} />
           <NavButton view="stockItems" label={t('navigation.stockItems')} icon={<StockItemsIcon />} />
           <NavButton view="inventory" label={t('navigation.inventory')} icon={<InventoryIcon />} />

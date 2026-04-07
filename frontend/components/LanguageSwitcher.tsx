@@ -8,7 +8,7 @@ const languageNames: Record<SupportedLanguage, { name: string; flag: string }> =
 };
 
 export const LanguageSwitcher: React.FC = () => {
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation('common');
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 

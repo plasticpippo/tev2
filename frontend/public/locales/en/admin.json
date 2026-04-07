@@ -15,7 +15,8 @@
     "tills": "Tills",
     "tables": "Tables & Layout",
     "itemisedConsumption": "Itemised Consumption",
-    "settings": "Settings"
+    "settings": "Settings",
+    "customers": "Customers"
   },
   "header": {
     "loggedInAs": "Logged in as {{name}}",
@@ -485,6 +486,47 @@
     "noOpenTabs": "No open tabs across all tills.",
     "on": "on"
   },
+  "transactions": {
+    "title": "Transactions",
+    "ariaLabels": {
+      "filterBy": "Filter by {{filter}}",
+      "filterByCustomDateRange": "Filter by custom date range",
+      "transactionDetails": "View details for transaction {{id}}",
+      "filterByTill": "Filter by till",
+      "filterByUser": "Filter by user",
+      "startTime": "Start time",
+      "endTime": "End time"
+    },
+    "dateRange": {
+      "today": "Today",
+      "yesterday": "Yesterday",
+      "last7Days": "Last 7 Days",
+      "last30Days": "Last 30 Days",
+      "custom": "Custom"
+    },
+    "filters": {
+      "till": "Till",
+      "user": "User",
+      "from": "From",
+      "to": "To"
+    },
+    "allTills": "All Tills",
+    "allUsers": "All Users",
+    "found": "{{count}} transactions found",
+    "noTransactions": "No transactions found",
+    "receipt": "Receipt #{{id}}",
+    "selectTransaction": "Select a transaction to view details",
+    "details": {
+      "complimentary": "Complimentary",
+      "table": "Table: {{name}}",
+      "subtotal": "Subtotal",
+      "tax": "Tax",
+      "discount": "Discount",
+      "discountReason": "Reason",
+      "tip": "Tip",
+      "total": "Total"
+    }
+  },
   "analytics": {
     "title": "Analytics Dashboard",
     "today": "Today",
@@ -749,6 +791,10 @@
       "change": "Change",
       "skip": "Skip (No Customer)",
       "confirm": "Confirm Selection",
+      "recentCustomers": "Recent Customers",
+      "orSearch": "Or search for a customer",
+      "viewAll": "View All Customers",
+      "receiptCount": "{{count}} receipt(s)",
       "validation": {
         "nameRequired": "Customer name is required",
         "nameMaxLength": "Name must be 200 characters or less",
@@ -764,16 +810,20 @@
     "management": {
       "title": "Receipt Management"
     },
-  "filters": {
-    "search": "Search",
-    "searchPlaceholder": "Receipt number or customer...",
-    "status": "Status",
-    "allStatuses": "All Statuses",
-    "generationStatus": "Generation",
-    "allGenerationStatuses": "All Generation Statuses",
-    "dateFrom": "From Date",
-    "dateTo": "To Date"
-  },
+    "filters": {
+        "search": "Search",
+        "searchPlaceholder": "Receipt number or customer...",
+        "status": "Status",
+        "allStatuses": "All Statuses",
+        "generationStatus": "Generation",
+        "allGenerationStatuses": "All Generation Statuses",
+        "dateFrom": "From Date",
+        "dateTo": "To Date",
+        "customer": "Customer",
+        "customerPlaceholder": "Search customer...",
+        "clearCustomer": "Clear customer filter",
+        "allCustomers": "All Customers"
+    },
   "generationStatus": {
     "pending": "Pending",
     "completed": "Completed",
@@ -807,11 +857,12 @@
     "email": "Send Email",
     "sending": "Sending..."
   },
-  "actions": {
-    "view": "View Details",
-    "download": "Download PDF",
-    "email": "Send Email",
-    "issue": "Issue Receipt"
+    "actions": {
+        "view": "View Details",
+        "download": "Download PDF",
+        "email": "Send Email",
+        "issue": "Issue Receipt",
+        "viewCustomer": "View Customer Details"
     },
     "issue": {
       "confirm": "Issue this receipt? This action cannot be undone.",
@@ -833,29 +884,103 @@
       "page": "Page {{current}} of {{total}}"
     },
     "detail": {
-      "title": "Receipt {{number}}",
-      "transaction": "Transaction #{{id}}",
-      "business": "Business",
-      "customer": "Customer",
-      "vatNumber": "VAT Number",
-      "items": "Items",
-      "item": "Item",
-      "qty": "Qty",
-      "price": "Price",
-      "total": "Total",
-      "subtotal": "Subtotal",
-      "tax": "Tax",
-      "discount": "Discount",
-      "tip": "Tip"
+        "title": "Receipt {{number}}",
+        "transaction": "Transaction #{{id}}",
+        "business": "Business",
+        "customer": "Customer",
+        "vatNumber": "VAT Number",
+        "items": "Items",
+        "item": "Item",
+        "qty": "Qty",
+        "price": "Price",
+        "total": "Total",
+        "subtotal": "Subtotal",
+        "tax": "Tax",
+        "discount": "Discount",
+        "tip": "Tip",
+        "customerDeleted": "Customer record no longer available"
     },
 "email": {
     "success": "Email sent successfully"
   },
-  "loading": "Loading receipts...",
-  "noReceipts": "No receipts found",
-  "noCustomer": "No Customer",
-  "statusBadge": {
-    "title": "{{count}} receipt(s) need attention"
+    "loading": "Loading receipts...",
+    "noReceipts": "No receipts found",
+    "noCustomer": "No Customer",
+    "statusBadge": {
+        "title": "{{count}} receipt(s) need attention"
+    },
+"customer": {
+      "noResults": "No customers found"
+    }
+  },
+  "customers": {
+    "management": {
+      "title": "Customer Management"
+    },
+    "buttons": {
+      "new": "New Customer",
+      "edit": "Edit",
+      "clearFilters": "Clear Filters"
+    },
+    "filters": {
+      "search": "Search",
+      "searchPlaceholder": "Search customers...",
+      "status": "Status",
+      "allStatuses": "All Statuses"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "table": {
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "vatNumber": "VAT Number",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "actions": {
+      "view": "View",
+      "edit": "Edit",
+      "activate": "Activate",
+      "deactivate": "Deactivate"
+    },
+    "form": {
+      "editTitle": "Edit Customer",
+      "newTitle": "New Customer",
+      "saveChanges": "Save Changes",
+      "createCustomer": "Create Customer",
+      "name": "Name",
+      "email": "Email",
+      "phone": "Phone",
+      "vatNumber": "VAT Number",
+      "address": "Address",
+      "city": "City",
+      "postalCode": "Postal Code",
+      "country": "Country",
+      "notes": "Notes",
+      "active": "Active"
+    },
+    "detail": {
+      "title": "Customer Details",
+      "contactInfo": "Contact Information",
+      "address": "Address",
+      "noAddress": "No address provided",
+      "notes": "Notes",
+      "noNotes": "No notes"
+    },
+    "pagination": {
+      "showing": "Showing",
+      "to": "to",
+      "of": "of",
+      "customers": "customers"
+    },
+    "loading": "Loading customers...",
+    "noCustomers": "No customers found",
+    "errors": {
+      "fetchFailed": "Failed to load customers",
+      "notFound": "Customer not found"
+    }
   }
-}
 }

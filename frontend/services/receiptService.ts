@@ -103,7 +103,7 @@ export const searchCustomers = async (searchTerm: string, limit: number = 10): P
 
   try {
     const result = await makeApiRequest(apiUrl(`/api/customers?${params.toString()}`));
-    return result.data;
+    return result.customers || result.data || [];
   } catch (error) {
     console.error(i18n.t('receiptService.errorSearchingCustomers'), error);
     return [];

@@ -1,4 +1,5 @@
 import express, { Request, Response } from 'express';
+import { z } from 'zod';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import * as customerService from '../services/customerService';
@@ -10,6 +11,37 @@ import {
   CustomerFilters,
   CustomerPagination,
 } from '../types/customer';
+
+const createCustomerSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200),
+  email: z.string().email("Invalid email format").max(255).nullable().or(z.literal('')),
+  phone: z.string().max(50).nullable(),
+  vatNumber: z.string().max(50).nullable(),
+  address: z.string().max(500).nullable(),
+  city: z.string().max(100).nullable(),
+  postalCode: z.string().max(20).nullable(),
+  country: z.string().max(100).nullable(),
+  notes: z.string().max(1000).nullable(),
+});
+
+const updateCustomerSchema = z.object({
+  name: z.string().min(1, "Name is required").max(200).optional(),
+  email: z.string().email("Invalid email format").max(255).nullable().or(z.literal('')),
+  phone: z.string().max(50).nullable(),
+  vatNumber: z.string().max(50).nullable(),
+  address: z.string().max(500).nullable(),
+  city: z.string().max(100).nullable(),
+  postalCode: z.string().max(20).nullable(),
+  country: z.string().max(100).nullable(),
+  notes: z.string().max(1000).nullable(),
+});
+
+const validateVATNumber = (vat: string | undefined): boolean => {
+  if (!vat) return true;
+  const itVatRegex = /^IT[0-9]{11}$/;
+  const euVatRegex = /^[A-Z]{2}[0-9A-Z]{2,12}$/;
+  return itVatRegex.test(vat) || euVatRegex.test(vat);
+};
 
 export const customersRouter = express.Router();
 
@@ -128,10 +160,20 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
       return res.status(401).json({ error: i18n.t('auth.userNotFound') });
     }
 
-    const { name, email, phone, vatNumber, address, city, postalCode, country, notes } = req.body;
+    const validation = createCustomerSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        error: i18n.t('customers.validationFailed'),
+        details: validation.error.errors,
+      });
+    }
 
-    if (!name || typeof name !== 'string' || name.trim() === '') {
-      return res.status(400).json({ error: i18n.t('customers.nameRequired') });
+    const { name, email, phone, vatNumber, address, city, postalCode, country, notes } = validation.data;
+
+    if (vatNumber && !validateVATNumber(vatNumber)) {
+      return res.status(400).json({
+        error: i18n.t('customers.invalidVatNumber'),
+      });
     }
 
     if (email) {
@@ -175,7 +217,22 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
       return res.status(401).json({ error: i18n.t('auth.userNotFound') });
     }
 
-    const { name, email, phone, vatNumber, address, city, postalCode, country, notes, isActive } = req.body;
+    const validation = updateCustomerSchema.safeParse(req.body);
+    if (!validation.success) {
+      return res.status(400).json({
+        error: i18n.t('customers.validationFailed'),
+        details: validation.error.errors,
+      });
+    }
+
+    const { name, email, phone, vatNumber, address, city, postalCode, country, notes } = validation.data;
+    const { isActive } = req.body;
+
+    if (vatNumber && !validateVATNumber(vatNumber)) {
+      return res.status(400).json({
+        error: i18n.t('customers.invalidVatNumber'),
+      });
+    }
 
     if (email !== undefined && email !== null) {
       const isUnique = await customerService.checkEmailUniqueness(email, Number(id));

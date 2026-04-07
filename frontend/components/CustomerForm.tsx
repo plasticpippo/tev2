@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Customer, CreateCustomerInput } from '../../shared/types';
+import type { Customer, CreateCustomerInput, UpdateCustomerInput } from '../../shared/types';
 
 interface CustomerFormProps {
-  onSubmit: (data: CreateCustomerInput) => Promise<void>;
-  onCancel: () => void;
-  initialData?: Partial<Customer>;
+  mode?: 'create' | 'edit';
+  initialData?: Customer;
+  onSubmit: (data: CreateCustomerInput | UpdateCustomerInput) => Promise<void>;
+  onCancel?: () => void;
   isLoading?: boolean;
 }
 
 export const CustomerForm: React.FC<CustomerFormProps> = ({
+  mode = 'create',
+  initialData,
   onSubmit,
   onCancel,
-  initialData,
   isLoading = false,
 }) => {
   const { t } = useTranslation('admin');
@@ -30,6 +32,10 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [submitting, setSubmitting] = useState(false);
+
+  const notesCharacterCount = formData.notes?.length || 0;
+  const maxNotesLength = 1000;
 
   const validateForm = (): boolean => {
     const newErrors: Record<string, string> = {};
@@ -64,7 +70,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       newErrors.postalCode = t('receipts.customer.validation.postalCodeMaxLength');
     }
 
-    if (formData.notes && formData.notes.length > 1000) {
+    if (formData.notes && formData.notes.length > maxNotesLength) {
       newErrors.notes = t('receipts.customer.validation.notesMaxLength');
     }
 
@@ -79,8 +85,9 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
       return;
     }
 
+    setSubmitting(true);
     try {
-      await onSubmit({
+      const cleanedData = {
         ...formData,
         email: formData.email?.trim() || null,
         phone: formData.phone?.trim() || null,
@@ -90,9 +97,13 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
         postalCode: formData.postalCode?.trim() || null,
         country: formData.country?.trim() || null,
         notes: formData.notes?.trim() || null,
-      });
+      };
+
+      await onSubmit(cleanedData);
     } catch (error) {
       // Error handling is done by the parent component
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -103,12 +114,19 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
     }
   };
 
+  const isFormDisabled = isLoading || submitting;
+  const submitButtonText = mode === 'edit'
+    ? t('customers.form.saveChanges', 'Save Changes')
+    : t('customers.form.createCustomer', 'Create Customer');
+  const loadingButtonText = mode === 'edit'
+    ? t('customers.form.saving', 'Saving...')
+    : t('customers.form.creating', 'Creating...');
+
   return (
     <form onSubmit={handleSubmit} className="space-y-4">
-      {/* Name - Required */}
       <div>
         <label htmlFor="customer-name" className="block text-sm font-medium text-slate-300 mb-1">
-          {t('receipts.customer.name')} *
+          {t('receipts.customer.name')} <span className="text-red-400">*</span>
         </label>
         <input
           id="customer-name"
@@ -118,13 +136,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.name ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
           placeholder={t('receipts.customer.namePlaceholder')}
           maxLength={200}
-          disabled={isLoading}
+          disabled={isFormDisabled}
           autoFocus
         />
         {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
       </div>
 
-      {/* Email */}
       <div>
         <label htmlFor="customer-email" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.email')}
@@ -137,12 +154,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.email ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
           placeholder={t('receipts.customer.emailPlaceholder')}
           maxLength={255}
-          disabled={isLoading}
+          disabled={isFormDisabled}
         />
         {errors.email && <p className="text-red-400 text-xs mt-1">{errors.email}</p>}
+        <p className="text-xs text-slate-500 mt-1">{t('customers.form.emailHint', 'Used for receipt delivery')}</p>
       </div>
 
-      {/* Phone */}
       <div>
         <label htmlFor="customer-phone" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.phone')}
@@ -155,12 +172,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.phone ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
           placeholder={t('receipts.customer.phonePlaceholder')}
           maxLength={50}
-          disabled={isLoading}
+          disabled={isFormDisabled}
         />
         {errors.phone && <p className="text-red-400 text-xs mt-1">{errors.phone}</p>}
       </div>
 
-      {/* VAT Number */}
       <div>
         <label htmlFor="customer-vat" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.vatNumber')}
@@ -173,12 +189,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.vatNumber ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
           placeholder={t('receipts.customer.vatNumberPlaceholder')}
           maxLength={50}
-          disabled={isLoading}
+          disabled={isFormDisabled}
         />
         {errors.vatNumber && <p className="text-red-400 text-xs mt-1">{errors.vatNumber}</p>}
+        <p className="text-xs text-slate-500 mt-1">{t('customers.form.vatHint', 'Required for business receipts')}</p>
       </div>
 
-      {/* Address */}
       <div>
         <label htmlFor="customer-address" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.address')}
@@ -191,12 +207,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.address ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
           placeholder={t('receipts.customer.addressPlaceholder')}
           maxLength={500}
-          disabled={isLoading}
+          disabled={isFormDisabled}
         />
         {errors.address && <p className="text-red-400 text-xs mt-1">{errors.address}</p>}
       </div>
 
-      {/* City and Postal Code - Side by Side */}
       <div className="grid grid-cols-2 gap-4">
         <div>
           <label htmlFor="customer-city" className="block text-sm font-medium text-slate-300 mb-1">
@@ -210,7 +225,7 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             className={`w-full bg-slate-900 p-2 rounded-md border ${errors.city ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
             placeholder={t('receipts.customer.cityPlaceholder')}
             maxLength={100}
-            disabled={isLoading}
+            disabled={isFormDisabled}
           />
           {errors.city && <p className="text-red-400 text-xs mt-1">{errors.city}</p>}
         </div>
@@ -227,13 +242,12 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
             className={`w-full bg-slate-900 p-2 rounded-md border ${errors.postalCode ? 'border-red-500' : 'border-slate-700'} text-white text-sm`}
             placeholder={t('receipts.customer.postalCodePlaceholder')}
             maxLength={20}
-            disabled={isLoading}
+            disabled={isFormDisabled}
           />
           {errors.postalCode && <p className="text-red-400 text-xs mt-1">{errors.postalCode}</p>}
         </div>
       </div>
 
-      {/* Country */}
       <div>
         <label htmlFor="customer-country" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.country')}
@@ -245,12 +259,11 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           onChange={(e) => handleChange('country', e.target.value)}
           className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-white text-sm"
           placeholder={t('receipts.customer.countryPlaceholder')}
-          maxLength={2}
-          disabled={isLoading}
+          maxLength={100}
+          disabled={isFormDisabled}
         />
       </div>
 
-      {/* Notes */}
       <div>
         <label htmlFor="customer-notes" className="block text-sm font-medium text-slate-300 mb-1">
           {t('receipts.customer.notes')}
@@ -261,29 +274,37 @@ export const CustomerForm: React.FC<CustomerFormProps> = ({
           onChange={(e) => handleChange('notes', e.target.value)}
           className={`w-full bg-slate-900 p-2 rounded-md border ${errors.notes ? 'border-red-500' : 'border-slate-700'} text-white text-sm resize-none`}
           placeholder={t('receipts.customer.notesPlaceholder')}
-          maxLength={1000}
+          maxLength={maxNotesLength}
           rows={3}
-          disabled={isLoading}
+          disabled={isFormDisabled}
         />
         {errors.notes && <p className="text-red-400 text-xs mt-1">{errors.notes}</p>}
+        <p className={`text-xs mt-1 ${maxNotesLength - notesCharacterCount < 100 ? 'text-amber-400' : 'text-slate-500'}`}>
+          {maxNotesLength - notesCharacterCount} {t('customers.form.charactersRemaining', 'characters remaining')}
+        </p>
       </div>
 
-      {/* Action Buttons */}
+      <div className="text-xs text-slate-500 pt-2">
+        <span className="text-red-400">*</span> {t('customers.form.requiredFields', 'Required fields')}
+      </div>
+
       <div className="flex gap-3 pt-4">
-        <button
-          type="button"
-          onClick={onCancel}
-          disabled={isLoading}
-          className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {t('stockItems.cancel')}
-        </button>
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            disabled={isFormDisabled}
+            className="flex-1 bg-slate-700 hover:bg-slate-600 text-white font-bold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {t('stockItems.cancel')}
+          </button>
+        )}
         <button
           type="submit"
-          disabled={isLoading}
-          className="flex-1 bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isFormDisabled}
+            className={`${onCancel ? 'flex-1' : 'w-full'} bg-amber-500 hover:bg-amber-400 text-white font-bold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed`}
         >
-          {isLoading ? t('stockItems.saving') : t('stockItems.save')}
+          {isFormDisabled ? loadingButtonText : submitButtonText}
         </button>
       </div>
     </form>

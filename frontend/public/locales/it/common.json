@@ -615,20 +615,45 @@
     "invalidLayoutName": "Nome layout non valido: {{message}}"
   },
 "paymentContext": {
-"invalidItemNames": "Alcuni articoli hanno nomi non validi, correzione in corso prima del salvataggio della transazione",
-"itemFallbackName": "Articolo {{variantId}}",
-"invalidStockItemReference": "Riferimento articolo magazzino non valido nella variante {{variantId}}: {{stockItemId}}",
-"invalidUuidFormat": " (Formato UUID non valido)",
-"stockItemNotExist": " (Articolo magazzino inesistente)",
-"orderSessionCompleteFailed": "Aggiornamento stato sessione ordine completato fallito o utente non autenticato",
-"orderSessionStatusUpdateFailed": "Impossibile aggiornare lo stato della sessione ordine al completamento del pagamento",
-"paymentProcessingFailed": "Elaborazione pagamento fallita",
-"paymentProcessingFailedMessage": "Elaborazione pagamento fallita. Riprova o contatta l'assistenza.",
-"paymentSuccess": "Pagamento completato!",
-"paymentSuccessWithReceipt": "Pagamento completato! Ricevuta: {{receiptNumber}}",
-"paymentSuccessReceiptQueued": "Pagamento completato! Ricevuta in coda per l'elaborazione.",
-"paymentSuccessReceiptDraft": "Pagamento completato! Ricevuta salvata come bozza.",
-"paymentSuccessReceiptError": "Pagamento completato, ma creazione ricevuta fallita. Controlla la lista ricevute.",
-"contextError": "usePaymentContext deve essere utilizzato all'interno di un PaymentProvider"
-}
+    "invalidItemNames": "Alcuni articoli hanno nomi non validi, correzione in corso prima del salvataggio della transazione",
+    "itemFallbackName": "Articolo {{variantId}}",
+    "invalidStockItemReference": "Riferimento articolo magazzino non valido nella variante {{variantId}}: {{stockItemId}}",
+    "invalidUuidFormat": " (Formato UUID non valido)",
+    "stockItemNotExist": " (Articolo magazzino inesistente)",
+    "orderSessionCompleteFailed": "Aggiornamento stato sessione ordine completato fallito o utente non autenticato",
+    "orderSessionStatusUpdateFailed": "Impossibile aggiornare lo stato della sessione ordine al completamento del pagamento",
+    "paymentProcessingFailed": "Elaborazione pagamento fallita",
+    "paymentProcessingFailedMessage": "Elaborazione pagamento fallita. Riprova o contatta l'assistenza.",
+    "paymentSuccess": "Pagamento completato!",
+    "paymentSuccessWithReceipt": "Pagamento completato! Ricevuta: {{receiptNumber}}",
+    "paymentSuccessReceiptQueued": "Pagamento completato! Ricevuta in coda per l'elaborazione.",
+    "paymentSuccessReceiptDraft": "Pagamento completato! Ricevuta salvata come bozza.",
+    "paymentSuccessReceiptError": "Pagamento completato, ma creazione ricevuta fallita. Controlla la lista ricevute.",
+    "contextError": "usePaymentContext deve essere utilizzato all'interno di un PaymentProvider"
+  },
+  "receiptService": {
+    "errorFetchingCustomers": "Impossibile recuperare i clienti",
+    "errorFetchingCustomer": "Impossibile recuperare il cliente",
+    "errorCreatingCustomer": "Impossibile creare il cliente",
+    "errorUpdatingCustomer": "Impossibile aggiornare il cliente",
+    "errorSearchingCustomers": "Impossibile cercare i clienti",
+    "errorFetchingReceipts": "Impossibile recuperare le ricevute",
+    "errorFetchingReceipt": "Impossibile recuperare la ricevuta",
+    "errorCreatingReceipt": "Impossibile creare la ricevuta",
+    "errorUpdatingReceipt": "Impossibile aggiornare la ricevuta",
+    "errorIssuingReceipt": "Impossibile emettere la ricevuta",
+    "errorVoidingReceipt": "Impossibile annullare la ricevuta",
+    "errorSendingReceiptEmail": "Impossibile inviare l'email della ricevuta",
+    "errorFetchingReceiptPdf": "Impossibile recuperare il PDF della ricevuta",
+    "errorDownloadingReceiptPdf": "Impossibile scaricare il PDF della ricevuta",
+    "errorFetchingPendingReceipts": "Impossibile recuperare le ricevute in sospeso",
+    "errorRetryingReceipt": "Impossibile riprovare la ricevuta"
+  },
+  "languageSwitcher": {
+    "changeLanguage": "Cambia Lingua"
+  },
+  "fullscreen": {
+    "enter": "Schermo Intero",
+    "exit": "Esci da Schermo Intero"
+  }
 }

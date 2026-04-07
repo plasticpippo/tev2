@@ -73,8 +73,13 @@ export async function createCustomer(
       createdBy: userId,
       updatedAt: new Date(),
     },
+    include: {
+      user: {
+        select: { id: true, username: true },
+      },
+    },
   });
-  
+
   return toCustomerDTO(customer);
 }
 
@@ -84,8 +89,13 @@ export async function getCustomerById(id: number): Promise<CustomerResponseDTO |
       id,
       deletedAt: null,
     },
+    include: {
+      user: {
+        select: { id: true, username: true },
+      },
+    },
   });
-  
+
   return customer ? toCustomerDTO(customer) : null;
 }
 
@@ -144,6 +154,11 @@ export async function listCustomers(
     },
     skip: (page - 1) * limit,
     take: limit,
+    include: {
+      user: {
+        select: { id: true, username: true },
+      },
+    },
   });
   
   return {
@@ -166,11 +181,11 @@ export async function updateCustomer(
   const existingCustomer = await prisma.customer.findFirst({
     where: { id, deletedAt: null },
   });
-  
+
   if (!existingCustomer) {
     return null;
   }
-  
+
   const customer = await prisma.customer.update({
     where: { id },
     data: {
@@ -186,8 +201,13 @@ export async function updateCustomer(
       ...(data.isActive !== undefined && { isActive: data.isActive }),
       updatedAt: new Date(),
     },
+    include: {
+      user: {
+        select: { id: true, username: true },
+      },
+    },
   });
-  
+
   return toCustomerDTO(customer);
 }
 
@@ -195,11 +215,11 @@ export async function softDeleteCustomer(id: number): Promise<CustomerResponseDT
   const existingCustomer = await prisma.customer.findFirst({
     where: { id, deletedAt: null },
   });
-  
+
   if (!existingCustomer) {
     return null;
   }
-  
+
   const customer = await prisma.customer.update({
     where: { id },
     data: {
@@ -207,8 +227,13 @@ export async function softDeleteCustomer(id: number): Promise<CustomerResponseDT
       isActive: false,
       updatedAt: new Date(),
     },
+    include: {
+      user: {
+        select: { id: true, username: true },
+      },
+    },
   });
-  
+
   return toCustomerDTO(customer);
 }
 

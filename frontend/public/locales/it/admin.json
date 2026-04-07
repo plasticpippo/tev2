@@ -15,7 +15,8 @@
     "tills": "Casse",
     "tables": "Tavoli e Layout",
     "itemisedConsumption": "Consumo Dettagliato",
-    "settings": "Impostazioni"
+    "settings": "Impostazioni",
+    "customers": "Clienti"
   },
   "header": {
     "loggedInAs": "Connesso come {{name}}",
@@ -163,6 +164,47 @@
     "allOpenTabs": "Tutti i Conti Aperti",
     "noOpenTabs": "Nessun conto aperto su tutte le casse.",
     "on": "su"
+  },
+  "transactions": {
+    "title": "Transazioni",
+    "ariaLabels": {
+      "filterBy": "Filtra per {{filter}}",
+      "filterByCustomDateRange": "Filtra per intervallo di date personalizzato",
+      "transactionDetails": "Visualizza dettagli per transazione {{id}}",
+      "filterByTill": "Filtra per cassa",
+      "filterByUser": "Filtra per utente",
+      "startTime": "Ora inizio",
+      "endTime": "Ora fine"
+    },
+    "dateRange": {
+      "today": "Oggi",
+      "yesterday": "Ieri",
+      "last7Days": "Ultimi 7 Giorni",
+      "last30Days": "Ultimi 30 Giorni",
+      "custom": "Personalizzato"
+    },
+    "filters": {
+      "till": "Cassa",
+      "user": "Utente",
+      "from": "Da",
+      "to": "A"
+    },
+    "allTills": "Tutte le Casse",
+    "allUsers": "Tutti gli Utenti",
+    "found": "{{count}} transazioni trovate",
+    "noTransactions": "Nessuna transazione trovata",
+    "receipt": "Scontrino #{{id}}",
+    "selectTransaction": "Seleziona una transazione per vedere i dettagli",
+    "details": {
+      "complimentary": "Omaggio",
+      "table": "Tavolo: {{name}}",
+      "subtotal": "Subtotale",
+      "tax": "Tassa",
+      "discount": "Sconto",
+      "discountReason": "Motivo",
+      "tip": "Mancia",
+      "total": "Totale"
+    }
   },
   "analytics": {
     "title": "Dashboard Analisi",
@@ -424,11 +466,15 @@
       "noResults": "Nessun cliente trovato",
       "createInstead": "Crea invece un nuovo cliente",
       "createNew": "Crea Nuovo Cliente",
-      "selectCustomer": "Seleziona Cliente",
+    "selectCustomer": "Seleziona Cliente",
       "change": "Cambia",
       "skip": "Salta (Nessun Cliente)",
       "confirm": "Conferma Selezione",
-"validation": {
+      "recentCustomers": "Clienti Recenti",
+      "orSearch": "Oppure cerca un cliente",
+      "viewAll": "Vedi Tutti i Clienti",
+      "receiptCount": "{{count}} scontrino/i",
+      "validation": {
       "nameRequired": "Il nome cliente e obbligatorio",
       "nameMaxLength": "Il nome deve essere di massimo 200 caratteri",
       "emailInvalid": "Inserisci un indirizzo email valido",
@@ -487,7 +533,7 @@
       "statusBadge": {
         "title": "{{count}} scontrino(i) richiedono attenzione"
       },
-      "filters": {
+    "filters": {
         "search": "Cerca",
         "searchPlaceholder": "Numero scontrino o cliente...",
         "status": "Stato",
@@ -495,8 +541,12 @@
         "generationStatus": "Generazione",
         "allGenerationStatuses": "Tutti gli Stati Generazione",
         "dateFrom": "Da Data",
-        "dateTo": "A Data"
-      },
+        "dateTo": "A Data",
+        "customer": "Cliente",
+        "customerPlaceholder": "Cerca cliente...",
+        "clearCustomer": "Cancella filtro cliente",
+        "allCustomers": "Tutti i Clienti"
+    },
       "generationStatus": {
         "pending": "In Attesa",
         "completed": "Completato",
@@ -507,7 +557,7 @@
         "confirmRetry": "Riprova generazione scontrino? Verra tentata nuovamente la generazione dello scontrino.",
         "retryFailed": "Impossibile riprovare la generazione. Riprova."
       },
-      "table": {
+    "table": {
         "receiptNumber": "Scontrino #",
         "transactionId": "Transazione",
         "customer": "Cliente",
@@ -516,6 +566,106 @@
         "total": "Totale",
         "issuedDate": "Data Emissione",
         "actions": "Azioni"
-      }
+    },
+    "actions": {
+        "view": "Vedi Dettagli",
+        "download": "Scarica PDF",
+        "email": "Invia Email",
+        "issue": "Emetti Scontrino",
+        "viewCustomer": "Vedi Dettagli Cliente"
+    },
+    "detail": {
+        "title": "Scontrino {{number}}",
+        "transaction": "Transazione #{{id}}",
+        "business": "Attivita",
+        "customer": "Cliente",
+        "vatNumber": "Partita IVA",
+        "items": "Articoli",
+        "item": "Articolo",
+        "qty": "Qta",
+        "price": "Prezzo",
+        "total": "Totale",
+        "subtotal": "Subtotale",
+        "tax": "Tassa",
+        "discount": "Sconto",
+        "tip": "Mancia",
+        "customerDeleted": "Record cliente non piu disponibile"
+    },
+    "loading": "Caricamento scontrini...",
+    "noReceipts": "Nessuno scontrino trovato",
+    "noCustomer": "Nessun Cliente",
+"customer": {
+      "noResults": "Nessun cliente trovato"
+    }
+  },
+  "customers": {
+    "management": {
+      "title": "Gestione Clienti"
+    },
+    "buttons": {
+      "new": "Nuovo Cliente",
+      "edit": "Modifica",
+      "clearFilters": "Cancella Filtri"
+    },
+    "filters": {
+      "search": "Cerca",
+      "searchPlaceholder": "Cerca clienti...",
+      "status": "Stato",
+      "allStatuses": "Tutti gli Stati"
+    },
+    "status": {
+      "active": "Attivo",
+      "inactive": "Inattivo"
+    },
+    "table": {
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefono",
+      "vatNumber": "Partita IVA",
+      "status": "Stato",
+      "actions": "Azioni"
+    },
+    "actions": {
+      "view": "Visualizza",
+      "edit": "Modifica",
+      "activate": "Attiva",
+      "deactivate": "Disattiva"
+    },
+    "form": {
+      "editTitle": "Modifica Cliente",
+      "newTitle": "Nuovo Cliente",
+      "saveChanges": "Salva Modifiche",
+      "createCustomer": "Crea Cliente",
+      "name": "Nome",
+      "email": "Email",
+      "phone": "Telefono",
+      "vatNumber": "Partita IVA",
+      "address": "Indirizzo",
+      "city": "Città",
+      "postalCode": "CAP",
+      "country": "Paese",
+      "notes": "Note",
+      "active": "Attivo"
+    },
+    "detail": {
+      "title": "Dettagli Cliente",
+      "contactInfo": "Informazioni di Contatto",
+      "address": "Indirizzo",
+      "noAddress": "Nessun indirizzo fornito",
+      "notes": "Note",
+      "noNotes": "Nessuna nota"
+    },
+    "pagination": {
+      "showing": "Mostrando",
+      "to": "a",
+      "of": "di",
+      "customers": "clienti"
+    },
+    "loading": "Caricamento clienti...",
+    "noCustomers": "Nessun cliente trovato",
+    "errors": {
+      "fetchFailed": "Impossibile caricare i clienti",
+      "notFound": "Cliente non trovato"
     }
   }
+}

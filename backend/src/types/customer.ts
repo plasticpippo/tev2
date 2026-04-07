@@ -91,7 +91,10 @@ export interface CustomerResponseDTO {
   isActive: boolean;
   createdAt: Date;
   updatedAt: Date;
-  createdBy: number;
+  createdBy: {
+    id: number;
+    name: string;
+  };
 }
 
 export function toCustomerDTO(customer: any): CustomerResponseDTO {
@@ -109,7 +112,9 @@ export function toCustomerDTO(customer: any): CustomerResponseDTO {
     isActive: customer.isActive,
     createdAt: customer.createdAt,
     updatedAt: customer.updatedAt,
-    createdBy: customer.createdBy,
+    createdBy: customer.user
+      ? { id: customer.user.id, name: customer.user.username }
+      : { id: customer.createdBy || 0, name: 'Unknown' },
   };
 }
 

@@ -18,6 +18,7 @@ import { analyticsRouter } from './handlers/analytics';
 import { layoutsRouter } from './handlers/layouts';
 import { taxRatesRouter } from './handlers/taxRates';
 import { customersRouter } from './handlers/customerHandler';
+import { customerRateLimiter } from './middleware/rateLimiter';
 import { receiptsRouter } from './handlers/receiptHandler';
 
 export const router = express.Router();
@@ -40,7 +41,7 @@ router.use('/consumption-reports', consumptionReportsRouter);
 router.use('/analytics', analyticsRouter);
 router.use('/layouts', layoutsRouter);
 router.use('/tax-rates', taxRatesRouter);
-router.use('/customers', customersRouter);
+router.use('/customers', customerRateLimiter, customersRouter);
 router.use('/receipts', receiptsRouter);
 
 router.get('/health', (req, res) => {

@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
-import type { Receipt, ReceiptStatus, PaginatedResponse } from '@shared/types';
+import type { Receipt, ReceiptStatus, PaginatedResponse, Customer } from '@shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import * as receiptService from '../services/receiptService';
 import { DatePicker } from './analytics/DatePicker';
@@ -9,80 +9,156 @@ import { DatePicker } from './analytics/DatePicker';
 type GenerationStatus = 'pending' | 'completed' | 'failed';
 
 interface ReceiptManagementProps {
-  onDataUpdate?: () => void;
+    onDataUpdate?: () => void;
+    onNavigateToCustomer?: (customerId: number) => void;
 }
 
 const STATUS_OPTIONS: ReceiptStatus[] = ['draft', 'issued', 'voided'];
 const GENERATION_STATUS_OPTIONS: GenerationStatus[] = ['pending', 'completed', 'failed'];
 
-export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpdate }) => {
-  const { t } = useTranslation('admin');
-  
-  const [receipts, setReceipts] = useState<Receipt[]>([]);
-  const [pagination, setPagination] = useState<PaginatedResponse<Receipt>['pagination']>({
-    page: 1,
-    pageSize: 20,
-    totalItems: 0,
-    totalPages: 0,
-    hasNextPage: false,
-    hasPrevPage: false
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-  
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState<ReceiptStatus | 'all'>('all');
-  const [generationStatusFilter, setGenerationStatusFilter] = useState<GenerationStatus | 'all'>('all');
-  const [dateFrom, setDateFrom] = useState<Date | null>(null);
-  const [dateTo, setDateTo] = useState<Date | null>(null);
-  const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [emailSending, setEmailSending] = useState(false);
-  const [emailResult, setEmailResult] = useState<{ success: boolean; message?: string } | null>(null);
-  const [issuingReceipt, setIssuingReceipt] = useState<Receipt | null>(null);
-  const [issueResult, setIssueResult] = useState<{ success: boolean; message?: string } | null>(null);
-  const [retryingReceipt, setRetryingReceipt] = useState<number | null>(null);
-  
-  const fetchReceipts = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpdate, onNavigateToCustomer }) => {
+    const { t } = useTranslation('admin');
 
-    const result = await receiptService.getReceipts({
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-      status: statusFilter === 'all' ? undefined : statusFilter,
-      generationStatus: generationStatusFilter === 'all' ? undefined : generationStatusFilter,
-      search: search || undefined,
-      startDate: dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined,
-      endDate: dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined,
-      sortBy: 'createdAt',
-      sortOrder: 'desc'
+    const [receipts, setReceipts] = useState<Receipt[]>([]);
+    const [pagination, setPagination] = useState<PaginatedResponse<Receipt>['pagination']>({
+        page: 1,
+        pageSize: 20,
+        totalItems: 0,
+        totalPages: 0,
+        hasNextPage: false,
+        hasPrevPage: false
     });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    if (result) {
-      setReceipts(result.data);
-      setPagination(result.pagination);
-    }
-    setLoading(false);
-  }, [pagination.page, pagination.pageSize, statusFilter, generationStatusFilter, search, dateFrom, dateTo]);
+    const [search, setSearch] = useState('');
+    const [statusFilter, setStatusFilter] = useState<ReceiptStatus | 'all'>('all');
+    const [generationStatusFilter, setGenerationStatusFilter] = useState<GenerationStatus | 'all'>('all');
+    const [dateFrom, setDateFrom] = useState<Date | null>(null);
+    const [dateTo, setDateTo] = useState<Date | null>(null);
+    const [selectedReceipt, setSelectedReceipt] = useState<Receipt | null>(null);
+    const [showDetailModal, setShowDetailModal] = useState(false);
+    const [emailSending, setEmailSending] = useState(false);
+    const [emailResult, setEmailResult] = useState<{ success: boolean; message?: string } | null>(null);
+    const [issuingReceipt, setIssuingReceipt] = useState<Receipt | null>(null);
+    const [issueResult, setIssueResult] = useState<{ success: boolean; message?: string } | null>(null);
+    const [retryingReceipt, setRetryingReceipt] = useState<number | null>(null);
+
+    const [customerFilter, setCustomerFilter] = useState<Customer | null>(null);
+    const [customerSearch, setCustomerSearch] = useState('');
+    const [customerOptions, setCustomerOptions] = useState<Customer[]>([]);
+    const [customerOptionsLoading, setCustomerOptionsLoading] = useState(false);
+    const [showCustomerDropdown, setShowCustomerDropdown] = useState(false);
+    const customerSearchRef = useRef<NodeJS.Timeout | null>(null);
   
-  useEffect(() => {
-    fetchReceipts();
-  }, [fetchReceipts]);
+    const fetchReceipts = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+
+        const result = await receiptService.getReceipts({
+            page: pagination.page,
+            pageSize: pagination.pageSize,
+            status: statusFilter === 'all' ? undefined : statusFilter,
+            generationStatus: generationStatusFilter === 'all' ? undefined : generationStatusFilter,
+            search: search || undefined,
+            customerId: customerFilter?.id,
+            startDate: dateFrom ? format(dateFrom, 'yyyy-MM-dd') : undefined,
+            endDate: dateTo ? format(dateTo, 'yyyy-MM-dd') : undefined,
+            sortBy: 'createdAt',
+            sortOrder: 'desc'
+        });
+
+        if (result) {
+            setReceipts(result.data);
+            setPagination(result.pagination);
+        }
+        setLoading(false);
+    }, [pagination.page, pagination.pageSize, statusFilter, generationStatusFilter, search, customerFilter?.id, dateFrom, dateTo]);
+
+    const searchCustomers = useCallback(async (searchTerm: string) => {
+        if (searchTerm.length < 2) {
+            setCustomerOptions([]);
+            return;
+        }
+        setCustomerOptionsLoading(true);
+        try {
+            const result = await receiptService.searchCustomers(searchTerm, 20);
+            setCustomerOptions(result);
+        } catch (err) {
+            setCustomerOptions([]);
+        } finally {
+            setCustomerOptionsLoading(false);
+        }
+    }, []);
+
+    useEffect(() => {
+        if (customerSearchRef.current) {
+            clearTimeout(customerSearchRef.current);
+        }
+        if (customerSearch.length >= 2) {
+            customerSearchRef.current = setTimeout(() => {
+                searchCustomers(customerSearch);
+            }, 300);
+        } else {
+            setCustomerOptions([]);
+        }
+        return () => {
+            if (customerSearchRef.current) {
+                clearTimeout(customerSearchRef.current);
+            }
+        };
+    }, [customerSearch, searchCustomers]);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as HTMLElement;
+            if (!target.closest('.customer-filter-dropdown')) {
+                setShowCustomerDropdown(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    useEffect(() => {
+        fetchReceipts();
+    }, [fetchReceipts]);
   
   const handleSearch = () => {
     setPagination(prev => ({ ...prev, page: 1 }));
     fetchReceipts();
   };
   
-  const handleClearFilters = () => {
-    setSearch('');
-    setStatusFilter('all');
-    setGenerationStatusFilter('all');
-    setDateFrom(null);
-    setDateTo(null);
-    setPagination(prev => ({ ...prev, page: 1 }));
-  };
+    const handleClearFilters = () => {
+        setSearch('');
+        setStatusFilter('all');
+        setGenerationStatusFilter('all');
+        setDateFrom(null);
+        setDateTo(null);
+        setCustomerFilter(null);
+        setCustomerSearch('');
+        setPagination(prev => ({ ...prev, page: 1 }));
+    };
+
+    const handleSelectCustomer = (customer: Customer) => {
+        setCustomerFilter(customer);
+        setCustomerSearch('');
+        setShowCustomerDropdown(false);
+        setCustomerOptions([]);
+        setPagination(prev => ({ ...prev, page: 1 }));
+    };
+
+    const handleClearCustomerFilter = () => {
+        setCustomerFilter(null);
+        setCustomerSearch('');
+        setPagination(prev => ({ ...prev, page: 1 }));
+    };
+
+    const handleCustomerClick = (customerId: number) => {
+        if (onNavigateToCustomer) {
+            onNavigateToCustomer(customerId);
+        }
+    };
   
   const handlePageChange = (newPage: number) => {
     setPagination(prev => ({ ...prev, page: newPage }));
@@ -259,18 +335,74 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
         />
       </div>
 
-      <div className="w-auto">
-        <label className="block text-sm font-medium text-slate-400 mb-1">
-          {t('receipts.filters.dateTo')}
-        </label>
-        <DatePicker
-          selectedDate={dateTo}
-          onDateChange={setDateTo}
-          maxDate={new Date()}
-          minDate={dateFrom || undefined}
-          placeholder={t('receipts.filters.dateTo')}
-        />
-      </div>
+            <div className="w-auto">
+                <label className="block text-sm font-medium text-slate-400 mb-1">
+                    {t('receipts.filters.dateTo')}
+                </label>
+                <DatePicker
+                    selectedDate={dateTo}
+                    onDateChange={setDateTo}
+                    maxDate={new Date()}
+                    minDate={dateFrom || undefined}
+                    placeholder={t('receipts.filters.dateTo')}
+                />
+            </div>
+
+            <div className="w-48 relative customer-filter-dropdown">
+                <label className="block text-sm font-medium text-slate-400 mb-1">
+                    {t('receipts.filters.customer')}
+                </label>
+                {customerFilter ? (
+                    <div className="flex items-center gap-2 bg-slate-900 p-2 rounded-md border border-amber-600">
+                        <span className="flex-1 text-sm text-white truncate">{customerFilter.name}</span>
+                        <button
+                            onClick={handleClearCustomerFilter}
+                            className="text-slate-400 hover:text-white"
+                            title={t('receipts.filters.clearCustomer')}
+                        >
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                ) : (
+                    <div className="relative">
+                        <input
+                            type="text"
+                            value={customerSearch}
+                            onChange={e => {
+                                setCustomerSearch(e.target.value);
+                                setShowCustomerDropdown(true);
+                            }}
+                            onFocus={() => setShowCustomerDropdown(true)}
+                            placeholder={t('receipts.filters.customerPlaceholder')}
+                            className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm"
+                        />
+                        {showCustomerDropdown && customerSearch.length >= 2 && (
+                            <div className="absolute z-20 mt-1 w-full bg-slate-800 border border-slate-600 rounded-md max-h-48 overflow-y-auto">
+                                {customerOptionsLoading ? (
+                                    <div className="p-2 text-slate-400 text-sm">{t('receipts.loading')}</div>
+                                ) : customerOptions.length > 0 ? (
+                                    customerOptions.map(customer => (
+                                        <button
+                                            key={customer.id}
+                                            onClick={() => handleSelectCustomer(customer)}
+                                            className="w-full text-left px-3 py-2 hover:bg-slate-700 text-sm text-white"
+                                        >
+                                            <div className="font-medium">{customer.name}</div>
+                                            {customer.email && (
+                                                <div className="text-xs text-slate-400">{customer.email}</div>
+                                            )}
+                                        </button>
+                                    ))
+) : (
+<div className="p-2 text-slate-400 text-sm">{t('receipts.customer.noResults')}</div>
+)}
+</div>
+)}
+                    </div>
+                )}
+            </div>
         </div>
         
         <div className="flex gap-2">
@@ -350,13 +482,25 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                     filteredReceipts.map(receipt => (
                       <tr key={receipt.id} className="hover:bg-slate-800/50">
                         <td className="px-4 py-3 text-sm font-medium text-amber-400">
-                          {receipt.receiptNumber}
+                            {receipt.receiptNumber}
                         </td>
                         <td className="px-4 py-3 text-sm text-slate-300">
-                          #{receipt.transactionId}
+                            #{receipt.transactionId}
                         </td>
-                        <td className="px-4 py-3 text-sm text-slate-300">
-                          {receipt.customerSnapshot?.name || t('receipts.noCustomer')}
+                        <td className="px-4 py-3 text-sm">
+                            {receipt.customerId && receipt.customer ? (
+                                <button
+                                    onClick={() => handleCustomerClick(receipt.customerId!)}
+                                    className="text-amber-400 hover:text-amber-300 hover:underline text-left"
+                                    title={t('receipts.actions.viewCustomer')}
+                                >
+                                    {receipt.customer.name}
+                                </button>
+                            ) : receipt.customerSnapshot?.name ? (
+                                <span className="text-slate-300">{receipt.customerSnapshot.name}</span>
+                            ) : (
+                                <span className="text-slate-500">{t('receipts.noCustomer')}</span>
+                            )}
                         </td>
                     <td className="px-4 py-3">
                       <span className={`px-2 py-1 rounded text-xs font-medium ${getStatusBadgeClass(receipt.status)}`}>
@@ -499,52 +643,55 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
         )}
       </div>
       
-      {showDetailModal && selectedReceipt && (
+    {showDetailModal && selectedReceipt && (
         <ReceiptDetailModal
-          receipt={selectedReceipt}
-          onClose={() => {
-            setShowDetailModal(false);
-            setSelectedReceipt(null);
-            setEmailResult(null);
-            setIssueResult(null);
-          }}
-          onDownload={handleDownloadPdf}
-          onEmail={handleSendEmail}
-          onIssue={handleIssueReceipt}
-          emailSending={emailSending}
-          emailResult={emailResult}
-          issuingReceipt={issuingReceipt?.id === selectedReceipt.id}
-          issueResult={issueResult}
+            receipt={selectedReceipt}
+            onClose={() => {
+                setShowDetailModal(false);
+                setSelectedReceipt(null);
+                setEmailResult(null);
+                setIssueResult(null);
+            }}
+            onDownload={handleDownloadPdf}
+            onEmail={handleSendEmail}
+            onIssue={handleIssueReceipt}
+            emailSending={emailSending}
+            emailResult={emailResult}
+            issuingReceipt={issuingReceipt?.id === selectedReceipt.id}
+            issueResult={issueResult}
+            onNavigateToCustomer={onNavigateToCustomer}
         />
-      )}
+    )}
     </div>
   );
 };
 
 interface ReceiptDetailModalProps {
-  receipt: Receipt;
-  onClose: () => void;
-  onDownload: (receipt: Receipt) => void;
-  onEmail: (receipt: Receipt) => void;
-  onIssue: (receipt: Receipt) => void;
-  emailSending: boolean;
-  emailResult: { success: boolean; message?: string } | null;
-  issuingReceipt: boolean;
-  issueResult: { success: boolean; message?: string } | null;
+    receipt: Receipt;
+    onClose: () => void;
+    onDownload: (receipt: Receipt) => void;
+    onEmail: (receipt: Receipt) => void;
+    onIssue: (receipt: Receipt) => void;
+    emailSending: boolean;
+    emailResult: { success: boolean; message?: string } | null;
+    issuingReceipt: boolean;
+    issueResult: { success: boolean; message?: string } | null;
+    onNavigateToCustomer?: (customerId: number) => void;
 }
 
 const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
-  receipt,
-  onClose,
-  onDownload,
-  onEmail,
-  onIssue,
-  emailSending,
-  emailResult,
-  issuingReceipt,
-  issueResult
+    receipt,
+    onClose,
+    onDownload,
+    onEmail,
+    onIssue,
+    emailSending,
+    emailResult,
+    issuingReceipt,
+    issueResult,
+    onNavigateToCustomer
 }) => {
-  const { t } = useTranslation('admin');
+    const { t } = useTranslation('admin');
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -596,30 +743,68 @@ const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
             </div>
           )}
           
-          {receipt.customerSnapshot && (
-            <div>
-              <h4 className="text-sm font-medium text-slate-400 mb-2">{t('receipts.detail.customer')}</h4>
-              <div className="bg-slate-800 rounded-md p-4">
-                <p className="font-semibold text-white">{receipt.customerSnapshot.name}</p>
-                {receipt.customerSnapshot.email && (
-                  <p className="text-sm text-slate-300">{receipt.customerSnapshot.email}</p>
-                )}
-                {receipt.customerSnapshot.address && (
-                  <p className="text-sm text-slate-300">{receipt.customerSnapshot.address}</p>
-                )}
-                {receipt.customerSnapshot.city && (
-                  <p className="text-sm text-slate-300">
-                    {receipt.customerSnapshot.postalCode} {receipt.customerSnapshot.city}
-                  </p>
-                )}
-                {receipt.customerSnapshot.vatNumber && (
-                  <p className="text-sm text-slate-400 mt-2">
-                    {t('receipts.detail.vatNumber')}: {receipt.customerSnapshot.vatNumber}
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+            {receipt.customerId && receipt.customer ? (
+                <div>
+                    <h4 className="text-sm font-medium text-slate-400 mb-2">{t('receipts.detail.customer')}</h4>
+                    <div className="bg-slate-800 rounded-md p-4">
+                        <p className="font-semibold text-white">{receipt.customer.name}</p>
+                        {receipt.customer.email && (
+                            <p className="text-sm text-slate-300">{receipt.customer.email}</p>
+                        )}
+                        {receipt.customer.phone && (
+                            <p className="text-sm text-slate-300">{receipt.customer.phone}</p>
+                        )}
+                        {receipt.customer.address && (
+                            <p className="text-sm text-slate-300">{receipt.customer.address}</p>
+                        )}
+                        {receipt.customer.city && (
+                            <p className="text-sm text-slate-300">
+                                {receipt.customer.postalCode} {receipt.customer.city}
+                            </p>
+                        )}
+                        {receipt.customer.vatNumber && (
+                            <p className="text-sm text-slate-400 mt-2">
+                                {t('receipts.detail.vatNumber')}: {receipt.customer.vatNumber}
+                            </p>
+                        )}
+                        {onNavigateToCustomer && (
+                            <button
+                                onClick={() => onNavigateToCustomer(receipt.customerId!)}
+                                className="mt-3 px-3 py-1.5 bg-amber-600 hover:bg-amber-500 text-white text-sm rounded-md transition flex items-center gap-2"
+                            >
+                                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                                </svg>
+                                {t('receipts.actions.viewCustomer')}
+                            </button>
+                        )}
+                    </div>
+                </div>
+            ) : receipt.customerSnapshot ? (
+                <div>
+                    <h4 className="text-sm font-medium text-slate-400 mb-2">{t('receipts.detail.customer')}</h4>
+                    <div className="bg-slate-800 rounded-md p-4">
+                        <p className="font-semibold text-white">{receipt.customerSnapshot.name}</p>
+                        {receipt.customerSnapshot.email && (
+                            <p className="text-sm text-slate-300">{receipt.customerSnapshot.email}</p>
+                        )}
+                        {receipt.customerSnapshot.address && (
+                            <p className="text-sm text-slate-300">{receipt.customerSnapshot.address}</p>
+                        )}
+                        {receipt.customerSnapshot.city && (
+                            <p className="text-sm text-slate-300">
+                                {receipt.customerSnapshot.postalCode} {receipt.customerSnapshot.city}
+                            </p>
+                        )}
+                        {receipt.customerSnapshot.vatNumber && (
+                            <p className="text-sm text-slate-400 mt-2">
+                                {t('receipts.detail.vatNumber')}: {receipt.customerSnapshot.vatNumber}
+                            </p>
+                        )}
+                        <p className="text-xs text-slate-500 mt-2">{t('receipts.detail.customerDeleted')}</p>
+                    </div>
+                </div>
+            ) : null}
           
           <div>
             <h4 className="text-sm font-medium text-slate-400 mb-2">{t('receipts.detail.items')}</h4>
