@@ -11,6 +11,7 @@ import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import i18n, { initI18n } from './i18n';
 import { initializeScheduler, stopScheduler } from './services/businessDayScheduler';
 import dotenv from 'dotenv';
+import path from 'path';
 
 // Load environment variables from .env file
 dotenv.config();
@@ -187,6 +188,18 @@ app.use(i18nextMiddleware.handle(i18n));
 
 // API routes
 app.use('/api', router);
+
+// Static file serving for uploaded logos
+const uploadsPath = path.join(__dirname, '../../uploads');
+app.use('/uploads', express.static(uploadsPath, {
+  maxAge: '1d',
+  setHeaders: (res: Response) => {
+    res.setHeader('Cache-Control', 'public, max-age=86400');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  }
+}));
 
 // Health check endpoint - comprehensive check including database connectivity
 app.get('/health', async (req: Request, res: Response) => {

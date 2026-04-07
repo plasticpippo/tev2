@@ -1,0 +1,44 @@
+<div class="totals-section">
+<table class="totals-table">
+<tbody>
+<tr class="subtotal-row">
+<td class="label">{{t 'invoice.subtotal'}}</td>
+<td class="value">{{formatCurrency invoice.subtotal}}</td>
+</tr>
+
+{{#if invoice.taxBreakdown}}
+{{#each invoice.taxBreakdown}}
+<tr class="tax-detail-row">
+<td class="label">{{this.rateName}} ({{this.ratePercent}}%)</td>
+<td class="value">{{formatCurrency this.taxAmount}}</td>
+</tr>
+{{/each}}
+{{else}}
+{{#gt invoice.tax 0}}
+<tr class="tax-row">
+<td class="label">{{t 'invoice.tax'}}</td>
+<td class="value">{{formatCurrency invoice.tax}}</td>
+</tr>
+{{/gt}}
+{{/if}}
+
+{{#gt invoice.discount 0}}
+<tr class="discount-row">
+<td class="label">
+{{t 'invoice.discount'}}
+{{#if invoice.discountReason}}
+<span class="discount-reason">({{invoice.discountReason}})</span>
+{{/if}}
+</td>
+<td class="value discount-value">-{{formatCurrency invoice.discount}}</td>
+</tr>
+{{/gt}}
+</tbody>
+<tfoot>
+<tr class="grand-total-row">
+<td class="label"><strong>{{t 'invoice.grandTotal'}}</strong></td>
+<td class="value"><strong>{{formatCurrency invoice.total}}</strong></td>
+</tr>
+</tfoot>
+</table>
+</div>

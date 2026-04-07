@@ -120,6 +120,8 @@ export interface BusinessSettings {
   phone: string | null;
   email: string | null;
   vatNumber: string | null;
+  logoPath?: string | null;
+  legalText?: string | null;
 }
 
 export interface ReceiptConfig {

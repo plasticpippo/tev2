@@ -1,0 +1,27 @@
+<div class="line-items-section">
+<table class="line-items">
+<thead>
+<tr>
+<th class="col-item">{{t 'invoice.description'}}</th>
+<th class="col-qty">{{t 'invoice.qty'}}</th>
+<th class="col-unit-price">{{t 'invoice.unitPrice'}}</th>
+<th class="col-total">{{t 'invoice.total'}}</th>
+</tr>
+</thead>
+<tbody>
+{{#each invoice.items}}
+<tr class="item-row page-break-avoid">
+<td class="item-name">
+<div class="item-name-text">{{truncate this.name 50}}</div>
+{{#if this.taxRateName}}
+<div class="item-tax-rate">{{this.taxRateName}} ({{this.taxRatePercent}}%)</div>
+{{/if}}
+</td>
+<td class="item-qty">{{formatNumber this.quantity}}</td>
+<td class="item-unit-price">{{formatCurrency this.price}}</td>
+<td class="item-total">{{formatCurrency (multiply this.price this.quantity)}}</td>
+</tr>
+{{/each}}
+</tbody>
+</table>
+</div>

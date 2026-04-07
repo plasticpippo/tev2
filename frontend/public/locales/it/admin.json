@@ -448,10 +448,39 @@
       "allowReceiptLabel": "Consenti scontrino dalla modale di pagamento",
       "allowReceiptDescription": "Abilita l'opzione per emettere scontrini direttamente dalla modale di pagamento.",
       "defaultSelectedLabel": "Selezionato di default",
-      "defaultSelectedDescription": "Se abilitato, l'opzione scontrino sarà selezionata di default nella modale di pagamento.",
-      "issueModeLabel": "Modalità emissione",
+      "defaultSelectedDescription": "Se abilitato, l'opzione scontrino sara selezionata di default nella modale di pagamento.",
+      "issueModeLabel": "Modalita emissione",
 "issueModeImmediate": "Immediata - Emetti scontrino immediatamente al pagamento",
     "issueModeDraft": "Bozza - Crea scontrino come bozza per revisione successiva"
+      },
+      "businessInfo": {
+        "title": "Informazioni Azienda",
+        "description": "Configura i dettagli della tua azienda che appaiono su scontrini e fatture.",
+        "businessName": "Nome Azienda",
+        "businessNamePlaceholder": "es., Il Mio Ristorante SRL",
+        "address": "Indirizzo",
+        "addressPlaceholder": "es., Via Roma 123",
+        "city": "Citta",
+        "cityPlaceholder": "es., Milano",
+        "postalCode": "CAP",
+        "postalCodePlaceholder": "es., 20100",
+        "country": "Paese",
+        "countryPlaceholder": "es., IT",
+        "phone": "Telefono",
+        "phonePlaceholder": "es., +39 02 1234567",
+        "email": "Email",
+        "emailPlaceholder": "es., info@miorestorante.com",
+        "vatNumber": "Partita IVA",
+        "vatNumberPlaceholder": "es., IT12345678901",
+        "legalText": "Testo Legale",
+        "legalTextPlaceholder": "Testo legale opzionale da mostrare sugli scontrini...",
+        "save": "Salva Modifiche",
+        "saving": "Salvataggio...",
+        "saveSuccess": "Informazioni azienda salvate con successo!",
+        "saveError": "Impossibile salvare le informazioni azienda. Riprova.",
+        "validation": {
+          "nameRequired": "Il nome azienda e obbligatorio"
+        }
       }
     },
     "receipts": {

@@ -5,6 +5,7 @@ import type { Settings } from '@shared/types';
 import { LanguageSettings } from './LanguageSettings';
 import { TaxSettings } from './TaxSettings';
 import { BusinessDaySettings } from './BusinessDaySettings';
+import { BusinessInfoSettings } from './BusinessInfoSettings';
 import { BackupSettings } from './BackupSettings';
 import { EmailSettings } from './EmailSettings';
 import { ReceiptSettings } from './ReceiptSettings';
@@ -16,7 +17,7 @@ interface SettingsModalProps {
   onUpdate: (settings: Settings) => void;
 }
 
-type SettingsTab = 'language' | 'tax' | 'businessDay' | 'backup' | 'email' | 'receipt';
+type SettingsTab = 'language' | 'tax' | 'businessDay' | 'businessInfo' | 'backup' | 'email' | 'receipt';
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdate }) => {
     const [activeTab, setActiveTab] = useState<SettingsTab>('language');
@@ -41,6 +42,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     onUpdate({ ...settings, receiptFromPaymentModal: receiptSettings });
   };
 
+  const handleBusinessInfoUpdate = (businessInfoSettings: Settings['business']) => {
+    onUpdate({ ...settings, business: businessInfoSettings });
+  };
+
     if (!isOpen) {
         return null;
     }
@@ -49,6 +54,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     { id: 'language', label: 'Language' },
     { id: 'tax', label: 'Tax Settings' },
     { id: 'businessDay', label: 'Business Day' },
+    { id: 'businessInfo', label: 'Business Info' },
     { id: 'backup', label: 'Backup' },
     { id: 'email', label: 'Email' },
     { id: 'receipt', label: 'Receipt from Payment' },
@@ -62,6 +68,8 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
         return <TaxSettings settings={settings.tax} onUpdate={handleTaxUpdate} />;
       case 'businessDay':
         return <BusinessDaySettings settings={settings.businessDay} onUpdate={handleBusinessDayUpdate} />;
+      case 'businessInfo':
+        return <BusinessInfoSettings settings={settings.business ?? {}} onUpdate={handleBusinessInfoUpdate} />;
       case 'backup':
         return <BackupSettings />;
       case 'email':

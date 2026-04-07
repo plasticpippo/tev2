@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="{{locale}}">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{{t 'invoice.title'}} - {{invoice.invoiceNumber}}</title>
+<style>
+* {
+margin: 0;
+padding: 0;
+box-sizing: border-box;
+}
+
+body {
+font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+font-size: 11px;
+line-height: 1.5;
+color: #1a1a1a;
+background: #fff;
+}
+
+.invoice-container {
+width: 100%;
+max-width: 210mm;
+margin: 0 auto;
+padding: 10mm;
+}
+
+.section-title {
+font-size: 12px;
+font-weight: 600;
+color: #333;
+margin-bottom: 6px;
+padding-bottom: 3px;
+border-bottom: 1px solid #e0e0e0;
+}
+
+.receipt-header {
+text-align: center;
+margin-bottom: 15px;
+padding-bottom: 10px;
+border-bottom: 2px solid #333;
+}
+
+.business-logo {
+max-height: 60px;
+margin-bottom: 8px;
+}
+
+.business-name {
+font-size: 20px;
+font-weight: 700;
+color: #1a1a1a;
+margin-bottom: 4px;
+}
+
+.business-details {
+font-size: 10px;
+color: #555;
+line-height: 1.6;
+}
+
+.business-address, .business-city, .business-country,
+.business-phone, .business-email, .business-vat {
+margin: 2px 0;
+}
+
+.invoice-info-section {
+display: flex;
+justify-content: space-between;
+align-items: flex-start;
+margin-bottom: 15px;
+padding-bottom: 10px;
+border-bottom: 1px solid #e0e0e0;
+}
+
+.invoice-number-display {
+text-align: left;
+}
+
+.invoice-label {
+font-size: 10px;
+color: #666;
+}
+
+.invoice-number-value {
+font-size: 16px;
+font-weight: 700;
+color: #1a1a1a;
+display: block;
+}
+
+.invoice-datetime {
+text-align: right;
+font-size: 10px;
+color: #555;
+}
+
+.invoice-datetime .label {
+color: #888;
+}
+
+.status-indicator {
+margin-top: 8px;
+}
+
+.status-badge {
+display: inline-block;
+padding: 3px 8px;
+border-radius: 3px;
+font-size: 10px;
+font-weight: 600;
+text-transform: uppercase;
+}
+
+.draft-status .status-badge {
+background: #fff3cd;
+color: #856404;
+border: 1px solid #ffc107;
+}
+
+.sent-status .status-badge {
+background: #cce5ff;
+color: #004085;
+border: 1px solid #007bff;
+}
+
+.paid-status .status-badge {
+background: #d4edda;
+color: #155724;
+border: 1px solid #28a745;
+}
+
+.overdue-status .status-badge {
+background: #f8d7da;
+color: #721c24;
+border: 1px solid #dc3545;
+}
+
+.cancelled-status .status-badge {
+background: #e2e3e5;
+color: #383d41;
+border: 1px solid #6c757d;
+}
+
+.customer-section {
+margin-bottom: 15px;
+padding: 10px;
+background: #f8f9fa;
+border-radius: 4px;
+}
+
+.customer-name {
+font-size: 12px;
+font-weight: 600;
+color: #1a1a1a;
+margin-bottom: 4px;
+}
+
+.customer-vat, .customer-address, .customer-city,
+.customer-email, .customer-phone {
+font-size: 10px;
+color: #555;
+margin: 2px 0;
+}
+
+.customer-details .label {
+color: #888;
+}
+
+.due-date-section {
+margin-bottom: 15px;
+padding: 8px;
+background: #f0f8ff;
+border-left: 3px solid #007bff;
+}
+
+.due-date-label {
+font-size: 10px;
+color: #666;
+}
+
+.due-date-value {
+font-size: 12px;
+font-weight: 600;
+color: #1a1a1a;
+}
+
+.line-items-section {
+margin-bottom: 15px;
+}
+
+.line-items {
+width: 100%;
+border-collapse: collapse;
+}
+
+.line-items th {
+background: #f0f0f0;
+padding: 8px 6px;
+text-align: left;
+font-size: 10px;
+font-weight: 600;
+color: #333;
+border-bottom: 1px solid #ccc;
+}
+
+.line-items td {
+padding: 8px 6px;
+font-size: 10px;
+border-bottom: 1px solid #eee;
+vertical-align: top;
+}
+
+.col-qty, .col-unit-price, .col-total {
+text-align: right;
+}
+
+.col-item {
+width: 45%;
+}
+
+.item-name-text {
+word-wrap: break-word;
+max-width: 200px;
+}
+
+.item-tax-rate {
+font-size: 9px;
+color: #888;
+margin-top: 2px;
+}
+
+.tax-breakdown-section {
+margin-bottom: 15px;
+page-break-inside: avoid;
+}
+
+.tax-breakdown-table {
+width: 100%;
+border-collapse: collapse;
+font-size: 10px;
+}
+
+.tax-breakdown-table th {
+background: #f8f9fa;
+padding: 6px;
+text-align: left;
+border-bottom: 1px solid #ddd;
+}
+
+.tax-breakdown-table td {
+padding: 6px;
+border-bottom: 1px solid #eee;
+}
+
+.tax-breakdown-table .col-taxable,
+.tax-breakdown-table .col-tax-amount {
+text-align: right;
+}
+
+.totals-section {
+margin-bottom: 15px;
+page-break-inside: avoid;
+}
+
+.totals-table {
+width: 100%;
+border-collapse: collapse;
+}
+
+.totals-table td {
+padding: 6px 0;
+font-size: 11px;
+}
+
+.totals-table .value {
+text-align: right;
+}
+
+.discount-value {
+color: #dc3545;
+}
+
+.grand-total-row td {
+font-size: 14px;
+padding-top: 10px;
+border-top: 2px solid #333;
+border-bottom: 2px solid #333;
+}
+
+.discount-reason {
+font-size: 9px;
+color: #888;
+font-style: italic;
+}
+
+.payment-instructions {
+margin-bottom: 15px;
+padding: 10px;
+background: #f8f9fa;
+border-radius: 4px;
+}
+
+.payment-instructions h4 {
+font-size: 11px;
+font-weight: 600;
+margin-bottom: 6px;
+}
+
+.payment-instructions p {
+font-size: 10px;
+color: #555;
+margin: 2px 0;
+}
+
+.receipt-footer {
+margin-top: 20px;
+padding-top: 15px;
+border-top: 1px solid #ccc;
+page-break-inside: avoid;
+}
+
+.payment-info {
+margin-bottom: 10px;
+font-size: 10px;
+}
+
+.payment-method-display {
+font-weight: 600;
+}
+
+.footer-notes {
+margin-bottom: 10px;
+font-size: 10px;
+color: #555;
+font-style: italic;
+}
+
+.legal-text {
+font-size: 9px;
+color: #888;
+line-height: 1.6;
+margin-bottom: 10px;
+}
+
+.thank-you-message {
+text-align: center;
+font-size: 12px;
+font-weight: 500;
+color: #1a1a1a;
+margin-top: 15px;
+}
+
+.page-info {
+text-align: center;
+font-size: 9px;
+color: #aaa;
+margin-top: 10px;
+}
+
+.watermark {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%) rotate(-45deg);
+font-size: 100px;
+font-weight: bold;
+color: rgba(200, 200, 200, 0.25);
+pointer-events: none;
+z-index: 1000;
+letter-spacing: 20px;
+}
+
+.stamp-overlay {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%) rotate(-15deg);
+font-size: 50px;
+font-weight: bold;
+color: rgba(180, 0, 0, 0.35);
+border: 6px solid rgba(180, 0, 0, 0.35);
+padding: 15px 30px;
+pointer-events: none;
+z-index: 1000;
+text-transform: uppercase;
+letter-spacing: 8px;
+}
+
+@media print {
+.watermark, .stamp-overlay {
+position: fixed;
+}
+}
+</style>
+</head>
+<body>
+{{#eq invoice.status 'draft'}}
+<div class="watermark">{{t 'invoice.status.draft'}}</div>
+{{/eq}}
+
+{{#eq invoice.status 'cancelled'}}
+<div class="stamp-overlay">{{t 'invoice.status.cancelled'}}</div>
+{{/eq}}
+
+<div class="invoice-container">
+{{> header invoice.business 
+  phoneLabelKey="invoice.phone" 
+  vatLabelKey="invoice.vatNumber"
+}}
+
+<div class="invoice-info-section">
+<div class="invoice-number-display">
+<span class="invoice-label">{{t 'invoice.number'}}:</span>
+<span class="invoice-number-value">{{invoice.invoiceNumber}}</span>
+<div class="status-indicator {{invoice.status}}-status">
+<span class="status-badge">{{t (concat 'invoice.status.' invoice.status)}}</span>
+</div>
+</div>
+<div class="invoice-datetime">
+<p><span class="label">{{t 'invoice.issueDate'}}:</span> {{formatDate invoice.issueDate 'long'}}</p>
+{{#if invoice.dueDate}}
+<p><span class="label">{{t 'invoice.dueDate'}}:</span> {{formatDate invoice.dueDate 'short'}}</p>
+{{/if}}
+</div>
+</div>
+
+{{#if invoice.customer}}
+<div class="customer-section">
+<h3 class="section-title">{{t 'invoice.billTo'}}</h3>
+<div class="customer-details">
+<p class="customer-name">{{invoice.customer.name}}</p>
+{{#if invoice.customer.address}}
+<p class="customer-address">{{invoice.customer.address}}</p>
+{{/if}}
+{{#if invoice.customer.city}}
+<p class="customer-city">
+{{#if invoice.customer.postalCode}}{{invoice.customer.postalCode}} {{/if}}{{invoice.customer.city}}
+{{#if invoice.customer.country}}, {{invoice.customer.country}}{{/if}}
+</p>
+{{/if}}
+{{#if invoice.customer.email}}
+<p class="customer-email">{{invoice.customer.email}}</p>
+{{/if}}
+{{#if invoice.customer.phone}}
+<p class="customer-phone">{{t 'invoice.phone'}}: {{invoice.customer.phone}}</p>
+{{/if}}
+{{#if invoice.customer.vatNumber}}
+<p class="customer-vat"><strong>{{t 'invoice.vatNumber'}}:</strong> {{invoice.customer.vatNumber}}</p>
+{{/if}}
+</div>
+</div>
+{{/if}}
+
+{{#if invoice.dueDate}}
+<div class="due-date-section">
+<span class="due-date-label">{{t 'invoice.paymentDue'}}:</span>
+<span class="due-date-value">{{formatDate invoice.dueDate 'long'}}</span>
+</div>
+{{/if}}
+
+{{> line-items}}
+
+{{> tax-breakdown}}
+
+{{> totals}}
+
+{{#if invoice.paymentInstructions}}
+<div class="payment-instructions">
+<h4>{{t 'invoice.paymentInstructions'}}</h4>
+{{{invoice.paymentInstructions}}}
+</div>
+{{/if}}
+
+{{> footer invoice
+  paymentMethodLabelKey="invoice.paymentMethod"
+  notesLabelKey="invoice.notes"
+  legalDisclaimerKey="invoice.legalDisclaimer"
+  thankYouKey="invoice.thankYou"
+  pageKey="invoice.page"
+  ofKey="invoice.of"
+}}
+</div>
+</body>
+</html>

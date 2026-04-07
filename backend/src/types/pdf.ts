@@ -115,3 +115,69 @@ export const RECEIPT_PDF_OPTIONS: PDFOptions = {
     left: '5mm',
   },
 };
+
+export interface InvoiceTemplateData extends TemplateData {
+  invoice: {
+    invoiceNumber: string;
+    issueDate: string;
+    dueDate: string | null;
+    status: 'draft' | 'sent' | 'paid' | 'overdue' | 'cancelled';
+    business: {
+      name: string;
+      address: string | null;
+      city: string | null;
+      postalCode: string | null;
+      country: string | null;
+      phone: string | null;
+      email: string | null;
+      vatNumber: string | null;
+      logoPath: string | null;
+    };
+    customer: {
+      name: string;
+      email: string | null;
+      phone: string | null;
+      vatNumber: string | null;
+      address: string | null;
+      city: string | null;
+      postalCode: string | null;
+      country: string | null;
+    } | null;
+    items: Array<{
+      name: string;
+      quantity: number;
+      price: number;
+      total: number;
+      taxRateName?: string;
+      taxRatePercent?: number;
+    }>;
+    subtotal: number;
+    tax: number;
+    taxBreakdown: Array<{
+      rateName: string;
+      ratePercent: number;
+      taxableAmount: number;
+      taxAmount: number;
+    }> | null;
+    discount: number;
+    discountReason: string | null;
+    total: number;
+    paymentMethod: string;
+    notes: string | null;
+    legalText: string | null;
+    paymentInstructions: string | null;
+  };
+  locale: string;
+  currency: string;
+}
+
+export const INVOICE_PDF_OPTIONS: PDFOptions = {
+  format: 'A4',
+  printBackground: true,
+  margin: {
+    top: '15mm',
+    right: '15mm',
+    bottom: '15mm',
+    left: '15mm',
+  },
+};

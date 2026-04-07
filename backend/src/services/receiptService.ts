@@ -20,10 +20,11 @@ import { Prisma } from '@prisma/client';
 import { generateNextReceiptNumber } from './receiptNumberService';
 import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
 import { savePDFToStorage, deletePDFFromStorage } from './pdfService';
+import { getLogoUrl } from './logoUploadService';
 
 async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
   const settings = await prisma.settings.findFirst();
-  
+
   if (!settings) {
     return {
       name: '',
@@ -34,9 +35,13 @@ async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
       phone: null,
       email: null,
       vatNumber: null,
+      logoPath: null,
+      legalText: null,
     };
   }
-  
+
+  const logoPath = settings.businessLogoPath ? getLogoUrl(settings.businessLogoPath) : null;
+
   return {
     name: settings.businessName || '',
     address: settings.businessAddress,
@@ -46,6 +51,8 @@ async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
     phone: settings.businessPhone,
     email: settings.businessEmail,
     vatNumber: settings.vatNumber,
+    logoPath,
+    legalText: settings.businessLegalText,
   };
 }
 

@@ -54,6 +54,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       # Limit Node.js heap to 640MB - prevents heap from consuming all container memory
       - NODE_OPTIONS=--max-old-space-size=640
+    volumes:
+      - uploads_data:/app/uploads
     depends_on:
       db:
         condition: service_healthy
@@ -157,3 +159,4 @@ networks:
 
 volumes:
   postgres_data:
+  uploads_data:

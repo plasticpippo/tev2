@@ -78,19 +78,33 @@ export interface TaxSettings {
   mode: 'inclusive' | 'exclusive' | 'none';
 }
 
+export interface BusinessSettings {
+ name: string | null;
+ address: string | null;
+ city: string | null;
+ postalCode: string | null;
+ country: string | null;
+ phone: string | null;
+ email: string | null;
+ vatNumber: string | null;
+ logoPath?: string | null;
+ legalText?: string | null;
+}
+
 export interface Settings {
-  tax: TaxSettings;
-  businessDay: {
-    autoStartTime: string;
-    businessDayEndHour: string;
-    lastManualClose: string | null;
-    autoCloseEnabled: boolean;
-  };
-  receiptFromPaymentModal: {
-    allowReceiptFromPaymentModal: boolean;
-    receiptIssueDefaultSelected: boolean;
-    receiptIssueMode: "immediate" | "draft";
-  };
+ tax: TaxSettings;
+ businessDay: {
+ autoStartTime: string;
+ businessDayEndHour: string;
+ lastManualClose: string | null;
+ autoCloseEnabled: boolean;
+ };
+ business?: BusinessSettings;
+ receiptFromPaymentModal: {
+ allowReceiptFromPaymentModal: boolean;
+ receiptIssueDefaultSelected: boolean;
+ receiptIssueMode: "immediate" | "draft";
+ };
 }
 
 export interface Till {

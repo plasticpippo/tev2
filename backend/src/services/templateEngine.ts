@@ -4,20 +4,24 @@ import path from 'path';
 import i18next from '../i18n';
 
 const TEMPLATES_DIR = process.env.PDF_TEMPLATE_PATH || path.join(__dirname, '../../templates/receipts');
+const INVOICES_DIR = process.env.INVOICE_TEMPLATE_PATH || path.join(__dirname, '../../templates/invoices');
+const SHARED_DIR = process.env.SHARED_TEMPLATE_PATH || path.join(__dirname, '../../templates/shared');
 const templateCache: Map<string, HandlebarsTemplateDelegate> = new Map();
 const partialCache: Map<string, string> = new Map();
 const partialsLoaded = new Set<string>();
 
 const ALL_PARTIALS = [
-  'header',
-  'footer',
-  'items',
-  'totals',
-  'receipt-info',
-  'customer',
-  'line-items',
-  'tax-breakdown',
+'items',
+'totals',
+'receipt-info',
+'customer',
+'line-items',
+'tax-breakdown',
 ];
+
+const INVOICE_PARTIALS = ['line-items', 'tax-breakdown', 'totals'];
+
+const SHARED_PARTIALS = ['header', 'footer'];
 
 function getLocaleFromData(data: unknown): string {
   const root = (data as { root?: { locale?: string } } | undefined)?.root;
@@ -147,44 +151,68 @@ function registerHelpers(): void {
     return options.inverse ? options.inverse(this) : '';
   });
 
-  Handlebars.registerHelper('t', (key: string, options?: Handlebars.HelperOptions) => {
-    const locale = getLocaleFromData(options?.data);
-    // If key starts with 'receipt.', strip it since we're using the 'receipt' namespace
-    const translationKey = key.startsWith('receipt.') ? key.substring(8) : key;
-    return i18next.t(translationKey, { lng: locale, ns: 'receipt' });
-  });
+Handlebars.registerHelper('t', (key: string, options?: Handlebars.HelperOptions) => {
+  const locale = getLocaleFromData(options?.data);
+  let namespace = 'receipt';
+  let translationKey = key;
+  
+  if (key.startsWith('receipt.')) {
+    translationKey = key.substring(8);
+    namespace = 'receipt';
+  } else if (key.startsWith('invoice.')) {
+    translationKey = key.substring(8);
+    namespace = 'invoice';
+  }
+  
+  return i18next.t(translationKey, { lng: locale, ns: namespace });
+});
 
-  Handlebars.registerHelper('multiply', (a: number, b: number) => a * b);
-  Handlebars.registerHelper('add', (a: number, b: number) => a + b);
-  Handlebars.registerHelper('subtract', (a: number, b: number) => a - b);
+Handlebars.registerHelper('multiply', (a: number, b: number) => a * b);
+Handlebars.registerHelper('add', (a: number, b: number) => a + b);
+Handlebars.registerHelper('subtract', (a: number, b: number) => a - b);
 
-  Handlebars.registerHelper('and', (a: unknown, b: unknown) => Boolean(a) && Boolean(b));
-  Handlebars.registerHelper('or', (a: unknown, b: unknown) => Boolean(a) || Boolean(b));
-  Handlebars.registerHelper('not', (a: unknown) => !a);
+Handlebars.registerHelper('and', (a: unknown, b: unknown) => Boolean(a) && Boolean(b));
+Handlebars.registerHelper('or', (a: unknown, b: unknown) => Boolean(a) || Boolean(b));
+Handlebars.registerHelper('not', (a: unknown) => !a);
 
-  Handlebars.registerHelper('isNull', (a: unknown) => a === null || a === undefined);
-  Handlebars.registerHelper('isNotNull', (a: unknown) => a !== null && a !== undefined);
+Handlebars.registerHelper('isNull', (a: unknown) => a === null || a === undefined);
+Handlebars.registerHelper('isNotNull', (a: unknown) => a !== null && a !== undefined);
+
+Handlebars.registerHelper('concat', function(this: unknown, ...args: unknown[]): string {
+  const options = args[args.length - 1];
+  const values = args.slice(0, -1);
+  return values.join('');
+});
 }
 
-async function loadPartial(name: string): Promise<string> {
-  if (partialCache.has(name)) {
-    if (!partialsLoaded.has(name)) {
-      Handlebars.registerPartial(name, partialCache.get(name)!);
-      partialsLoaded.add(name);
+async function loadPartial(name: string, templateDir: string = TEMPLATES_DIR): Promise<string> {
+  const cacheKey = `${templateDir}:${name}`;
+  if (partialCache.has(cacheKey)) {
+    if (!partialsLoaded.has(cacheKey)) {
+      Handlebars.registerPartial(name, partialCache.get(cacheKey)!);
+      partialsLoaded.add(cacheKey);
     }
-    return partialCache.get(name)!;
+    return partialCache.get(cacheKey)!;
   }
 
-  const partialPath = path.join(TEMPLATES_DIR, 'partials', `${name}.html.hbs`);
+  const partialPath = path.join(templateDir, 'partials', `${name}.html.hbs`);
   const content = await fs.readFile(partialPath, 'utf-8');
-  partialCache.set(name, content);
+  partialCache.set(cacheKey, content);
   Handlebars.registerPartial(name, content);
-  partialsLoaded.add(name);
+  partialsLoaded.add(cacheKey);
   return content;
 }
 
-async function loadAllPartials(): Promise<void> {
-  await Promise.all(ALL_PARTIALS.map(name => loadPartial(name)));
+async function loadAllPartials(templateDir: string = TEMPLATES_DIR): Promise<void> {
+  await Promise.all(ALL_PARTIALS.map(name => loadPartial(name, templateDir)));
+}
+
+async function loadInvoicePartials(): Promise<void> {
+  await Promise.all(INVOICE_PARTIALS.map(name => loadPartial(name, INVOICES_DIR)));
+}
+
+async function loadSharedPartials(): Promise<void> {
+  await Promise.all(SHARED_PARTIALS.map(name => loadPartial(name, SHARED_DIR)));
 }
 
 export async function loadTemplate(templateName: string): Promise<HandlebarsTemplateDelegate> {
@@ -194,9 +222,28 @@ export async function loadTemplate(templateName: string): Promise<HandlebarsTemp
     return templateCache.get(cacheKey)!;
   }
 
+  await loadSharedPartials();
   await loadAllPartials();
 
   const templatePath = path.join(TEMPLATES_DIR, `${templateName}.html.hbs`);
+  const templateContent = await fs.readFile(templatePath, 'utf-8');
+  const template = Handlebars.compile(templateContent);
+
+  templateCache.set(cacheKey, template);
+  return template;
+}
+
+export async function loadInvoiceTemplate(templateName: string): Promise<HandlebarsTemplateDelegate> {
+  const cacheKey = `invoice:${templateName}`;
+
+  if (templateCache.has(cacheKey)) {
+    return templateCache.get(cacheKey)!;
+  }
+
+  await loadSharedPartials();
+  await loadInvoicePartials();
+
+  const templatePath = path.join(INVOICES_DIR, `${templateName}.html.hbs`);
   const templateContent = await fs.readFile(templatePath, 'utf-8');
   const template = Handlebars.compile(templateContent);
 

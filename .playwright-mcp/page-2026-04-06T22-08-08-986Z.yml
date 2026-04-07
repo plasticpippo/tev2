@@ -1,0 +1,111 @@
+- generic [ref=e2]:
+  - generic [ref=e123]:
+    - banner [ref=e124]:
+      - generic [ref=e126]:
+        - heading "Admin Panel" [level=1] [ref=e127]
+        - paragraph [ref=e128]: Logged in as Admin User
+      - generic [ref=e129]:
+        - button "Switch to POS" [ref=e130] [cursor=pointer]
+        - button "Logout" [ref=e131] [cursor=pointer]
+    - generic [ref=e132]:
+      - navigation [ref=e133]:
+        - button "Collapse sidebar" [ref=e135] [cursor=pointer]:
+          - img [ref=e136]
+        - button "Dashboard" [ref=e339] [cursor=pointer]:
+          - img [ref=e341]
+          - generic [ref=e343]: Dashboard
+        - button "Analytics" [ref=e344] [cursor=pointer]:
+          - img [ref=e346]
+          - generic [ref=e348]: Analytics
+        - button "Transactions" [ref=e349] [cursor=pointer]:
+          - img [ref=e351]
+          - generic [ref=e353]: Transactions
+        - button "Receipts 13" [ref=e354] [cursor=pointer]:
+          - img [ref=e356]
+          - generic [ref=e358]: Receipts
+          - button "13" [ref=e359]
+        - button "Activity Log" [ref=e360] [cursor=pointer]:
+          - img [ref=e362]
+          - generic [ref=e364]: Activity Log
+        - button "Daily Closing Summary" [ref=e365] [cursor=pointer]:
+          - img [ref=e367]
+          - generic [ref=e369]: Daily Closing Summary
+        - button "Products" [ref=e370] [cursor=pointer]:
+          - img [ref=e372]
+          - generic [ref=e374]: Products
+        - button "Categories" [ref=e375] [cursor=pointer]:
+          - img [ref=e377]
+          - generic [ref=e379]: Categories
+        - button "Stock Items" [ref=e380] [cursor=pointer]:
+          - img [ref=e382]
+          - generic [ref=e384]: Stock Items
+        - button "Inventory" [ref=e385] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e389]: Inventory
+        - button "Users" [ref=e390] [cursor=pointer]:
+          - img [ref=e392]
+          - generic [ref=e394]: Users
+        - button "Tills" [ref=e395] [cursor=pointer]:
+          - img [ref=e397]
+          - generic [ref=e399]: Tills
+        - button "Tables & Layout" [ref=e400] [cursor=pointer]:
+          - img [ref=e402]
+          - generic [ref=e404]: Tables & Layout
+        - button "Itemised Consumption" [ref=e405] [cursor=pointer]:
+          - img [ref=e407]
+          - generic [ref=e409]: Itemised Consumption
+        - button "Settings" [ref=e410] [cursor=pointer]:
+          - img [ref=e412]
+          - generic [ref=e415]: Settings
+      - main [ref=e219]:
+        - generic [ref=e416]:
+          - generic [ref=e417]:
+            - button "Language" [ref=e418] [cursor=pointer]
+            - button "Tax Settings" [ref=e419] [cursor=pointer]
+            - button "Business Day" [ref=e420] [cursor=pointer]
+            - button "Business Info" [active] [ref=e421] [cursor=pointer]
+            - button "Backup" [ref=e422] [cursor=pointer]
+            - button "Email" [ref=e423] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e424] [cursor=pointer]
+          - generic [ref=e436]:
+            - heading "Business Information" [level=3] [ref=e437]
+            - paragraph [ref=e438]: Configure your business details that appear on receipts and invoices.
+            - generic [ref=e439]:
+              - generic [ref=e440]:
+                - generic [ref=e441]: Business Logo
+                - button "Drag and drop or click to upload logo" [ref=e442] [cursor=pointer]:
+                  - generic [ref=e443]:
+                    - generic [ref=e444]: Drag and drop or click to upload
+                    - generic [ref=e445]: PNG, JPG, SVG (max 2MB)
+              - generic [ref=e446]:
+                - generic [ref=e447]: Business Name *
+                - textbox "e.g., My Restaurant SRL" [ref=e448]: Test Business SRL
+              - generic [ref=e449]:
+                - generic [ref=e450]: Address
+                - textbox "e.g., Via Roma 123" [ref=e451]: Via Roma 123
+              - generic [ref=e452]:
+                - generic [ref=e453]:
+                  - generic [ref=e454]: City
+                  - textbox "e.g., Milan" [ref=e455]: Milan
+                - generic [ref=e456]:
+                  - generic [ref=e457]: Postal Code
+                  - textbox "e.g., 20100" [ref=e458]: "20100"
+              - generic [ref=e459]:
+                - generic [ref=e460]: Country
+                - textbox "e.g., IT" [ref=e461]: IT
+              - generic [ref=e462]:
+                - generic [ref=e463]:
+                  - generic [ref=e464]: Phone
+                  - textbox "e.g., +39 02 1234567" [ref=e465]: +39 02 1234567
+                - generic [ref=e466]:
+                  - generic [ref=e467]: Email
+                  - textbox "e.g., info@myrestaurant.com" [ref=e468]: +39 02 1234567info@test.com
+              - generic [ref=e469]:
+                - generic [ref=e470]: VAT Number
+                - textbox "e.g., IT12345678901" [ref=e471]: info@test.comIT12345678901
+              - generic [ref=e472]:
+                - generic [ref=e473]: Legal Text
+                - textbox "Optional legal text to appear on receipts..." [ref=e474]
+              - button "Save Changes" [ref=e475] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e120] [cursor=pointer]:
+    - img [ref=e121]

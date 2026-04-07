@@ -263,6 +263,9 @@ model Settings {
   receiptIssueDefaultSelected Boolean @default(false)
   receiptIssueMode String @default("immediate")
 
+  businessLogoPath String?
+  businessLegalText String?
+
   @@index([defaultTaxRateId])
   @@map("settings")
 }

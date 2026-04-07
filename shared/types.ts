@@ -111,16 +111,18 @@ export interface Settings {
     lastManualClose: string | null; // ISO string
     autoCloseEnabled: boolean; // Enable automatic business day closing
   };
-  business?: {
-    name: string | null;
-    address: string | null;
-    city: string | null;
-    postalCode: string | null;
-    country: string | null;
-    phone: string | null;
-    email: string | null;
-    vatNumber: string | null;
-  };
+ business?: {
+ name: string | null;
+ address: string | null;
+ city: string | null;
+ postalCode: string | null;
+ country: string | null;
+ phone: string | null;
+ email: string | null;
+ vatNumber: string | null;
+ logoPath?: string | null;
+ legalText?: string | null;
+ };
   receipt?: {
     prefix: string;
     numberLength: number;
@@ -332,14 +334,16 @@ export interface ReceiptItemSnapshot {
 }
 
 export interface BusinessSnapshot {
-  name: string | null;
-  address: string | null;
-  city: string | null;
-  postalCode: string | null;
-  country: string | null;
-  phone: string | null;
-  email: string | null;
-  vatNumber: string | null;
+ name: string | null;
+ address: string | null;
+ city: string | null;
+ postalCode: string | null;
+ country: string | null;
+ phone: string | null;
+ email: string | null;
+ vatNumber: string | null;
+ logoPath?: string | null;
+ legalText?: string | null;
 }
 
 export interface CustomerSnapshot {

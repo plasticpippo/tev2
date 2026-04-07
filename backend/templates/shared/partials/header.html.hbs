@@ -1,0 +1,34 @@
+<header class="receipt-header">
+{{#if logoPath}}
+<img src="{{logoPath}}" alt="{{name}}" class="business-logo">
+{{/if}}
+
+<h1 class="business-name">{{name}}</h1>
+
+<div class="business-details">
+{{#if address}}
+<p class="business-address">{{address}}</p>
+{{/if}}
+
+{{#if city}}
+<p class="business-city">
+{{#if postalCode}}{{postalCode}} {{/if}}{{city}}
+{{#if country}}, {{country}}{{/if}}
+</p>
+{{else if country}}
+<p class="business-country">{{country}}</p>
+{{/if}}
+
+{{#if phone}}
+<p class="business-phone">{{t phoneLabelKey}}: {{phone}}</p>
+{{/if}}
+
+{{#if email}}
+<p class="business-email">{{email}}</p>
+{{/if}}
+
+{{#if vatNumber}}
+<p class="business-vat"><strong>{{t vatLabelKey}}:</strong> {{vatNumber}}</p>
+{{/if}}
+</div>
+</header>

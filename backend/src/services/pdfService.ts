@@ -1,11 +1,14 @@
 import puppeteer, { Browser, Page, PDFOptions as PuppeteerPDFOptions } from 'puppeteer';
 import { loadTemplate } from './templateEngine';
+import { loadInvoiceTemplate } from './templateEngine';
 import {
   PDFOptions,
   ReceiptTemplateData,
   PDFGenerationResult,
   PDFCacheEntry,
   ReceiptTemplateData as ReceiptData,
+  InvoiceTemplateData,
+  INVOICE_PDF_OPTIONS,
 } from '../types/pdf';
 import path from 'path';
 import fs from 'fs/promises';
@@ -187,6 +190,28 @@ export async function generateReceiptPDF(receipt: ReceiptData): Promise<PDFGener
 
   await fs.mkdir(STORAGE_PATH, { recursive: true });
   const filePath = path.join(STORAGE_PATH, filename);
+  await fs.writeFile(filePath, pdfBuffer);
+
+  return {
+    buffer: pdfBuffer,
+    filename,
+    generatedAt: new Date(),
+    sizeBytes: pdfBuffer.length,
+  };
+}
+
+export async function generateInvoicePDF(invoice: InvoiceTemplateData): Promise<PDFGenerationResult> {
+  const invoiceStoragePath = process.env.INVOICE_STORAGE_PATH || path.join(__dirname, '../../storage/invoices');
+  
+  const template = await loadInvoiceTemplate('invoice-main');
+  const htmlContent = template(invoice as unknown as object);
+  
+  const pdfBuffer = await generatePDF(htmlContent, INVOICE_PDF_OPTIONS);
+
+  const filename = `invoice-${invoice.invoice.invoiceNumber}-${crypto.randomUUID()}.pdf`;
+
+  await fs.mkdir(invoiceStoragePath, { recursive: true });
+  const filePath = path.join(invoiceStoragePath, filename);
   await fs.writeFile(filePath, pdfBuffer);
 
   return {

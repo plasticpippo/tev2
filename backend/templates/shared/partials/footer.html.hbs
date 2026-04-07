@@ -1,0 +1,29 @@
+<footer class="receipt-footer">
+<div class="payment-info">
+<span class="label">{{t paymentMethodLabelKey}}:</span>
+<span class="payment-method-display">{{paymentMethod}}</span>
+</div>
+
+{{#if notes}}
+<div class="footer-notes">
+<span class="label">{{t notesLabelKey}}:</span>
+<span>{{notes}}</span>
+</div>
+{{/if}}
+
+{{#if legalText}}
+<div class="legal-text">{{legalText}}</div>
+{{else}}
+<div class="legal-text">
+{{t legalDisclaimerKey}}
+</div>
+{{/if}}
+
+<div class="thank-you-message">
+{{t thankYouKey}}
+</div>
+
+<div class="page-info">
+<span>{{t pageKey}} <span class="page-number"></span> {{t ofKey}} <span class="page-count"></span></span>
+</div>
+</footer>

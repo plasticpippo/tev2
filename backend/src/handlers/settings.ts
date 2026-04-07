@@ -10,6 +10,8 @@ import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayS
 import { Settings as PrismaSettings, TaxRate as PrismaTaxRate } from '@prisma/client';
 import { spawn } from 'child_process';
 import { testSmtpConnection, getEmailConfig } from '../services/emailService';
+import { upload } from '../middleware/upload';
+import { processLogo, deleteLogo, getLogoUrl } from '../services/logoUploadService';
 
 export const settingsRouter = express.Router();
 
@@ -77,7 +79,9 @@ settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
           country: null,
           phone: null,
           email: null,
-          vatNumber: null
+          vatNumber: null,
+          logoPath: null,
+          legalText: null
         },
         receipt: {
           prefix: 'R',
@@ -110,6 +114,8 @@ email: {
     const defaultTaxRate = formatTaxRate(settings.defaultTaxRate);
 
     // Convert the database format to the expected format
+    const logoUrl = settings.businessLogoPath ? getLogoUrl(settings.businessLogoPath) : null;
+
     const result: Settings = {
       tax: {
         mode: settings.taxMode as 'inclusive' | 'exclusive' | 'none',
@@ -130,7 +136,9 @@ email: {
         country: settings.businessCountry,
         phone: settings.businessPhone,
         email: settings.businessEmail,
-        vatNumber: settings.vatNumber
+        vatNumber: settings.vatNumber,
+        logoPath: logoUrl,
+        legalText: settings.businessLegalText
       },
       receipt: {
         prefix: settings.receiptPrefix,
@@ -163,6 +171,95 @@ email: {
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
+  }
+});
+
+// POST /api/settings/logo - Upload business logo
+settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('logo') as any, async (req: Request, res: Response) => {
+  try {
+    if (!req.file) {
+      res.status(400).json({ error: 'No file uploaded' });
+      return;
+    }
+
+    const file = req.file as Express.Multer.File;
+    const uploadResult = await processLogo({
+      fieldname: file.fieldname,
+      originalname: file.originalname,
+      encoding: file.encoding,
+      mimetype: file.mimetype,
+      buffer: file.buffer,
+      size: file.size,
+    });
+
+    if (!uploadResult.success) {
+      res.status(400).json({ error: uploadResult.error });
+      return;
+    }
+
+    const existingSettings = await prisma.settings.findFirst();
+    let settings;
+
+    if (existingSettings) {
+      settings = await prisma.settings.update({
+        where: { id: existingSettings.id },
+        data: { businessLogoPath: uploadResult.path },
+      });
+    } else {
+      settings = await prisma.settings.create({
+        data: {
+          taxMode: 'none',
+          autoStartTime: '06:00',
+          businessDayEndHour: '06:00',
+          businessLogoPath: uploadResult.path,
+        },
+      });
+    }
+
+    clearSettingsCache();
+    logInfo('Business logo uploaded', { correlationId: (req as any).correlationId });
+
+    const logoUrl = uploadResult.path ? getLogoUrl(uploadResult.path) : '';
+    res.json({
+      success: true,
+      path: uploadResult.path,
+      url: logoUrl,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error uploading logo', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to upload logo' });
+  }
+});
+
+// DELETE /api/settings/logo - Delete business logo
+settingsRouter.delete('/logo', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const existingSettings = await prisma.settings.findFirst();
+
+    if (!existingSettings || !existingSettings.businessLogoPath) {
+      res.status(404).json({ error: 'No logo found' });
+      return;
+    }
+
+    const oldLogoPath = existingSettings.businessLogoPath;
+    await deleteLogo(oldLogoPath);
+
+    await prisma.settings.update({
+      where: { id: existingSettings.id },
+      data: { businessLogoPath: null },
+    });
+
+    clearSettingsCache();
+    logInfo('Business logo deleted', { correlationId: (req as any).correlationId });
+
+    res.json({ success: true });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error deleting logo', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to delete logo' });
   }
 });
 
@@ -244,6 +341,7 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           businessPhone: business?.phone !== undefined ? business.phone : existingSettings.businessPhone,
           businessEmail: business?.email !== undefined ? business.email : existingSettings.businessEmail,
           vatNumber: business?.vatNumber !== undefined ? business.vatNumber : existingSettings.vatNumber,
+          businessLegalText: business?.legalText !== undefined ? business.legalText : existingSettings.businessLegalText,
           receiptPrefix: receipt?.prefix !== undefined ? receipt.prefix : existingSettings.receiptPrefix,
           receiptNumberLength: receipt?.numberLength !== undefined ? receipt.numberLength : existingSettings.receiptNumberLength,
           receiptStartNumber: receipt?.startNumber !== undefined ? receipt.startNumber : existingSettings.receiptStartNumber,
@@ -284,6 +382,7 @@ emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSe
           businessPhone: business?.phone ?? null,
           businessEmail: business?.email ?? null,
           vatNumber: business?.vatNumber ?? null,
+          businessLegalText: business?.legalText ?? null,
           receiptPrefix: receipt?.prefix ?? 'R',
           receiptNumberLength: receipt?.numberLength ?? 6,
           receiptStartNumber: receipt?.startNumber ?? 1,
@@ -336,7 +435,9 @@ emailSmtpSecure: email?.smtpSecure ?? false,
         country: settings.businessCountry,
         phone: settings.businessPhone,
         email: settings.businessEmail,
-        vatNumber: settings.vatNumber
+        vatNumber: settings.vatNumber,
+        logoPath: settings.businessLogoPath ? getLogoUrl(settings.businessLogoPath) : null,
+        legalText: settings.businessLegalText
       },
       receipt: {
         prefix: settings.receiptPrefix,

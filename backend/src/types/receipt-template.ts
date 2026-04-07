@@ -8,6 +8,7 @@ export interface ReceiptTemplateBusiness {
   email: string | null;
   vatNumber: string | null;
   logoPath?: string | null;
+  legalText?: string | null;
 }
 
 export interface ReceiptTemplateCustomer {
@@ -96,6 +97,8 @@ export function prepareReceiptTemplateData(receipt: {
     phone: string | null;
     email: string | null;
     vatNumber: string | null;
+    logoPath?: string | null;
+    legalText?: string | null;
   };
   customerSnapshot: {
     name: string;
@@ -140,16 +143,18 @@ export function prepareReceiptTemplateData(receipt: {
       receiptNumber: receipt.receiptNumber,
       status: receipt.status,
       issuedAt: receipt.issuedAt || new Date(),
-      business: {
-        name: receipt.businessSnapshot.name,
-        address: receipt.businessSnapshot.address,
-        city: receipt.businessSnapshot.city,
-        postalCode: receipt.businessSnapshot.postalCode,
-        country: receipt.businessSnapshot.country,
-        phone: receipt.businessSnapshot.phone,
-        email: receipt.businessSnapshot.email,
-        vatNumber: receipt.businessSnapshot.vatNumber,
-      },
+business: {
+      name: receipt.businessSnapshot.name,
+      address: receipt.businessSnapshot.address,
+      city: receipt.businessSnapshot.city,
+      postalCode: receipt.businessSnapshot.postalCode,
+      country: receipt.businessSnapshot.country,
+      phone: receipt.businessSnapshot.phone,
+      email: receipt.businessSnapshot.email,
+      vatNumber: receipt.businessSnapshot.vatNumber,
+      logoPath: receipt.businessSnapshot.logoPath,
+      legalText: receipt.businessSnapshot.legalText,
+    },
       customer: receipt.customerSnapshot ? {
         name: receipt.customerSnapshot.name,
         email: receipt.customerSnapshot.email,

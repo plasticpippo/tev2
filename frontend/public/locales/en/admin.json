@@ -395,6 +395,35 @@
       "issueModeLabel": "Issue mode",
       "issueModeImmediate": "Immediate - Issue receipt immediately upon payment",
       "issueModeDraft": "Draft - Create receipt as draft for later review"
+    },
+    "businessInfo": {
+      "title": "Business Information",
+      "description": "Configure your business details that appear on receipts and invoices.",
+      "businessName": "Business Name",
+      "businessNamePlaceholder": "e.g., My Restaurant SRL",
+      "address": "Address",
+      "addressPlaceholder": "e.g., Via Roma 123",
+      "city": "City",
+      "cityPlaceholder": "e.g., Milan",
+      "postalCode": "Postal Code",
+      "postalCodePlaceholder": "e.g., 20100",
+      "country": "Country",
+      "countryPlaceholder": "e.g., IT",
+      "phone": "Phone",
+      "phonePlaceholder": "e.g., +39 02 1234567",
+      "email": "Email",
+      "emailPlaceholder": "e.g., info@myrestaurant.com",
+      "vatNumber": "VAT Number",
+      "vatNumberPlaceholder": "e.g., IT12345678901",
+      "legalText": "Legal Text",
+      "legalTextPlaceholder": "Optional legal text to appear on receipts...",
+      "save": "Save Changes",
+      "saving": "Saving...",
+      "saveSuccess": "Business information saved successfully!",
+      "saveError": "Failed to save business information. Please try again.",
+      "validation": {
+        "nameRequired": "Business name is required"
+      }
     }
   },
 "itemisedConsumption": {

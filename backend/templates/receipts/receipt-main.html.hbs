@@ -361,8 +361,11 @@
   <div class="stamp-overlay">{{t 'receipt.status.voided'}}</div>
   {{/eq}}
 
-  <div class="receipt-container">
-    {{> header}}
+<div class="receipt-container">
+{{> header receipt.business 
+  phoneLabelKey="receipt.phone" 
+  vatLabelKey="receipt.vatNumber"
+}}
 
     {{> receipt-info}}
 
@@ -374,7 +377,14 @@
 
     {{> totals}}
 
-    {{> footer}}
-  </div>
+{{> footer receipt
+  paymentMethodLabelKey="receipt.paymentMethod"
+  notesLabelKey="receipt.notes"
+  legalDisclaimerKey="receipt.legalDisclaimer"
+  thankYouKey="receipt.thankYou"
+  pageKey="receipt.page"
+  ofKey="receipt.of"
+}}
+</div>
 </body>
 </html>
