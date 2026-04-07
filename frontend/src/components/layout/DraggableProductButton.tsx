@@ -1,7 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useLayout } from '../../contexts/LayoutContext';
 import type { ProductVariant, Product } from '@shared/types';
 import { formatCurrency } from '../../../utils/formatting';
+
+// Must match ProductGridLayout constants
+const MOBILE_BREAKPOINT = 768;
+const GRID_COLUMNS_MOBILE = 3;
 
 interface DraggableProductButtonProps {
   variant: ProductVariant;
@@ -11,6 +15,129 @@ interface DraggableProductButtonProps {
   isPositioned?: boolean; // Whether the button has a saved position in the grid
 }
 
+// Custom hook for touch drag support
+const useTouchDrag = (
+  buttonRef: React.RefObject<HTMLDivElement>,
+  isEditMode: boolean,
+  variantId: number,
+  onDragStart: () => void,
+  onDragEnd: () => void
+) => {
+  const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const touchStartPos = useRef<{ x: number; y: number } | null>(null);
+  const touchCurrentPos = useRef<{ x: number; y: number } | null>(null);
+  const dragElementRef = useRef<HTMLElement | null>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  useEffect(() => {
+    const element = buttonRef.current;
+    if (!element || !isEditMode) return;
+
+    const handleTouchStart = (e: TouchEvent) => {
+      const touch = e.touches[0];
+      touchStartPos.current = { x: touch.clientX, y: touch.clientY };
+      touchCurrentPos.current = { x: touch.clientX, y: touch.clientY };
+
+      // Long press to initiate drag (500ms)
+      longPressTimerRef.current = setTimeout(() => {
+        setIsTouchDragging(true);
+        onDragStart();
+
+        // Create a visual drag element
+        const dragElement = element.cloneNode(true) as HTMLElement;
+        dragElement.style.position = 'fixed';
+        dragElement.style.zIndex = '9999';
+        dragElement.style.opacity = '0.8';
+        dragElement.style.pointerEvents = 'none';
+        dragElement.style.transform = 'scale(1.05)';
+        dragElement.style.width = `${element.offsetWidth}px`;
+        document.body.appendChild(dragElement);
+        dragElementRef.current = dragElement;
+      }, 500);
+    };
+
+    const handleTouchMove = (e: TouchEvent) => {
+      if (!touchStartPos.current) return;
+
+      const touch = e.touches[0];
+      touchCurrentPos.current = { x: touch.clientX, y: touch.clientY };
+
+      // Cancel long press if moved too much before drag starts
+      const dx = touch.clientX - touchStartPos.current.x;
+      const dy = touch.clientY - touchStartPos.current.y;
+      const distance = Math.sqrt(dx * dx + dy * dy);
+
+      if (!isTouchDragging && distance > 10 && longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+
+      // Update drag element position
+      if (dragElementRef.current) {
+        const width = dragElementRef.current.offsetWidth;
+        const height = dragElementRef.current.offsetHeight;
+        dragElementRef.current.style.left = `${touch.clientX - width / 2}px`;
+        dragElementRef.current.style.top = `${touch.clientY - height / 2}px`;
+      }
+
+      // Dispatch custom event for grid cells to detect
+      const customEvent = new CustomEvent('touchDragOver', {
+        detail: { x: touch.clientX, y: touch.clientY, variantId },
+        bubbles: true
+      });
+      element.dispatchEvent(customEvent);
+    };
+
+    const handleTouchEnd = (e: TouchEvent) => {
+      // Clear long press timer
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+        longPressTimerRef.current = null;
+      }
+
+      if (isTouchDragging) {
+        // Remove drag element
+        if (dragElementRef.current) {
+          document.body.removeChild(dragElementRef.current);
+          dragElementRef.current = null;
+        }
+
+        // Dispatch custom drop event
+        const touch = e.changedTouches[0];
+        const customEvent = new CustomEvent('touchDrop', {
+          detail: { x: touch.clientX, y: touch.clientY, variantId },
+          bubbles: true
+        });
+        element.dispatchEvent(customEvent);
+
+        setIsTouchDragging(false);
+        onDragEnd();
+      }
+
+      touchStartPos.current = null;
+      touchCurrentPos.current = null;
+    };
+
+    element.addEventListener('touchstart', handleTouchStart, { passive: false });
+    element.addEventListener('touchmove', handleTouchMove, { passive: false });
+    element.addEventListener('touchend', handleTouchEnd, { passive: false });
+
+    return () => {
+      element.removeEventListener('touchstart', handleTouchStart);
+      element.removeEventListener('touchmove', handleTouchMove);
+      element.removeEventListener('touchend', handleTouchEnd);
+      if (longPressTimerRef.current) {
+        clearTimeout(longPressTimerRef.current);
+      }
+      if (dragElementRef.current) {
+        document.body.removeChild(dragElementRef.current);
+      }
+    };
+  }, [isEditMode, variantId, isTouchDragging, onDragStart, onDragEnd, buttonRef]);
+
+  return isTouchDragging;
+};
+
 export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
   variant,
   product,
@@ -19,9 +146,20 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
 }) => {
   const { isEditMode, getButtonPosition } = useLayout();
   const [isDragging, setIsDragging] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
 
   const position = getButtonPosition(variant.id);
+
+  // Detect mobile viewport
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
 
   const handleClick = () => {
     // Only allow clicks in normal mode (not edit mode)
@@ -30,13 +168,30 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>) => {
+  const handleDragStart = () => {
+    setIsDragging(true);
+  };
+
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  // Use touch drag hook for mobile support
+  const isTouchDragging = useTouchDrag(
+    buttonRef,
+    isEditMode,
+    variant.id,
+    handleDragStart,
+    handleDragEnd
+  );
+
+  const handleMouseDragStart = (e: React.DragEvent<HTMLDivElement>) => {
     if (!isEditMode) return;
-    
+
     setIsDragging(true);
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('variantId', variant.id.toString());
-    
+
     // Make the drag image semi-transparent
     if (buttonRef.current) {
       const dragImage = buttonRef.current.cloneNode(true) as HTMLElement;
@@ -47,83 +202,85 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     }
   };
 
-  const handleDragEnd = () => {
+  const handleMouseDragEnd = () => {
     setIsDragging(false);
   };
 
-  // If no position saved, render outside the grid (will be hidden or at end)
-    const gridStyle: React.CSSProperties = position ? {
-      gridColumn: position.gridColumn,
-      gridRow: position.gridRow,
-    } : {
-      // No grid positioning - will render in document flow after positioned items
-      // For unpositioned items in edit mode, we don't apply grid positioning
-      // The parent component handles positioning for unpositioned items
-    };
+  // Calculate grid positioning:
+  // - In edit mode: always apply position, but clamp to current grid columns on mobile
+  // - In normal mode on desktop: apply saved position
+  // - In normal mode on mobile: let products flow naturally (no position)
+  let gridStyle: React.CSSProperties = {};
+
+  if (position) {
+    if (isEditMode) {
+      // In edit mode, always apply position but clamp column on mobile
+      const clampedColumn = isMobile
+        ? Math.min(position.gridColumn, GRID_COLUMNS_MOBILE)
+        : position.gridColumn;
+      gridStyle = {
+        gridColumn: clampedColumn,
+        gridRow: position.gridRow,
+      };
+    } else if (!isMobile) {
+      // Normal mode on desktop: use saved position
+      gridStyle = {
+        gridColumn: position.gridColumn,
+        gridRow: position.gridRow,
+      };
+    }
+    // Normal mode on mobile: no position, flows naturally
+  }
+
+  const isActivelyDragging = isDragging || isTouchDragging;
 
   return (
     <div
       ref={buttonRef}
-      draggable={isEditMode}
-      onDragStart={handleDragStart}
-      onDragEnd={handleDragEnd}
+      draggable={isEditMode && !isMobile}
+      onDragStart={handleMouseDragStart}
+      onDragEnd={handleMouseDragEnd}
       onClick={handleClick}
       style={gridStyle}
       data-theme-color={variant.themeColor}
-      className={`
-        product-variant-btn
-        relative
-        rounded-lg
-        p-2 sm:p-3
-        flex
-        flex-col
-        justify-between
-        transition-all
-        ${isEditMode ? 'cursor-move' : (isMakable ? 'cursor-pointer hover:brightness-110' : 'cursor-not-allowed')}
-        ${isDragging ? 'opacity-50' : 'opacity-100'}
-        ${isEditMode ? 'ring-2 ring-yellow-500 ring-opacity-50' : ''}
-        ${!isMakable && !isEditMode ? 'opacity-50' : ''}
-        min-h-[72px] sm:min-h-20
-        aspect-[4/3]
-        w-full
-        shadow-md
-      `}
+      data-variant-id={variant.id}
+      className={`product-variant-btn product-grid-button ${isEditMode ? 'edit-mode' : ''} ${isActivelyDragging ? 'dragging' : ''} ${!isMakable && !isEditMode ? 'disabled' : ''}`}
     >
       {/* Edit mode indicator */}
       {isEditMode && (
-        <div className="absolute top-1 right-1 text-yellow-400 text-[10px] sm:text-xs font-bold">
+        <div className="product-grid-drag-handle">
           ⋮⋮
         </div>
       )}
 
       {/* Out of stock overlay (only in normal mode) */}
       {!isMakable && !isEditMode && (
-        <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center rounded-lg">
-          <span className="text-white font-bold text-xs bg-red-600 px-2 py-1 rounded">
+        <div className="product-grid-overlay">
+          <span className="product-grid-overlay-text">
             OUT OF STOCK
           </span>
         </div>
       )}
 
       {/* Product name */}
-      <p className="font-bold text-base sm:text-lg md:text-xl lg:text-2xl truncate">
+      <p className="product-grid-name">
         {product.name}
       </p>
 
       {/* Variant info */}
       <div>
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg font-semibold truncate">
+        <p className="product-grid-variant">
           {variant.name}
         </p>
-        <p className="text-xs sm:text-sm md:text-base lg:text-lg opacity-80">
+        <p className="product-grid-price">
           {formatCurrency(variant.price)}
         </p>
       </div>
 
       {/* Favourite indicator */}
       {variant.isFavourite && !isEditMode && (
-        <div className="absolute top-1 left-1">
-          <span className="text-yellow-400 text-[10px] sm:text-xs font-bold">FAV</span>
+        <div className="product-grid-fav">
+          FAV
         </div>
       )}
     </div>
