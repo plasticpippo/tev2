@@ -68,6 +68,10 @@
     "uncategorized": "Uncategorized",
     "favourite": "Favourite",
     "quantity": "Qty",
+    "searchPlaceholder": "Search products...",
+    "searching": "Searching...",
+    "searchResults": "{{count}} product(s) found",
+    "noSearchResults": "No products found matching your search",
     "validation": {
       "productNameRequired": "Product name is required",
       "productNameMaxLength": "Product name must be 255 characters or less",
@@ -95,6 +99,9 @@
     "none": "None",
     "confirmDelete": "Are you sure you want to delete the category \"{{name}}\"? Products in this category will become uncategorized.",
     "noCategories": "No categories found",
+    "searchPlaceholder": "Search categories...",
+    "searchResults": "{{count}} categor(y/ies) found",
+    "noSearchResults": "No categories found matching your search",
     "validation": {
       "nameRequired": "Category name is required",
       "nameMaxLength": "Category name must be 255 characters or less"
@@ -136,6 +143,9 @@
     "addPurchasingUnit": "+ Add Purchasing Unit",
     "unitNamePlaceholder": "Unit Name (e.g., Bottle)",
     "multiplierPlaceholder": "Multiplier",
+    "searchPlaceholder": "Search stock items...",
+    "searchResults": "{{count}} stock item(s) found",
+    "noSearchResults": "No stock items found matching your search",
     "validation": {
       "nameRequired": "Stock item name is required",
       "nameMaxLength": "Stock item name must be 255 characters or less",
@@ -176,7 +186,10 @@
     },
     "recentAdjustments": "Recent Adjustments",
     "noAdjustments": "No recent adjustments",
-    "noStockAdjustments": "No stock adjustments found."
+    "noStockAdjustments": "No stock adjustments found.",
+    "searchPlaceholder": "Search adjustments...",
+    "searchResults": "{{count}} adjustment(s) found",
+    "noSearchResults": "No adjustments found matching your search"
   },
   "users": {
     "title": "User Management",

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Category, Till } from '@shared/types';
 import * as productApi from '../services/productService';
@@ -118,6 +118,39 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingCategory, setEditingCategory] = useState<Category | undefined>(undefined);
   const [deletingCategory, setDeletingCategory] = useState<Category | null>(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Filter categories based on search query
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (!searchQuery.trim()) {
+        setFilteredCategories(categories);
+      } else {
+        const query = searchQuery.toLowerCase();
+        const filtered = categories.filter(category =>
+          category.name.toLowerCase().includes(query)
+        );
+        setFilteredCategories(filtered);
+      }
+    }, 300);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, categories]);
+
+  // Reset filtered categories when categories changes
+  useEffect(() => {
+    setFilteredCategories(categories);
+  }, [categories]);
 
   const handleSave = () => {
     setIsModalOpen(false);
@@ -155,29 +188,69 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
           {t('categories.addCategory')}
         </button>
       </div>
+      
+      {/* Search input */}
+      <div className="flex-shrink-0 mb-4">
+        <div className="relative">
+          <VKeyboardInput
+            k-type="full"
+            type="text"
+            placeholder={t('categories.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md pl-10"
+          />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {searchQuery.trim() && (
+          <p className="text-sm text-slate-400 mt-2">
+            {t('categories.searchResults', { count: filteredCategories.length })}
+          </p>
+        )}
+      </div>
+      
       <div className="flex-grow space-y-2 overflow-y-auto pr-2">
-        {categories.map(category => (
+        {filteredCategories.map(category => (
           <div key={category.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
             <div>
               <p className="font-semibold">{category.name}</p>
               <p className="text-sm text-slate-400">{t('categories.visibleOn')}: {getTillNames(category.visibleTillIds)}</p>
             </div>
             <div className="flex items-center gap-2">
-                <button
-                    onClick={() => { setEditingCategory(category); setIsModalOpen(true); }}
-                    className="btn btn-secondary btn-sm"
-                >
-                    {t('buttons.edit', { ns: 'common' })}
-                </button>
-                 <button
-                    onClick={() => setDeletingCategory(category)}
-                    className="btn btn-danger btn-sm"
-                >
-                    {t('buttons.delete', { ns: 'common' })}
-                </button>
+              <button
+                onClick={() => { setEditingCategory(category); setIsModalOpen(true); }}
+                className="btn btn-secondary btn-sm"
+              >
+                {t('buttons.edit', { ns: 'common' })}
+              </button>
+              <button
+                onClick={() => setDeletingCategory(category)}
+                className="btn btn-danger btn-sm"
+              >
+                {t('buttons.delete', { ns: 'common' })}
+              </button>
             </div>
           </div>
         ))}
+        {searchQuery.trim() && filteredCategories.length === 0 && (
+          <div className="text-center py-8 text-slate-400">
+            {t('categories.noSearchResults')}
+          </div>
+        )}
       </div>
       {isModalOpen && (
         <CategoryModal

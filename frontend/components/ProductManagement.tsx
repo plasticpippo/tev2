@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Product, ProductVariant, Category, StockItem, TaxRate, ThemeColor } from '../../shared/types';
 import * as productApi from '../services/productService';
@@ -355,6 +355,56 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
   const [editingProduct, setEditingProduct] = useState<Product | undefined>(undefined);
   const [deletingProduct, setDeletingProduct] = useState<Product | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [searchResults, setSearchResults] = useState<Product[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Debounced search function
+  const performSearch = useCallback(async (query: string) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const results = await productApi.searchProducts(query);
+      setSearchResults(results);
+    } catch (error) {
+      console.error('Error searching products:', error);
+      setSearchResults([]);
+    } finally {
+      setIsSearching(false);
+    }
+  }, []);
+
+  // Handle search input change with debounce
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    if (searchQuery.trim()) {
+      setIsSearching(true);
+      searchTimeoutRef.current = setTimeout(() => {
+        performSearch(searchQuery);
+      }, 300);
+    } else {
+      setSearchResults([]);
+      setIsSearching(false);
+    }
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, performSearch]);
+
+  // Determine which products to display
+  const displayedProducts = searchQuery.trim() ? searchResults : products;
 
   const handleSave = () => {
     setIsModalOpen(false);
@@ -403,44 +453,93 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
           {t('products.addProduct')}
         </button>
       </div>
+      
+      {/* Search input */}
+      <div className="flex-shrink-0 mb-4">
+        <div className="relative">
+          <VKeyboardInput
+            k-type="full"
+            type="text"
+            placeholder={t('products.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md pl-10"
+          />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            {isSearching ? (
+              <svg className="animate-spin h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            ) : (
+              <svg className="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+              </svg>
+            )}
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {searchQuery.trim() && (
+          <p className="text-sm text-slate-400 mt-2">
+            {isSearching 
+              ? t('products.searching') 
+              : t('products.searchResults', { count: displayedProducts.length })}
+          </p>
+        )}
+      </div>
+      
       <div className="flex-grow space-y-2 overflow-y-auto pr-2">
-        {products.map(product => (
+        {displayedProducts.map(product => (
           <div key={product.id} className="bg-slate-800 p-4 rounded-md">
             <div className="flex justify-between items-start">
-                <div>
-                    <p className="font-semibold">{product.name}</p>
-                    <p className="text-sm text-slate-400">{getCategoryName(product.categoryId)}</p>
-                </div>
-                <div className="flex items-center gap-2">
-                    <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="btn btn-secondary btn-sm">{t('buttons.edit', { ns: 'common' })}</button>
-                    <button
-                      onClick={() => setDeletingProduct(product)}
-                      disabled={isDeleting}
-                      className={`btn btn-danger btn-sm ${isDeleting ? 'opacity-75 cursor-not-allowed' : ''}`}
-                    >
-                      {isDeleting ? (
-                        <span className="flex items-center">
-                          <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                          </svg>
-                          {t('buttons.deleting', { ns: 'common' })}
-                        </span>
-                      ) : t('buttons.delete', { ns: 'common' })}
-                    </button>
-                </div>
+              <div>
+                <p className="font-semibold">{product.name}</p>
+                <p className="text-sm text-slate-400">{getCategoryName(product.categoryId)}</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => { setEditingProduct(product); setIsModalOpen(true); }} className="btn btn-secondary btn-sm">{t('buttons.edit', { ns: 'common' })}</button>
+                <button
+                  onClick={() => setDeletingProduct(product)}
+                  disabled={isDeleting}
+                  className={`btn btn-danger btn-sm ${isDeleting ? 'opacity-75 cursor-not-allowed' : ''}`}
+                >
+                  {isDeleting ? (
+                    <span className="flex items-center">
+                      <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                      </svg>
+                      {t('buttons.deleting', { ns: 'common' })}
+                    </span>
+                  ) : t('buttons.delete', { ns: 'common' })}
+                </button>
+              </div>
             </div>
-             <div className="mt-2 pt-2 border-t border-slate-700 text-sm space-y-1">
-                <p className="font-semibold text-slate-400 text-xs">{t('products.variants')}:</p>
-                {product.variants.map((v: any) => (
-                    <div key={v.id} className="flex justify-between">
-                        <span>{v.name} {v.isFavourite && <span className="text-amber-400">{t('products.favourite')}</span>}</span>
-                        <span>{formatCurrency(v.price)}</span>
-                    </div>
-                ))}
-             </div>
+            <div className="mt-2 pt-2 border-t border-slate-700 text-sm space-y-1">
+              <p className="font-semibold text-slate-400 text-xs">{t('products.variants')}:</p>
+              {product.variants.map((v: any) => (
+                <div key={v.id} className="flex justify-between">
+                  <span>{v.name} {v.isFavourite && <span className="text-amber-400">{t('products.favourite')}</span>}</span>
+                  <span>{formatCurrency(v.price)}</span>
+                </div>
+              ))}
+            </div>
           </div>
         ))}
+        {searchQuery.trim() && displayedProducts.length === 0 && !isSearching && (
+          <div className="text-center py-8 text-slate-400">
+            {t('products.noSearchResults')}
+          </div>
+        )}
       </div>
       {isModalOpen && (
         <ProductModal

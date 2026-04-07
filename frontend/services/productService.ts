@@ -4,12 +4,23 @@ import i18n from '../src/i18n';
 
 // Products
 export const getProducts = async (): Promise<Product[]> => {
-  const cacheKey = 'getProducts';
+const cacheKey = 'getProducts';
+try {
+const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
+return result;
+} catch (error) {
+console.error(i18n.t('productService.errorFetchingProducts'), error);
+return [];
+}
+};
+
+export const searchProducts = async (query: string, limit: number = 50): Promise<Product[]> => {
   try {
-    const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
+    const params = new URLSearchParams({ q: query, limit: String(limit) });
+    const result = await makeApiRequest(apiUrl(`/api/products/search?${params}`));
     return result;
   } catch (error) {
-    console.error(i18n.t('productService.errorFetchingProducts'), error);
+    console.error(i18n.t('productService.errorSearchingProducts'), error);
     return [];
   }
 };

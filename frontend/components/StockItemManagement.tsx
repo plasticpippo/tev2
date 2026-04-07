@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 // Fix: Import the 'Product' type to resolve type errors in prop definitions.
 import type { StockItem, PurchasingUnit, Product } from '../shared/types';
@@ -254,12 +254,47 @@ interface StockItemManagementProps {
 }
 
 export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockItems, products, onDataUpdate }) => {
-    const { t } = useTranslation('admin');
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [editingItem, setEditingItem] = useState<StockItem | undefined>(undefined);
-    const [deletingItem, setDeletingItem] = useState<StockItem | null>(null);
-    const [deleteError, setDeleteError] = useState<string>('');
-    const [isDeleting, setIsDeleting] = useState(false);
+  const { t } = useTranslation('admin');
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingItem, setEditingItem] = useState<StockItem | undefined>(undefined);
+  const [deletingItem, setDeletingItem] = useState<StockItem | null>(null);
+  const [deleteError, setDeleteError] = useState<string>('');
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filteredItems, setFilteredItems] = useState<StockItem[]>([]);
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Filter stock items based on search query
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+
+    searchTimeoutRef.current = setTimeout(() => {
+      if (!searchQuery.trim()) {
+        setFilteredItems(stockItems);
+      } else {
+        const query = searchQuery.toLowerCase();
+        const filtered = stockItems.filter(item =>
+          item.name.toLowerCase().includes(query) ||
+          item.type.toLowerCase().includes(query) ||
+          item.baseUnit.toLowerCase().includes(query)
+        );
+        setFilteredItems(filtered);
+      }
+    }, 300);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchQuery, stockItems]);
+
+  // Reset filtered items when stockItems changes
+  useEffect(() => {
+    setFilteredItems(stockItems);
+  }, [stockItems]);
 
     const handleSave = () => {
         setIsModalOpen(false);
@@ -289,55 +324,95 @@ export const StockItemManagement: React.FC<StockItemManagementProps> = ({ stockI
         }
     };
 
-    return (
-        <div className="h-full flex flex-col">
-            <div className="flex-shrink-0 flex justify-between items-center mb-4">
-                <h3 className="text-xl font-bold text-slate-300">{t('stockItems.stockItems')}</h3>
-                <button
-                    onClick={() => { setEditingItem(undefined); setIsModalOpen(true); }}
-                    className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 min-h-11 rounded-md"
-                >
-                    {t('stockItems.addStockItem')}
-                </button>
+return (
+    <div className="h-full flex flex-col">
+      <div className="flex-shrink-0 flex justify-between items-center mb-4">
+        <h3 className="text-xl font-bold text-slate-300">{t('stockItems.stockItems')}</h3>
+        <button
+          onClick={() => { setEditingItem(undefined); setIsModalOpen(true); }}
+          className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-4 min-h-11 rounded-md"
+        >
+          {t('stockItems.addStockItem')}
+        </button>
+      </div>
+      
+      {/* Search input */}
+      <div className="flex-shrink-0 mb-4">
+        <div className="relative">
+          <VKeyboardInput
+            k-type="full"
+            type="text"
+            placeholder={t('stockItems.searchPlaceholder')}
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full p-3 bg-slate-900 border border-slate-700 rounded-md pl-10"
+          />
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <svg className="h-5 w-5 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+            </svg>
+          </div>
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center"
+            >
+              <svg className="h-5 w-5 text-slate-400 hover:text-slate-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+        </div>
+        {searchQuery.trim() && (
+          <p className="text-sm text-slate-400 mt-2">
+            {t('stockItems.searchResults', { count: filteredItems.length })}
+          </p>
+        )}
+      </div>
+      
+      <div className="flex-grow space-y-2 overflow-y-auto pr-2">
+        {filteredItems.map(item => (
+          <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
+            <div>
+              <p className="font-semibold">{item.name}</p>
+              <p className="text-sm text-slate-400">{item.type} ({t('stockItems.trackedIn', { unit: item.baseUnit })})</p>
             </div>
-            <div className="flex-grow space-y-2 overflow-y-auto pr-2">
-                {stockItems.map(item => (
-                    <div key={item.id} className="bg-slate-800 p-4 rounded-md flex justify-between items-center">
-                        <div>
-                            <p className="font-semibold">{item.name}</p>
-                            <p className="text-sm text-slate-400">{item.type} ({t('stockItems.trackedIn', { unit: item.baseUnit })})</p>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <span className="text-lg font-bold text-amber-400">{t('stockItems.inStockValue', { quantity: item.quantity, unit: item.baseUnit })}</span>
-                            <button
-                                onClick={() => { setEditingItem(item); setIsModalOpen(true); }}
-                                className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md"
-                            >
-                                {t('stockItems.edit')}
-                            </button>
-                            <button
-                                onClick={() => handleDeleteClick(item)}
-                                disabled={isDeleting}
-                                className={`font-bold py-1 px-3 text-sm rounded-md ${
-                                  isDeleting
-                                    ? 'bg-gray-500 cursor-not-allowed'
-                                    : 'bg-red-700 hover:bg-red-600 text-white'
-                                }`}
-                            >
-                              {isDeleting ? (
-                                <span className="flex items-center">
-                                  <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                                  </svg>
-                                  {t('stockItems.deleting')}
-                                </span>
-                              ) : t('stockItems.delete')}
-                            </button>
-                        </div>
-                    </div>
-                ))}
+            <div className="flex items-center gap-2">
+              <span className="text-lg font-bold text-amber-400">{t('stockItems.inStockValue', { quantity: item.quantity, unit: item.baseUnit })}</span>
+              <button
+                onClick={() => { setEditingItem(item); setIsModalOpen(true); }}
+                className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-1 px-3 text-sm rounded-md"
+              >
+                {t('stockItems.edit')}
+              </button>
+              <button
+                onClick={() => handleDeleteClick(item)}
+                disabled={isDeleting}
+                className={`font-bold py-1 px-3 text-sm rounded-md ${
+                  isDeleting
+                    ? 'bg-gray-500 cursor-not-allowed'
+                    : 'bg-red-700 hover:bg-red-600 text-white'
+                }`}
+              >
+                {isDeleting ? (
+                  <span className="flex items-center">
+                    <svg className="animate-spin -ml-1 mr-1 h-3 w-3 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {t('stockItems.deleting')}
+                  </span>
+                ) : t('stockItems.delete')}
+              </button>
             </div>
+          </div>
+        ))}
+        {searchQuery.trim() && filteredItems.length === 0 && (
+          <div className="text-center py-8 text-slate-400">
+            {t('stockItems.noSearchResults')}
+          </div>
+        )}
+      </div>
             {isModalOpen && (
                 <StockItemModal
                     item={editingItem}

@@ -36,6 +36,57 @@ function formatProductVariant(variant: ProductVariant & { stockConsumption: Stoc
   };
 }
 
+// GET /api/products/search - Search products by name
+productsRouter.get('/search', authenticateToken, async (req: Request, res: Response) => {
+  try {
+    const { q, limit } = req.query;
+    const searchQuery = typeof q === 'string' ? q : '';
+    const limitNum = typeof limit === 'string' ? Math.min(parseInt(limit, 10), 100) : 50;
+
+    if (!searchQuery.trim()) {
+      return res.json([]);
+    }
+
+    const products = await prisma.product.findMany({
+      where: {
+        OR: [
+          { name: { contains: searchQuery, mode: 'insensitive' } },
+          { 
+            variants: { 
+              some: { 
+                name: { contains: searchQuery, mode: 'insensitive' } 
+              } 
+            } 
+          }
+        ]
+      },
+      include: {
+        variants: {
+          include: {
+            stockConsumption: true,
+            taxRate: true
+          }
+        }
+      },
+      take: limitNum,
+      orderBy: { name: 'asc' }
+    });
+
+    // Format products with tax rate info
+    const formattedProducts = products.map(product => ({
+      ...product,
+      variants: product.variants.map(formatProductVariant)
+    }));
+
+    res.json(formattedProducts);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error searching products', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: i18n.t('errors:products.searchFailed') });
+  }
+});
+
 // GET /api/products - Get all products
 productsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   try {
