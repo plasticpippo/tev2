@@ -46,3 +46,38 @@ NO Workarounds! NO shortcuts! ONLY proper coding!
 ### ALL documentation must be located at ./docs
 
 ### do not rush! always make sure you are editing things right. the goal is here is quality and not speed
+
+## Database Migrations - CRITICAL
+
+### ALWAYS use Prisma migrations for schema changes
+
+When modifying the database schema (adding tables, columns, indexes, relations):
+
+1. **CORRECT** - Use Prisma migrations:
+   ```bash
+   cd backend
+   npx prisma migrate dev --name descriptive_name_of_change
+   ```
+
+2. **NEVER USE** - These bypass migrations and break fresh installations:
+   ```bash
+   npx prisma db push    # FORBIDDEN - Only for prototyping
+   Manual SQL changes    # FORBIDDEN - Not tracked
+   ```
+
+### After schema changes, ALWAYS:
+
+1. Generate the migration file: `npx prisma migrate dev --name add_xxx`
+2. Verify migration file was created in `backend/prisma/migrations/`
+3. Commit the migration file to version control
+4. Test with a fresh database: `docker compose down -v && docker compose up -d --build`
+
+### Why this matters
+
+Missing migration files cause fresh installations to fail because:
+- `docker-entrypoint.sh` runs `npx prisma migrate deploy` on startup
+- This ONLY applies migration files - it does NOT read the schema
+- If a model exists in schema but has no migration, the table won't exist
+- This breaks deployments on new servers
+
+### See troubleshooting guide at: `docs/troubleshooting-fresh-installation.md`
