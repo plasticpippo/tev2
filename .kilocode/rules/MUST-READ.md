@@ -81,3 +81,7 @@ Missing migration files cause fresh installations to fail because:
 - This breaks deployments on new servers
 
 ### See troubleshooting guide at: `docs/troubleshooting-fresh-installation.md`
+
+## Prisma migrations application
+you must use '''npx prima migrate deploy''' instead of '''npx prisma migrate dev''' 
+you are on a headless machine and the dev option requires an inteactive environment

@@ -30,6 +30,13 @@ model User {
   voidedReceipts Receipt[] @relation("ReceiptVoidedBy")
   receiptAuditLogs ReceiptAuditLog[]
   receiptFromPaymentDefault Boolean?
+  
+  // Profitability Analytics Relations
+  costHistory CostHistory[]
+  inventoryCounts InventoryCount[]
+  approvedInventoryCounts InventoryCount[] @relation("InventoryApprovedBy")
+  varianceReports VarianceReport[]
+  reviewedVarianceReports VarianceReport[] @relation("VarianceReviewedBy")
 
   @@map("users")
 }
@@ -60,15 +67,22 @@ model Product {
 }
 
 model ProductVariant {
-  id            Int       @id @default(autoincrement())
-  productId     Int
-  name          String
-  price         Decimal   @db.Decimal(10, 2)
-  isFavourite   Boolean?  @default(false)
-  themeColor    String    @default("slate")
-  taxRateId     Int?
-  product       Product   @relation(fields: [productId], references: [id])
-  taxRate       TaxRate?  @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
+  id Int @id @default(autoincrement())
+  productId Int
+  name String
+  price Decimal @db.Decimal(10, 2)
+  isFavourite Boolean? @default(false)
+  themeColor String @default("slate")
+  taxRateId Int?
+  
+  // Profitability Analytics Fields
+  theoreticalCost Decimal? @db.Decimal(10, 4) // Calculated recipe cost
+  currentMargin Decimal? @db.Decimal(5, 2) // Current margin %
+  lastCostCalc DateTime? // Last recalculation timestamp
+  costStatus String? @default("pending") // pending, current, stale
+  
+  product Product @relation(fields: [productId], references: [id])
+  taxRate TaxRate? @relation(fields: [taxRateId], references: [id], onDelete: SetNull)
   stockConsumption StockConsumption[]
   variantLayouts VariantLayout[]
   sharedLayoutPositions SharedLayoutPosition[]
@@ -119,6 +133,13 @@ model Transaction {
   version Int @default(0)
   idempotencyKey String? @unique
   idempotencyCreatedAt DateTime?
+  
+  // Profitability Analytics Fields
+  totalCost Decimal? @db.Decimal(10, 2) // Total COGS
+  costCalculatedAt DateTime? // When cost was calculated
+  grossMargin Decimal? @db.Decimal(10, 2) // subtotal - totalCost
+  marginPercent Decimal? @db.Decimal(5, 2) // (margin/subtotal)*100
+  
   user User @relation(fields: [userId], references: [id])
   receipts Receipt[]
 
@@ -188,8 +209,18 @@ model StockItem {
   baseUnit String
   purchasingUnits Json?
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+  
+  // Profitability Analytics Fields
+  standardCost Decimal @default(0) @db.Decimal(10, 4) // Cost per base unit
+  costPerUnit Decimal @default(0) @db.Decimal(10, 4) // Display cost per serving
+  lastCostUpdate DateTime @default(now())
+  costUpdateReason String?
+  
   stockAdjustments StockAdjustment[]
   stockConsumptions StockConsumption[]
+  costHistory CostHistory[]
+  inventoryCountItems InventoryCountItem[]
+  varianceReportItems VarianceReportItem[]
 
   @@map("stock_items")
 }
@@ -570,4 +601,118 @@ model ReceiptGenerationQueue {
 
   @@index([status, nextAttemptAt])
   @@map("receipt_generation_queue")
+}
+
+// ============================================
+// Profitability Analytics Models
+// ============================================
+
+model CostHistory {
+  id Int @id @default(autoincrement())
+  stockItemId String @db.Uuid
+  previousCost Decimal @db.Decimal(10, 4)
+  newCost Decimal @db.Decimal(10, 4)
+  changePercent Decimal @db.Decimal(6, 2) // Calculated: ((new-prev)/prev)*100
+  reason String // supplier, review, adjustment
+  effectiveFrom DateTime @default(now())
+  createdBy Int
+  createdAt DateTime @default(now())
+
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  user User @relation(fields: [createdBy], references: [id])
+
+  @@index([stockItemId, effectiveFrom])
+  @@index([effectiveFrom])
+  @@map("cost_history")
+}
+
+model InventoryCount {
+  id Int @id @default(autoincrement())
+  countDate DateTime @default(now())
+  countType String @default("full") // full, partial, spot
+  status String @default("draft") // draft, submitted, approved
+  submittedAt DateTime?
+  approvedAt DateTime?
+  approvedBy Int?
+  notes String?
+  createdBy Int
+  createdAt DateTime @default(now())
+
+  items InventoryCountItem[]
+  user User @relation(fields: [createdBy], references: [id])
+  approver User? @relation("InventoryApprovedBy", fields: [approvedBy], references: [id])
+
+  @@index([countDate])
+  @@index([status])
+  @@map("inventory_counts")
+}
+
+model InventoryCountItem {
+  id Int @id @default(autoincrement())
+  inventoryCountId Int
+  stockItemId String @db.Uuid
+  quantity Decimal @db.Decimal(10, 2)
+  unitCost Decimal @db.Decimal(10, 4) // Cost at count time
+  extendedValue Decimal @db.Decimal(10, 2) // quantity * unitCost
+  notes String?
+
+  inventoryCount InventoryCount @relation(fields: [inventoryCountId], references: [id], onDelete: Cascade)
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+
+  @@index([inventoryCountId])
+  @@index([stockItemId])
+  @@map("inventory_count_items")
+}
+
+model VarianceReport {
+  id Int @id @default(autoincrement())
+  periodStart DateTime
+  periodEnd DateTime
+  status String @default("draft") // draft, reviewed, final
+
+  // Summary values
+  theoreticalCost Decimal @db.Decimal(10, 2)
+  actualCost Decimal @db.Decimal(10, 2)
+  varianceValue Decimal @db.Decimal(10, 2)
+  variancePercent Decimal @db.Decimal(6, 2)
+
+  // Beginning/Ending inventory references
+  beginningCountId Int?
+  endingCountId Int?
+
+  createdBy Int
+  createdAt DateTime @default(now())
+  reviewedAt DateTime?
+  reviewedBy Int?
+
+  items VarianceReportItem[]
+  user User @relation(fields: [createdBy], references: [id])
+  reviewer User? @relation("VarianceReviewedBy", fields: [reviewedBy], references: [id])
+
+  @@index([periodStart, periodEnd])
+  @@map("variance_reports")
+}
+
+model VarianceReportItem {
+  id Int @id @default(autoincrement())
+  varianceReportId Int
+  stockItemId String @db.Uuid
+
+  theoreticalQty Decimal @db.Decimal(10, 2)
+  actualQty Decimal @db.Decimal(10, 2)
+  varianceQty Decimal @db.Decimal(10, 2)
+
+  unitCost Decimal @db.Decimal(10, 4)
+  varianceValue Decimal @db.Decimal(10, 2)
+  variancePercent Decimal @db.Decimal(6, 2)
+
+  status String @default("ok") // ok, warning, critical
+  notes String?
+
+  varianceReport VarianceReport @relation(fields: [varianceReportId], references: [id], onDelete: Cascade)
+  stockItem StockItem @relation(fields: [stockItemId], references: [id])
+
+  @@index([varianceReportId])
+  @@index([stockItemId])
+  @@map("variance_report_items")
 }
