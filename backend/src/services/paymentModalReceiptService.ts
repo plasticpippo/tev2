@@ -5,6 +5,7 @@ import { addToQueue } from './receiptQueueService';
 import { toReceiptDTO } from '../types/receipt';
 import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
 import { savePDFToStorage } from './pdfService';
+import { getLogoUrl } from './logoUploadService';
 
 interface CreateReceiptFromPaymentOptions {
   transactionId: number;
@@ -75,6 +76,15 @@ export async function createReceiptFromPayment(
   const settings = await prisma.settings.findFirst();
   const taxMode = (settings?.taxMode || 'exclusive') as 'inclusive' | 'exclusive' | 'none';
 
+  // For PDF generation, we need an absolute URL for the logo
+  // Puppeteer can't load relative URLs when generating PDFs
+  let logoPath: string | null = null;
+  if (settings?.businessLogoPath) {
+    const baseUrl = process.env.URL || 'http://localhost:3001';
+    const relativeLogoPath = getLogoUrl(settings.businessLogoPath);
+    logoPath = `${baseUrl}${relativeLogoPath}`;
+  }
+
   const businessSnapshot = {
     name: settings?.businessName || '',
     address: settings?.businessAddress,
@@ -84,6 +94,8 @@ export async function createReceiptFromPayment(
     phone: settings?.businessPhone,
     email: settings?.businessEmail,
     vatNumber: settings?.vatNumber,
+    logoPath,
+    legalText: settings?.businessLegalText,
   };
 
   const items = typeof transaction.items === 'string' 

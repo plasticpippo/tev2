@@ -40,7 +40,14 @@ async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
     };
   }
 
-  const logoPath = settings.businessLogoPath ? getLogoUrl(settings.businessLogoPath) : null;
+  // For PDF generation, we need an absolute URL for the logo
+  // Puppeteer can't load relative URLs when generating PDFs
+  let logoPath: string | null = null;
+  if (settings.businessLogoPath) {
+    const baseUrl = process.env.URL || 'http://localhost:3001';
+    const relativeLogoPath = getLogoUrl(settings.businessLogoPath);
+    logoPath = `${baseUrl}${relativeLogoPath}`;
+  }
 
   return {
     name: settings.businessName || '',

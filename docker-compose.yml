@@ -52,6 +52,13 @@ services:
       - NODE_ENV=${NODE_ENV:-development}
       - CORS_ORIGIN=${URL},${URL}:${NGINX_PORT}
       - JWT_SECRET=${JWT_SECRET}
+      - URL=${URL}
+      - PDF_STORAGE_PATH=./storage/receipts
+      - PDF_TEMPLATE_PATH=./templates/receipts
+      - PDF_FONT_PATH=./assets/fonts
+      - PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
+      - PDF_CACHE_ENABLED=${PDF_CACHE_ENABLED:-true}
+      - PDF_CACHE_TTL=${PDF_CACHE_TTL:-3600}
       # Limit Node.js heap to 640MB - prevents heap from consuming all container memory
       - NODE_OPTIONS=--max-old-space-size=640
     volumes:

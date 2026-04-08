@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useRef, DragEvent, ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
-import { getAuthHeaders, apiUrl } from '../services/apiBase';
+import { getAuthHeaders, apiUrl, getCsrfToken } from '../services/apiBase';
 
 interface LogoUploaderProps {
   currentLogoPath?: string | null;
@@ -123,12 +123,14 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
         }));
       });
 
-      xhr.open('POST', apiUrl('/api/settings/logo'));
-      const headers = getAuthHeaders();
-      Object.entries(headers).forEach(([key, value]) => {
-        xhr.setRequestHeader(key, value);
-      });
-      xhr.send(formData);
+    xhr.open('POST', apiUrl('/api/settings/logo'));
+    // For FormData uploads, don't set Content-Type header - browser will set it with correct boundary
+    // Also include CSRF token for state-changing requests
+    const headers = getAuthHeaders(false);
+    Object.entries(headers).forEach(([key, value]) => {
+      xhr.setRequestHeader(key, value);
+    });
+    xhr.send(formData);
     } catch {
       setState(prev => ({
         ...prev,

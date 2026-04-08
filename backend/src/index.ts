@@ -180,8 +180,17 @@ app.use(generalRateLimit);
 // Add request logger middleware
 app.use(requestLoggerMiddleware);
 
-// Parse JSON bodies
-app.use(express.json({ limit: '10mb' }));
+// Custom body parser middleware that skips multipart/form-data
+// This allows multer to handle file uploads in specific routes
+app.use((req, res, next) => {
+  const contentType = req.headers['content-type'];
+  if (contentType && contentType.includes('multipart/form-data')) {
+    // Skip body parsing for multipart requests - multer will handle these
+    return next();
+  }
+  // For all other requests, parse as JSON
+  express.json({ limit: '10mb' })(req, res, next);
+});
 
 // i18n middleware - adds req.t function for translations
 app.use(i18nextMiddleware.handle(i18n));
@@ -190,7 +199,7 @@ app.use(i18nextMiddleware.handle(i18n));
 app.use('/api', router);
 
 // Static file serving for uploaded logos
-const uploadsPath = path.join(__dirname, '../../uploads');
+const uploadsPath = path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(uploadsPath, {
   maxAge: '1d',
   setHeaders: (res: Response) => {

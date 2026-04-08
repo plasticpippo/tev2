@@ -93,27 +93,46 @@ export const isTokenExpiringSoon = (): boolean => {
   return true; // If no token found, it's considered expiring/missing
 };
 
+// CSRF token cookie name (must match backend)
+const CSRF_COOKIE_NAME = 'XSRF-TOKEN-READ';
+const CSRF_HEADER_NAME = 'x-csrf-token';
+
+// Helper function to get CSRF token from cookie
+export const getCsrfToken = (): string | null => {
+  const cookies = document.cookie.split(';');
+  for (const cookie of cookies) {
+    const [name, value] = cookie.trim().split('=');
+    if (name === CSRF_COOKIE_NAME) {
+      return decodeURIComponent(value);
+    }
+  }
+  return null;
+};
+
 // Helper function to get headers with credentials
-export const getAuthHeaders = (): Record<string, string> => {
+export const getAuthHeaders = (includeContentType: boolean = true): Record<string, string> => {
   let token = localStorage.getItem('authToken');
-  
+
   // Check if token exists and is expired
   if (token && isTokenExpired(token)) {
     console.log(i18n.t('api.tokenExpired'));
     localStorage.removeItem('authToken');
     localStorage.removeItem('currentUser');
     token = null;
-    
+
     // Redirect to login if on a protected route
     if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
       window.location.href = '/';
     }
   }
-  
-  const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
-  };
-  
+
+  const headers: Record<string, string> = {};
+
+  // Only set Content-Type for JSON requests (not for FormData uploads)
+  if (includeContentType) {
+    headers['Content-Type'] = 'application/json';
+  }
+
   // Get token from localStorage - try both token and currentUser formats
   if (token) {
     headers['Authorization'] = `Bearer ${token}`;
@@ -128,7 +147,7 @@ export const getAuthHeaders = (): Record<string, string> => {
           if (isTokenExpired(currentUser.token)) {
             localStorage.removeItem('authToken');
             localStorage.removeItem('currentUser');
-            
+
             // Redirect to login if on a protected route
             if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
               window.location.href = '/';
@@ -142,7 +161,13 @@ export const getAuthHeaders = (): Record<string, string> => {
       }
     }
   }
-  
+
+  // Add CSRF token for state-changing requests
+  const csrfToken = getCsrfToken();
+  if (csrfToken) {
+    headers[CSRF_HEADER_NAME] = csrfToken;
+  }
+
   return headers;
 };
 
