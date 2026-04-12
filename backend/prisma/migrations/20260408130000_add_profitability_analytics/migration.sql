@@ -89,11 +89,16 @@ CREATE TABLE "variance_report_items" (
     "varianceQty" DECIMAL(10,2) NOT NULL,
     "unitCost" DECIMAL(10,4) NOT NULL,
     "varianceValue" DECIMAL(10,2) NOT NULL,
+    "variancePercent" DECIMAL(6,2) NOT NULL,
+    "status" TEXT DEFAULT 'ok',
+    "notes" TEXT,
     CONSTRAINT "variance_report_items_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex: Cost history lookups
 CREATE INDEX "cost_history_stockItemId_idx" ON "cost_history"("stockItemId");
+CREATE INDEX "cost_history_stockItemId_effectiveFrom_idx" ON "cost_history"("stockItemId", "effectiveFrom");
+CREATE INDEX "cost_history_effectiveFrom_idx" ON "cost_history"("effectiveFrom");
 
 -- CreateIndex: Inventory count lookups
 CREATE INDEX "inventory_count_items_inventoryCountId_idx" ON "inventory_count_items"("inventoryCountId");
@@ -102,6 +107,13 @@ CREATE INDEX "inventory_count_items_stockItemId_idx" ON "inventory_count_items"(
 -- CreateIndex: Variance report lookups
 CREATE INDEX "variance_report_items_varianceReportId_idx" ON "variance_report_items"("varianceReportId");
 CREATE INDEX "variance_report_items_stockItemId_idx" ON "variance_report_items"("stockItemId");
+
+-- CreateIndex: Inventory counts lookups
+CREATE INDEX "inventory_counts_countDate_idx" ON "inventory_counts"("countDate");
+CREATE INDEX "inventory_counts_status_idx" ON "inventory_counts"("status");
+
+-- CreateIndex: Variance reports lookups
+CREATE INDEX "variance_reports_periodStart_periodEnd_idx" ON "variance_reports"("periodStart", "periodEnd");
 
 -- AddForeignKey: Cost history relations
 ALTER TABLE "cost_history" ADD CONSTRAINT "cost_history_stockItemId_fkey" FOREIGN KEY ("stockItemId") REFERENCES "stock_items"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

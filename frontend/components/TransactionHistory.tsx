@@ -1,10 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Transaction, User, Till, Settings, Receipt } from '../../shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
 import { ReceiptGenerationModal } from './ReceiptGenerationModal';
 import { getAuthHeaders } from '../services/apiBase';
+import { voidTransaction } from '../services/transactionService';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -13,11 +14,12 @@ interface TransactionHistoryProps {
     users: User[];
     tills: Till[];
     settings: Settings;
+    onDataUpdate?: () => void;
 }
 
 type DateRangePreset = 'today' | 'yesterday' | '7days' | '30days' | 'custom';
 
-export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, users, tills, settings }) => {
+export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transactions, users, tills, settings, onDataUpdate }) => {
   const { t } = useTranslation('admin');
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null);
   const [dateRange, setDateRange] = useState<DateRangePreset>('30days');
@@ -31,6 +33,12 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
   // Receipt generation state
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [transactionForReceipt, setTransactionForReceipt] = useState<Transaction | null>(null);
+
+  // Void transaction state
+  const [showVoidModal, setShowVoidModal] = useState(false);
+  const [voidReason, setVoidReason] = useState('');
+  const [voidError, setVoidError] = useState('');
+  const [isVoiding, setIsVoiding] = useState(false);
 
     const filteredTransactions = useMemo(() => {
         let items = [...transactions];
@@ -90,7 +98,9 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
     }, [transactions, dateRange, customStart, customEnd, customStartTime, customEndTime, selectedTillId, selectedUserId, settings]);
     
   const totalFilteredSales = useMemo(() => {
-    return filteredTransactions.reduce((sum, t) => sum + t.total, 0);
+    return filteredTransactions
+      .filter(t => t.status !== 'voided')
+      .reduce((sum, t) => sum + t.total, 0);
   }, [filteredTransactions]);
 
   const handleGenerateReceipt = (transaction: Transaction) => {
@@ -128,6 +138,33 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
       console.error('Failed to view receipt:', error);
     }
   };
+
+  const handleVoidTransaction = useCallback(() => {
+    if (!selectedTransaction) return;
+    setVoidReason('');
+    setVoidError('');
+    setShowVoidModal(true);
+  }, [selectedTransaction]);
+
+  const handleConfirmVoid = useCallback(async () => {
+    if (!selectedTransaction || !voidReason.trim()) {
+      setVoidError('A reason is required to void a transaction.');
+      return;
+    }
+    setIsVoiding(true);
+    setVoidError('');
+    try {
+      await voidTransaction(selectedTransaction.id, voidReason.trim());
+      setShowVoidModal(false);
+      setSelectedTransaction(null);
+      setVoidReason('');
+      onDataUpdate?.();
+    } catch (error) {
+      setVoidError(error instanceof Error ? error.message : 'Failed to void transaction');
+    } finally {
+      setIsVoiding(false);
+    }
+  }, [selectedTransaction, voidReason, onDataUpdate]);
     
 const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({preset, label}) => (
 <button
@@ -278,6 +315,14 @@ aria-pressed={dateRange === 'custom'}
                     <span className="text-purple-400">{t('transactions.details.complimentary')}</span>
                   </div>
                 )}
+                {tx.status === 'voided' && (
+                  <div className="flex justify-between items-center text-xs mt-1">
+                    <span className="text-red-400 font-semibold">VOIDED</span>
+                    {tx.voidReason && (
+                      <span className="text-red-300/70 text-xs truncate max-w-[60%]">{tx.voidReason}</span>
+                    )}
+                  </div>
+                )}
                 {tx.receipt && (
                   <div className="flex justify-between items-center text-xs mt-1">
                     <span className="bg-green-100 text-green-800 px-2 py-0.5 rounded text-xs font-medium">
@@ -298,6 +343,19 @@ aria-pressed={dateRange === 'custom'}
                             {selectedTransaction.status === 'complimentary' && (
                                 <div className="mb-4 bg-purple-900/30 border border-purple-700/50 rounded-md p-2 text-center">
                                     <span className="text-purple-400 font-semibold">{t('transactions.details.complimentary')}</span>
+                                </div>
+                            )}
+                            {selectedTransaction.status === 'voided' && (
+                                <div className="mb-4 bg-red-900/30 border border-red-700/50 rounded-md p-3">
+                                    <div className="text-red-400 font-semibold text-center mb-1">VOIDED</div>
+                                    {selectedTransaction.voidReason && (
+                                        <div className="text-red-300/70 text-xs text-center">{selectedTransaction.voidReason}</div>
+                                    )}
+                                    {selectedTransaction.voidedAt && (
+                                        <div className="text-red-300/50 text-xs text-center mt-1">
+                                            Voided at {formatDate(selectedTransaction.voidedAt)}
+                                        </div>
+                                    )}
                                 </div>
                             )}
                             <div className="space-y-2 mb-4">
@@ -369,6 +427,22 @@ aria-pressed={dateRange === 'custom'}
   </button>
 )}
 </div>
+
+{/* Void Transaction Button - only for completed/complimentary transactions */}
+{selectedTransaction.status === 'completed' || selectedTransaction.status === 'complimentary' ? (
+  <div className="mt-3">
+    <button
+      onClick={handleVoidTransaction}
+      className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
+      aria-label="Void transaction"
+    >
+      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+      </svg>
+      Void Transaction
+    </button>
+  </div>
+) : null}
           </div>
                     ) : (
                         <p className="text-slate-500 text-center pt-16">{t('transactions.selectTransaction')}</p>
@@ -384,6 +458,54 @@ aria-pressed={dateRange === 'custom'}
   transaction={transactionForReceipt}
   onReceiptGenerated={handleReceiptGenerated}
 />
+
+{/* Void Transaction Confirmation Modal */}
+{showVoidModal && selectedTransaction && (
+  <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50" onClick={() => setShowVoidModal(false)}>
+    <div className="bg-slate-800 rounded-lg p-6 max-w-md w-full mx-4 border border-slate-600" onClick={e => e.stopPropagation()}>
+      <h3 className="text-lg font-bold text-red-400 mb-2">Void Transaction #{selectedTransaction.id}</h3>
+      <p className="text-sm text-slate-400 mb-1">
+        Total: <span className="text-white font-semibold">{formatCurrency(selectedTransaction.total)}</span>
+      </p>
+      <p className="text-sm text-slate-400 mb-4">
+        This will restore stock for all items in this transaction and mark it as voided. This action cannot be undone.
+      </p>
+      <div className="mb-4">
+        <label htmlFor="void-reason" className="block text-sm font-medium text-slate-300 mb-1">
+          Reason for voiding *
+        </label>
+        <textarea
+          id="void-reason"
+          value={voidReason}
+          onChange={e => { setVoidReason(e.target.value); setVoidError(''); }}
+          placeholder="Enter the reason for voiding this transaction..."
+          className="w-full bg-slate-900 p-3 rounded-md border border-slate-700 text-sm text-white placeholder-slate-500 resize-none"
+          rows={3}
+          autoFocus
+        />
+        {voidError && (
+          <p className="text-red-400 text-xs mt-1">{voidError}</p>
+        )}
+      </div>
+      <div className="flex gap-3">
+        <button
+          onClick={() => setShowVoidModal(false)}
+          className="flex-1 bg-slate-600 hover:bg-slate-500 text-white font-medium py-2 px-4 rounded-md transition"
+          disabled={isVoiding}
+        >
+          Cancel
+        </button>
+        <button
+          onClick={handleConfirmVoid}
+          className="flex-1 bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md transition disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={isVoiding || !voidReason.trim()}
+        >
+          {isVoiding ? 'Voiding...' : 'Confirm Void'}
+        </button>
+      </div>
+    </div>
+  </div>
+)}
 </>
 );
 };

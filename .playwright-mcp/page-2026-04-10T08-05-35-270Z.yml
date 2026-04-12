@@ -1,0 +1,117 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e484] [cursor=pointer]:
+          - img [ref=e486]
+          - generic [ref=e488]: Dashboard
+        - button "Analytics" [ref=e489] [cursor=pointer]:
+          - img [ref=e491]
+          - generic [ref=e493]: Analytics
+        - button "Profit Analytics" [ref=e494] [cursor=pointer]:
+          - img [ref=e496]
+          - generic [ref=e498]: Profit Analytics
+        - button "Transactions" [ref=e499] [cursor=pointer]:
+          - img [ref=e501]
+          - generic [ref=e503]: Transactions
+        - button "Receipts 13" [ref=e504] [cursor=pointer]:
+          - img [ref=e506]
+          - generic [ref=e508]: Receipts
+          - button "13" [ref=e509]
+        - button "Activity Log" [ref=e510] [cursor=pointer]:
+          - img [ref=e512]
+          - generic [ref=e514]: Activity Log
+        - button "Daily Closing Summary" [ref=e515] [cursor=pointer]:
+          - img [ref=e517]
+          - generic [ref=e519]: Daily Closing Summary
+        - button "Customers" [ref=e520] [cursor=pointer]:
+          - img [ref=e522]
+          - generic [ref=e524]: Customers
+        - button "Products" [ref=e525] [cursor=pointer]:
+          - img [ref=e527]
+          - generic [ref=e529]: Products
+        - button "Categories" [ref=e530] [cursor=pointer]:
+          - img [ref=e532]
+          - generic [ref=e534]: Categories
+        - button "Stock Items" [ref=e535] [cursor=pointer]:
+          - img [ref=e537]
+          - generic [ref=e539]: Stock Items
+        - button "Inventory" [ref=e540] [cursor=pointer]:
+          - img [ref=e542]
+          - generic [ref=e544]: Inventory
+        - button "Cost Management" [ref=e545] [cursor=pointer]:
+          - img [ref=e547]
+          - generic [ref=e549]: Cost Management
+        - button "Inventory Counts" [ref=e550] [cursor=pointer]:
+          - img [ref=e552]
+          - generic [ref=e554]: Inventory Counts
+        - button "Variance Reports" [ref=e555] [cursor=pointer]:
+          - img [ref=e557]
+          - generic [ref=e559]: Variance Reports
+        - button "Users" [ref=e560] [cursor=pointer]:
+          - img [ref=e562]
+          - generic [ref=e564]: Users
+        - button "Tills" [ref=e565] [cursor=pointer]:
+          - img [ref=e567]
+          - generic [ref=e569]: Tills
+        - button "Tables & Layout" [ref=e570] [cursor=pointer]:
+          - img [ref=e572]
+          - generic [ref=e574]: Tables & Layout
+        - button "Itemised Consumption" [ref=e575] [cursor=pointer]:
+          - img [ref=e577]
+          - generic [ref=e579]: Itemised Consumption
+        - button "Settings" [ref=e580] [cursor=pointer]:
+          - img [ref=e582]
+          - generic [ref=e585]: Settings
+      - main [ref=e240]:
+        - generic [ref=e586]:
+          - generic [ref=e587]:
+            - heading "Inventory Counts" [level=2] [ref=e588]
+            - button "New Count" [ref=e589] [cursor=pointer]
+          - generic [ref=e590]:
+            - button "All" [ref=e591] [cursor=pointer]
+            - button "Draft" [ref=e592] [cursor=pointer]
+            - button "Submitted" [ref=e593] [cursor=pointer]
+            - button "Approved" [ref=e594] [cursor=pointer]
+          - table [ref=e595]:
+            - rowgroup [ref=e596]:
+              - row "Date Type Status Items Notes Actions" [ref=e597]:
+                - columnheader "Date" [ref=e598]
+                - columnheader "Type" [ref=e599]
+                - columnheader "Status" [ref=e600]
+                - columnheader "Items" [ref=e601]
+                - columnheader "Notes" [ref=e602]
+                - columnheader "Actions" [ref=e603]
+            - rowgroup [ref=e604]:
+              - row "10/04/2026 Full Count Draft 0 Test count via e2e Submit View" [ref=e605]:
+                - cell "10/04/2026" [ref=e606]
+                - cell "Full Count" [ref=e607]:
+                  - generic [ref=e608]: Full Count
+                - cell "Draft" [ref=e609]:
+                  - generic [ref=e610]: Draft
+                - cell "0" [ref=e611]
+                - cell "Test count via e2e" [ref=e612]
+                - cell "Submit View" [ref=e613]:
+                  - button "Submit" [ref=e614] [cursor=pointer]
+                  - button "View" [ref=e615] [cursor=pointer]
+              - row "09/04/2026 Full Count Approved 0 Test inventory count View" [ref=e616]:
+                - cell "09/04/2026" [ref=e617]
+                - cell "Full Count" [ref=e618]:
+                  - generic [ref=e619]: Full Count
+                - cell "Approved" [ref=e620]:
+                  - generic [ref=e621]: Approved
+                - cell "0" [ref=e622]
+                - cell "Test inventory count" [ref=e623]
+                - cell "View" [ref=e624]:
+                  - button "View" [ref=e625] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

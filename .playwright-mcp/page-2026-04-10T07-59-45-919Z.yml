@@ -1,0 +1,197 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e1207] [cursor=pointer]:
+          - img [ref=e1209]
+          - generic [ref=e1211]: Dashboard
+        - button "Analytics" [ref=e1212] [cursor=pointer]:
+          - img [ref=e1214]
+          - generic [ref=e1216]: Analytics
+        - button "Profit Analytics" [ref=e1217] [cursor=pointer]:
+          - img [ref=e1219]
+          - generic [ref=e1221]: Profit Analytics
+        - button "Transactions" [ref=e1222] [cursor=pointer]:
+          - img [ref=e1224]
+          - generic [ref=e1226]: Transactions
+        - button "Receipts 13" [ref=e1227] [cursor=pointer]:
+          - img [ref=e1229]
+          - generic [ref=e1231]: Receipts
+          - button "13" [ref=e1232]
+        - button "Activity Log" [ref=e1233] [cursor=pointer]:
+          - img [ref=e1235]
+          - generic [ref=e1237]: Activity Log
+        - button "Daily Closing Summary" [ref=e1238] [cursor=pointer]:
+          - img [ref=e1240]
+          - generic [ref=e1242]: Daily Closing Summary
+        - button "Customers" [ref=e1243] [cursor=pointer]:
+          - img [ref=e1245]
+          - generic [ref=e1247]: Customers
+        - button "Products" [ref=e1248] [cursor=pointer]:
+          - img [ref=e1250]
+          - generic [ref=e1252]: Products
+        - button "Categories" [ref=e1253] [cursor=pointer]:
+          - img [ref=e1255]
+          - generic [ref=e1257]: Categories
+        - button "Stock Items" [ref=e1258] [cursor=pointer]:
+          - img [ref=e1260]
+          - generic [ref=e1262]: Stock Items
+        - button "Inventory" [ref=e1263] [cursor=pointer]:
+          - img [ref=e1265]
+          - generic [ref=e1267]: Inventory
+        - button "Cost Management" [ref=e1268] [cursor=pointer]:
+          - img [ref=e1270]
+          - generic [ref=e1272]: Cost Management
+        - button "Inventory Counts" [ref=e1273] [cursor=pointer]:
+          - img [ref=e1275]
+          - generic [ref=e1277]: Inventory Counts
+        - button "Variance Reports" [ref=e1278] [cursor=pointer]:
+          - img [ref=e1280]
+          - generic [ref=e1282]: Variance Reports
+        - button "Users" [ref=e1283] [cursor=pointer]:
+          - img [ref=e1285]
+          - generic [ref=e1287]: Users
+        - button "Tills" [ref=e1288] [cursor=pointer]:
+          - img [ref=e1290]
+          - generic [ref=e1292]: Tills
+        - button "Tables & Layout" [ref=e1293] [cursor=pointer]:
+          - img [ref=e1295]
+          - generic [ref=e1297]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1298] [cursor=pointer]:
+          - img [ref=e1300]
+          - generic [ref=e1302]: Itemised Consumption
+        - button "Settings" [ref=e1303] [cursor=pointer]:
+          - img [ref=e1305]
+          - generic [ref=e1308]: Settings
+      - main [ref=e240]:
+        - generic [ref=e1309]:
+          - generic [ref=e1310]:
+            - heading "Profit Analytics" [level=2] [ref=e1311]
+            - generic [ref=e1312]:
+              - button "Today" [ref=e1313] [cursor=pointer]
+              - button "Last 7 Days" [ref=e1314] [cursor=pointer]
+              - button "Last 30 Days" [ref=e1315] [cursor=pointer]
+              - button "This Month" [ref=e1316] [cursor=pointer]
+              - button "Custom" [ref=e1317] [cursor=pointer]
+          - generic [ref=e1318]:
+            - generic [ref=e1319]:
+              - paragraph [ref=e1320]: Revenue
+              - paragraph [ref=e1321]: €147,32
+              - generic [ref=e1322]:
+                - generic [ref=e1323]: "-88.0%"
+                - text: vs prev period
+            - generic [ref=e1324]:
+              - paragraph [ref=e1325]: COGS
+              - paragraph [ref=e1326]: €3,60
+              - generic [ref=e1327]:
+                - generic [ref=e1328]: +100.0%
+                - text: vs prev period
+            - generic [ref=e1329]:
+              - paragraph [ref=e1330]: Gross Profit
+              - paragraph [ref=e1331]: €143,72
+              - generic [ref=e1332]:
+                - generic [ref=e1333]: "-88.0%"
+                - text: vs prev period
+            - generic [ref=e1334]:
+              - paragraph [ref=e1335]: Margin %
+              - paragraph [ref=e1336]: 98.0%
+              - generic [ref=e1337]:
+                - generic [ref=e1338]: "-2.0pp"
+                - text: vs prev period
+          - generic [ref=e1339]:
+            - heading "Margin Trend" [level=3] [ref=e1340]
+            - generic [ref=e1341]:
+              - generic [ref=e1342]:
+                - generic [ref=e1343]: 0.0%
+                - 'generic "04 Apr: 0.0% | Revenue: €0,00"'
+                - generic [ref=e1344]: "04"
+              - generic [ref=e1345]:
+                - generic [ref=e1346]: 100.0%
+                - 'generic "05 Apr: 100.0% | Revenue: €88,60"'
+                - generic [ref=e1347]: "05"
+              - generic [ref=e1348]:
+                - generic [ref=e1349]: 100.0%
+                - 'generic "06 Apr: 100.0% | Revenue: €10,08"'
+                - generic [ref=e1350]: "06"
+              - generic [ref=e1351]:
+                - generic [ref=e1352]: 0.0%
+                - 'generic "07 Apr: 0.0% | Revenue: €0,00"'
+                - generic [ref=e1353]: "07"
+              - generic [ref=e1354]:
+                - generic [ref=e1355]: 100.0%
+                - 'generic "08 Apr: 100.0% | Revenue: €31,36"'
+                - generic [ref=e1356]: "08"
+              - generic [ref=e1357]:
+                - generic [ref=e1358]: 79.0%
+                - 'generic "09 Apr: 79.0% | Revenue: €17,28"'
+                - generic [ref=e1359]: "09"
+              - generic [ref=e1360]:
+                - generic [ref=e1361]: 0.0%
+                - 'generic "10 Apr: 0.0% | Revenue: €0,00"'
+                - generic [ref=e1362]: "10"
+          - generic [ref=e1363]:
+            - heading "Category Breakdown" [level=3] [ref=e1364]
+            - generic [ref=e1365]:
+              - generic [ref=e1366]:
+                - generic [ref=e1367]:
+                  - generic [ref=e1368]: Cocktails
+                  - generic [ref=e1369]: 96.0%
+                - generic [ref=e1373]:
+                  - generic [ref=e1374]: "Revenue: €117,00"
+                  - generic [ref=e1375]: "COGS: €4,36"
+              - generic [ref=e1376]:
+                - generic [ref=e1377]:
+                  - generic [ref=e1378]: Shots
+                  - generic [ref=e1379]: 100.0%
+                - generic [ref=e1382]:
+                  - generic [ref=e1383]: "Revenue: €39,00"
+                  - generic [ref=e1384]: "COGS: €0,00"
+              - generic [ref=e1385]:
+                - generic [ref=e1386]:
+                  - generic [ref=e1387]: Beer
+                  - generic [ref=e1388]: 100.0%
+                - generic [ref=e1391]:
+                  - generic [ref=e1392]: "Revenue: €14,00"
+                  - generic [ref=e1393]: "COGS: €0,00"
+              - generic [ref=e1394]:
+                - generic [ref=e1395]:
+                  - generic [ref=e1396]: Soft Drinks
+                  - generic [ref=e1397]: 100.0%
+                - generic [ref=e1400]:
+                  - generic [ref=e1401]: "Revenue: €4,00"
+                  - generic [ref=e1402]: "COGS: €0,00"
+          - generic [ref=e1403]:
+            - heading "Top Products by Margin" [level=3] [ref=e1404]
+            - table [ref=e1406]:
+              - rowgroup [ref=e1407]:
+                - row "Product Variant Revenue COGS Gross Profit Margin %" [ref=e1408]:
+                  - columnheader "Product" [ref=e1409]
+                  - columnheader "Variant" [ref=e1410]
+                  - columnheader "Revenue" [ref=e1411]
+                  - columnheader "COGS" [ref=e1412]
+                  - columnheader "Gross Profit" [ref=e1413]
+                  - columnheader "Margin %" [ref=e1414]
+              - rowgroup [ref=e1415]:
+                - row "Vodka Tonic Standard €56,00 €16,80 €39,20 70.0%" [ref=e1416]:
+                  - cell "Vodka Tonic" [ref=e1417]
+                  - cell "Standard" [ref=e1418]
+                  - cell "€56,00" [ref=e1419]
+                  - cell "€16,80" [ref=e1420]
+                  - cell "€39,20" [ref=e1421]
+                  - cell "70.0%" [ref=e1422]
+          - generic [ref=e1424]:
+            - generic [ref=e1426]: "!"
+            - generic [ref=e1427]:
+              - paragraph [ref=e1428]: Low Cost Coverage
+              - paragraph [ref=e1429]: Only 11% of transactions have cost data. Add ingredient costs to more products for accurate profit tracking.
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

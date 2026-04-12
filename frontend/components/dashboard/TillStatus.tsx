@@ -11,7 +11,7 @@ export const TillStatus: React.FC<{ tills: Till[], transactions: Transaction[], 
 
     const tillData = useMemo(() => {
         const businessDayStart = getBusinessDayStart(settings);
-        const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart));
+        const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart) && t.status !== 'voided');
 
         return tills.map(till => {
             const tillTransactions = todaysTransactions.filter(t => t.tillId === till.id);

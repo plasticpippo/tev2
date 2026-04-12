@@ -43,8 +43,8 @@ export {
 // Export transaction service functions
 export {
   getTransactions,
-  saveTransaction,
   processPayment,
+  voidTransaction,
   getTabs,
   saveTab,
   deleteTab,
@@ -117,3 +117,28 @@ export {
   setDefaultTaxRate,
   deleteTaxRate
 } from './taxRateService';
+
+// Export cost management service functions
+export {
+  fetchIngredients,
+  fetchIngredientDetail,
+  updateIngredientCost,
+  fetchCostHistory,
+  fetchRecentCostChanges,
+  fetchVariantCostSummary,
+  fetchVariantCostBreakdown,
+  recalculateVariantCost,
+  bulkRecalculateCosts,
+  fetchInventoryCounts,
+  fetchInventoryCount,
+  createInventoryCount,
+  submitInventoryCount,
+  approveInventoryCount,
+  fetchVarianceReports,
+  fetchVarianceReport,
+  generateVarianceReport,
+  updateVarianceReportStatus,
+  fetchProfitDashboard,
+  fetchProfitSummary,
+  fetchMarginTrend
+} from './costManagementService';

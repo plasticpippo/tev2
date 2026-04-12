@@ -18,7 +18,7 @@ export const TotalSalesTicker: React.FC<{ transactions: Transaction[], settings:
     
   const dailyStats = useMemo(() => {
     const businessDayStart = getBusinessDayStart(settings);
-    const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart));
+    const todaysTransactions = transactions.filter(t => isWithinBusinessDay(t.createdAt, businessDayStart) && t.status !== 'voided');
 
     // grossSales is the sum of all pre-discount totals (subtotal + tax + tip)
     // This matches the backend dailyClosingService calculation

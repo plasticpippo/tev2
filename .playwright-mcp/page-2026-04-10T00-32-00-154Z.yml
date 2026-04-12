@@ -1,0 +1,96 @@
+- generic [ref=e2]:
+  - generic [ref=e138]:
+    - banner [ref=e139]:
+      - generic [ref=e141]:
+        - heading "Admin Panel" [level=1] [ref=e142]
+        - paragraph [ref=e143]: Logged in as Admin User
+      - generic [ref=e144]:
+        - button "Switch to POS" [ref=e145] [cursor=pointer]
+        - button "Logout" [ref=e146] [cursor=pointer]
+    - generic [ref=e147]:
+      - navigation [ref=e148]:
+        - button "Collapse sidebar" [ref=e150] [cursor=pointer]:
+          - img [ref=e151]
+        - button "Dashboard" [ref=e354] [cursor=pointer]:
+          - img [ref=e356]
+          - generic [ref=e358]: Dashboard
+        - button "Analytics" [ref=e359] [cursor=pointer]:
+          - img [ref=e361]
+          - generic [ref=e363]: Analytics
+        - button "Profit Analytics" [ref=e364] [cursor=pointer]:
+          - img [ref=e366]
+          - generic [ref=e368]: Profit Analytics
+        - button "Transactions" [ref=e369] [cursor=pointer]:
+          - img [ref=e371]
+          - generic [ref=e373]: Transactions
+        - button "Receipts 13" [ref=e374] [cursor=pointer]:
+          - img [ref=e376]
+          - generic [ref=e378]: Receipts
+          - button "13" [ref=e379]
+        - button "Activity Log" [ref=e380] [cursor=pointer]:
+          - img [ref=e382]
+          - generic [ref=e384]: Activity Log
+        - button "Daily Closing Summary" [ref=e385] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e389]: Daily Closing Summary
+        - button "Customers" [ref=e390] [cursor=pointer]:
+          - img [ref=e392]
+          - generic [ref=e394]: Customers
+        - button "Products" [ref=e395] [cursor=pointer]:
+          - img [ref=e397]
+          - generic [ref=e399]: Products
+        - button "Categories" [ref=e400] [cursor=pointer]:
+          - img [ref=e402]
+          - generic [ref=e404]: Categories
+        - button "Stock Items" [ref=e405] [cursor=pointer]:
+          - img [ref=e407]
+          - generic [ref=e409]: Stock Items
+        - button "Inventory" [ref=e410] [cursor=pointer]:
+          - img [ref=e412]
+          - generic [ref=e414]: Inventory
+        - button "Cost Management" [ref=e415] [cursor=pointer]:
+          - img [ref=e417]
+          - generic [ref=e419]: Cost Management
+        - button "Users" [ref=e420] [cursor=pointer]:
+          - img [ref=e422]
+          - generic [ref=e424]: Users
+        - button "Tills" [ref=e425] [cursor=pointer]:
+          - img [ref=e427]
+          - generic [ref=e429]: Tills
+        - button "Tables & Layout" [ref=e430] [cursor=pointer]:
+          - img [ref=e432]
+          - generic [ref=e434]: Tables & Layout
+        - button "Itemised Consumption" [ref=e435] [cursor=pointer]:
+          - img [ref=e437]
+          - generic [ref=e439]: Itemised Consumption
+        - button "Settings" [ref=e440] [cursor=pointer]:
+          - img [ref=e442]
+          - generic [ref=e445]: Settings
+      - main [ref=e249]:
+        - generic [ref=e446]:
+          - generic [ref=e447]:
+            - button "Ingredient Costs" [ref=e448] [cursor=pointer]
+            - button "Variant Costs" [ref=e449] [cursor=pointer]
+            - button "Recent Changes" [active] [ref=e450] [cursor=pointer]
+          - table [ref=e992]:
+            - rowgroup [ref=e993]:
+              - row "Date Ingredient Previous Cost New Cost Change % Reason Updated By" [ref=e994]:
+                - columnheader "Date" [ref=e995]
+                - columnheader "Ingredient" [ref=e996]
+                - columnheader "Previous Cost" [ref=e997]
+                - columnheader "New Cost" [ref=e998]
+                - columnheader "Change %" [ref=e999]
+                - columnheader "Reason" [ref=e1000]
+                - columnheader "Updated By" [ref=e1001]
+            - rowgroup [ref=e1002]:
+              - row "09/04/2026, 21:17 Bibita Pompelma €0,00 €15,50 +100.0% test_cost_entry Admin User" [ref=e1003]:
+                - cell "09/04/2026, 21:17" [ref=e1004]
+                - cell "Bibita Pompelma" [ref=e1005]
+                - cell "€0,00" [ref=e1006]
+                - cell "€15,50" [ref=e1007]
+                - cell "+100.0%" [ref=e1008]:
+                  - generic [ref=e1009]: +100.0%
+                - cell "test_cost_entry" [ref=e1010]
+                - cell "Admin User" [ref=e1011]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

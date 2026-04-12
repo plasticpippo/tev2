@@ -1,0 +1,102 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e650] [cursor=pointer]:
+          - img [ref=e652]
+          - generic [ref=e654]: Dashboard
+        - button "Analytics" [ref=e655] [cursor=pointer]:
+          - img [ref=e657]
+          - generic [ref=e659]: Analytics
+        - button "Profit Analytics" [ref=e660] [cursor=pointer]:
+          - img [ref=e662]
+          - generic [ref=e664]: Profit Analytics
+        - button "Transactions" [ref=e665] [cursor=pointer]:
+          - img [ref=e667]
+          - generic [ref=e669]: Transactions
+        - button "Receipts 13" [ref=e670] [cursor=pointer]:
+          - img [ref=e672]
+          - generic [ref=e674]: Receipts
+          - button "13" [ref=e675]
+        - button "Activity Log" [ref=e676] [cursor=pointer]:
+          - img [ref=e678]
+          - generic [ref=e680]: Activity Log
+        - button "Daily Closing Summary" [ref=e681] [cursor=pointer]:
+          - img [ref=e683]
+          - generic [ref=e685]: Daily Closing Summary
+        - button "Customers" [ref=e686] [cursor=pointer]:
+          - img [ref=e688]
+          - generic [ref=e690]: Customers
+        - button "Products" [ref=e691] [cursor=pointer]:
+          - img [ref=e693]
+          - generic [ref=e695]: Products
+        - button "Categories" [ref=e696] [cursor=pointer]:
+          - img [ref=e698]
+          - generic [ref=e700]: Categories
+        - button "Stock Items" [ref=e701] [cursor=pointer]:
+          - img [ref=e703]
+          - generic [ref=e705]: Stock Items
+        - button "Inventory" [ref=e706] [cursor=pointer]:
+          - img [ref=e708]
+          - generic [ref=e710]: Inventory
+        - button "Cost Management" [ref=e711] [cursor=pointer]:
+          - img [ref=e713]
+          - generic [ref=e715]: Cost Management
+        - button "Inventory Counts" [ref=e716] [cursor=pointer]:
+          - img [ref=e718]
+          - generic [ref=e720]: Inventory Counts
+        - button "Variance Reports" [ref=e721] [cursor=pointer]:
+          - img [ref=e723]
+          - generic [ref=e725]: Variance Reports
+        - button "Users" [ref=e726] [cursor=pointer]:
+          - img [ref=e728]
+          - generic [ref=e730]: Users
+        - button "Tills" [ref=e731] [cursor=pointer]:
+          - img [ref=e733]
+          - generic [ref=e735]: Tills
+        - button "Tables & Layout" [ref=e736] [cursor=pointer]:
+          - img [ref=e738]
+          - generic [ref=e740]: Tables & Layout
+        - button "Itemised Consumption" [ref=e741] [cursor=pointer]:
+          - img [ref=e743]
+          - generic [ref=e745]: Itemised Consumption
+        - button "Settings" [ref=e746] [cursor=pointer]:
+          - img [ref=e748]
+          - generic [ref=e751]: Settings
+      - main [ref=e240]:
+        - generic [ref=e752]:
+          - generic [ref=e753]:
+            - heading "New Count" [level=2] [ref=e781]
+            - button "Cancel" [ref=e782] [cursor=pointer]
+          - generic [ref=e756]:
+            - generic [ref=e783]:
+              - generic [ref=e784]:
+                - generic [ref=e785]: Count Date
+                - textbox [ref=e786]: 2026-04-10
+              - generic [ref=e787]:
+                - generic [ref=e788]: Count Type
+                - combobox [ref=e789]:
+                  - option "Full Count" [selected]
+                  - option "Partial Count"
+                  - option "Spot Check"
+              - generic [ref=e790]:
+                - generic [ref=e791]: Notes
+                - textbox [ref=e792]
+            - generic [ref=e793]:
+              - generic [ref=e794]: Add Item
+              - generic [ref=e795]:
+                - textbox "Search ingredients..." [active] [ref=e796]: Vodka
+                - button "Vodka Moskovskaya" [ref=e803] [cursor=pointer]
+            - paragraph [ref=e797]: No items added yet
+            - button "Create Count" [disabled] [ref=e799]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

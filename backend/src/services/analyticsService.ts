@@ -107,6 +107,9 @@ export const aggregateProductPerformance = async (
     whereClause.createdAt.lte = new Date(endTime);
   }
 
+  // Exclude voided transactions from analytics
+  whereClause.status = { not: 'voided' };
+
   // Get all transactions that match the criteria
   const transactions = await prisma.transaction.findMany({
     where: whereClause,
@@ -342,12 +345,15 @@ export const aggregateHourlySales = async (
     businessDayEndHour: settings.businessDayEndHour,
   });
   
-  // Fetch transactions within the business day
+  // Fetch transactions within the business day (excluding voided)
   const transactions = await prisma.transaction.findMany({
     where: {
       createdAt: {
         gte: start,
         lte: end,
+      },
+      status: {
+        not: 'voided',
       },
     },
   });
@@ -500,5 +506,513 @@ export const compareHourlySales = async (
         transactionCountPercentChange,
       },
     },
+  };
+};
+
+// ============================================================================
+// PROFIT ANALYTICS
+// ============================================================================
+
+export interface ProfitPeriod {
+  start: string;
+  end: string;
+}
+
+export interface ProfitSummary {
+  period: ProfitPeriod;
+  revenue: number;
+  cogs: number;
+  grossProfit: number;
+  marginPercent: number;
+  transactionCount: number;
+  averageTransaction: number;
+  averageMargin: number;
+  transactionsWithCosts: number;
+  costCoveragePercent: number;
+}
+
+export interface ProfitComparison {
+  current: ProfitSummary;
+  previous: ProfitSummary;
+  changes: {
+    revenueChange: number;
+    revenueChangePercent: number;
+    cogsChange: number;
+    cogsChangePercent: number;
+    grossProfitChange: number;
+    grossProfitChangePercent: number;
+    marginChangePp: number;
+  };
+}
+
+export interface CategoryMargin {
+  categoryId: number;
+  categoryName: string;
+  revenue: number;
+  cogs: number;
+  grossProfit: number;
+  marginPercent: number;
+  transactionCount: number;
+  itemsSold: number;
+}
+
+export interface ProductMargin {
+  productId: number;
+  productName: string;
+  variantId: number;
+  variantName: string;
+  categoryId: number;
+  categoryName: string;
+  revenue: number;
+  cogs: number | null;
+  grossProfit: number | null;
+  marginPercent: number | null;
+  quantitySold: number;
+  hasCostData: boolean;
+}
+
+export interface MarginTrendPoint {
+  date: string;
+  revenue: number;
+  cogs: number;
+  grossProfit: number;
+  marginPercent: number;
+  transactionCount: number;
+}
+
+export interface ProfitDashboardData {
+  summary: ProfitSummary;
+  comparison: ProfitComparison | null;
+  byCategory: CategoryMargin[];
+  byProduct: ProductMargin[];
+  trend: MarginTrendPoint[];
+}
+
+function parseTransactionItems(transaction: Transaction): any[] {
+  let items: any[] = [];
+  if (Array.isArray(transaction.items)) {
+    items = transaction.items as any;
+  } else if (typeof transaction.items === 'string') {
+    try {
+      const parsed = JSON.parse(transaction.items);
+      if (Array.isArray(parsed)) {
+        items = parsed;
+      }
+    } catch (e) {
+      console.error('Error parsing transaction items:', e);
+    }
+  } else if (typeof transaction.items === 'object' && transaction.items !== null) {
+    items = (transaction.items as unknown) as any[];
+  }
+  return items;
+}
+
+function computePeriodDates(startDate: string, endDate: string): { start: Date; end: Date } {
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T23:59:59.999`);
+  return { start, end };
+}
+
+function computePreviousPeriod(startDate: string, endDate: string): { prevStart: string; prevEnd: string } {
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T23:59:59.999`);
+  const durationMs = end.getTime() - start.getTime();
+  const prevEnd = new Date(start.getTime() - 1);
+  const prevStart = new Date(prevEnd.getTime() - durationMs);
+  return {
+    prevStart: prevStart.toISOString().split('T')[0],
+    prevEnd: prevEnd.toISOString().split('T')[0],
+  };
+}
+
+export const getProfitSummary = async (
+  startDate: string,
+  endDate: string
+): Promise<ProfitSummary> => {
+  const { start, end } = computePeriodDates(startDate, endDate);
+
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      createdAt: { gte: start, lte: end },
+      status: 'completed',
+    },
+  });
+
+  let totalRevenue = 0;
+  let totalCOGS = 0;
+  let totalGrossProfit = 0;
+  let totalTransactions = 0;
+  let transactionsWithCosts = 0;
+  let sumMarginsWithCosts = 0;
+
+  for (const transaction of transactions) {
+    const revenue = decimalToNumber(transaction.subtotal);
+    const cost = transaction.totalCost ? decimalToNumber(transaction.totalCost) : 0;
+    const hasCost = transaction.totalCost !== null && cost > 0;
+
+    totalRevenue = addMoney(totalRevenue, revenue);
+    totalCOGS = addMoney(totalCOGS, cost);
+    totalTransactions += 1;
+
+    if (hasCost) {
+      transactionsWithCosts += 1;
+      const margin = safePercentage(subtractMoney(revenue, cost), revenue);
+      sumMarginsWithCosts = addMoney(sumMarginsWithCosts, margin);
+    }
+
+    totalTransactions += 0;
+  }
+
+  totalGrossProfit = subtractMoney(totalRevenue, totalCOGS);
+  const marginPercent = totalRevenue > 0
+    ? safePercentage(totalGrossProfit, totalRevenue)
+    : 0;
+  const averageTransaction = totalTransactions > 0
+    ? roundMoney(divideMoney(totalRevenue, totalTransactions))
+    : 0;
+  const averageMargin = transactionsWithCosts > 0
+    ? roundMoney(divideMoney(sumMarginsWithCosts, transactionsWithCosts))
+    : 0;
+  const costCoveragePercent = totalTransactions > 0
+    ? roundMoney(multiplyMoney(divideMoney(transactionsWithCosts, totalTransactions), 100))
+    : 0;
+
+  return {
+    period: { start: startDate, end: endDate },
+    revenue: roundMoney(totalRevenue),
+    cogs: roundMoney(totalCOGS),
+    grossProfit: roundMoney(totalGrossProfit),
+    marginPercent,
+    transactionCount: totalTransactions,
+    averageTransaction,
+    averageMargin,
+    transactionsWithCosts,
+    costCoveragePercent,
+  };
+};
+
+export const getProfitComparison = async (
+  startDate: string,
+  endDate: string
+): Promise<ProfitComparison> => {
+  const current = await getProfitSummary(startDate, endDate);
+  const { prevStart, prevEnd } = computePreviousPeriod(startDate, endDate);
+  const previous = await getProfitSummary(prevStart, prevEnd);
+
+  const revenueChange = roundMoney(subtractMoney(current.revenue, previous.revenue));
+  const revenueChangePercent = safePercentage(revenueChange, previous.revenue);
+  const cogsChange = roundMoney(subtractMoney(current.cogs, previous.cogs));
+  const cogsChangePercent = safePercentage(cogsChange, previous.cogs);
+  const grossProfitChange = roundMoney(subtractMoney(current.grossProfit, previous.grossProfit));
+  const grossProfitChangePercent = safePercentage(grossProfitChange, previous.grossProfit);
+  const marginChangePp = roundMoney(subtractMoney(current.marginPercent, previous.marginPercent));
+
+  return {
+    current,
+    previous,
+    changes: {
+      revenueChange,
+      revenueChangePercent,
+      cogsChange,
+      cogsChangePercent,
+      grossProfitChange,
+      grossProfitChangePercent,
+      marginChangePp,
+    },
+  };
+};
+
+export const getMarginByCategory = async (
+  startDate: string,
+  endDate: string
+): Promise<CategoryMargin[]> => {
+  const { start, end } = computePeriodDates(startDate, endDate);
+
+  const [transactions, products] = await Promise.all([
+    prisma.transaction.findMany({
+      where: {
+        createdAt: { gte: start, lte: end },
+        status: 'completed',
+      },
+    }),
+    prisma.product.findMany({
+      include: { category: true },
+    }),
+  ]);
+
+  const productMap = new Map<number, { categoryId: number; categoryName: string }>();
+  for (const product of products) {
+    productMap.set(product.id, {
+      categoryId: product.categoryId,
+      categoryName: product.category?.name || 'Uncategorized',
+    });
+  }
+
+  const categoryMap = new Map<number, {
+    categoryId: number;
+    categoryName: string;
+    revenue: number;
+    cogs: number;
+    transactionCount: Set<number>;
+    itemsSold: number;
+  }>();
+
+  for (const transaction of transactions) {
+    const items = parseTransactionItems(transaction);
+    const subtotal = decimalToNumber(transaction.subtotal);
+    const txCost = transaction.totalCost ? decimalToNumber(transaction.totalCost) : 0;
+
+    for (const item of items) {
+      if (!item.productId || typeof item.quantity !== 'number' || typeof item.price !== 'number') {
+        continue;
+      }
+
+      const productInfo = productMap.get(item.productId);
+      if (!productInfo) continue;
+
+      const itemRevenue = multiplyMoney(item.price, item.quantity);
+      let itemCogs = 0;
+      if (txCost > 0 && subtotal > 0) {
+        itemCogs = multiplyMoney(txCost, divideMoney(itemRevenue, subtotal));
+      }
+
+      if (!categoryMap.has(productInfo.categoryId)) {
+        categoryMap.set(productInfo.categoryId, {
+          categoryId: productInfo.categoryId,
+          categoryName: productInfo.categoryName,
+          revenue: 0,
+          cogs: 0,
+          transactionCount: new Set(),
+          itemsSold: 0,
+        });
+      }
+
+      const cat = categoryMap.get(productInfo.categoryId)!;
+      cat.revenue = addMoney(cat.revenue, itemRevenue);
+      cat.cogs = addMoney(cat.cogs, itemCogs);
+      cat.transactionCount.add(transaction.id);
+      cat.itemsSold += item.quantity;
+    }
+  }
+
+  const results: CategoryMargin[] = [];
+  for (const [, cat] of categoryMap) {
+    const grossProfit = subtractMoney(cat.revenue, cat.cogs);
+    results.push({
+      categoryId: cat.categoryId,
+      categoryName: cat.categoryName,
+      revenue: roundMoney(cat.revenue),
+      cogs: roundMoney(cat.cogs),
+      grossProfit: roundMoney(grossProfit),
+      marginPercent: cat.revenue > 0 ? safePercentage(grossProfit, cat.revenue) : 0,
+      transactionCount: cat.transactionCount.size,
+      itemsSold: cat.itemsSold,
+    });
+  }
+
+  results.sort((a, b) => b.revenue - a.revenue);
+  return results;
+};
+
+export const getMarginByProduct = async (
+  startDate: string,
+  endDate: string,
+  limit?: number
+): Promise<ProductMargin[]> => {
+  const { start, end } = computePeriodDates(startDate, endDate);
+
+  const [transactions, variants] = await Promise.all([
+    prisma.transaction.findMany({
+      where: {
+        createdAt: { gte: start, lte: end },
+        status: 'completed',
+      },
+    }),
+    prisma.productVariant.findMany({
+      include: {
+        product: {
+          include: { category: true },
+        },
+      },
+    }),
+  ]);
+
+  const variantMap = new Map<number, {
+    productId: number;
+    productName: string;
+    variantName: string;
+    categoryId: number;
+    categoryName: string;
+    theoreticalCost: number | null;
+  }>();
+
+  for (const variant of variants) {
+    variantMap.set(variant.id, {
+      productId: variant.productId,
+      productName: variant.product?.name || 'Unknown',
+      variantName: variant.name,
+      categoryId: variant.product?.categoryId || 0,
+      categoryName: variant.product?.category?.name || 'Uncategorized',
+      theoreticalCost: variant.theoreticalCost ? decimalToNumber(variant.theoreticalCost) : null,
+    });
+  }
+
+  const productMetricsMap = new Map<string, {
+    productId: number;
+    productName: string;
+    variantId: number;
+    variantName: string;
+    categoryId: number;
+    categoryName: string;
+    revenue: number;
+    cogs: number;
+    quantitySold: number;
+    hasCostData: boolean;
+  }>();
+
+  for (const transaction of transactions) {
+    const items = parseTransactionItems(transaction);
+
+    for (const item of items) {
+      if (!item.productId || typeof item.quantity !== 'number' || typeof item.price !== 'number') {
+        continue;
+      }
+
+      const variantId: number = item.variantId ?? item.productId;
+      const variantInfo = variantMap.get(variantId);
+      if (!variantInfo) continue;
+
+      const key = `${item.productId}_${variantId}`;
+
+      if (!productMetricsMap.has(key)) {
+        productMetricsMap.set(key, {
+          productId: item.productId,
+          productName: variantInfo.productName,
+          variantId,
+          variantName: variantInfo.variantName,
+          categoryId: variantInfo.categoryId,
+          categoryName: variantInfo.categoryName,
+          revenue: 0,
+          cogs: 0,
+          quantitySold: 0,
+          hasCostData: variantInfo.theoreticalCost !== null,
+        });
+      }
+
+      const metrics = productMetricsMap.get(key)!;
+      const itemRevenue = multiplyMoney(item.price, item.quantity);
+      metrics.revenue = addMoney(metrics.revenue, itemRevenue);
+      metrics.quantitySold += item.quantity;
+
+      if (variantInfo.theoreticalCost !== null) {
+        metrics.cogs = addMoney(metrics.cogs, multiplyMoney(variantInfo.theoreticalCost, item.quantity));
+      }
+    }
+  }
+
+  const results: ProductMargin[] = [];
+  for (const [, m] of productMetricsMap) {
+    const grossProfit = m.hasCostData ? subtractMoney(m.revenue, m.cogs) : null;
+    const marginPercent = m.hasCostData && m.revenue > 0
+      ? safePercentage(grossProfit!, m.revenue)
+      : null;
+
+    results.push({
+      productId: m.productId,
+      productName: m.productName,
+      variantId: m.variantId,
+      variantName: m.variantName,
+      categoryId: m.categoryId,
+      categoryName: m.categoryName,
+      revenue: roundMoney(m.revenue),
+      cogs: m.hasCostData ? roundMoney(m.cogs) : null,
+      grossProfit: grossProfit !== null ? roundMoney(grossProfit) : null,
+      marginPercent,
+      quantitySold: m.quantitySold,
+      hasCostData: m.hasCostData,
+    });
+  }
+
+  results.sort((a, b) => b.revenue - a.revenue);
+  return limit ? results.slice(0, limit) : results;
+};
+
+export const getMarginTrend = async (
+  startDate: string,
+  endDate: string
+): Promise<MarginTrendPoint[]> => {
+  const start = new Date(`${startDate}T00:00:00`);
+  const end = new Date(`${endDate}T23:59:59.999`);
+
+  const days: string[] = [];
+  const current = new Date(start);
+  while (current <= end) {
+    days.push(current.toISOString().split('T')[0]);
+    current.setDate(current.getDate() + 1);
+  }
+
+  const trend: MarginTrendPoint[] = [];
+
+  for (const day of days) {
+    const dayStart = new Date(`${day}T00:00:00`);
+    const dayEnd = new Date(`${day}T23:59:59.999`);
+
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        createdAt: { gte: dayStart, lte: dayEnd },
+        status: 'completed',
+      },
+    });
+
+    let dayRevenue = 0;
+    let dayCOGS = 0;
+
+    for (const tx of transactions) {
+      dayRevenue = addMoney(dayRevenue, decimalToNumber(tx.subtotal));
+      if (tx.totalCost) {
+        dayCOGS = addMoney(dayCOGS, decimalToNumber(tx.totalCost));
+      }
+    }
+
+    const grossProfit = subtractMoney(dayRevenue, dayCOGS);
+    const marginPercent = dayRevenue > 0 ? safePercentage(grossProfit, dayRevenue) : 0;
+
+    trend.push({
+      date: day,
+      revenue: roundMoney(dayRevenue),
+      cogs: roundMoney(dayCOGS),
+      grossProfit: roundMoney(grossProfit),
+      marginPercent,
+      transactionCount: transactions.length,
+    });
+  }
+
+  return trend;
+};
+
+export const getProfitDashboard = async (
+  startDate: string,
+  endDate: string
+): Promise<ProfitDashboardData> => {
+  const [summary, byCategory, byProduct, trend] = await Promise.all([
+    getProfitSummary(startDate, endDate),
+    getMarginByCategory(startDate, endDate),
+    getMarginByProduct(startDate, endDate),
+    getMarginTrend(startDate, endDate),
+  ]);
+
+  let comparison: ProfitComparison | null = null;
+  try {
+    comparison = await getProfitComparison(startDate, endDate);
+  } catch {
+    comparison = null;
+  }
+
+  return {
+    summary,
+    comparison,
+    byCategory,
+    byProduct,
+    trend,
   };
 };

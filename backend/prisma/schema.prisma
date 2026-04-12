@@ -21,6 +21,7 @@ model User {
   orderSessions OrderSession[]
   stockAdjustments StockAdjustment[]
   transactions Transaction[]
+  voidedTransactions Transaction[] @relation("VoidedTransactions")
   tables Table[]
   variantLayouts VariantLayout[]
   sharedLayouts SharedLayout[]
@@ -139,7 +140,13 @@ model Transaction {
   costCalculatedAt DateTime? // When cost was calculated
   grossMargin Decimal? @db.Decimal(10, 2) // subtotal - totalCost
   marginPercent Decimal? @db.Decimal(5, 2) // (margin/subtotal)*100
-  
+
+  // Void/Cancel Fields
+  voidedAt DateTime?
+  voidReason String?
+  voidedBy Int?
+  voidedByUser User? @relation("VoidedTransactions", fields: [voidedBy], references: [id])
+
   user User @relation(fields: [userId], references: [id])
   receipts Receipt[]
 

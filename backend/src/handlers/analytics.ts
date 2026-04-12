@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { validateAnalyticsParams } from '../utils/validation';
-import { aggregateProductPerformance, aggregateHourlySales, compareHourlySales } from '../services/analyticsService';
+import { aggregateProductPerformance, aggregateHourlySales, compareHourlySales, getProfitSummary, getProfitComparison, getMarginByCategory, getMarginByProduct, getMarginTrend, getProfitDashboard } from '../services/analyticsService';
 import { logError } from '../utils/logger';
 import i18n from '../i18n';
 import { authenticateToken } from '../middleware/auth';
@@ -130,5 +130,166 @@ analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Req
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: i18n.t('errors.analytics.compare.fetchFailed') });
+  }
+});
+
+// ============================================================================
+// PROFIT ANALYTICS ENDPOINTS
+// ============================================================================
+
+// GET /api/analytics/profit-summary - Get profit KPIs for a date range
+analyticsRouter.get('/profit-summary', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const result = await getProfitSummary(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching profit summary', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch profit summary' });
+  }
+});
+
+// GET /api/analytics/profit-comparison - Compare current vs previous period
+analyticsRouter.get('/profit-comparison', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const result = await getProfitComparison(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching profit comparison', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch profit comparison' });
+  }
+});
+
+// GET /api/analytics/margin-by-category - Margin breakdown by category
+analyticsRouter.get('/margin-by-category', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const result = await getMarginByCategory(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching margin by category', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch margin by category' });
+  }
+});
+
+// GET /api/analytics/margin-by-product - Margin breakdown by product
+analyticsRouter.get('/margin-by-product', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate, limit } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const parsedLimit = limit ? parseInt(limit as string, 10) : undefined;
+    const result = await getMarginByProduct(startDate, endDate, parsedLimit);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching margin by product', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch margin by product' });
+  }
+});
+
+// GET /api/analytics/margin-trend - Daily margin trend over time
+analyticsRouter.get('/margin-trend', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const result = await getMarginTrend(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching margin trend', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch margin trend' });
+  }
+});
+
+// GET /api/analytics/profit-dashboard - Complete profit dashboard data
+analyticsRouter.get('/profit-dashboard', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { startDate, endDate } = req.query;
+
+    if (!startDate || !endDate || typeof startDate !== 'string' || typeof endDate !== 'string') {
+      res.status(400).json({ error: 'startDate and endDate query parameters are required (YYYY-MM-DD)' });
+      return;
+    }
+
+    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+    if (!dateRegex.test(startDate) || !dateRegex.test(endDate)) {
+      res.status(400).json({ error: 'Invalid date format. Use YYYY-MM-DD' });
+      return;
+    }
+
+    const result = await getProfitDashboard(startDate, endDate);
+    res.json(result);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching profit dashboard', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: 'Failed to fetch profit dashboard' });
   }
 });

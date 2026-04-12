@@ -19,6 +19,10 @@ import { ItemisedConsumptionPanel } from './itemised-consumption/ItemisedConsump
 import { ReceiptManagement } from './ReceiptManagement';
 import { ReceiptStatusBadge } from './ReceiptStatusBadge';
 import { CustomerManagement } from './CustomerManagement';
+import CostManagementPanel from './CostManagementPanel';
+import { ProfitAnalyticsPanel } from './ProfitAnalyticsPanel';
+import VarianceReportPanel from './VarianceReportPanel';
+import InventoryCountPanel from './InventoryCountPanel';
 import TableErrorBoundary from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
@@ -53,7 +57,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers' | 'costManagement' | 'profitAnalytics' | 'varianceReports' | 'inventoryCounts';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -106,7 +110,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
       case 'settings':
         return <SettingsModal isOpen={true} onClose={() => {}} settings={settings} onUpdate={handleSettingsUpdate} />
       case 'transactions':
-        return <TransactionHistory transactions={transactions} users={users} tills={tills} settings={settings} />;
+        return <TransactionHistory transactions={transactions} users={users} tills={tills} settings={settings} onDataUpdate={onDataUpdate} />;
       case 'activity':
         return <OrderActivityHistory logs={orderActivityLogs} />;
       case 'tables':
@@ -125,6 +129,14 @@ case 'itemisedConsumption':
             return <ReceiptManagement onDataUpdate={onDataUpdate} onNavigateToCustomer={(id) => { setActiveView('customers'); }} />;
         case 'customers':
             return <CustomerManagement onDataUpdate={onDataUpdate} />;
+      case 'costManagement':
+        return <CostManagementPanel stockItems={stockItems} />;
+      case 'profitAnalytics':
+        return <ProfitAnalyticsPanel />;
+      case 'varianceReports':
+        return <VarianceReportPanel />;
+      case 'inventoryCounts':
+        return <InventoryCountPanel />;
     default:
         return <p>Select a view</p>;
     }
@@ -196,6 +208,36 @@ case 'itemisedConsumption':
   const InventoryIcon = () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h4m-2 0v4" />
+    </svg>
+  );
+
+  const ProfitIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+    </svg>
+  );
+
+  const CostIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+    </svg>
+  );
+
+  const CustomersIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+  );
+
+  const VarianceIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+    </svg>
+  );
+
+  const InventoryCountIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
     </svg>
   );
 
@@ -300,6 +342,7 @@ case 'itemisedConsumption':
           </div>
           <NavButton view="dashboard" label={t('navigation.dashboard')} isFirst icon={<DashboardIcon />} />
           <NavButton view="analytics" label={t('navigation.analytics')} icon={<AnalyticsIcon />} />
+          <NavButton view="profitAnalytics" label={t('navigation.profitAnalytics')} icon={<ProfitIcon />} />
           <div className="pt-2"></div>
 <NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />
       <NavButton 
@@ -316,6 +359,9 @@ case 'itemisedConsumption':
           <NavButton view="categories" label={t('navigation.categories')} icon={<CategoriesIcon />} />
           <NavButton view="stockItems" label={t('navigation.stockItems')} icon={<StockItemsIcon />} />
           <NavButton view="inventory" label={t('navigation.inventory')} icon={<InventoryIcon />} />
+          <NavButton view="costManagement" label={t('navigation.costManagement')} icon={<CostIcon />} />
+          <NavButton view="inventoryCounts" label={t('navigation.inventoryCounts')} icon={<InventoryCountIcon />} />
+          <NavButton view="varianceReports" label={t('navigation.varianceReports')} icon={<VarianceIcon />} />
           <div className="pt-2"></div>
           <NavButton view="users" label={t('navigation.users')} isFirst icon={<UsersIcon />} />
           <NavButton view="tills" label={t('navigation.tills')} icon={<TillsIcon />} />

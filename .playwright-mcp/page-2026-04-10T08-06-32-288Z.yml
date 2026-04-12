@@ -1,0 +1,100 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e484] [cursor=pointer]:
+          - img [ref=e486]
+          - generic [ref=e488]: Dashboard
+        - button "Analytics" [ref=e489] [cursor=pointer]:
+          - img [ref=e491]
+          - generic [ref=e493]: Analytics
+        - button "Profit Analytics" [ref=e494] [cursor=pointer]:
+          - img [ref=e496]
+          - generic [ref=e498]: Profit Analytics
+        - button "Transactions" [ref=e499] [cursor=pointer]:
+          - img [ref=e501]
+          - generic [ref=e503]: Transactions
+        - button "Receipts 13" [ref=e504] [cursor=pointer]:
+          - img [ref=e506]
+          - generic [ref=e508]: Receipts
+          - button "13" [ref=e509]
+        - button "Activity Log" [ref=e510] [cursor=pointer]:
+          - img [ref=e512]
+          - generic [ref=e514]: Activity Log
+        - button "Daily Closing Summary" [ref=e515] [cursor=pointer]:
+          - img [ref=e517]
+          - generic [ref=e519]: Daily Closing Summary
+        - button "Customers" [ref=e520] [cursor=pointer]:
+          - img [ref=e522]
+          - generic [ref=e524]: Customers
+        - button "Products" [ref=e525] [cursor=pointer]:
+          - img [ref=e527]
+          - generic [ref=e529]: Products
+        - button "Categories" [ref=e530] [cursor=pointer]:
+          - img [ref=e532]
+          - generic [ref=e534]: Categories
+        - button "Stock Items" [ref=e535] [cursor=pointer]:
+          - img [ref=e537]
+          - generic [ref=e539]: Stock Items
+        - button "Inventory" [ref=e540] [cursor=pointer]:
+          - img [ref=e542]
+          - generic [ref=e544]: Inventory
+        - button "Cost Management" [ref=e545] [cursor=pointer]:
+          - img [ref=e547]
+          - generic [ref=e549]: Cost Management
+        - button "Inventory Counts" [ref=e550] [cursor=pointer]:
+          - img [ref=e552]
+          - generic [ref=e554]: Inventory Counts
+        - button "Variance Reports" [ref=e555] [cursor=pointer]:
+          - img [ref=e557]
+          - generic [ref=e559]: Variance Reports
+        - button "Users" [ref=e560] [cursor=pointer]:
+          - img [ref=e562]
+          - generic [ref=e564]: Users
+        - button "Tills" [ref=e565] [cursor=pointer]:
+          - img [ref=e567]
+          - generic [ref=e569]: Tills
+        - button "Tables & Layout" [ref=e570] [cursor=pointer]:
+          - img [ref=e572]
+          - generic [ref=e574]: Tables & Layout
+        - button "Itemised Consumption" [ref=e575] [cursor=pointer]:
+          - img [ref=e577]
+          - generic [ref=e579]: Itemised Consumption
+        - button "Settings" [ref=e580] [cursor=pointer]:
+          - img [ref=e582]
+          - generic [ref=e585]: Settings
+      - main [ref=e240]:
+        - generic [ref=e586]:
+          - generic [ref=e587]:
+            - heading "New Count" [level=2] [ref=e626]
+            - button "Cancel" [active] [ref=e627] [cursor=pointer]
+          - generic [ref=e590]:
+            - generic [ref=e628]:
+              - generic [ref=e629]:
+                - generic [ref=e630]: Count Date
+                - textbox [ref=e631]: 2026-04-10
+              - generic [ref=e632]:
+                - generic [ref=e633]: Count Type
+                - combobox [ref=e634]:
+                  - option "Full Count" [selected]
+                  - option "Partial Count"
+                  - option "Spot Check"
+              - generic [ref=e635]:
+                - generic [ref=e636]: Notes
+                - textbox [ref=e637]
+            - generic [ref=e638]:
+              - generic [ref=e639]: Add Item
+              - textbox "Search ingredients..." [ref=e641]
+            - paragraph [ref=e642]: No items added yet
+            - button "Create Count" [disabled] [ref=e644]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

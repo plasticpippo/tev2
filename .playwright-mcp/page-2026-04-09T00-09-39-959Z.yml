@@ -1,0 +1,105 @@
+- generic [ref=e2]:
+  - generic [ref=e25]:
+    - generic [ref=e26]:
+      - button "Enter Fullscreen" [ref=e27] [cursor=pointer]:
+        - img [ref=e28]
+      - button "Admin Panel" [ref=e30] [cursor=pointer]
+    - main [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - heading "Products" [level=2] [ref=e37]
+            - generic [ref=e38]:
+              - button "Favourites" [ref=e39] [cursor=pointer]
+              - button "Shots" [ref=e40] [cursor=pointer]
+              - button "Beer" [ref=e41] [cursor=pointer]
+              - button "Cocktails" [ref=e42] [cursor=pointer]
+              - button "Soft Drinks" [ref=e43] [cursor=pointer]
+              - button "Vino" [ref=e44] [cursor=pointer]
+              - button "All" [ref=e45] [cursor=pointer]
+          - generic [ref=e48]:
+            - generic [ref=e49]:
+              - generic [ref=e51]: OUT OF STOCK
+              - paragraph [ref=e52]: Vodka Tonic
+              - generic [ref=e53]:
+                - paragraph [ref=e54]: Standard
+                - paragraph [ref=e55]: €8,00
+              - generic [ref=e56]: FAV
+            - generic [ref=e57] [cursor=pointer]:
+              - paragraph [ref=e58]: Shot Vodka
+              - generic [ref=e59]:
+                - paragraph [ref=e60]: Standard
+                - paragraph [ref=e61]: €3,00
+              - generic [ref=e62]: FAV
+            - generic [ref=e63] [cursor=pointer]:
+              - paragraph [ref=e64]: Pirlo Campari
+              - generic [ref=e65]:
+                - paragraph [ref=e66]: Standard
+                - paragraph [ref=e67]: €5,00
+              - generic [ref=e68]: FAV
+            - generic [ref=e69] [cursor=pointer]:
+              - paragraph [ref=e70]: Shot Tequila
+              - generic [ref=e71]:
+                - paragraph [ref=e72]: Standard
+                - paragraph [ref=e73]: €3,00
+              - generic [ref=e74]: FAV
+            - generic [ref=e75] [cursor=pointer]:
+              - paragraph [ref=e76]: Vodka Lemon
+              - generic [ref=e77]:
+                - paragraph [ref=e78]: Standard
+                - paragraph [ref=e79]: €8,00
+              - generic [ref=e80]: FAV
+            - generic [ref=e81] [cursor=pointer]:
+              - paragraph [ref=e82]: Beck's
+              - generic [ref=e83]:
+                - paragraph [ref=e84]: 33cl
+                - paragraph [ref=e85]: €4,00
+              - generic [ref=e86]: FAV
+            - generic [ref=e87]:
+              - generic [ref=e89]: OUT OF STOCK
+              - paragraph [ref=e90]: Gin Tonic
+              - generic [ref=e91]:
+                - paragraph [ref=e92]: Standard
+                - paragraph [ref=e93]: €8,00
+              - generic [ref=e94]: FAV
+            - generic [ref=e95] [cursor=pointer]:
+              - paragraph [ref=e96]: Gin Lemon
+              - generic [ref=e97]:
+                - paragraph [ref=e98]: Standard
+                - paragraph [ref=e99]: €8,00
+              - generic [ref=e100]: FAV
+            - generic [ref=e101] [cursor=pointer]:
+              - paragraph [ref=e102]: Acqua
+              - generic [ref=e103]:
+                - paragraph [ref=e104]: 50cl
+                - paragraph [ref=e105]: €2,00
+              - generic [ref=e106]: FAV
+            - generic [ref=e107] [cursor=pointer]:
+              - paragraph [ref=e108]: Wuhrer
+              - generic [ref=e109]:
+                - paragraph [ref=e110]: 66cl
+                - paragraph [ref=e111]: €6,00
+              - generic [ref=e112]: FAV
+            - generic [ref=e113] [cursor=pointer]:
+              - paragraph [ref=e114]: Shot Hierbas
+              - generic [ref=e115]:
+                - paragraph [ref=e116]: Standard
+                - paragraph [ref=e117]: €3,00
+              - generic [ref=e118]: FAV
+        - generic [ref=e120]:
+          - generic [ref=e121]:
+            - generic [ref=e122]:
+              - paragraph [ref=e123]: "Logged in as:"
+              - paragraph [ref=e124]:
+                - text: Admin User
+                - generic [ref=e125]: (Admin)
+            - button "Logout" [ref=e126] [cursor=pointer]
+          - generic [ref=e127]:
+            - heading "Current Order" [level=2] [ref=e128]
+            - generic [ref=e130]: Select products to add them here.
+          - button "EDIT Edit Layout" [ref=e132] [cursor=pointer]:
+            - generic [ref=e133]: EDIT
+            - generic [ref=e134]: Edit Layout
+          - button "View Open Tabs" [ref=e137] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

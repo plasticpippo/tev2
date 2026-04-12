@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
-import type { Transaction } from '../types';
+import type { Transaction, OrderItem } from '../types';
 import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
 import { logPaymentEvent, logError, logInfo, logDebug } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
@@ -10,6 +10,7 @@ import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, forma
 import i18n from '../i18n';
 import { requireRole } from '../middleware/authorization';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
+import { calculateTransactionCost } from '../services/costCalculationService';
 
 export const transactionsRouter = express.Router();
 
@@ -37,11 +38,12 @@ function validateIdempotencyKey(key: unknown): string | null {
 
 // POST /api/transactions/process-payment - Atomic payment processing
 // This endpoint handles the entire payment flow in a single database transaction:
-// 1. Create transaction record
-// 2. Decrement stock levels
-// 3. Complete order session
-// 4. Delete tab (if exists)
-// 5. Update table status (if exists)
+// 1. Calculate transaction costs
+// 2. Create transaction record (with cost data)
+// 3. Decrement stock levels
+// 4. Complete order session
+// 5. Delete tab (if exists)
+// 6. Update table status (if exists)
 // If ANY step fails, ALL changes are rolled back
 transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
   const correlationId = (req as any).correlationId;
@@ -198,12 +200,58 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
             userId: authenticatedUserId // SECURITY: Use authenticated user ID (A4.5)
           });
   
-          // Return existing transaction - will be returned with HTTP 200
-          return { isDuplicate: true, transaction: existingTransaction } as IdempotentResult;
-        }
-      }
+// Return existing transaction - will be returned with HTTP 200
+    return { isDuplicate: true, transaction: existingTransaction } as IdempotentResult;
+  }
+}
+
+// 1. Calculate transaction costs (non-blocking - null if costs unavailable)
+let totalCost: number | null = null;
+let costCalculatedAt: Date | null = null;
+let grossMargin: number | null = null;
+let marginPercent: number | null = null;
+
+try {
+  const costInput = items.map(item => ({
+    variantId: item.variantId,
+    quantity: item.quantity,
+  }));
+  const costResult = await calculateTransactionCost(costInput);
   
-      // 1. Collect stock consumptions INSIDE transaction to prevent race conditions
+  if (costResult.totalCost !== null && costResult.hasAllCosts) {
+    totalCost = costResult.totalCost;
+    costCalculatedAt = new Date();
+    
+    // Calculate gross margin: subtotal - totalCost
+    grossMargin = subtractMoney(calculatedSubtotal, totalCost);
+    
+    // Calculate margin percentage: (grossMargin / subtotal) * 100
+    if (calculatedSubtotal > 0) {
+      marginPercent = roundMoney(divideMoney(grossMargin, calculatedSubtotal) * 100);
+    }
+    
+    logDebug('Transaction cost calculated', {
+      correlationId,
+      totalCost,
+      grossMargin,
+      marginPercent,
+      itemCount: items.length,
+    });
+  } else {
+    logDebug('Transaction cost calculation incomplete - missing cost data', {
+      correlationId,
+      hasAllCosts: costResult.hasAllCosts,
+      itemCount: items.length,
+    });
+  }
+} catch (costError) {
+  logError('Cost calculation failed - transaction proceeding without cost data', {
+    correlationId,
+    error: costError instanceof Error ? costError.message : 'Unknown error',
+  });
+}
+
+// 2. Collect stock consumptions INSIDE transaction to prevent race conditions
       const consumptions = new Map<string, number>();
       for (const item of items) {
         const product = await tx.product.findUnique({
@@ -219,29 +267,33 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
         }
       }
   
-      // 2. Create the transaction with idempotency key
-      const transaction = await tx.transaction.create({
-        data: {
-          items: JSON.stringify(items),
-          subtotal: calculatedSubtotal,
-          tax: validatedTax,
-          tip: tip || 0,
-          total: finalTotal,
-          discount: discountAmount,
-          discountReason: discountReason || null,
-          status: finalStatus,
-          paymentMethod,
-          userId: authenticatedUserId, // SECURITY: Use authenticated user ID (A4.5)
-          userName: authenticatedUserName, // SECURITY: Use authenticated user name (A4.5)
-          tillId, // Already validated to exist (A4.4)
-          tillName, // Already validated to match till.name (A4.4)
-          idempotencyKey: idempotencyKey || null,
-          idempotencyCreatedAt: idempotencyKey ? new Date() : null,
-          createdAt: new Date()
+// 3. Create the transaction with idempotency key and cost data
+const transaction = await tx.transaction.create({
+  data: {
+    items: JSON.stringify(items),
+    subtotal: calculatedSubtotal,
+    tax: validatedTax,
+    tip: tip || 0,
+    total: finalTotal,
+    discount: discountAmount,
+    discountReason: discountReason || null,
+    status: finalStatus,
+    paymentMethod,
+    userId: authenticatedUserId,
+    userName: authenticatedUserName,
+    tillId,
+    tillName,
+    idempotencyKey: idempotencyKey || null,
+    idempotencyCreatedAt: idempotencyKey ? new Date() : null,
+    totalCost: totalCost !== null ? totalCost : null,
+    costCalculatedAt,
+    grossMargin: grossMargin !== null ? grossMargin : null,
+    marginPercent: marginPercent !== null ? marginPercent : null,
+    createdAt: new Date()
         }
       });
   
-      // 3. Decrement stock levels (if any consumptions)
+      // 4. Decrement stock levels (if any consumptions)
       if (consumptions.size > 0) {
         for (const [stockItemId, quantity] of consumptions) {
           const updateResult = await tx.stockItem.updateMany({
@@ -262,7 +314,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
         }
       }
   
-      // 4. Complete order session with version-based optimistic locking
+      // 5. Complete order session with version-based optimistic locking
       const activeSession = await tx.orderSession.findFirst({
         where: { userId: authenticatedUserId, status: 'active' } // SECURITY: Use authenticated user ID (A4.5)
       });
@@ -276,14 +328,14 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
         }
       }
   
-      // 5. Delete tab if exists
+      // 6. Delete tab if exists
       if (activeTabId) {
         await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
           logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
         });
       }
   
-      // 6. Update table status if assigned
+      // 7. Update table status if assigned
       if (tableId) {
         await tx.table.update({
           where: { id: tableId },
@@ -388,9 +440,9 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
 // GET /api/transactions/reconcile - Reconcile transactions with stock levels (MUST be before /:id route)
 transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res: Response) => {
   try {
-    // Get all completed transactions
+    // Get all non-voided transactions (completed and complimentary)
     const transactions = await prisma.transaction.findMany({
-      where: { status: 'completed' },
+      where: { status: { in: ['completed', 'complimentary'] } },
       orderBy: { createdAt: 'desc' }
     });
     
@@ -567,292 +619,166 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
   }
 });
 
-// POST /api/transactions - Create a new transaction
-transactionsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
-  try {
-    // Get settings to determine tax mode
-    let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
+// POST /:id/void - Void a transaction and restore stock
+transactionsRouter.post(
+  '/:id/void',
+  authenticateToken,
+  requireRole(['ADMIN']),
+  async (req: Request, res: Response) => {
+    const { id } = req.params;
+    const { reason } = req.body;
+    const authenticatedUserId = req.user?.id;
+    const authenticatedUserName = req.user?.username;
+
+    if (!reason || typeof reason !== 'string' || reason.trim() === '') {
+      return res.status(400).json({ error: 'Void reason is required' });
+    }
+
     try {
-      const settings = await prisma.settings.findFirst();
-      taxMode = (settings?.taxMode || 'exclusive') as 'inclusive' | 'exclusive' | 'none';
-    } catch (settingsError) {
-      logError('Failed to fetch settings for tax mode', {
-        correlationId: (req as any).correlationId,
-        error: settingsError instanceof Error ? settingsError.message : 'Unknown error'
-      });
-      // Fall back to default 'exclusive' mode
-    }
-    
-  const {
-    items, subtotal, tax, tip, paymentMethod,
-    tillId, tillName, discount, discountReason
-  } = req.body as Omit<Transaction, 'id' | 'createdAt' | 'status' | 'total' | 'userId' | 'userName'>;
-
-  // SECURITY FIX (A4.5): Use authenticated user from JWT token instead of request body
-  const authenticatedUserId = req.user?.id;
-  const authenticatedUserName = req.user?.username;
-
-  if (!authenticatedUserId || !authenticatedUserName) {
-    return res.status(401).json({ error: 'User not authenticated' });
-  }
-
-  // SECURITY FIX (A4.4): Validate that tillId exists and tillName matches
-  if (!tillId) {
-    return res.status(400).json({ error: 'Missing tillId' });
-  }
-
-  const till = await prisma.till.findUnique({ where: { id: tillId } });
-  if (!till) {
-    return res.status(400).json({ error: 'Invalid till reference: till not found' });
-  }
-  if (till.name !== tillName) {
-    return res.status(400).json({ error: 'Till name mismatch' });
-  }
-
-  // Validate monetary values are valid numbers
-    if (!isMoneyValid(subtotal)) {
-      return res.status(400).json({ error: 'Invalid subtotal value' });
-    }
-    if (!isMoneyValid(tax)) {
-      return res.status(400).json({ error: 'Invalid tax value' });
-    }
-    if (!isMoneyValid(tip)) {
-      return res.status(400).json({ error: 'Invalid tip value' });
-    }
-
-    // Validate non-negative values
-    if (subtotal < 0) {
-      return res.status(400).json({ error: 'Subtotal cannot be negative' });
-    }
-    if (tax < 0) {
-      return res.status(400).json({ error: 'Tax cannot be negative' });
-    }
-    if (tip < 0) {
-      return res.status(400).json({ error: 'Tip cannot be negative' });
-    }
-    
-    // Validate that all items have required properties, especially name
-    if (!Array.isArray(items)) {
-      return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
-    }
-    
-    // Diagnostic logging: capture the items array being received
-    logInfo('Transaction items received', {
-      correlationId: (req as any).correlationId,
-      itemCount: items.length,
-      items: JSON.stringify(items)
-    });
-    
-    for (const item of items) {
-      if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-        logError(i18n.t('transactions.log.itemWithoutName'), {
-          correlationId: (req as any).correlationId,
-          item: JSON.stringify(item),
-          missingProperties: {
-            name: !item.name || typeof item.name !== 'string' || item.name.trim() === ''
-          }
+      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        // 1. Fetch the transaction
+        const transaction = await tx.transaction.findUnique({
+          where: { id: Number(id) },
         });
-        return res.status(400).json({ error: i18n.t('transactions.itemNameRequired') });
-      }
-      if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-        logError(i18n.t('transactions.log.itemInvalidProperties'), {
-          correlationId: (req as any).correlationId,
-          item: JSON.stringify(item),
-          missingProperties: {
-            id: !item.id,
-            variantId: !item.variantId,
-            productId: !item.productId,
-            price: typeof item.price !== 'number',
-            quantity: typeof item.quantity !== 'number'
-          }
+
+        if (!transaction) {
+          throw new Error('NOT_FOUND');
+        }
+
+        if (transaction.status === 'voided') {
+          throw new Error('ALREADY_VOIDED');
+        }
+
+        if (transaction.status !== 'completed' && transaction.status !== 'complimentary') {
+          throw new Error('INVALID_STATUS');
+        }
+
+        // 2. Parse the items JSON to determine what was sold
+        const items = safeJsonParse<OrderItem[]>(transaction.items, [], {
+          id: String(transaction.id),
+          field: 'items',
         });
-        return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
-      }
 
-      // Validate item price
-      if (!isMoneyValid(item.price)) {
-        return res.status(400).json({ error: `Invalid price value for item: ${item.name}` });
-      }
-      if (item.price < 0) {
-        return res.status(400).json({ error: `Price cannot be negative for item: ${item.name}` });
-      }
+        // 3. Calculate stock restorations by re-reading current recipes
+        const restorations = new Map<string, { name: string; quantity: number }>();
 
-      // Validate item quantity
-      if (!isMoneyValid(item.quantity)) {
-        return res.status(400).json({ error: `Invalid quantity value for item: ${item.name}` });
-      }
-      if (item.quantity <= 0) {
-        return res.status(400).json({ error: `Quantity must be positive for item: ${item.name}` });
-      }
-    }
+        for (const item of items) {
+          if (!item.productId || !item.variantId) continue;
 
-    // Calculate expected subtotal and tax from items in a single pass
-    let calculatedSubtotal = 0;
-    let calculatedTax = 0;
-    for (const item of items) {
-      const itemPrice = item.price;
-      const itemQuantity = item.quantity;
-      const taxRate = item.effectiveTaxRate ?? 0;
-      
-      let itemSubtotal: number;
-      let itemTax: number = 0;
-      
-      if (taxMode === 'inclusive' && taxRate > 0) {
-        // In inclusive mode, the price already includes tax
-        // Extract the pre-tax price: price / (1 + taxRate)
-        const preTaxPrice = divideMoney(itemPrice, 1 + taxRate);
-        itemSubtotal = multiplyMoney(preTaxPrice, itemQuantity);
-        // Extract the tax from the inclusive price: price - (price / (1 + taxRate))
-        itemTax = multiplyMoney(subtractMoney(itemPrice, preTaxPrice), itemQuantity);
-      } else if (taxMode === 'exclusive' && taxRate > 0) {
-        // In exclusive mode, calculate tax on top of the price
-        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
-        itemTax = multiplyMoney(itemSubtotal, taxRate);
-      } else {
-        // In 'none' mode or taxRate = 0, use price as-is with no tax
-        itemSubtotal = multiplyMoney(itemPrice, itemQuantity);
-      }
-      
-      calculatedSubtotal = addMoney(calculatedSubtotal, itemSubtotal);
-      calculatedTax = addMoney(calculatedTax, itemTax);
-    }
+          const product = await tx.product.findUnique({
+            where: { id: item.productId },
+            include: {
+              variants: {
+                where: { id: item.variantId },
+                include: { stockConsumption: true },
+              },
+            },
+          });
 
-    // Validate subtotal matches calculated value (with 1 cent tolerance)
-    const subtotalDifference = Math.abs(subtractMoney(subtotal, calculatedSubtotal));
-    if (subtotalDifference > 0.01) {
-      return res.status(400).json({ 
-        error: `Subtotal mismatch. Expected: ${formatMoney(calculatedSubtotal)}, Received: ${formatMoney(subtotal)}` 
+          if (product && product.variants[0]) {
+            for (const sc of product.variants[0].stockConsumption) {
+              const current = restorations.get(sc.stockItemId);
+              const restorationQty = sc.quantity * item.quantity;
+
+              if (current) {
+                current.quantity += restorationQty;
+              } else {
+                restorations.set(sc.stockItemId, {
+                  name: '',
+                  quantity: restorationQty,
+                });
+              }
+            }
+          }
+        }
+
+        // 4. Restore stock quantities and create adjustment records for audit trail
+        for (const [stockItemId, restoration] of restorations) {
+          const stockItem = await tx.stockItem.findUnique({
+            where: { id: stockItemId },
+          });
+
+          if (stockItem) {
+            restoration.name = stockItem.name;
+
+            // Increment stock back
+            await tx.stockItem.update({
+              where: { id: stockItemId },
+              data: { quantity: { increment: restoration.quantity } },
+            });
+
+            // Create linked stock adjustment for audit trail
+            await tx.stockAdjustment.create({
+              data: {
+                stockItemId,
+                itemName: stockItem.name,
+                quantity: restoration.quantity,
+                reason: `Transaction #${id} voided: ${reason.trim()}`,
+                userId: authenticatedUserId!,
+                userName: authenticatedUserName!,
+              },
+            });
+          }
+        }
+
+        // 5. Update transaction status to voided
+        const updatedTransaction = await tx.transaction.update({
+          where: { id: Number(id) },
+          data: {
+            status: 'voided',
+            voidedAt: new Date(),
+            voidReason: reason.trim(),
+            voidedBy: authenticatedUserId,
+          },
+        });
+
+        return {
+          transaction: updatedTransaction,
+          restoredItems: Array.from(restorations.entries()).map(
+            ([stockItemId, data]) => ({
+              stockItemId,
+              ...data,
+            })
+          ),
+        };
       });
-    }
 
-    // Use calculated subtotal for consistency
-    const validatedSubtotal = calculatedSubtotal;
-
-    // Validate tax matches calculated value (with 1 cent tolerance)
-    // Skip validation if frontend sends tax = 0 (handles 'no tax' mode)
-    const taxDifference = Math.abs(subtractMoney(tax, calculatedTax));
-    let validatedTax: number;
-    if (tax === 0) {
-      // Accept frontend's tax = 0 (no tax mode) without forcing calculation from items
-      validatedTax = 0;
-    } else if (taxDifference > 0.01) {
-      return res.status(400).json({ 
-        error: `Tax mismatch. Expected: ${formatMoney(calculatedTax)}, Received: ${formatMoney(tax)}` 
+      logInfo('Transaction voided', {
+        transactionId: Number(id),
+        reason,
+        restoredItems: result.restoredItems.length,
+        userId: authenticatedUserId,
       });
-    } else {
-      // Use the validated tax value from frontend when it matches calculation
-      validatedTax = tax;
-    }
 
-    // Validate discount if provided
-    const discountAmount = discount || 0;
-    const discountReasonText = discountReason || null;
-
-    // Discount must be non-negative
-    if (discountAmount < 0) {
-      return res.status(400).json({ error: i18n.t('transactions.discountNegative') });
-    }
-
-    // Calculate the pre-discount total
-    const preDiscountTotal = addMoney(addMoney(validatedSubtotal, validatedTax), tip);
-
-    // Discount must not exceed the total
-    if (discountAmount > preDiscountTotal) {
-      return res.status(400).json({ error: i18n.t('transactions.discountExceedsTotal') });
-    }
-
-    // If discount > 0, check if user is admin
-    if (discountAmount > 0) {
-      const userRole = req.user?.role;
-      const isAdmin = userRole === 'ADMIN' || userRole === 'Admin';
-      if (!isAdmin) {
-        return res.status(403).json({ error: i18n.t('transactions.discountRequiresAdmin') });
+      res.json({
+        message: 'Transaction voided successfully',
+        transaction: {
+          ...result.transaction,
+          subtotal: decimalToNumber(result.transaction.subtotal),
+          tax: decimalToNumber(result.transaction.tax),
+          tip: decimalToNumber(result.transaction.tip),
+          total: decimalToNumber(result.transaction.total),
+          discount: decimalToNumber(result.transaction.discount),
+        },
+        restoredItems: result.restoredItems,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === 'NOT_FOUND') {
+          return res.status(404).json({ error: 'Transaction not found' });
+        }
+        if (error.message === 'ALREADY_VOIDED') {
+          return res.status(409).json({ error: 'Transaction is already voided' });
+        }
+        if (error.message === 'INVALID_STATUS') {
+          return res.status(400).json({ error: 'Only completed or complimentary transactions can be voided' });
+        }
       }
+      logError('Error voiding transaction', { error, transactionId: id });
+      res.status(500).json({ error: 'Failed to void transaction' });
     }
-
-    // Calculate the final total after discount
-    const finalTotal = subtractMoney(preDiscountTotal, discountAmount);
-
-    // Determine status: 'complimentary' if total <= 0, otherwise 'completed'
-    const status = finalTotal <= 0 ? 'complimentary' : 'completed';
-    
-    // Log payment initiation
-    logPaymentEvent(
-      'PROCESSED',
-      finalTotal,
-      'EUR',
-      true,
-      {
-        orderId: 'pending',
-        paymentMethod,
-        itemCount: items.length,
-        correlationId: (req as any).correlationId,
-      }
-    );
-    
-  const transaction = await prisma.transaction.create({
-    data: {
-      items: JSON.stringify(items),
-      subtotal: validatedSubtotal,
-      tax: validatedTax,
-      tip,
-      total: finalTotal,
-      paymentMethod,
-      userId: authenticatedUserId, // SECURITY: Use authenticated user ID (A4.5)
-      userName: authenticatedUserName, // SECURITY: Use authenticated user name (A4.5)
-      tillId, // Already validated to exist (A4.4)
-      tillName, // Already validated to match till.name (A4.4)
-      discount: discountAmount,
-      discountReason: discountReasonText,
-      status,
-      createdAt: new Date()
-    }
-  });
-    
-    // Log payment success
-    logPaymentEvent(
-      'PROCESSED',
-      finalTotal,
-      'EUR',
-      true,
-      {
-        orderId: transaction.id,
-        paymentMethod,
-        itemCount: items.length,
-        correlationId: (req as any).correlationId,
-      }
-    );
-    
-    // Convert Decimal to number for JSON response
-    const response = {
-      ...transaction,
-      subtotal: decimalToNumber(transaction.subtotal),
-      tax: decimalToNumber(transaction.tax),
-      tip: decimalToNumber(transaction.tip),
-      total: decimalToNumber(transaction.total),
-      discount: decimalToNumber(transaction.discount),
-    };
-    
-    res.status(201).json(response);
-  } catch (error) {
-    // Log payment failure
-    logPaymentEvent(
-      'FAILED',
-      req.body?.total || 0,
-      'EUR',
-      false,
-      {
-        orderId: 'failed',
-        reason: error instanceof Error ? error.message : 'Unknown error',
-        correlationId: (req as any).correlationId,
-      }
-    );
-    
-    logError(error instanceof Error ? error : i18n.t('transactions.log.createError'), {
-      correlationId: (req as any).correlationId,
-    });
-    res.status(500).json({ error: i18n.t('transactions.createFailed') });
   }
-});
+);
+
 
 export default transactionsRouter;

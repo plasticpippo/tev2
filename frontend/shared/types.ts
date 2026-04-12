@@ -61,7 +61,7 @@ export interface Transaction {
   tip: number;
   discount: number;
   discountReason?: string;
-  status?: 'completed' | 'complimentary';
+  status?: 'completed' | 'complimentary' | 'voided';
   total: number;
   paymentMethod: string;
   userId: number;
@@ -72,6 +72,9 @@ export interface Transaction {
   tableName?: string;
   createdAt: string;
   receipt?: TransactionReceiptInfo | null;
+  voidedAt?: string | null;
+  voidReason?: string | null;
+  voidedBy?: number | null;
 }
 
 export interface TaxSettings {

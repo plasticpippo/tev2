@@ -1,0 +1,8 @@
+- generic [active] [ref=e1]:
+  - heading "An error occurred." [level=1] [ref=e2]
+  - paragraph [ref=e3]:
+    - text: Sorry, the page you are looking for is currently unavailable.
+    - text: Please try again later.
+  - paragraph [ref=e4]: If you are the system administrator of this resource then you should check the error log for details.
+  - paragraph [ref=e5]:
+    - emphasis [ref=e6]: Faithfully yours, nginx.

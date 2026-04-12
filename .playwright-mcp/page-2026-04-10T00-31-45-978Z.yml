@@ -1,0 +1,472 @@
+- generic [ref=e2]:
+  - generic [ref=e138]:
+    - banner [ref=e139]:
+      - generic [ref=e141]:
+        - heading "Admin Panel" [level=1] [ref=e142]
+        - paragraph [ref=e143]: Logged in as Admin User
+      - generic [ref=e144]:
+        - button "Switch to POS" [ref=e145] [cursor=pointer]
+        - button "Logout" [ref=e146] [cursor=pointer]
+    - generic [ref=e147]:
+      - navigation [ref=e148]:
+        - button "Collapse sidebar" [ref=e150] [cursor=pointer]:
+          - img [ref=e151]
+        - button "Dashboard" [ref=e354] [cursor=pointer]:
+          - img [ref=e356]
+          - generic [ref=e358]: Dashboard
+        - button "Analytics" [ref=e359] [cursor=pointer]:
+          - img [ref=e361]
+          - generic [ref=e363]: Analytics
+        - button "Profit Analytics" [ref=e364] [cursor=pointer]:
+          - img [ref=e366]
+          - generic [ref=e368]: Profit Analytics
+        - button "Transactions" [ref=e369] [cursor=pointer]:
+          - img [ref=e371]
+          - generic [ref=e373]: Transactions
+        - button "Receipts 13" [ref=e374] [cursor=pointer]:
+          - img [ref=e376]
+          - generic [ref=e378]: Receipts
+          - button "13" [ref=e379]
+        - button "Activity Log" [ref=e380] [cursor=pointer]:
+          - img [ref=e382]
+          - generic [ref=e384]: Activity Log
+        - button "Daily Closing Summary" [ref=e385] [cursor=pointer]:
+          - img [ref=e387]
+          - generic [ref=e389]: Daily Closing Summary
+        - button "Customers" [ref=e390] [cursor=pointer]:
+          - img [ref=e392]
+          - generic [ref=e394]: Customers
+        - button "Products" [ref=e395] [cursor=pointer]:
+          - img [ref=e397]
+          - generic [ref=e399]: Products
+        - button "Categories" [ref=e400] [cursor=pointer]:
+          - img [ref=e402]
+          - generic [ref=e404]: Categories
+        - button "Stock Items" [ref=e405] [cursor=pointer]:
+          - img [ref=e407]
+          - generic [ref=e409]: Stock Items
+        - button "Inventory" [ref=e410] [cursor=pointer]:
+          - img [ref=e412]
+          - generic [ref=e414]: Inventory
+        - button "Cost Management" [ref=e415] [cursor=pointer]:
+          - img [ref=e417]
+          - generic [ref=e419]: Cost Management
+        - button "Users" [ref=e420] [cursor=pointer]:
+          - img [ref=e422]
+          - generic [ref=e424]: Users
+        - button "Tills" [ref=e425] [cursor=pointer]:
+          - img [ref=e427]
+          - generic [ref=e429]: Tills
+        - button "Tables & Layout" [ref=e430] [cursor=pointer]:
+          - img [ref=e432]
+          - generic [ref=e434]: Tables & Layout
+        - button "Itemised Consumption" [ref=e435] [cursor=pointer]:
+          - img [ref=e437]
+          - generic [ref=e439]: Itemised Consumption
+        - button "Settings" [ref=e440] [cursor=pointer]:
+          - img [ref=e442]
+          - generic [ref=e445]: Settings
+      - main [ref=e249]:
+        - generic [ref=e446]:
+          - generic [ref=e447]:
+            - button "Ingredient Costs" [ref=e448] [cursor=pointer]
+            - button "Variant Costs" [active] [ref=e449] [cursor=pointer]
+            - button "Recent Changes" [ref=e450] [cursor=pointer]
+          - generic [ref=e594]:
+            - generic [ref=e595]:
+              - heading "Variant Costs" [level=3] [ref=e596]
+              - button "Recalculate All" [ref=e597] [cursor=pointer]
+            - table [ref=e599]:
+              - rowgroup [ref=e600]:
+                - row "Variant Name Product Category Price Theoretical Cost Margin Cost Status" [ref=e601]:
+                  - columnheader "Variant Name" [ref=e602]
+                  - columnheader "Product" [ref=e603]
+                  - columnheader "Category" [ref=e604]
+                  - columnheader "Price" [ref=e605]
+                  - columnheader "Theoretical Cost" [ref=e606]
+                  - columnheader "Margin" [ref=e607]
+                  - columnheader "Cost Status" [ref=e608]
+                  - columnheader [ref=e609]
+              - rowgroup [ref=e610]:
+                - row "Standard Vodka Tonic Cocktails €8,00 €2,40 70.0% current Recalculate" [ref=e611] [cursor=pointer]:
+                  - cell "Standard" [ref=e612]
+                  - cell "Vodka Tonic" [ref=e613]
+                  - cell "Cocktails" [ref=e614]
+                  - cell "€8,00" [ref=e615]
+                  - cell "€2,40" [ref=e616]
+                  - cell "70.0%" [ref=e617]
+                  - cell "current" [ref=e618]
+                  - cell "Recalculate" [ref=e619]:
+                    - button "Recalculate" [ref=e620]
+                - row "Carico Vodka Tonic Cocktails €10,00 N/A N/A pending Recalculate" [ref=e621] [cursor=pointer]:
+                  - cell "Carico" [ref=e622]
+                  - cell "Vodka Tonic" [ref=e623]
+                  - cell "Cocktails" [ref=e624]
+                  - cell "€10,00" [ref=e625]
+                  - cell "N/A" [ref=e626]
+                  - cell "N/A" [ref=e627]
+                  - cell "pending" [ref=e628]
+                  - cell "Recalculate" [ref=e629]:
+                    - button "Recalculate" [ref=e630]
+                - row "Standard Sipsmith Tonic Cocktails €12,00 N/A N/A pending Recalculate" [ref=e631] [cursor=pointer]:
+                  - cell "Standard" [ref=e632]
+                  - cell "Sipsmith Tonic" [ref=e633]
+                  - cell "Cocktails" [ref=e634]
+                  - cell "€12,00" [ref=e635]
+                  - cell "N/A" [ref=e636]
+                  - cell "N/A" [ref=e637]
+                  - cell "pending" [ref=e638]
+                  - cell "Recalculate" [ref=e639]:
+                    - button "Recalculate" [ref=e640]
+                - row "Standard Lemonsoda Soft Drinks €3,00 N/A N/A pending Recalculate" [ref=e641] [cursor=pointer]:
+                  - cell "Standard" [ref=e642]
+                  - cell "Lemonsoda" [ref=e643]
+                  - cell "Soft Drinks" [ref=e644]
+                  - cell "€3,00" [ref=e645]
+                  - cell "N/A" [ref=e646]
+                  - cell "N/A" [ref=e647]
+                  - cell "pending" [ref=e648]
+                  - cell "Recalculate" [ref=e649]:
+                    - button "Recalculate" [ref=e650]
+                - row "Bottiglia 200ml Ginger Beer Soft Drinks €4,00 N/A N/A pending Recalculate" [ref=e651] [cursor=pointer]:
+                  - cell "Bottiglia 200ml" [ref=e652]
+                  - cell "Ginger Beer" [ref=e653]
+                  - cell "Soft Drinks" [ref=e654]
+                  - cell "€4,00" [ref=e655]
+                  - cell "N/A" [ref=e656]
+                  - cell "N/A" [ref=e657]
+                  - cell "pending" [ref=e658]
+                  - cell "Recalculate" [ref=e659]:
+                    - button "Recalculate" [ref=e660]
+                - row "Standard Vodka Ginger Beer Cocktails €8,00 N/A N/A pending Recalculate" [ref=e661] [cursor=pointer]:
+                  - cell "Standard" [ref=e662]
+                  - cell "Vodka Ginger Beer" [ref=e663]
+                  - cell "Cocktails" [ref=e664]
+                  - cell "€8,00" [ref=e665]
+                  - cell "N/A" [ref=e666]
+                  - cell "N/A" [ref=e667]
+                  - cell "pending" [ref=e668]
+                  - cell "Recalculate" [ref=e669]:
+                    - button "Recalculate" [ref=e670]
+                - row "Standard Gin Ginger Beer Cocktails €8,00 N/A N/A pending Recalculate" [ref=e671] [cursor=pointer]:
+                  - cell "Standard" [ref=e672]
+                  - cell "Gin Ginger Beer" [ref=e673]
+                  - cell "Cocktails" [ref=e674]
+                  - cell "€8,00" [ref=e675]
+                  - cell "N/A" [ref=e676]
+                  - cell "N/A" [ref=e677]
+                  - cell "pending" [ref=e678]
+                  - cell "Recalculate" [ref=e679]:
+                    - button "Recalculate" [ref=e680]
+                - row "Standard Shot Vodka Shots €3,00 N/A N/A pending Recalculate" [ref=e681] [cursor=pointer]:
+                  - cell "Standard" [ref=e682]
+                  - cell "Shot Vodka" [ref=e683]
+                  - cell "Shots" [ref=e684]
+                  - cell "€3,00" [ref=e685]
+                  - cell "N/A" [ref=e686]
+                  - cell "N/A" [ref=e687]
+                  - cell "pending" [ref=e688]
+                  - cell "Recalculate" [ref=e689]:
+                    - button "Recalculate" [ref=e690]
+                - row "Standard Shot Gin Gordon's Shots €3,00 N/A N/A pending Recalculate" [ref=e691] [cursor=pointer]:
+                  - cell "Standard" [ref=e692]
+                  - cell "Shot Gin Gordon's" [ref=e693]
+                  - cell "Shots" [ref=e694]
+                  - cell "€3,00" [ref=e695]
+                  - cell "N/A" [ref=e696]
+                  - cell "N/A" [ref=e697]
+                  - cell "pending" [ref=e698]
+                  - cell "Recalculate" [ref=e699]:
+                    - button "Recalculate" [ref=e700]
+                - row "Standard Shot Campari Shots €3,00 N/A N/A pending Recalculate" [ref=e701] [cursor=pointer]:
+                  - cell "Standard" [ref=e702]
+                  - cell "Shot Campari" [ref=e703]
+                  - cell "Shots" [ref=e704]
+                  - cell "€3,00" [ref=e705]
+                  - cell "N/A" [ref=e706]
+                  - cell "N/A" [ref=e707]
+                  - cell "pending" [ref=e708]
+                  - cell "Recalculate" [ref=e709]:
+                    - button "Recalculate" [ref=e710]
+                - row "Standard Shot Sipsmith Shots €5,00 N/A N/A pending Recalculate" [ref=e711] [cursor=pointer]:
+                  - cell "Standard" [ref=e712]
+                  - cell "Shot Sipsmith" [ref=e713]
+                  - cell "Shots" [ref=e714]
+                  - cell "€5,00" [ref=e715]
+                  - cell "N/A" [ref=e716]
+                  - cell "N/A" [ref=e717]
+                  - cell "pending" [ref=e718]
+                  - cell "Recalculate" [ref=e719]:
+                    - button "Recalculate" [ref=e720]
+                - row "Can Coca Cola Soft Drinks €3,00 N/A N/A pending Recalculate" [ref=e721] [cursor=pointer]:
+                  - cell "Can" [ref=e722]
+                  - cell "Coca Cola" [ref=e723]
+                  - cell "Soft Drinks" [ref=e724]
+                  - cell "€3,00" [ref=e725]
+                  - cell "N/A" [ref=e726]
+                  - cell "N/A" [ref=e727]
+                  - cell "pending" [ref=e728]
+                  - cell "Recalculate" [ref=e729]:
+                    - button "Recalculate" [ref=e730]
+                - row "Standard Gratis Entrata €0,00 N/A N/A pending Recalculate" [ref=e731] [cursor=pointer]:
+                  - cell "Standard" [ref=e732]
+                  - cell "Gratis" [ref=e733]
+                  - cell "Entrata" [ref=e734]
+                  - cell "€0,00" [ref=e735]
+                  - cell "N/A" [ref=e736]
+                  - cell "N/A" [ref=e737]
+                  - cell "pending" [ref=e738]
+                  - cell "Recalculate" [ref=e739]:
+                    - button "Recalculate" [ref=e740]
+                - row "Standard Entrata Entrata €10,00 N/A N/A pending Recalculate" [ref=e741] [cursor=pointer]:
+                  - cell "Standard" [ref=e742]
+                  - cell "Entrata" [ref=e743]
+                  - cell "Entrata" [ref=e744]
+                  - cell "€10,00" [ref=e745]
+                  - cell "N/A" [ref=e746]
+                  - cell "N/A" [ref=e747]
+                  - cell "pending" [ref=e748]
+                  - cell "Recalculate" [ref=e749]:
+                    - button "Recalculate" [ref=e750]
+                - row "Bicchiere Vino Bianco Vino €5,00 N/A N/A pending Recalculate" [ref=e751] [cursor=pointer]:
+                  - cell "Bicchiere" [ref=e752]
+                  - cell "Vino Bianco" [ref=e753]
+                  - cell "Vino" [ref=e754]
+                  - cell "€5,00" [ref=e755]
+                  - cell "N/A" [ref=e756]
+                  - cell "N/A" [ref=e757]
+                  - cell "pending" [ref=e758]
+                  - cell "Recalculate" [ref=e759]:
+                    - button "Recalculate" [ref=e760]
+                - row "Bottiglia Vino Bianco Vino €25,00 N/A N/A pending Recalculate" [ref=e761] [cursor=pointer]:
+                  - cell "Bottiglia" [ref=e762]
+                  - cell "Vino Bianco" [ref=e763]
+                  - cell "Vino" [ref=e764]
+                  - cell "€25,00" [ref=e765]
+                  - cell "N/A" [ref=e766]
+                  - cell "N/A" [ref=e767]
+                  - cell "pending" [ref=e768]
+                  - cell "Recalculate" [ref=e769]:
+                    - button "Recalculate" [ref=e770]
+                - row "Standard Tonica Soft Drinks €4,00 N/A N/A pending Recalculate" [ref=e771] [cursor=pointer]:
+                  - cell "Standard" [ref=e772]
+                  - cell "Tonica" [ref=e773]
+                  - cell "Soft Drinks" [ref=e774]
+                  - cell "€4,00" [ref=e775]
+                  - cell "N/A" [ref=e776]
+                  - cell "N/A" [ref=e777]
+                  - cell "pending" [ref=e778]
+                  - cell "Recalculate" [ref=e779]:
+                    - button "Recalculate" [ref=e780]
+                - row "Standard Pirlo Campari Cocktails €5,00 N/A N/A pending Recalculate" [ref=e781] [cursor=pointer]:
+                  - cell "Standard" [ref=e782]
+                  - cell "Pirlo Campari" [ref=e783]
+                  - cell "Cocktails" [ref=e784]
+                  - cell "€5,00" [ref=e785]
+                  - cell "N/A" [ref=e786]
+                  - cell "N/A" [ref=e787]
+                  - cell "pending" [ref=e788]
+                  - cell "Recalculate" [ref=e789]:
+                    - button "Recalculate" [ref=e790]
+                - row "Standard Tessera Entrata €10,00 N/A N/A pending Recalculate" [ref=e791] [cursor=pointer]:
+                  - cell "Standard" [ref=e792]
+                  - cell "Tessera" [ref=e793]
+                  - cell "Entrata" [ref=e794]
+                  - cell "€10,00" [ref=e795]
+                  - cell "N/A" [ref=e796]
+                  - cell "N/A" [ref=e797]
+                  - cell "pending" [ref=e798]
+                  - cell "Recalculate" [ref=e799]:
+                    - button "Recalculate" [ref=e800]
+                - row "Standard Industry Pass Entrata €0,00 N/A N/A pending Recalculate" [ref=e801] [cursor=pointer]:
+                  - cell "Standard" [ref=e802]
+                  - cell "Industry Pass" [ref=e803]
+                  - cell "Entrata" [ref=e804]
+                  - cell "€0,00" [ref=e805]
+                  - cell "N/A" [ref=e806]
+                  - cell "N/A" [ref=e807]
+                  - cell "pending" [ref=e808]
+                  - cell "Recalculate" [ref=e809]:
+                    - button "Recalculate" [ref=e810]
+                - row "Standard Shot Tequila Shots €3,00 N/A N/A pending Recalculate" [ref=e811] [cursor=pointer]:
+                  - cell "Standard" [ref=e812]
+                  - cell "Shot Tequila" [ref=e813]
+                  - cell "Shots" [ref=e814]
+                  - cell "€3,00" [ref=e815]
+                  - cell "N/A" [ref=e816]
+                  - cell "N/A" [ref=e817]
+                  - cell "pending" [ref=e818]
+                  - cell "Recalculate" [ref=e819]:
+                    - button "Recalculate" [ref=e820]
+                - row "Standard 5 Euro (1am) Entrata €5,00 N/A N/A pending Recalculate" [ref=e821] [cursor=pointer]:
+                  - cell "Standard" [ref=e822]
+                  - cell "5 Euro (1am)" [ref=e823]
+                  - cell "Entrata" [ref=e824]
+                  - cell "€5,00" [ref=e825]
+                  - cell "N/A" [ref=e826]
+                  - cell "N/A" [ref=e827]
+                  - cell "pending" [ref=e828]
+                  - cell "Recalculate" [ref=e829]:
+                    - button "Recalculate" [ref=e830]
+                - row "Standard Americano Cocktails €8,00 N/A N/A pending Recalculate" [ref=e831] [cursor=pointer]:
+                  - cell "Standard" [ref=e832]
+                  - cell "Americano" [ref=e833]
+                  - cell "Cocktails" [ref=e834]
+                  - cell "€8,00" [ref=e835]
+                  - cell "N/A" [ref=e836]
+                  - cell "N/A" [ref=e837]
+                  - cell "pending" [ref=e838]
+                  - cell "Recalculate" [ref=e839]:
+                    - button "Recalculate" [ref=e840]
+                - row "Standard Negroni Cocktails €8,00 N/A N/A pending Recalculate" [ref=e841] [cursor=pointer]:
+                  - cell "Standard" [ref=e842]
+                  - cell "Negroni" [ref=e843]
+                  - cell "Cocktails" [ref=e844]
+                  - cell "€8,00" [ref=e845]
+                  - cell "N/A" [ref=e846]
+                  - cell "N/A" [ref=e847]
+                  - cell "pending" [ref=e848]
+                  - cell "Recalculate" [ref=e849]:
+                    - button "Recalculate" [ref=e850]
+                - row "Standard Vodka Lemon Cocktails €8,00 N/A N/A pending Recalculate" [ref=e851] [cursor=pointer]:
+                  - cell "Standard" [ref=e852]
+                  - cell "Vodka Lemon" [ref=e853]
+                  - cell "Cocktails" [ref=e854]
+                  - cell "€8,00" [ref=e855]
+                  - cell "N/A" [ref=e856]
+                  - cell "N/A" [ref=e857]
+                  - cell "pending" [ref=e858]
+                  - cell "Recalculate" [ref=e859]:
+                    - button "Recalculate" [ref=e860]
+                - row "Carico Vodka Lemon Cocktails €10,00 N/A N/A pending Recalculate" [ref=e861] [cursor=pointer]:
+                  - cell "Carico" [ref=e862]
+                  - cell "Vodka Lemon" [ref=e863]
+                  - cell "Cocktails" [ref=e864]
+                  - cell "€10,00" [ref=e865]
+                  - cell "N/A" [ref=e866]
+                  - cell "N/A" [ref=e867]
+                  - cell "pending" [ref=e868]
+                  - cell "Recalculate" [ref=e869]:
+                    - button "Recalculate" [ref=e870]
+                - row "33cl Beck's Beer €4,00 N/A N/A pending Recalculate" [ref=e871] [cursor=pointer]:
+                  - cell "33cl" [ref=e872]
+                  - cell "Beck's" [ref=e873]
+                  - cell "Beer" [ref=e874]
+                  - cell "€4,00" [ref=e875]
+                  - cell "N/A" [ref=e876]
+                  - cell "N/A" [ref=e877]
+                  - cell "pending" [ref=e878]
+                  - cell "Recalculate" [ref=e879]:
+                    - button "Recalculate" [ref=e880]
+                - row "Standard Paloma Cocktails €8,00 N/A N/A pending Recalculate" [ref=e881] [cursor=pointer]:
+                  - cell "Standard" [ref=e882]
+                  - cell "Paloma" [ref=e883]
+                  - cell "Cocktails" [ref=e884]
+                  - cell "€8,00" [ref=e885]
+                  - cell "N/A" [ref=e886]
+                  - cell "N/A" [ref=e887]
+                  - cell "pending" [ref=e888]
+                  - cell "Recalculate" [ref=e889]:
+                    - button "Recalculate" [ref=e890]
+                - row "Standard Gin Tonic Cocktails €8,00 N/A N/A pending Recalculate" [ref=e891] [cursor=pointer]:
+                  - cell "Standard" [ref=e892]
+                  - cell "Gin Tonic" [ref=e893]
+                  - cell "Cocktails" [ref=e894]
+                  - cell "€8,00" [ref=e895]
+                  - cell "N/A" [ref=e896]
+                  - cell "N/A" [ref=e897]
+                  - cell "pending" [ref=e898]
+                  - cell "Recalculate" [ref=e899]:
+                    - button "Recalculate" [ref=e900]
+                - row "Carico Gin Tonic Cocktails €10,00 N/A N/A pending Recalculate" [ref=e901] [cursor=pointer]:
+                  - cell "Carico" [ref=e902]
+                  - cell "Gin Tonic" [ref=e903]
+                  - cell "Cocktails" [ref=e904]
+                  - cell "€10,00" [ref=e905]
+                  - cell "N/A" [ref=e906]
+                  - cell "N/A" [ref=e907]
+                  - cell "pending" [ref=e908]
+                  - cell "Recalculate" [ref=e909]:
+                    - button "Recalculate" [ref=e910]
+                - row "Standard Gin Lemon Cocktails €8,00 N/A N/A pending Recalculate" [ref=e911] [cursor=pointer]:
+                  - cell "Standard" [ref=e912]
+                  - cell "Gin Lemon" [ref=e913]
+                  - cell "Cocktails" [ref=e914]
+                  - cell "€8,00" [ref=e915]
+                  - cell "N/A" [ref=e916]
+                  - cell "N/A" [ref=e917]
+                  - cell "pending" [ref=e918]
+                  - cell "Recalculate" [ref=e919]:
+                    - button "Recalculate" [ref=e920]
+                - row "Carico Gin Lemon Cocktails €10,00 N/A N/A pending Recalculate" [ref=e921] [cursor=pointer]:
+                  - cell "Carico" [ref=e922]
+                  - cell "Gin Lemon" [ref=e923]
+                  - cell "Cocktails" [ref=e924]
+                  - cell "€10,00" [ref=e925]
+                  - cell "N/A" [ref=e926]
+                  - cell "N/A" [ref=e927]
+                  - cell "pending" [ref=e928]
+                  - cell "Recalculate" [ref=e929]:
+                    - button "Recalculate" [ref=e930]
+                - row "Standard Sipsmith Lemon Cocktails €12,00 N/A N/A pending Recalculate" [ref=e931] [cursor=pointer]:
+                  - cell "Standard" [ref=e932]
+                  - cell "Sipsmith Lemon" [ref=e933]
+                  - cell "Cocktails" [ref=e934]
+                  - cell "€12,00" [ref=e935]
+                  - cell "N/A" [ref=e936]
+                  - cell "N/A" [ref=e937]
+                  - cell "pending" [ref=e938]
+                  - cell "Recalculate" [ref=e939]:
+                    - button "Recalculate" [ref=e940]
+                - row "50cl Acqua Soft Drinks €2,00 N/A N/A pending Recalculate" [ref=e941] [cursor=pointer]:
+                  - cell "50cl" [ref=e942]
+                  - cell "Acqua" [ref=e943]
+                  - cell "Soft Drinks" [ref=e944]
+                  - cell "€2,00" [ref=e945]
+                  - cell "N/A" [ref=e946]
+                  - cell "N/A" [ref=e947]
+                  - cell "pending" [ref=e948]
+                  - cell "Recalculate" [ref=e949]:
+                    - button "Recalculate" [ref=e950]
+                - row "66cl Wuhrer Beer €6,00 N/A N/A pending Recalculate" [ref=e951] [cursor=pointer]:
+                  - cell "66cl" [ref=e952]
+                  - cell "Wuhrer" [ref=e953]
+                  - cell "Beer" [ref=e954]
+                  - cell "€6,00" [ref=e955]
+                  - cell "N/A" [ref=e956]
+                  - cell "N/A" [ref=e957]
+                  - cell "pending" [ref=e958]
+                  - cell "Recalculate" [ref=e959]:
+                    - button "Recalculate" [ref=e960]
+                - row "Standard Coca Rum Cocktails €8,00 N/A N/A pending Recalculate" [ref=e961] [cursor=pointer]:
+                  - cell "Standard" [ref=e962]
+                  - cell "Coca Rum" [ref=e963]
+                  - cell "Cocktails" [ref=e964]
+                  - cell "€8,00" [ref=e965]
+                  - cell "N/A" [ref=e966]
+                  - cell "N/A" [ref=e967]
+                  - cell "pending" [ref=e968]
+                  - cell "Recalculate" [ref=e969]:
+                    - button "Recalculate" [ref=e970]
+                - row "Standard Shot Rum Shots €3,00 N/A N/A pending Recalculate" [ref=e971] [cursor=pointer]:
+                  - cell "Standard" [ref=e972]
+                  - cell "Shot Rum" [ref=e973]
+                  - cell "Shots" [ref=e974]
+                  - cell "€3,00" [ref=e975]
+                  - cell "N/A" [ref=e976]
+                  - cell "N/A" [ref=e977]
+                  - cell "pending" [ref=e978]
+                  - cell "Recalculate" [ref=e979]:
+                    - button "Recalculate" [ref=e980]
+                - row "Standard Shot Hierbas Shots €3,00 N/A N/A pending Recalculate" [ref=e981] [cursor=pointer]:
+                  - cell "Standard" [ref=e982]
+                  - cell "Shot Hierbas" [ref=e983]
+                  - cell "Shots" [ref=e984]
+                  - cell "€3,00" [ref=e985]
+                  - cell "N/A" [ref=e986]
+                  - cell "N/A" [ref=e987]
+                  - cell "pending" [ref=e988]
+                  - cell "Recalculate" [ref=e989]:
+                    - button "Recalculate" [ref=e990]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

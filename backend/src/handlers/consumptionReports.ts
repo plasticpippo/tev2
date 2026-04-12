@@ -35,6 +35,9 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
       };
     }
 
+    // Exclude voided transactions from consumption reports
+    transactionWhere.status = { not: 'voided' };
+
     const transactions = await prisma.transaction.findMany({
       where: transactionWhere,
       select: {

@@ -20,6 +20,7 @@ import { taxRatesRouter } from './handlers/taxRates';
 import { customersRouter } from './handlers/customerHandler';
 import { customerRateLimiter } from './middleware/rateLimiter';
 import { receiptsRouter } from './handlers/receiptHandler';
+import { costManagementRouter } from './handlers/costManagement';
 
 export const router = express.Router();
 
@@ -43,6 +44,7 @@ router.use('/layouts', layoutsRouter);
 router.use('/tax-rates', taxRatesRouter);
 router.use('/customers', customerRateLimiter, customersRouter);
 router.use('/receipts', receiptsRouter);
+router.use('/cost-management', costManagementRouter);
 
 router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });

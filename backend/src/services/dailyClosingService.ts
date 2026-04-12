@@ -35,12 +35,15 @@ export const calculateDailyClosingSummary = async (
   startDate: Date,
   endDate: Date
 ): Promise<ClosingSummary> => {
-  // Get all transactions within the specified date range
+  // Get all transactions within the specified date range (excluding voided)
   const transactions = await prisma.transaction.findMany({
     where: {
       createdAt: {
         gte: startDate,
         lt: endDate
+      },
+      status: {
+        not: 'voided'
       }
     }
   });

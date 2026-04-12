@@ -14,28 +14,44 @@ export const getTransactions = async (): Promise<Transaction[]> => {
   }
 };
 
-export const saveTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt'>): Promise<Transaction> => {
+// Void a transaction and restore stock
+export interface VoidTransactionResponse {
+  message: string;
+  transaction: Transaction;
+  restoredItems: Array<{
+    stockItemId: string;
+    name: string;
+    quantity: number;
+  }>;
+}
+
+export const voidTransaction = async (
+  transactionId: number,
+  reason: string
+): Promise<VoidTransactionResponse> => {
   try {
-    const response = await fetch(apiUrl('/api/transactions'), {
+    const response = await fetch(apiUrl(`/api/transactions/${transactionId}/void`), {
       method: 'POST',
       headers: getAuthHeaders(),
       credentials: 'include',
-      body: JSON.stringify(transactionData)
+      body: JSON.stringify({ reason })
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
       throw new Error(errorMessage);
     }
-    const savedTransaction = await response.json();
+
+    const result = await response.json();
     notifyUpdates();
-    return savedTransaction;
+    return result;
   } catch (error) {
-    console.error(i18n.t('transactionService.errorSavingTransaction'), error);
+    console.error('Error voiding transaction:', error);
     throw error;
   }
 };
+
 
 // Tabs
 export const getTabs = async (): Promise<Tab[]> => {
