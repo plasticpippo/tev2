@@ -1,87 +1,123 @@
-# YOU MUST NOT IGNORE THE DETAILS BELOW
+# Project Instructions
 
-## NO EMOJIS anywhere in the frontend!!! 
+## Environment
 
-### DO NOT use plawright npm package for testing, you MUST use Playwright MCP Server
+- App: http://192.168.1.70 (LAN browser, not localhost)
+- Admin credentials: `admin` / `admin123`
+- PostgreSQL on port 5432 in Docker — see `.env` for credentials
+- All servers (frontend, backend, db) run in Docker
 
-### Config is:
+Docker container names:
+- `bar_pos_nginx`
+- `bar_pos_frontend`
+- `bar_pos_backend`
+- `bar_pos_backend_db`
 
-- postgres on port 5432 in a docker container
-check .env file for username and password and other important details
+Rebuild and restart:
+```bash
+docker compose up -d --build
+```
 
-- app credentials
-admin user: admin
-admin password: admin123
+Before starting any container, verify it is not already running.
 
-app is available at http://192.168.1.70
-
+---
 
 ## General Behaviour
-Frontend and backend and db servers are running in docker
-to run test new features and fixes you need to use the command
-'docker compose up -d --build'
 
-Before starting backend or frontend server, make sure they are not already running
+- No emojis anywhere in the frontend
+- No workarounds or shortcuts — only proper solutions
+- Do not rush; prioritise quality over speed
+- Break work into micro subtasks to minimise token usage
+- All documentation goes in `./docs`
+- Never kill all npm processes — only stop what the current task requires
 
-Docker container names of the app are
- - bar_pos_nginx
- - bar_pos_frontend
- - bar_pos_backend
- - bar_pos_backend_db
+---
 
-NO Workarounds! NO shortcuts! ONLY proper coding!
+## Think Before Coding
 
-## ALWAYS USE MICRO SUBTASKS TO KEEP TOKEN USAGE AT A MINIMUM
+Before writing any code:
 
+- State assumptions explicitly; ask if uncertain
+- If multiple valid approaches exist, present them — do not pick silently
+- If something is unclear, stop and ask
+- Push back when a simpler approach exists
 
-### We are testing from LAN with a browser, NOT from localhost
-# Instructions for e2e testing
- - do NOT use test files
- - use playwright mcp server to directly browse the app
- - ALL testing must be done it their own subtasks and all test files must be in the ./test-files folder
+---
 
-## DO NOT EVER kill all npm processes. ONLY stop the necessary processes required to achieve your current goal
+## Simplicity First
 
+Write the minimum code that solves the problem:
 
-### ALL documentation must be located at ./docs
+- No unrequested features, abstractions, or configurability
+- No speculative error handling
+- If 200 lines could be 50, rewrite to 50
+- Ask: "Would a senior engineer call this overcomplicated?" If yes, simplify
 
-### do not rush! always make sure you are editing things right. the goal is here is quality and not speed
+---
 
-## Database Migrations - CRITICAL
+## Surgical Changes
 
-### ALWAYS use Prisma migrations for schema changes
+Touch only what the task requires:
 
-When modifying the database schema (adding tables, columns, indexes, relations):
+- Do not improve, reformat, or refactor adjacent code
+- Match existing style even if you would do it differently
+- If you notice unrelated dead code, mention it — do not delete it
+- Remove imports, variables, and functions that **your changes** made unused
+- Do not remove pre-existing dead code unless explicitly asked
+- Every changed line must trace directly to the request
 
-1. **CORRECT** - Use Prisma migrations:
-   ```bash
-   cd backend
-   npx prisma migrate dev --name descriptive_name_of_change
-   ```
+---
 
-2. **NEVER USE** - These bypass migrations and break fresh installations:
-   ```bash
-   npx prisma db push    # FORBIDDEN - Only for prototyping
-   Manual SQL changes    # FORBIDDEN - Not tracked
-   ```
+## Goal-Driven Execution
 
-### After schema changes, ALWAYS:
+Turn tasks into verifiable goals before starting:
 
-1. Generate the migration file: `npx prisma migrate dev --name add_xxx`
-2. Verify migration file was created in `backend/prisma/migrations/`
-3. Commit the migration file to version control
-4. Test with a fresh database: `docker compose down -v && docker compose up -d --build`
+- "Add validation" → write tests for invalid inputs, then make them pass
+- "Fix the bug" → reproduce it in a test, then make it pass
 
-### Why this matters
+For multi-step tasks, state a brief plan:
 
-Missing migration files cause fresh installations to fail because:
-- `docker-entrypoint.sh` runs `npx prisma migrate deploy` on startup
-- This ONLY applies migration files - it does NOT read the schema
-- If a model exists in schema but has no migration, the table won't exist
-- This breaks deployments on new servers
+```
+1. [Step] → verify: [check]
+2. [Step] → verify: [check]
+3. [Step] → verify: [check]
+```
 
-### See troubleshooting guide at: `docs/troubleshooting-fresh-installation.md`
+Execute the plan; loop until all checks pass.
 
-## Prisma migrations application
-you must use '''npx prima migrate deploy''' instead of '''npx prisma migrate dev''' 
-you are on a headless machine and the dev option requires an inteactive environment
+---
+
+## Database Migrations
+
+**Always use Prisma migrations for schema changes — no exceptions.**
+
+Correct workflow:
+```bash
+cd backend
+npx prisma migrate deploy
+```
+
+> Use `migrate deploy` (not `migrate dev`) — the environment is headless and non-interactive.
+
+**Never use:**
+- `npx prisma db push` — forbidden, bypasses migration tracking
+- Manual SQL changes — forbidden, not tracked
+
+After every schema change:
+1. Verify the migration file was created in `backend/prisma/migrations/`
+2. Commit the migration file
+3. Test with a fresh database: `docker compose down -v && docker compose up -d --build`
+
+**Why this matters:** On startup, `docker-entrypoint.sh` runs `npx prisma migrate deploy`, which only applies migration files. If a model exists in the schema but has no migration file, the table will not exist on fresh installs.
+
+See: `docs/troubleshooting-fresh-installation.md`
+
+---
+
+## Testing
+
+- Use the **Playwright MCP Server** — do not install or use the `playwright` npm package
+- Do not create test files — use the MCP server to browse the app directly
+- All test-related files go in `./test-files`
+- Run all tests as their own subtasks
+- Test against http://192.168.1.70 (LAN)

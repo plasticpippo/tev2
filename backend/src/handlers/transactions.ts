@@ -292,7 +292,21 @@ const transaction = await tx.transaction.create({
     createdAt: new Date()
         }
       });
-  
+
+      // 3b. Create relational TransactionItem records for queryability and integrity
+      await tx.transactionItem.createMany({
+        data: items.map((item: { productId: number; variantId: number; name: string; price: number; quantity: number; effectiveTaxRate?: number }) => ({
+          transactionId: transaction.id,
+          productId: item.productId,
+          variantId: item.variantId,
+          productName: item.name,
+          variantName: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          effectiveTaxRate: item.effectiveTaxRate ?? null,
+        })),
+      });
+
       // 4. Decrement stock levels (if any consumptions)
       if (consumptions.size > 0) {
         for (const [stockItemId, quantity] of consumptions) {
