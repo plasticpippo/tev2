@@ -26,6 +26,7 @@
     "noOrphanedReferences": "Nessun riferimento orfano trovato",
     "dataIntegrityIssuesFound": "Problemi di integrita dei dati rilevati",
     "dataIntegrityValidationPassed": "Validazione integrita dei dati superata",
+    "dataIntegrityIssuesFixed": "Problemi di integrita dei dati rilevati e corretti",
     "orderSessionCreated": "Sessione ordine creata con successo",
     "orderSessionUpdated": "Sessione ordine aggiornata con successo",
     "orderSessionRestored": "Sessione ordine ripristinata con successo",

@@ -26,6 +26,7 @@
     "noOrphanedReferences": "No orphaned references found",
     "dataIntegrityIssuesFound": "Data integrity issues found",
     "dataIntegrityValidationPassed": "Data integrity validation passed",
+    "dataIntegrityIssuesFixed": "Data integrity issues have been detected and fixed",
     "orderSessionCreated": "Order session created successfully",
     "orderSessionUpdated": "Order session updated successfully",
     "orderSessionRestored": "Order session restored successfully",

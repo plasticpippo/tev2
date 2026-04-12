@@ -412,18 +412,49 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       
       // If variants are provided, update them as well
       if (variants && Array.isArray(variants) && variants.length > 0) {
-        // First, delete existing stock consumption records for this product's variants
+        // Snapshot existing stock consumption records into version history before deletion
+        const existingConsumptions = await tx.stockConsumption.findMany({
+          where: {
+            variant: {
+              productId: Number(id),
+            },
+          },
+          include: {
+            variant: {
+              include: { product: true },
+            },
+            stockItem: true,
+          },
+        });
+
+        if (existingConsumptions.length > 0) {
+          await tx.stockConsumptionVersion.createMany({
+            data: existingConsumptions.map((sc) => ({
+              variantId: sc.variantId,
+              variantName: sc.variant.name,
+              productId: sc.variant.productId,
+              productName: sc.variant.product.name,
+              stockItemId: sc.stockItemId,
+              stockItemName: sc.stockItem.name,
+              quantity: sc.quantity,
+              changeReason: 'product_update',
+              changedBy: req.user?.id ?? null,
+            })),
+          });
+        }
+
+        // Delete existing stock consumption records for this product's variants
         await tx.stockConsumption.deleteMany({
           where: {
             variant: {
-              productId: Number(id)
-            }
-          }
+              productId: Number(id),
+            },
+          },
         });
-        
+
         // Then delete existing variants for this product
         await tx.productVariant.deleteMany({
-          where: { productId: Number(id) }
+          where: { productId: Number(id) },
         });
         
         // Create new variants

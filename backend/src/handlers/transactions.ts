@@ -62,6 +62,10 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
   const { idempotencyKey: rawIdempotencyKey, issueReceipt, ...paymentData } = req.body;
   const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
 
+  if (!idempotencyKey) {
+    return res.status(400).json({ error: 'idempotencyKey is required and must be a valid string (8-128 alphanumeric characters, hyphens, or underscores)' });
+  }
+
   const {
     items,
     subtotal,

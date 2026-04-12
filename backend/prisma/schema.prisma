@@ -105,6 +105,25 @@ model StockConsumption {
   @@map("stock_consumptions")
 }
 
+model StockConsumptionVersion {
+  id            Int      @id @default(autoincrement())
+  variantId     Int
+  variantName   String
+  productId     Int
+  productName   String
+  stockItemId   String   @db.Uuid
+  stockItemName String
+  quantity      Int
+  replacedAt    DateTime @default(now())
+  changeReason  String?
+  changedBy     Int?
+
+  @@index([variantId])
+  @@index([productId])
+  @@index([replacedAt])
+  @@map("stock_consumption_versions")
+}
+
 model Category {
   id Int @id @default(autoincrement())
   name String

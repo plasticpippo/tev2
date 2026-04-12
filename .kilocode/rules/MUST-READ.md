@@ -33,6 +33,18 @@ Before starting any container, verify it is not already running.
 
 ---
 
+## Concurrency and Rate Limits
+
+This subscription has API rate limits. Parallel agents and parallel subagents will exhaust
+them and cause the session to stall in a backoff loop.
+
+- Execute all subtasks sequentially — finish one before starting the next
+- Do NOT spawn parallel subagents or use parallel tool calls
+- Do NOT use the Agent Manager to run concurrent sessions for a single feature
+- One API request at a time; wait for a response before proceeding
+
+---
+
 ## Think Before Coding
 
 Before writing any code:
@@ -62,7 +74,7 @@ Touch only what the task requires:
 - Do not improve, reformat, or refactor adjacent code
 - Match existing style even if you would do it differently
 - If you notice unrelated dead code, mention it — do not delete it
-- Remove imports, variables, and functions that **your changes** made unused
+- Remove imports, variables, and functions that your changes made unused
 - Do not remove pre-existing dead code unless explicitly asked
 - Every changed line must trace directly to the request
 
@@ -89,7 +101,7 @@ Execute the plan; loop until all checks pass.
 
 ## Database Migrations
 
-**Always use Prisma migrations for schema changes — no exceptions.**
+Always use Prisma migrations for schema changes — no exceptions.
 
 Correct workflow:
 ```bash
@@ -97,9 +109,9 @@ cd backend
 npx prisma migrate deploy
 ```
 
-> Use `migrate deploy` (not `migrate dev`) — the environment is headless and non-interactive.
+Use `migrate deploy` (not `migrate dev`) — the environment is headless and non-interactive.
 
-**Never use:**
+Never use:
 - `npx prisma db push` — forbidden, bypasses migration tracking
 - Manual SQL changes — forbidden, not tracked
 
@@ -108,7 +120,9 @@ After every schema change:
 2. Commit the migration file
 3. Test with a fresh database: `docker compose down -v && docker compose up -d --build`
 
-**Why this matters:** On startup, `docker-entrypoint.sh` runs `npx prisma migrate deploy`, which only applies migration files. If a model exists in the schema but has no migration file, the table will not exist on fresh installs.
+Why this matters: on startup, `docker-entrypoint.sh` runs `npx prisma migrate deploy`, which
+only applies migration files. If a model exists in the schema but has no migration file, the
+table will not exist on fresh installs.
 
 See: `docs/troubleshooting-fresh-installation.md`
 
@@ -116,7 +130,7 @@ See: `docs/troubleshooting-fresh-installation.md`
 
 ## Testing
 
-- Use the **Playwright MCP Server** — do not install or use the `playwright` npm package
+- Use the Playwright MCP Server — do not install or use the `playwright` npm package
 - Do not create test files — use the MCP server to browse the app directly
 - All test-related files go in `./test-files`
 - Run all tests as their own subtasks

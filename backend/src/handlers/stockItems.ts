@@ -462,6 +462,152 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
   }
 });
 
+// POST /api/stock-items/validate-integrity - Detect and fix data integrity issues
+stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    // --- Detection phase (same as GET endpoint) ---
+
+    // Check for orphaned stock consumption references
+    const allStockConsumptions = await prisma.stockConsumption.findMany({
+      include: {
+        variant: {
+          include: {
+            product: true
+          }
+        }
+      }
+    });
+
+    const stockItemIds = [...new Set(allStockConsumptions.map((sc) => sc.stockItemId))];
+    const existingStockItems = await prisma.stockItem.findMany({
+      where: { id: { in: stockItemIds } },
+      select: { id: true }
+    });
+
+    const existingStockItemIds = new Set(existingStockItems.map((item) => item.id));
+
+    const orphanedConsumptions = allStockConsumptions.filter((sc) => !existingStockItemIds.has(sc.stockItemId));
+
+    const formattedOrphanedConsumptions = orphanedConsumptions.map((consumption) => ({
+      id: consumption.id,
+      variantId: consumption.variantId,
+      stockItemId: consumption.stockItemId,
+      quantity: consumption.quantity,
+      variantName: consumption.variant.name,
+      productName: consumption.variant.product.name
+    }));
+
+    // Check for stock items with negative quantities
+    const negativeStockItems = await prisma.stockItem.findMany({
+      where: { quantity: { lt: 0 } }
+    });
+
+    // Variants without consumption (informational only, not fixed)
+    const variantsWithoutConsumption = await prisma.productVariant.findMany({
+      where: { stockConsumption: { none: {} } },
+      include: { product: true }
+    });
+
+    const hasFixableIssues = formattedOrphanedConsumptions.length > 0 || negativeStockItems.length > 0;
+
+    if (!hasFixableIssues) {
+      return res.status(200).json({
+        message: i18n.t('api:success.dataIntegrityValidationPassed'),
+        fixesApplied: {
+          orphanedConsumptionsDeleted: 0,
+          negativeQuantitiesReset: 0
+        },
+        report: {
+          orphanedConsumptions: formattedOrphanedConsumptions.length,
+          negativeStockItems: negativeStockItems.length,
+          variantsWithoutConsumption: variantsWithoutConsumption.length,
+          details: {
+            orphanedConsumptions: formattedOrphanedConsumptions,
+            negativeStockItems,
+            variantsWithoutConsumption: variantsWithoutConsumption.map((v) => ({
+              id: v.id,
+              name: v.name,
+              productName: v.product.name
+            }))
+          }
+        }
+      });
+    }
+
+    // --- Correction phase ---
+    const fixResults = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Fix 1: Delete orphaned stock consumption records
+      let orphanedDeletedCount = 0;
+      const deletedOrphanedRecords: typeof formattedOrphanedConsumptions = [];
+
+      if (formattedOrphanedConsumptions.length > 0) {
+        const orphanedIds = formattedOrphanedConsumptions.map((oc) => oc.id);
+        orphanedDeletedCount = (await tx.stockConsumption.deleteMany({
+          where: { id: { in: orphanedIds } }
+        })).count;
+        deletedOrphanedRecords.push(...formattedOrphanedConsumptions);
+      }
+
+      // Fix 2: Reset negative stock quantities to 0 with audit trail
+      const resetStockItems: { id: string; name: string; previousQuantity: number; newQuantity: number }[] = [];
+
+      for (const item of negativeStockItems) {
+        const previousQuantity = item.quantity;
+        const adjustment = Math.abs(previousQuantity);
+
+        await tx.stockItem.update({
+          where: { id: item.id },
+          data: { quantity: 0 }
+        });
+
+        await tx.stockAdjustment.create({
+          data: {
+            stockItemId: item.id,
+            itemName: item.name,
+            quantity: adjustment,
+            reason: `Integrity fix: reset negative quantity from ${previousQuantity} to 0`,
+            userId: req.user!.id,
+            userName: req.user!.username,
+          }
+        });
+
+        resetStockItems.push({
+          id: item.id,
+          name: item.name,
+          previousQuantity,
+          newQuantity: 0
+        });
+      }
+
+      return {
+        orphanedDeletedCount,
+        deletedOrphanedRecords,
+        resetStockItems
+      };
+    });
+
+    res.status(200).json({
+      message: i18n.t('api:success.dataIntegrityIssuesFixed'),
+      fixesApplied: {
+        orphanedConsumptionsDeleted: fixResults.orphanedDeletedCount,
+        negativeQuantitiesReset: fixResults.resetStockItems.length
+      },
+      details: {
+        deletedOrphanedConsumptions: fixResults.deletedOrphanedRecords,
+        resetStockItems: fixResults.resetStockItems
+      },
+      report: {
+        orphanedConsumptions: formattedOrphanedConsumptions.length,
+        negativeStockItems: negativeStockItems.length,
+        variantsWithoutConsumption: variantsWithoutConsumption.length
+      }
+    });
+  } catch (error) {
+    logError('Error fixing data integrity issues:', { error });
+    res.status(500).json({ error: i18n.t('errors:stockItems.validateIntegrityFailed') });
+  }
+});
+
 // GET /api/stock-items/validate-integrity - Validate data integrity between products and stock items
 stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
   try {

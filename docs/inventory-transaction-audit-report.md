@@ -1,106 +1,113 @@
 # Inventory-to-Transaction Integrity Audit Report
 
-**Report ID:** INV-AUDIT-2026-001
+**Report ID:** INV-AUDIT-2026-002
 **Date:** 2026-04-12
-**Classification:** CRITICAL
-**Scope:** Full-stack audit of inventory deduction lifecycle across all transaction endpoints, stock management handlers, recipe configuration flows, and frontend payment paths.
+**Classification:** HIGH
+**Scope:** Full re-audit of inventory deduction lifecycle, incorporating findings from INV-AUDIT-2026-001 and verifying all previously reported fixes. Deep-dive into new code paths including transaction void, recipe versioning, receipt lifecycle, and all six StockItem.quantity write paths.
 
 ---
 
 ## Table of Contents
 
 1. [Executive Summary](#1-executive-summary)
-2. [System Architecture Overview](#2-system-architecture-overview)
-3. [Audit Methodology](#3-audit-methodology)
-4. [Findings](#4-findings)
-   - [CRITICAL-1: POST /transactions Creates Sales Without Inventory Deduction](#critical-1-post-transactionstransactions-creates-sales-without-inventory-deduction)
-   - [CRITICAL-2: No Transaction Void/Cancel Mechanism With Stock Restoration](#critical-2-no-transaction-voidcancel-mechanism-with-stock-restoration)
-   - [CRITICAL-3: Items With No Recipe Are Sold Silently Without Stock Deduction](#critical-3-items-with-no-recipe-are-sold-silently-without-stock-deduction)
-   - [HIGH-1: Orphaned update-levels Endpoint Permits Untracked Stock Deductions](#high-1-orphaned-update-levels-endpoint-permits-untracked-stock-deductions)
-   - [HIGH-2: Recipe Replacement on Product Update Destroys All Historical Recipe Data](#high-2-recipe-replacement-on-product-update-destroys-all-historical-recipe-data)
-   - [HIGH-3: Transaction Items Stored as JSON With No Relational Integrity](#high-3-transaction-items-stored-as-json-with-no-relational-integrity)
-   - [MEDIUM-1: No Database-Level Constraint Preventing Negative Stock Quantities](#medium-1-no-database-level-constraint-preventing-negative-stock-quantities)
-   - [MEDIUM-2: Reconciliation Endpoint Is Non-Functional](#medium-2-reconciliation-endpoint-is-non-functional)
-   - [MEDIUM-3: Cost Calculation Failure Is Non-Blocking](#medium-3-cost-calculation-failure-is-non-blocking)
-   - [MEDIUM-4: Idempotency Key Is Optional](#medium-4-idempotency-key-is-optional)
-   - [MEDIUM-5: Dead Code Exposes Unnecessary Attack Surface](#medium-5-dead-code-exposes-unnecessary-attack-surface)
-   - [MEDIUM-6: Complimentary Transactions Still Deduct Stock Without Documentation](#medium-6-complimentary-transactions-still-deduct-stock-without-documentation)
-5. [Complete File Audit Matrix](#5-complete-file-audit-matrix)
-6. [Strategic Recommendations](#6-strategic-recommendations)
+2. [Previous Findings Reconciliation](#2-previous-findings-reconciliation)
+3. [System Architecture (Updated)](#3-system-architecture-updated)
+4. [All Inventory Write Paths](#4-all-inventory-write-paths)
+5. [New Findings](#5-new-findings)
+6. [Complete File Audit Matrix](#6-complete-file-audit-matrix)
 7. [Proposed Fixes With Exact Code](#7-proposed-fixes-with-exact-code)
-8. [Appendix: Inventory Deduction Verification Flow](#8-appendix-inventory-deduction-verification-flow)
 
 ---
 
 ## 1. Executive Summary
 
-An exhaustive and rigorous audit was performed across the entire codebase to verify that every financial or point-of-sale transaction accurately triggers a corresponding inventory decrease dictated by predefined recipes or salable goods. The audit traced the complete data lifecycle of every transaction type, investigating all database queries, state management functions, API endpoints, and frontend flows.
+This is the second exhaustive audit (INV-AUDIT-2026-002) of the inventory-to-transaction integrity lifecycle. It re-examines every finding from INV-AUDIT-2026-001 (the original 12-finding report) and conducts a fresh deep-dive into all code paths that have been added or modified since.
 
-**Files Audited:**
-- Prisma schema: 1 file, 38 migrations
-- Backend handlers: 22 files
-- Backend services: 19 files
-- Backend middleware: 7 files
-- Frontend services: 19 files
-- Frontend components: All transaction/payment-related components
+### Audit Scope
 
-### Summary of Findings
+| Area | Files Examined |
+|------|---------------|
+| Prisma schema | `schema.prisma` (765 lines) |
+| Backend handlers | `transactions.ts` (798 lines), `stockItems.ts` (556 lines), `stockAdjustments.ts` (263 lines), `products.ts` (547 lines), `consumptionReports.ts` (188 lines) |
+| Backend services | `costCalculationService.ts` (241 lines), `dailyClosingService.ts` (151 lines), `analyticsService.ts` (1018 lines), `receiptService.ts`, `varianceService.ts` |
+| Frontend services | `transactionService.ts` (200 lines), `inventoryService.ts` (136 lines) |
+| Frontend components | `TransactionHistory.tsx`, `PaymentContext.tsx`, `PaymentModal.tsx` |
+| Migrations | All migration SQL files checked for CHECK constraints |
+
+### Summary of Current Findings
 
 | Severity | Count | Description |
 |----------|-------|-------------|
-| **CRITICAL** | 3 | Issues that cause permanent inventory/transaction data corruption |
 | **HIGH** | 3 | Issues that create significant risk of data inconsistency |
-| **MEDIUM** | 6 | Issues that represent design weaknesses or future risks |
-| **TOTAL** | 12 | |
+| **MEDIUM** | 5 | Issues that represent design weaknesses or future risks |
+| **LOW** | 3 | Cosmetic or minor concerns |
+| **RESOLVED** | 6 | Issues from INV-AUDIT-2026-001 that have been fixed |
+| **TOTAL OPEN** | 11 | |
 
 ### Key Conclusion
 
-The sole active payment path (`POST /api/transactions/process-payment`) correctly performs atomic inventory deduction inside a Prisma database transaction with proper insufficient-stock checks. However, **three critical systemic gaps** undermine this correctness: (1) a dead but fully exposed alternative transaction endpoint that creates completed sales without any stock deduction, (2) the complete absence of any transaction void/cancel mechanism with stock restoration, and (3) silent acceptance of items sold without configured recipes. These gaps mean that inventory levels will gradually and irreversibly diverge from sales records.
+The sole active payment path (`POST /api/transactions/process-payment`) correctly performs atomic inventory deduction inside a Prisma database transaction with proper insufficient-stock checks. Six of the original twelve findings have been resolved, including the three CRITICAL issues. However, **three HIGH-severity gaps remain**: (1) transaction void restores stock using the *current* recipe rather than the recipe at time of sale, causing incorrect restorations when recipes change; (2) the `POST /stock-adjustments` endpoint can drive stock below zero with no sufficiency check; and (3) there is no database-level CHECK constraint preventing negative stock quantities. Additionally, several analytics and reporting endpoints use `{ not: 'voided' }` instead of a positive-status allowlist, risking inclusion of future or pending transaction states.
 
 ---
 
-## 2. System Architecture Overview
+## 2. Previous Findings Reconciliation
 
-### 2.1 Data Models Involved
+The original report (INV-AUDIT-2026-001) contained 12 findings. Below is the disposition of each:
 
-The system uses the following Prisma models for the inventory-to-transaction lifecycle:
+### RESOLVED Findings (6 of 12)
+
+| Original ID | Title | Resolution |
+|-------------|-------|------------|
+| **CRITICAL-1** | POST /transactions creates sales without inventory deduction | **FIXED.** The dead `POST /` endpoint has been removed from `transactions.ts` (file reduced from 948 to 798 lines). The frontend `saveTransaction()` dead code has also been removed from `transactionService.ts`. |
+| **CRITICAL-2** | No transaction void/cancel mechanism with stock restoration | **FIXED.** `POST /api/transactions/:id/void` added at lines 636-795. Performs atomic stock restoration inside `prisma.$transaction()`, creates `StockAdjustment` audit records, and sets status to `voided` with reason/user tracking. |
+| **HIGH-2** | Recipe replacement destroys historical recipe data | **FIXED.** `StockConsumptionVersion` model added to schema. Product update handler (lines 416-444) now snapshots existing recipes into version history before deletion. |
+| **HIGH-3** | Transaction items stored as JSON with no relational integrity | **FIXED.** `TransactionItem` model added to schema with proper foreign keys and indexes. `process-payment` handler now creates `TransactionItem` records (lines 296-308). |
+| **MEDIUM-5** | Dead code exposes unnecessary attack surface | **FIXED.** Dead `saveTransaction()` removed from frontend. Dead `POST /` backend endpoint removed. |
+| **HIGH-1** | Orphaned update-levels endpoint permits untracked deductions | **PARTIALLY FIXED.** The endpoint now requires a `reason` field and creates `StockAdjustment` records for every deduction. However, the frontend `updateStockLevels()` function remains dead code (see MEDIUM-1 below). |
+
+### STILL OPEN Findings (6 of 12, re-categorized)
+
+| Original ID | Original Severity | New Severity | Title | Current Status |
+|-------------|-------------------|--------------|-------|----------------|
+| **CRITICAL-3** | CRITICAL | **MEDIUM** | Items with no recipe sold without stock deduction | Still by-design. Variants with zero `StockConsumption` records trigger no inventory movement. See NEW-5. |
+| **MEDIUM-1** | MEDIUM | **MEDIUM** | No DB constraint preventing negative stock | Still open. No `CHECK (quantity >= 0)` in schema or migrations. See NEW-1. |
+| **MEDIUM-2** | MEDIUM | **LOW** | Reconciliation endpoint non-functional | `validate-integrity` endpoint exists but is diagnostic-only, not corrective. |
+| **MEDIUM-3** | MEDIUM | **MEDIUM** | Cost calculation failure is non-blocking | Still open. Cost calculation errors are caught and logged but do not prevent the transaction. |
+| **MEDIUM-4** | MEDIUM | **LOW** | Idempotency key is optional | `idempotencyKey` field is optional in schema. Frontend generates one, but API callers can omit it. |
+| **MEDIUM-6** | MEDIUM | **LOW** | Complimentary transactions deduct stock silently | Still open. Complimentary transactions go through `process-payment` with full stock deduction. No visual indicator in inventory reports. |
+
+---
+
+## 3. System Architecture (Updated)
+
+### 3.1 Data Models
 
 ```
 Category 1:N Product 1:N ProductVariant
 ProductVariant 1:N StockConsumption N:1 StockItem
-Transaction (items as JSON)
+StockConsumptionVersion (historical snapshots of StockConsumption)
+Transaction (items as Json) 1:N TransactionItem
+TransactionItem (relational: productId, variantId, quantity, unitCost, totalCost)
 Receipt N:1 Transaction
-OrderSession (items as JSON)
-Tab (items as JSON)
-Table (items as JSON)
 StockAdjustment N:1 StockItem
+StockAdjustment.created as audit trail for void restorations
 ```
 
-### 2.2 Recipe System
+### 3.2 Transaction Status Lifecycle
 
-The recipe system is expressed through the `StockConsumption` junction table:
+```
+              process-payment
+  [new] ──────────────────────> completed
+                                    |
+                                    |  POST /:id/void (ADMIN only)
+                                    v
+                                voided
+                                  (stock restored)
+```
 
-| Field | Type | Description |
-|-------|------|-------------|
-| `id` | `Int` (autoincrement) | Primary key |
-| `variantId` | `Int` | Foreign key to `ProductVariant.id` |
-| `stockItemId` | `String` (UUID) | Foreign key to `StockItem.id` |
-| `quantity` | `Int` | Number of stock units consumed per sale of this variant |
+Additional status: `complimentary` (total=0, discount>0). Only `completed` and `complimentary` can be voided. Voided transactions are excluded from analytics, closings, and consumption reports.
 
-There is no dedicated `Recipe` or `RecipeIngredient` model. The recipe is an implicit collection of `StockConsumption` records linked to a `ProductVariant`. A variant with zero `StockConsumption` records has no recipe and will not trigger any inventory deduction when sold.
-
-### 2.3 Transaction Storage
-
-Transaction line items are stored as a JSON string in `Transaction.items` (type `Json`). Each item in the array contains:
-- `id`, `name` (snapshot)
-- `productId`, `variantId` (references, not foreign keys)
-- `price` (snapshot)
-- `quantity` (order quantity)
-- `effectiveTaxRate` (snapshot)
-
-There is no relational `TransactionItem` model. The JSON approach means these references are not enforceable at the database level and cannot be queried relationally.
-
-### 2.4 Active Payment Flow
+### 3.3 Active Payment Flow (Updated)
 
 ```
 Frontend: PaymentModal.tsx
@@ -108,1370 +115,1080 @@ Frontend: PaymentModal.tsx
   -> transactionService.ts -> processPayment()
   -> POST /api/transactions/process-payment
   -> prisma.$transaction() {
-       1. Idempotency key check against DB
-       2. Cost calculation (calculateTransactionCost service)
+       1. Idempotency key check
+       2. Cost calculation (calculateTransactionCost)
        3. Collect StockConsumption records per item
-       4. Create Transaction record (with cost/margin data)
-       5. Decrement StockItem.quantity for each consumed stock item
-       6. Complete active OrderSession (optimistic locking)
-       7. Delete Tab (if activeTabId provided)
-       8. Update Table status to 'available'
+       4. Create Transaction record (with cost/margin/void fields)
+       5. Create TransactionItem records (normalized relational rows)
+       6. Decrement StockItem.quantity (with insufficient-stock guard)
+       7. Complete active OrderSession (optimistic locking)
+       8. Delete Tab (if activeTabId provided)
+       9. Update Table status to 'available'
      }
-  -> Post-transaction: Optional receipt creation via createReceiptFromPayment
+  -> Post-transaction: Optional receipt creation
 ```
 
-### 2.5 Inventory Write Paths
+### 3.4 Transaction Void Flow (NEW)
 
-The following endpoints can modify `StockItem.quantity`:
-
-| Endpoint | File | Trigger | Linked to Transaction? |
-|----------|------|---------|----------------------|
-| `POST /process-payment` | `transactions.ts` lines 296-314 | Sale event | Yes (atomic) |
-| `PUT /stock-items/update-levels` | `stockItems.ts` lines 91-208 | Manual API call | No |
-| `POST /stock-adjustments` | `stockAdjustments.ts` lines 55-88 | Manual adjustment | No |
-| `PUT /stock-items/:id` | `stockItems.ts` lines 211-298 | Direct quantity edit | No |
-
----
-
-## 3. Audit Methodology
-
-The audit was performed in the following sequential phases:
-
-1. **Schema Analysis:** Complete read of `schema.prisma` and all 38 migration files to understand the data model evolution, relationships, constraints, and default values.
-
-2. **Backend Route Mapping:** Complete directory listing of `backend/src/handlers/`, `backend/src/services/`, and `backend/src/utils/`. Every handler file was read in full.
-
-3. **Transaction Handler Deep Dive:** The complete 948-line `transactions.ts` was read line-by-line. Every endpoint was analyzed for: input validation, database queries, stock deduction logic, error handling, and rollback behavior.
-
-4. **Stock Management Audit:** Complete reads of `stockItems.ts` (541 lines), `stockAdjustments.ts` (263 lines), `products.ts` (516 lines), `costCalculationService.ts` (241 lines).
-
-5. **Frontend Payment Flow Tracing:** Search for all files containing `process-payment`, `/transactions`, `saveTransaction`. Complete reads of `transactionService.ts` (184 lines), `inventoryService.ts` (132 lines), `PaymentContext.tsx`, `PaymentModal.tsx`.
-
-6. **Void/Refund/Cancel Search:** Regex search for `void|refund|cancel|reverse|restock` across all backend TypeScript files.
-
-7. **Ancillary Handlers:** Complete reads of `dailyClosings.ts` (205 lines), `tables.ts` (374 lines), `consumptionReports.ts` (185 lines), `analytics.ts` (295 lines), `costManagement.ts` (685 lines), `receiptHandler.ts` (778 lines), `orderSessions.ts` (451 lines), `tabs.ts` (365 lines).
-
-8. **Dead Code Analysis:** Grep searches for all frontend call sites of `updateStockLevels`, `saveStockAdjustment`, `saveTransaction` to determine which endpoints are actually used versus which are dead code.
+```
+Frontend: TransactionHistory.tsx
+  -> voidTransaction(transactionId, reason)
+  -> POST /api/transactions/:id/void
+  -> prisma.$transaction() {
+       1. Fetch transaction, verify not already voided
+       2. Parse items JSON
+       3. For each item: fetch CURRENT recipe (StockConsumption)
+       4. Compute restoration quantities per stock item
+       5. Increment StockItem.quantity for each
+       6. Create StockAdjustment record (audit trail)
+       7. Update transaction: status='voided', voidedAt, voidReason, voidedBy
+     }
+```
 
 ---
 
-## 4. Findings
+## 4. All Inventory Write Paths
+
+Every code path that modifies `StockItem.quantity`, verified by searching for `stockItem.*update`, `quantity.*decrement`, `quantity.*increment`, `StockItem.*quantity` across the entire backend:
+
+| # | Path | File & Lines | Trigger | Atomic? | Sufficiency Check? | Audit Trail? |
+|---|------|-------------|---------|---------|-------------------|-------------|
+| A | Transaction creation | `transactions.ts:313-318` | Sale event | Yes (inside `$transaction`) | Yes (`quantity: { gte: quantity }` in `updateMany`) | Via TransactionItem |
+| B | Transaction void | `transactions.ts:719-721` | Admin void | Yes (inside `$transaction`) | No upper-bound check | Yes (StockAdjustment created at lines 725-734) |
+| C | Stock item PUT | `stockItems.ts:303-306` | Direct edit | No | `>=0` validated in app code only | **None** |
+| D | Bulk stock level update | `stockItems.ts:169-200` | Manual API | Yes (inside `$transaction`) | Yes (pre-check + in-tx check) | Yes (StockAdjustment) |
+| E | Stock adjustment POST | `stockAdjustments.ts:72-95` | Manual adjustment | Yes (inside `$transaction`) | **No** (increment can be negative, driving quantity below zero) | Yes (StockAdjustment) |
+| F | Cost history update | `costHistoryService.ts:64-71` | Cost update | Yes (inside `$transaction`) | N/A (updates `standardCost`, not `quantity`) | Via CostHistory |
+
+### Critical Analysis of Path E: Stock Adjustment POST
+
+**File:** `backend/src/handlers/stockAdjustments.ts`, lines 72-81
+
+```typescript
+await tx.stockItem.update({
+  where: { id: stockItemId },
+  data: {
+    quantity: {
+      increment: quantity // This can be positive or negative
+    }
+  }
+});
+```
+
+The comment on line 78 explicitly states "This can be positive or negative." There is no check that `stockItem.quantity + quantity >= 0` after the increment. A negative increment will silently drive the stock below zero.
+
+**Contrast with Path A** (transaction creation), which uses:
+```typescript
+const updateResult = await tx.stockItem.updateMany({
+  where: { id: stockItemId, quantity: { gte: quantity } },
+  data: { quantity: { decrement: quantity } }
+});
+if (updateResult.count === 0) {
+  throw new Error(`Insufficient stock for item ${stockItemId}`);
+}
+```
+
+Path A correctly guards against negative stock. Path E does not.
 
 ---
 
-### CRITICAL-1: POST /transactions Creates Sales Without Inventory Deduction
+## 5. New Findings
 
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 623-946
-**Severity:** CRITICAL
-**Status:** Active vulnerability
+---
 
-#### Root Cause
+### NEW-1 (HIGH): No Database-Level Constraint Prevents Negative Stock Quantities
 
-The `transactionsRouter.post('/', ...)` endpoint (lines 623-946) creates a fully-formed transaction record but performs **zero inventory deduction**. The endpoint:
+**File:** `backend/prisma/schema.prisma` line 254; initial migration `20251030152931_init/migration.sql`
+**Severity:** HIGH
+**Status:** Open
 
-1. Validates monetary values, items, till reference, and tax calculations (lines 625-770)
-2. Calculates cost and margin data (lines 845-877)
-3. Creates the transaction record directly via `prisma.transaction.create()` (lines 879-900)
-4. Returns HTTP 201 with the transaction data (lines 916-926)
+#### Evidence
 
-At no point does this endpoint:
-- Fetch `StockConsumption` records for the sold variants
-- Decrement `StockItem.quantity` for consumed ingredients
-- Check for sufficient stock levels
-- Perform any operation inside a `prisma.$transaction()` atomic block
+The `StockItem` model defines quantity as a bare `Int` with no constraints:
 
-#### Contrast With the Correct Endpoint
+```prisma
+model StockItem {
+  // ...
+  quantity Int
+  // ...
+}
+```
 
-The `POST /process-payment` endpoint (lines 48-438) performs all of these operations correctly inside a single `prisma.$transaction()`:
-- Lines 254-268: Collects stock consumptions per item
-- Lines 296-314: Atomically decrements stock with insufficient-stock check
-- Lines 317-329: Completes order session with optimistic locking
-- Lines 331-344: Deletes tab and updates table status
+The initial migration SQL:
+```sql
+CREATE TABLE "stock_items" (
+    "id" SERIAL NOT NULL,
+    "name" TEXT NOT NULL,
+    "quantity" INTEGER NOT NULL,
+    ...
+    CONSTRAINT "stock_items_pkey" PRIMARY KEY ("id")
+);
+```
 
-#### Current Impact
+No `CHECK (quantity >= 0)` constraint exists. A search across all migration SQL files for `CHECK.*quantity` returned zero results.
 
-The frontend's `saveTransaction()` function (in `frontend/services/transactionService.ts` lines 17-38) calls this endpoint. However, a search of the entire frontend codebase confirms that **no component, context, or other service ever invokes `saveTransaction()`**. It is dead code on the frontend.
+The application-level validation in `validateStockItemQuantity` (validation.ts:219) rejects negative values for create/update, but this only applies to the `POST /stock-items` and `PUT /stock-items/:id` endpoints. It does NOT apply to:
+- Stock adjustments via `POST /stock-adjustments` (Path E above)
+- Transaction void stock restoration (Path B)
+- Bulk stock level updates (Path D - protected by its own in-transaction check)
 
-However, the backend endpoint remains **fully exposed and authenticated**. Any authenticated user with the CASHIER or ADMIN role (the `POST /` endpoint only requires `authenticateToken`, not a specific role check beyond what is documented) can call `POST /api/transactions` directly via API and create completed transactions without any stock movement.
+The system even has a diagnostic endpoint that actively looks for negative quantities (`stockItems.ts:507-512`), confirming the developers are aware negative quantities can occur.
 
-#### Potential Risks
+#### Impact
 
-- **Phantom transactions:** Transactions appear in revenue reports, daily closings, and analytics but have zero corresponding inventory movement.
-- **Stock level divergence:** Over time, reported stock levels become permanently disconnected from actual sales data.
-- **Financial reporting corruption:** Revenue and COGS reports will be inconsistent because some transactions have cost data but no corresponding stock deductions.
-- **Attack surface:** An attacker with a valid JWT token can flood the system with fake transactions.
+Any of the unprotected write paths can produce `StockItem.quantity < 0`. Once negative, subsequent transaction sales will still succeed (the `updateMany` with `quantity: { gte: qty }` will match rows where quantity is negative but >= qty for small values).
 
 #### Proposed Fix
 
-**Option A (Recommended): Remove the endpoint entirely**
+Create a new migration:
 
-Since the frontend never calls it, the safest fix is to remove the dead code:
+```sql
+-- File: backend/prisma/migrations/YYYYMMDDHHMMSS_add_stock_quantity_check/migration.sql
 
-```typescript
-// DELETE the entire block from line 622 to line 946 in:
-// /home/pippo/tev2/backend/src/handlers/transactions.ts
-//
-// Also remove the unused saveTransaction function from:
-// /home/pippo/tev2/frontend/services/transactionService.ts (lines 17-38)
+ALTER TABLE "stock_items" ADD CONSTRAINT "stock_items_quantity_non_negative" CHECK ("quantity" >= 0);
 ```
 
-**Option B: Add full inventory deduction logic**
+Then apply:
+```bash
+cd backend && npx prisma migrate dev --name add_stock_quantity_check
+```
 
-If the endpoint must be retained for backward compatibility, it must be updated to include stock deduction inside a `prisma.$transaction()`:
+This is a one-way migration. If negative quantities already exist, they must be corrected before applying.
+
+---
+
+### NEW-2 (HIGH): Transaction Void Restores Stock Using Current Recipes, Not Recipes at Time of Sale
+
+**File:** `backend/src/handlers/transactions.ts`, lines 676-706
+**Severity:** HIGH
+**Status:** Open
+
+#### Root Cause
+
+When voiding a transaction, the handler fetches the *current* `StockConsumption` records for each sold variant:
 
 ```typescript
-// Replace the transaction creation at lines 879-900 with:
-const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-  // 1. Collect stock consumptions from recipe system
-  const consumptions = new Map<string, number>();
-  for (const item of items) {
+// Line 682-689
+const product = await tx.product.findUnique({
+  where: { id: item.productId },
+  include: {
+    variants: {
+      where: { id: item.variantId },
+      include: { stockConsumption: true },  // <-- CURRENT recipes
+    },
+  },
+});
+```
+
+If a recipe has been modified between the time of sale and the time of void, the wrong quantities will be restored.
+
+#### Example Scenario
+
+1. **Day 1:** Espresso has recipe: Coffee Beans 10g, Water 50ml. Transaction #42 sells 1 Espresso. Stock deducted: Beans -10, Water -50.
+2. **Day 3:** Manager updates Espresso recipe to: Coffee Beans 14g, Water 60ml.
+3. **Day 5:** Admin voids Transaction #42. System reads *current* recipe and restores: Beans +14, Water +60.
+4. **Result:** Net drift of Beans +4, Water +10 -- inventory is now permanently overstated.
+
+#### The Fix Already Exists But Is Not Used
+
+The `StockConsumptionVersion` model was specifically designed to store historical recipe snapshots. The `TransactionItem` model stores `unitCost` and `totalCost` at time of sale. However, the void handler does not use either of these to reconstruct the original recipe.
+
+#### Proposed Fix
+
+**Option A (Recommended): Snapshot recipe ingredients in TransactionItem at sale time**
+
+Add a `recipeSnapshot` JSON field to `TransactionItem`:
+
+```prisma
+model TransactionItem {
+  // ... existing fields ...
+  recipeSnapshot Json? // Snapshot of StockConsumption records at time of sale
+}
+```
+
+During `process-payment`, when creating `TransactionItem` records:
+
+```typescript
+// In transactions.ts, inside the TransactionItem create loop (around line 296-308):
+recipeSnapshot: itemConsumptions.map(sc => ({
+  stockItemId: sc.stockItemId,
+  stockItemName: sc.stockItemName,
+  quantity: sc.quantity,
+})),
+```
+
+During void, use the snapshot instead of fetching current recipes:
+
+```typescript
+// Replace lines 676-706 with:
+for (const item of items) {
+  if (!item.productId || !item.variantId) continue;
+
+  // Fetch the TransactionItem to get the recipe snapshot
+  const transactionItem = await tx.transactionItem.findFirst({
+    where: {
+      transactionId: Number(id),
+      variantId: item.variantId,
+      productId: item.productId,
+    },
+  });
+
+  if (transactionItem?.recipeSnapshot) {
+    const snapshot = transactionItem.recipeSnapshot as Array<{
+      stockItemId: string;
+      quantity: number;
+    }>;
+    for (const sc of snapshot) {
+      const current = restorations.get(sc.stockItemId);
+      const restorationQty = sc.quantity * item.quantity;
+      if (current) {
+        current.quantity += restorationQty;
+      } else {
+        restorations.set(sc.stockItemId, { name: '', quantity: restorationQty });
+      }
+    }
+  } else {
+    // Fallback to current recipe if no snapshot exists (for pre-migration transactions)
     const product = await tx.product.findUnique({
       where: { id: item.productId },
       include: {
         variants: {
           where: { id: item.variantId },
-          include: { stockConsumption: true }
-        }
-      }
+          include: { stockConsumption: true },
+        },
+      },
     });
 
     if (product && product.variants[0]) {
       for (const sc of product.variants[0].stockConsumption) {
-        const currentQty = consumptions.get(sc.stockItemId) || 0;
-        consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
+        const current = restorations.get(sc.stockItemId);
+        const restorationQty = sc.quantity * item.quantity;
+        if (current) {
+          current.quantity += restorationQty;
+        } else {
+          restorations.set(sc.stockItemId, { name: '', quantity: restorationQty });
+        }
       }
     }
   }
+}
+```
 
-  // 2. Create the transaction record
-  const transaction = await tx.transaction.create({
-    data: {
-      items: JSON.stringify(items),
-      subtotal: validatedSubtotal,
-      tax: validatedTax,
-      tip,
-      total: finalTotal,
-      paymentMethod,
-      userId: authenticatedUserId,
-      userName: authenticatedUserName,
-      tillId,
-      tillName,
-      discount: discountAmount,
-      discountReason: discountReasonText,
-      status,
-      createdAt: new Date(),
-      totalCost: totalCost !== null ? totalCost : null,
-      costCalculatedAt,
-      grossMargin: grossMargin !== null ? grossMargin : null,
-      marginPercent: marginPercent !== null ? marginPercent : null,
+**Option B: Query StockConsumptionVersion by timestamp**
+
+Use the `StockConsumptionVersion` table to find the recipe that was active at the time of the transaction:
+
+```typescript
+// For each item in the voided transaction:
+const versions = await tx.stockConsumptionVersion.findMany({
+  where: {
+    variantId: item.variantId,
+    replacedAt: { lte: transaction.createdAt },
+  },
+  orderBy: { replacedAt: 'desc' },
+});
+```
+
+This is less reliable because versions are only created on replacement, not on every transaction.
+
+---
+
+### NEW-3 (HIGH): Stock Adjustment Endpoint Can Drive Quantity Below Zero
+
+**File:** `backend/src/handlers/stockAdjustments.ts`, lines 72-81
+**Severity:** HIGH
+**Status:** Open
+
+#### Evidence
+
+The `POST /stock-adjustments` endpoint uses `increment` which accepts both positive and negative values:
+
+```typescript
+await tx.stockItem.update({
+  where: { id: stockItemId },
+  data: {
+    quantity: {
+      increment: quantity // Can be negative, no lower-bound check
     }
+  }
+});
+```
+
+There is no validation that `stockItem.quantity + quantity >= 0`.
+
+#### Proposed Fix
+
+Add a sufficiency check inside the transaction:
+
+```typescript
+// In stockAdjustments.ts, replace lines 72-81 with:
+const stockAdjustment = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const currentItem = await tx.stockItem.findUnique({
+    where: { id: stockItemId },
   });
 
-  // 3. Decrement stock levels with insufficient-stock check
-  if (consumptions.size > 0) {
-    for (const [stockItemId, quantity] of consumptions) {
-      const updateResult = await tx.stockItem.updateMany({
-        where: {
-          id: stockItemId,
-          quantity: { gte: quantity }
-        },
-        data: { quantity: { decrement: quantity } }
-      });
-      if (updateResult.count === 0) {
-        const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
-        if (!stockItem) {
-          throw new Error(`Stock item not found: ${stockItemId}`);
-        }
-        throw new Error(
-          `Insufficient stock for item ${stockItem.name}. Available: ${stockItem.quantity}, Requested: ${quantity}`
-        );
-      }
-    }
+  if (!currentItem) {
+    throw new Error('Stock item not found');
   }
 
-  return transaction;
+  const newQuantity = currentItem.quantity + quantity;
+  if (newQuantity < 0) {
+    throw new Error(
+      `Insufficient stock: ${itemName} has ${currentItem.quantity} units, cannot adjust by ${quantity}`
+    );
+  }
+
+  await tx.stockItem.update({
+    where: { id: stockItemId },
+    data: {
+      quantity: newQuantity,
+    },
+  });
+
+  return tx.stockAdjustment.create({
+    data: {
+      stockItemId,
+      itemName,
+      quantity,
+      reason,
+      userId,
+      userName,
+      createdAt: new Date(),
+    },
+  });
 });
 ```
 
 ---
 
-### CRITICAL-2: No Transaction Void/Cancel Mechanism With Stock Restoration
+### NEW-4 (MEDIUM): Inconsistent Transaction Status Filtering Across Analytics
 
-**Files:**
-- `backend/src/handlers/transactions.ts` -- No DELETE, PATCH, or void endpoints on transactions
-- `backend/src/handlers/receiptHandler.ts` lines 355-410 -- Void receipt only changes receipt status
-- `backend/src/services/receiptService.ts` lines 387-430 -- `voidReceipt()` implementation
+**Files:** `analyticsService.ts`, `dailyClosingService.ts`, `consumptionReports.ts`
+**Severity:** MEDIUM
+**Status:** Open
 
-**Severity:** CRITICAL
-**Status:** Feature gap / design flaw
+#### Evidence
 
-#### Root Cause
+Different modules filter transaction statuses inconsistently:
 
-The system has **no mechanism** to void, cancel, or reverse a completed transaction. The only void-related functionality is receipt voiding (`POST /api/receipts/:id/void`), which exclusively modifies the `Receipt` model:
+| Module | Filter | What It Includes |
+|--------|--------|-----------------|
+| `aggregateProductPerformance` | `{ not: 'voided' }` | `completed`, `complimentary`, `pending`, any future status |
+| `aggregateHourlySales` | `{ not: 'voided' }` | `completed`, `complimentary`, `pending`, any future status |
+| `getProfitSummary` | `status: 'completed'` | Only `completed` |
+| `getMarginByCategory` | `status: 'completed'` | Only `completed` |
+| `getMarginByProduct` | `status: 'completed'` | Only `completed` |
+| `getMarginTrend` | `status: 'completed'` | Only `completed` |
+| `dailyClosingService` | `{ not: 'voided' }` | `completed`, `complimentary`, `pending`, any future status |
+| `consumptionReports` | `{ not: 'voided' }` | `completed`, `complimentary`, `pending`, any future status |
+| `varianceService` | `status: 'completed'` | Only `completed` |
 
-```typescript
-// receiptService.ts lines 387-430 (simplified)
-export async function voidReceipt(id, userId, input) {
-  const receipt = await prisma.receipt.findUnique({ where: { id } });
-  // Validates receipt exists and has status 'issued'
-  // Updates receipt: status='voided', voidedAt=now, voidReason=reason, voidedBy=userId
-  // Deletes the PDF file from storage
-  return updatedReceipt;
-}
-```
-
-This function does NOT:
-- Change the `Transaction.status` from `completed` to `voided`
-- Restore `StockItem.quantity` that was deducted during the original sale
-- Create any compensating `StockAdjustment` record
-- Log the void in any transaction-level audit trail
-
-#### Current Impact
-
-When a transaction is made in error (wrong items, wrong amount, wrong price, duplicate submission), the only way to correct inventory is for an administrator to manually create a `StockAdjustment` with a positive quantity via the Inventory Management UI. However:
-
-1. This manual adjustment has **no formal link** to the original transaction
-2. The original transaction remains in `completed` status forever
-3. Revenue reports, daily closings, analytics, and tax calculations **include the erroneous transaction**
-4. The audit trail is broken: there is no way to trace that adjustment X was made to compensate for transaction Y
-
-#### Potential Risks
-
-- **Unrecoverable errors:** A single erroneous transaction permanently corrupts both inventory and financial data.
-- **Audit trail destruction:** Manual adjustments cannot be traced back to the originating error.
-- **Compliance risk:** In jurisdictions requiring transaction voiding capabilities, the system is non-compliant.
-- **Operational overhead:** Staff must manually calculate and enter stock restorations, which is error-prone.
-- **Financial misstatement:** Daily closings, revenue reports, and tax calculations include voided transactions.
+The `{ not: 'voided' }` approach is fragile. If a `pending` status is ever introduced (or any other non-terminal status), those transactions would be incorrectly included in revenue, hourly sales, daily closings, and consumption reports. The profit analytics and variance service correctly use a positive allowlist (`status: 'completed'`), but even these exclude `complimentary` transactions.
 
 #### Proposed Fix
 
-Add a `POST /api/transactions/:id/void` endpoint that atomically voids the transaction and restores stock:
+Define a shared constant for valid reportable statuses and use it everywhere:
 
 ```typescript
-// Add to /home/pippo/tev2/backend/src/handlers/transactions.ts
+// In a shared file, e.g., backend/src/constants/transactionStatuses.ts
+export const REPORTABLE_STATUSES = ['completed', 'complimentary'] as const;
+export const PROFIT_STATUSES = ['completed'] as const;
 
-transactionsRouter.post(
-  '/:id/void',
-  authenticateToken,
-  requireRole(['ADMIN']),
-  async (req: Request, res: Response) => {
-    const { id } = req.params;
-    const { reason } = req.body;
-    const authenticatedUserId = req.user?.id;
-    const authenticatedUserName = req.user?.username;
-
-    if (!reason || typeof reason !== 'string' || reason.trim() === '') {
-      return res.status(400).json({ error: 'Void reason is required' });
-    }
-
-    try {
-      const result = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-        // 1. Fetch the transaction with pessimistic lock
-        const transaction = await tx.transaction.findUnique({
-          where: { id: Number(id) },
-        });
-
-        if (!transaction) {
-          throw new Error('NOT_FOUND');
-        }
-
-        if (transaction.status === 'voided') {
-          throw new Error('ALREADY_VOIDED');
-        }
-
-        if (transaction.status !== 'completed' && transaction.status !== 'complimentary') {
-          throw new Error('INVALID_STATUS');
-        }
-
-        // 2. Parse the items JSON to determine what was sold
-        const items = safeJsonParse(transaction.items, [], {
-          id: String(transaction.id),
-          field: 'items',
-        });
-
-        // 3. Calculate stock restorations by re-reading recipes
-        const restorations = new Map<string, { name: string; quantity: number }>();
-
-        for (const item of items) {
-          if (!item.productId || !item.variantId) continue;
-
-          const product = await tx.product.findUnique({
-            where: { id: item.productId },
-            include: {
-              variants: {
-                where: { id: item.variantId },
-                include: { stockConsumption: true },
-              },
-            },
-          });
-
-          if (product && product.variants[0]) {
-            for (const sc of product.variants[0].stockConsumption) {
-              const current = restorations.get(sc.stockItemId);
-              const restorationQty = sc.quantity * item.quantity;
-
-              if (current) {
-                current.quantity += restorationQty;
-              } else {
-                restorations.set(sc.stockItemId, {
-                  name: '', // populated below
-                  quantity: restorationQty,
-                });
-              }
-            }
-          }
-        }
-
-        // 4. Restore stock quantities and create adjustment records
-        for (const [stockItemId, restoration] of restorations) {
-          const stockItem = await tx.stockItem.findUnique({
-            where: { id: stockItemId },
-          });
-
-          if (stockItem) {
-            restoration.name = stockItem.name;
-
-            // Increment stock back
-            await tx.stockItem.update({
-              where: { id: stockItemId },
-              data: { quantity: { increment: restoration.quantity } },
-            });
-
-            // Create linked stock adjustment for audit trail
-            await tx.stockAdjustment.create({
-              data: {
-                stockItemId,
-                itemName: stockItem.name,
-                quantity: restoration.quantity,
-                reason: `Transaction #${id} voided: ${reason.trim()}`,
-                userId: authenticatedUserId!,
-                userName: authenticatedUserName!,
-              },
-            });
-          }
-        }
-
-        // 5. Update transaction status
-        const updatedTransaction = await tx.transaction.update({
-          where: { id: Number(id) },
-          data: {
-            status: 'voided',
-            discountReason:
-              (transaction.discountReason || '') +
-              ` [VOIDED: ${reason.trim()}]`,
-          },
-        });
-
-        return {
-          transaction: updatedTransaction,
-          restoredItems: Array.from(restorations.entries()).map(
-            ([id, data]) => ({
-              stockItemId: id,
-              ...data,
-            })
-          ),
-        };
-      });
-
-      logInfo('Transaction voided', {
-        transactionId: Number(id),
-        reason,
-        restoredItems: result.restoredItems.length,
-        userId: authenticatedUserId,
-      });
-
-      res.json({
-        message: 'Transaction voided successfully',
-        transaction: {
-          ...result.transaction,
-          subtotal: decimalToNumber(result.transaction.subtotal),
-          tax: decimalToNumber(result.transaction.tax),
-          tip: decimalToNumber(result.transaction.tip),
-          total: decimalToNumber(result.transaction.total),
-          discount: decimalToNumber(result.transaction.discount),
-        },
-        restoredItems: result.restoredItems,
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message === 'NOT_FOUND') {
-          return res.status(404).json({ error: 'Transaction not found' });
-        }
-        if (error.message === 'ALREADY_VOIDED') {
-          return res
-            .status(409)
-            .json({ error: 'Transaction is already voided' });
-        }
-        if (error.message === 'INVALID_STATUS') {
-          return res
-            .status(400)
-            .json({ error: 'Only completed transactions can be voided' });
-        }
-      }
-      logError('Error voiding transaction', { error });
-      res.status(500).json({ error: 'Failed to void transaction' });
-    }
-  }
-);
+// Prisma where clause helper:
+export const reportableWhere = () => ({
+  status: { in: REPORTABLE_STATUSES },
+});
 ```
 
-Additionally, add a `voided` status to the Transaction model if it does not already support it. The current schema defines `status` as a free-form `String` with default `"completed"`, so `"voided"` is already valid. However, the reconciliation endpoint, daily closing service, and analytics queries must all be updated to **exclude voided transactions** from their calculations.
-
-**Files requiring updates to exclude voided transactions:**
-
-```typescript
-// 1. backend/src/handlers/transactions.ts GET /reconcile (line 445)
-// Change:
-where: { status: 'completed' }
-// To:
-where: { status: { in: ['completed', 'complimentary'] } }
-
-// 2. backend/src/services/dailyClosingService.ts
-// The calculateDailyClosingSummary function must exclude voided transactions.
-// Add to the where clause of its transaction query:
-where: {
-  createdAt: { gte: startDate, lte: endDate },
-  status: { not: 'voided' }
-}
-
-// 3. backend/src/services/analyticsService.ts
-// All analytics aggregation queries must exclude voided transactions.
-// Add to every transaction query:
-status: { not: 'voided' }
-
-// 4. backend/src/handlers/consumptionReports.ts
-// The GET /itemised endpoint must exclude voided transactions.
-// Add to the transaction query:
-where: { status: { not: 'voided' } }
-```
+Then replace all instances of `{ not: 'voided' }` with `{ in: ['completed', 'complimentary'] }` in:
+- `analyticsService.ts` lines 111, 356
+- `dailyClosingService.ts` lines 46-47
+- `consumptionReports.ts` line 39
 
 ---
 
-### CRITICAL-3: Items With No Recipe Are Sold Silently Without Stock Deduction
+### NEW-5 (MEDIUM): Items With No Recipe Are Sold Silently (Reclassified from CRITICAL-3)
 
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 254-268
-**Severity:** CRITICAL
-**Status:** Active silent data loss
+**File:** `backend/src/handlers/transactions.ts`, lines 254-268
+**Severity:** MEDIUM
+**Status:** Open (by design, but lacks guardrails)
 
-#### Root Cause
+#### Evidence
 
-The stock consumption collection loop in the `process-payment` endpoint:
+During `process-payment`, the stock consumption collection loop:
 
 ```typescript
 // Lines 254-268
-const consumptions = new Map<string, number>();
 for (const item of items) {
-  const product = await tx.product.findUnique({
-    where: { id: item.productId },
-    include: { variants: { where: { id: item.variantId }, include: { stockConsumption: true } } }
-  });
-
-  if (product && product.variants[0]) {
-    for (const sc of product.variants[0].stockConsumption) {
-      const currentQty = consumptions.get(sc.stockItemId) || 0;
-      consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
-    }
-  }
-}
-```
-
-Two conditions cause silent skipping of inventory deduction:
-
-1. **Product/Variant not found:** If `product` is null or `product.variants[0]` is undefined (e.g., the variant was deleted or the `variantId` is wrong), the `if` check fails silently and no consumption is recorded.
-
-2. **No recipe configured:** If the variant exists but has zero `StockConsumption` records (i.e., `stockConsumption` array is empty), the inner `for` loop simply does not execute.
-
-In both cases, the transaction **succeeds**, records revenue, calculates cost (as null if costs are unavailable), and returns HTTP 201. The customer is charged, the receipt is generated, but zero inventory is deducted.
-
-#### Current Impact
-
-The `ProductVariant` model has a `costStatus` field that can be `"pending"`, `"current"`, or `"stale"`. A variant with `costStatus: "pending"` likely has no recipe configured. However, this field is never checked during the payment flow.
-
-The `GET /api/stock-items/validate-integrity` endpoint does report `variantsWithoutConsumption` (variants with no stock consumption records), but this is a manual check that no one is required to perform before selling.
-
-The frontend's `DraggableProductButton.tsx` (line 260) displays an "OUT OF STOCK" badge based on stock levels, but there is no "NO RECIPE" warning, and the badge logic is not tied to whether a recipe exists.
-
-#### Potential Risks
-
-- **Silent stock drift:** Products that should consume inventory but lack recipe configuration will be sold repeatedly without any stock deduction. Physical inventory depletes with no system record.
-- **Cost calculation returns null:** The `calculateTransactionCost` service returns `hasAllCosts: false` when any variant lacks costs, so `totalCost` is stored as null. Profitability analytics become incomplete.
-- **No alerting:** There is no mechanism to alert administrators that products are being sold without recipes.
-
-#### Proposed Fix
-
-Add validation after the consumption collection loop to enforce that all items have valid recipes:
-
-```typescript
-// Insert AFTER the consumption collection loop (after line 268)
-// and BEFORE the transaction creation (before line 270):
-
-const missingRecipes: string[] = [];
-const missingVariants: string[] = [];
-
-for (const item of items) {
-  const product = await tx.product.findUnique({
-    where: { id: item.productId },
-    include: {
-      variants: {
-        where: { id: item.variantId },
-        include: { stockConsumption: true },
-      },
-    },
-  });
-
-  if (!product) {
-    missingVariants.push(
-      `"${item.name}" (productId ${item.productId} not found)`
-    );
-    continue;
-  }
-
-  if (!product.variants[0]) {
-    missingVariants.push(
-      `"${item.name}" (variantId ${item.variantId} not found)`
-    );
-    continue;
-  }
-
-  if (product.variants[0].stockConsumption.length === 0) {
-    missingRecipes.push(`"${item.name}" (${product.name} - ${product.variants[0].name})`);
-  }
-}
-
-if (missingVariants.length > 0) {
-  throw new Error(
-    `Product/variant not found for items: ${missingVariants.join(', ')}. Sale cannot proceed.`
-  );
-}
-
-if (missingRecipes.length > 0) {
-  throw new Error(
-    `No recipe configured for items: ${missingRecipes.join(', ')}. Inventory deduction is required for all sales.`
-  );
-}
-```
-
-This fix should also be accompanied by a frontend enhancement to prevent selling products without recipes:
-
-```typescript
-// In the frontend OrderPanel or PaymentContext, before allowing checkout:
-// Filter the order items and check if any variant has no stockConsumption records.
-// Display a warning or block the sale.
-```
-
----
-
-### HIGH-1: Orphaned update-levels Endpoint Permits Untracked Stock Deductions
-
-**File:** `/home/pippo/tev2/backend/src/handlers/stockItems.ts` lines 91-208
-**Severity:** HIGH
-**Status:** Dead code but exposed API
-
-#### Root Cause
-
-The `PUT /api/stock-items/update-levels` endpoint accepts an arbitrary array of `{ stockItemId, quantity }` consumptions and decrements stock levels atomically. This endpoint is completely disconnected from the transaction system. There is no link between what this endpoint deducts and any transaction record.
-
-Frontend analysis confirms that the `updateStockLevels()` function in `frontend/services/inventoryService.ts` (lines 64-97) is **never called from any component**. It is dead code.
-
-#### Current Impact
-
-The endpoint is authenticated (requires `ADMIN` or `CASHIER` role) and functional. If called (manually, by script, or by a future frontend feature), it would deduct stock without creating any transaction, receipt, or meaningful audit trail. The only record created is the HTTP response itself.
-
-#### Potential Risks
-
-- **Phantom inventory deductions:** Stock disappears with no transactional context.
-- **Unreconcilable state:** The reconciliation endpoint has no way to trace these deductions back to a source.
-- **Future developer trap:** A developer might wire this endpoint to a new UI feature, assuming it is safe, without realizing it bypasses the transaction system.
-
-#### Proposed Fix
-
-**Option A (Recommended): Remove the endpoint**
-
-```typescript
-// DELETE lines 91-208 from /home/pippo/tev2/backend/src/handlers/stockItems.ts
-// Also delete updateStockLevels() from /home/pippo/tev2/frontend/services/inventoryService.ts (lines 64-97)
-```
-
-**Option B: Gate behind a transactionId requirement**
-
-If bulk stock updates are needed for operational purposes, require a `transactionId` or `reason` field that creates a proper audit trail:
-
-```typescript
-stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req, res) => {
-  const { consumptions, reason } = req.body;
-
-  if (!reason || typeof reason !== 'string' || reason.trim() === '') {
-    return res.status(400).json({ error: 'A reason is required for stock level updates' });
-  }
-
-  // ... existing validation logic ...
-
-  await prisma.$transaction(async (tx) => {
-    for (const { stockItemId, quantity } of validConsumptions) {
-      // ... existing decrement logic ...
-
-      // Create a StockAdjustment for audit trail
-      const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
-      await tx.stockAdjustment.create({
-        data: {
-          stockItemId,
-          itemName: stockItem?.name || 'Unknown',
-          quantity: -quantity, // negative to indicate deduction
-          reason: `Bulk update: ${reason.trim()}`,
-          userId: req.user!.id,
-          userName: req.user!.username,
-        },
-      });
-    }
-  });
-});
-```
-
----
-
-### HIGH-2: Recipe Replacement on Product Update Destroys All Historical Recipe Data
-
-**File:** `/home/pippo/tev2/backend/src/handlers/products.ts` lines 394-463
-**Severity:** HIGH
-**Status:** Active design flaw
-
-#### Root Cause
-
-The product update endpoint (`PUT /api/products/:id`) uses a **destructive full-replacement strategy** for variants and their stock consumption records:
-
-```typescript
-// Lines 416-427 (inside prisma.$transaction)
-// Step 1: Delete ALL stockConsumption records for ALL variants of this product
-await tx.stockConsumption.deleteMany({
-  where: {
-    variant: {
-      productId: Number(id),
-    },
-  },
-});
-
-// Step 2: Delete ALL productVariant records for this product
-await tx.productVariant.deleteMany({
-  where: { productId: Number(id) },
-});
-
-// Step 3: Create brand-new variants with nested stockConsumption creation
-// ... (lines 430-457)
-```
-
-This means:
-1. All historical recipe data for the product is permanently destroyed
-2. If the update payload omits a variant or changes its recipe, the old data is lost forever
-3. Completed transactions that referenced the OLD recipe no longer have any way to determine what recipe was in effect at the time of sale
-4. The reconciliation endpoint, which reads CURRENT variant stock consumptions, cannot accurately compute historical consumption
-
-#### Current Impact
-
-When a product's recipe is changed (e.g., a Latte now uses 18g of coffee instead of 14g), all historical recipe data is lost. The system cannot answer the question: "What was the recipe for a Latte when transaction #1234 was created?"
-
-This affects:
-- **Reconciliation accuracy:** The reconcile endpoint computes expected consumption using CURRENT recipes, not the recipes that were active when each transaction was made.
-- **Cost history accuracy:** The `calculateTransactionCost` function uses current `StockItem.standardCost` values, not the costs that were in effect at the time of sale.
-- **Audit compliance:** There is no recipe version history for regulatory or internal audit purposes.
-
-#### Potential Risks
-
-- **Irreversible data loss:** Recipe changes cannot be rolled back.
-- **Inaccurate COGS:** Historical cost-of-goods-sold calculations become incorrect after recipe changes.
-- **Compliance failure:** Jurisdictions requiring recipe audit trails are not served.
-
-#### Proposed Fix
-
-Create a `StockConsumptionVersion` model that snapshots recipe configurations before replacement:
-
-```prisma
-model StockConsumptionVersion {
-  id           Int      @id @default(autoincrement())
-  variantId    Int      // FK reference (not enforced - variant may be deleted)
-  variantName  String   // Snapshot
-  stockItemId  String   @db.Uuid
-  stockItemName String  // Snapshot
-  quantity     Int      // The consumption quantity at this point in time
-  validFrom    DateTime @default(now())
-  validTo      DateTime? // Null = currently active
-  replacedBy   Int?      // ID of the StockConsumption that replaced this version
-  changeReason String?   // "product_update", "recipe_edit", etc.
-  changedBy    Int?      // User ID who made the change
-
-  @@index([variantId, validFrom])
-}
-```
-
-Then, in the product update handler, before deleting the old stock consumption records, create version snapshots:
-
-```typescript
-// Before the deleteMany calls, add:
-const existingConsumptions = await tx.stockConsumption.findMany({
-  where: {
-    variant: { productId: Number(id) },
-  },
-  include: {
-    variant: true,
-    stockItem: true,
-  },
-});
-
-for (const sc of existingConsumptions) {
-  await tx.stockConsumptionVersion.create({
-    data: {
-      variantId: sc.variantId,
-      variantName: sc.variant.name,
-      stockItemId: sc.stockItemId,
-      stockItemName: sc.stockItem.name,
-      quantity: sc.quantity,
-      validFrom: sc.createdAt || new Date(), // approximate
-      validTo: new Date(),
-      changeReason: 'product_update',
-      changedBy: req.user?.id,
-    },
-  });
-}
-```
-
----
-
-### HIGH-3: Transaction Items Stored as JSON With No Relational Integrity
-
-**File:** Prisma schema - `Transaction.items` field (type `Json`)
-**Severity:** HIGH
-**Status:** Architectural limitation
-
-#### Root Cause
-
-Transaction line items are stored as a JSON string in `Transaction.items`. Each item in the array contains `productId`, `variantId`, `price`, `quantity`, and `name`, but these are plain values embedded in JSON -- not foreign keys, not typed, not queryable at the database level.
-
-The same pattern applies to:
-- `Tab.items` (type `Json`)
-- `OrderSession.items` (type `Json`)
-- `Table.items` (type `Json?`)
-
-#### Current Impact
-
-1. **No referential integrity:** If a `ProductVariant` or `Product` is deleted, the transaction's JSON still references them by ID, but there is no database-level constraint to prevent the deletion or cascade the change.
-
-2. **No queryability:** Finding "all transactions that included variant X" requires parsing every transaction's JSON items at the application level. This is computationally expensive and cannot be indexed.
-
-3. **Historical inconsistency:** The `price` and `name` in the JSON are snapshots, which is correct. However, the `variantId` reference becomes stale if variants are deleted and recreated during product updates.
-
-4. **Reconciliation impossibility:** The reconciliation endpoint (`GET /reconcile`) does not parse transaction items at all. It only compares current variant stock consumptions against current stock levels, which is meaningless for historical reconciliation.
-
-#### Potential Risks
-
-- **Data corruption:** Deleted products/variants leave orphaned references in transaction JSON.
-- **Performance degradation:** As transaction volume grows, JSON parsing for analytics becomes increasingly expensive.
-- **Reporting inaccuracy:** Post-hoc analysis (e.g., "what was the most sold product last month") requires full table scans with JSON parsing.
-
-#### Proposed Fix
-
-Create a relational `TransactionItem` model to supplement (not replace) the existing JSON field:
-
-```prisma
-model TransactionItem {
-  id              Int      @id @default(autoincrement())
-  transactionId   Int
-  transaction     Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
-  productId       Int      // Snapshot reference
-  variantId       Int      // Snapshot reference
-  productName     String   // Snapshot at time of sale
-  variantName     String   // Snapshot at time of sale
-  price           Decimal  @db.Decimal(10, 2) // Price at time of sale
-  quantity        Int      // Quantity ordered
-  effectiveTaxRate Decimal? @db.Decimal(10, 4) // Tax rate at time of sale
-  unitCost        Decimal? @db.Decimal(10, 4) // COGS per unit at time of sale
-  totalCost       Decimal? @db.Decimal(10, 4) // quantity * unitCost
-
-  @@index([transactionId])
-  @@index([variantId])
-  @@index([productId])
-}
-```
-
-Update the `process-payment` endpoint to create `TransactionItem` records alongside the transaction:
-
-```typescript
-// After creating the transaction, create TransactionItem records:
-const transactionItems = items.map((item) => ({
-  transactionId: transaction.id,
-  productId: item.productId,
-  variantId: item.variantId,
-  productName: item.name, // snapshot
-  variantName: item.name, // snapshot (could be different from product name)
-  price: item.price,
-  quantity: item.quantity,
-  effectiveTaxRate: item.effectiveTaxRate || null,
-}));
-
-await tx.transactionItem.createMany({ data: transactionItems });
-```
-
-**Migration strategy:** Backfill existing transactions by parsing their JSON `items` field:
-
-```sql
-INSERT INTO transaction_items (transaction_id, product_id, variant_id, product_name, variant_name, price, quantity)
-SELECT
-  t.id,
-  (item->>'productId')::int,
-  (item->>'variantId')::int,
-  item->>'name',
-  item->>'name',
-  (item->>'price')::decimal,
-  (item->>'quantity')::int
-FROM transactions t, json_array_elements(t.items::json) AS item;
-```
-
----
-
-### MEDIUM-1: No Database-Level Constraint Preventing Negative Stock Quantities
-
-**File:** Prisma schema - `StockItem.quantity` field (type `Int`, no constraints)
-**Severity:** MEDIUM
-**Status:** Design weakness
-
-#### Root Cause
-
-The `StockItem.quantity` field is defined as `Int` with no database-level CHECK constraint. While the application-layer code in `process-payment` uses `updateMany({ where: { quantity: { gte: quantity } } })` to prevent over-deduction, this check exists only at the application level. If the database is accessed directly (e.g., via SQL, a migration script, or a bug in another handler), quantities can go negative.
-
-Additionally, the `PUT /stock-items/:id` endpoint allows setting `quantity` to any integer value, including negative numbers, with no validation:
-
-```typescript
-// stockItems.ts line 261
-if (quantity !== undefined) {
-  const quantityError = validateStockItemQuantity(quantity);
-  if (quantityError) errors.push(quantityError);
-}
-```
-
-The `validateStockItemQuantity` function's behavior was not audited, but even if it rejects negative values, the database itself has no such constraint.
-
-#### Current Impact
-
-Direct database manipulation or bugs in stock management handlers can create negative stock quantities. The `GET /api/stock-items/validate-integrity` endpoint does check for `quantity < 0` but only on manual invocation.
-
-#### Potential Risks
-
-- **Invalid state:** Negative stock quantities make no physical sense and break consumption calculations.
-- **Cascading errors:** Cost calculations, margin reports, and variance reports produce incorrect results when quantities are negative.
-
-#### Proposed Fix
-
-Add a database CHECK constraint via a Prisma migration:
-
-```bash
-cd backend && npx prisma migrate dev --name add_stock_quantity_non_negative_check
-```
-
-```sql
--- In the generated migration file:
-ALTER TABLE stock_items ADD CONSTRAINT stock_items_quantity_non_negative
-  CHECK (quantity >= 0);
-```
-
-Also update the `validateStockItemQuantity` function to explicitly reject negative values:
-
-```typescript
-// In /home/pippo/tev2/backend/src/utils/validation.ts
-export function validateStockItemQuantity(quantity: unknown): string | null {
-  if (typeof quantity !== 'number' || isNaN(quantity)) {
-    return 'Quantity must be a valid number';
-  }
-  if (!Number.isInteger(quantity)) {
-    return 'Quantity must be an integer';
-  }
-  if (quantity < 0) {
-    return 'Quantity cannot be negative';
-  }
-  return null;
-}
-```
-
----
-
-### MEDIUM-2: Reconciliation Endpoint Is Non-Functional
-
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 440-542
-**Severity:** MEDIUM
-**Status:** Feature exists but does not work as intended
-
-#### Root Cause
-
-The `GET /api/transactions/reconcile` endpoint has three fundamental flaws:
-
-1. **Does not parse transaction items:** The endpoint fetches all completed transactions (line 444) but only uses their totals (`totalRevenue`, `totalTips`, `totalTax`). It never parses the `items` JSON to determine what was actually consumed in each transaction.
-
-2. **Uses current recipes, not historical:** The endpoint fetches current `ProductVariant.stockConsumption` records (lines 450-455) and sums them up. This represents what is configured NOW, not what was consumed in past transactions. After recipe changes, this computation becomes meaningless.
-
-3. **All results are WARNING:** Lines 500-508 mark every stock item as `WARNING` with the note "Original quantity unknown - manual verification recommended." This provides no actionable information.
-
-The endpoint's output looks like this:
-```json
-{
-  "stockItems": [
-    {
-      "stockItemId": "uuid",
-      "name": "Coffee Beans",
-      "currentQuantity": 500,
-      "totalConsumedFromVariants": 14,
-      "status": "WARNING",
-      "notes": "Current quantity shown. Original quantity unknown - manual verification recommended."
-    }
-  ]
-}
-```
-
-The `totalConsumedFromVariants` field represents the sum of `StockConsumption.quantity` across ALL variants that reference this stock item -- not the actual amount consumed by transactions. This is a configuration sum, not a consumption sum.
-
-#### Current Impact
-
-The reconciliation endpoint provides no useful information for verifying inventory accuracy. Administrators cannot use it to detect discrepancies between recorded sales and actual stock levels.
-
-#### Proposed Fix
-
-Rewrite the reconciliation endpoint to actually parse transaction items and compute consumed quantities:
-
-```typescript
-transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res: Response) => {
-  try {
-    // 1. Get all non-voided completed transactions
-    const transactions = await prisma.transaction.findMany({
-      where: { status: { in: ['completed', 'complimentary'] } },
+  if (item.variantId) {
+    const variantConsumptions = await tx.stockConsumption.findMany({
+      where: { variantId: item.variantId },
+      include: { stockItem: true },
     });
-
-    // 2. Parse all transaction items and build a variant-quantity map
-    const variantQuantityMap = new Map<number, number>(); // variantId -> total quantity sold
-
-    for (const tx of transactions) {
-      const items = safeJsonParse(tx.items, [], { id: String(tx.id), field: 'items' });
-      for (const item of items) {
-        const current = variantQuantityMap.get(item.variantId) || 0;
-        variantQuantityMap.set(item.variantId, current + item.quantity);
-      }
+    for (const consumption of variantConsumptions) {
+      // ... accumulate consumptions
     }
-
-    // 3. For each variant sold, get its current stock consumption recipe
-    const consumedStockMap = new Map<string, { name: string; consumed: number }>();
-
-    for (const [variantId, totalSold] of variantQuantityMap) {
-      const variant = await prisma.productVariant.findUnique({
-        where: { id: variantId },
-        include: { stockConsumption: { include: { stockItem: true } } },
-      });
-
-      if (variant) {
-        for (const sc of variant.stockConsumption) {
-          const current = consumedStockMap.get(sc.stockItemId);
-          const consumed = sc.quantity * totalSold;
-
-          if (current) {
-            current.consumed += consumed;
-          } else {
-            consumedStockMap.set(sc.stockItemId, {
-              name: sc.stockItem.name,
-              consumed,
-            });
-          }
-        }
-      }
-    }
-
-    // 4. Get all stock adjustments
-    const adjustments = await prisma.stockAdjustment.findMany();
-    const adjustmentMap = new Map<string, number>();
-    for (const adj of adjustments) {
-      const current = adjustmentMap.get(adj.stockItemId) || 0;
-      adjustmentMap.set(adj.stockItemId, current + adj.quantity);
-    }
-
-    // 5. Get current stock levels
-    const stockItems = await prisma.stockItem.findMany();
-
-    // 6. Compute reconciliation
-    const results = stockItems.map((si) => {
-      const consumed = consumedStockMap.get(si.id)?.consumed || 0;
-      const adjustmentsTotal = adjustmentMap.get(si.id) || 0;
-
-      // Theoretical formula:
-      // current_quantity = initial_quantity - total_consumed + total_adjustments
-      // Therefore: initial_quantity = current_quantity + total_consumed - total_adjustments
-      // We cannot verify accuracy without knowing the initial quantity,
-      // but we can report the computed consumption.
-
-      const status = consumed === 0 ? 'OK' : 'WARNING';
-
-      return {
-        stockItemId: si.id,
-        name: si.name,
-        currentQuantity: si.quantity,
-        totalConsumedByTransactions: consumed,
-        totalAdjustments: adjustmentsTotal,
-        status,
-        notes: consumed === 0
-          ? 'No consumption recorded against this stock item'
-          : `Consumed ${consumed} units across ${transactions.length} transactions. Adjustments: ${adjustmentsTotal > 0 ? '+' : ''}${adjustmentsTotal}.`,
-      };
-    });
-
-    res.json({
-      totalTransactions: transactions.length,
-      results,
-    });
-  } catch (error) {
-    logError('Error reconciling data', { error });
-    res.status(500).json({ error: 'Data reconciliation failed' });
   }
-});
+}
 ```
 
-**Note:** Accurate reconciliation requires a known initial quantity per stock item (or a stock intake table) and recipe versioning (see HIGH-2). The above is a significant improvement but still uses current recipes, not historical ones.
+If a variant has zero `StockConsumption` records, the loop body simply does nothing for that item. The sale completes successfully with no inventory deduction. The `TransactionItem` is still created, but `unitCost` and `totalCost` will be `null`.
+
+The `validate-integrity` endpoint (`stockItems.ts:516-526`) reports variants without consumption records, but this is diagnostic-only and not enforced at sale time.
+
+#### Proposed Fix
+
+Add a warning or validation during payment processing:
+
+```typescript
+// After the stock consumption collection loop (around line 268):
+const itemsWithoutRecipes = items.filter(item => {
+  if (!item.variantId) return true;
+  return !consumptions.has(item.variantId);
+});
+
+if (itemsWithoutRecipes.length > 0) {
+  // Option A: Log a warning (non-blocking)
+  logWarn('Transaction includes items without recipes', {
+    transactionId: newTransaction.id,
+    items: itemsWithoutRecipes.map(i => ({ productId: i.productId, variantId: i.variantId })),
+  });
+
+  // Option B: Block the transaction (strict mode)
+  // throw new Error(`Cannot complete sale: items missing recipes: ${itemsWithoutRecipes.map(i => i.name).join(', ')}`);
+}
+```
 
 ---
 
-### MEDIUM-3: Cost Calculation Failure Is Non-Blocking
+### NEW-6 (MEDIUM): Cost Calculation Failure Is Non-Blocking (Reclassified from MEDIUM-3)
 
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 208-252
+**File:** `backend/src/handlers/transactions.ts`, lines 213-229
 **Severity:** MEDIUM
-**Status:** By design but creates data gaps
+**Status:** Open
 
-#### Root Cause
-
-In the `process-payment` endpoint, cost calculation is wrapped in a try-catch that logs the error but allows the transaction to proceed:
+#### Evidence
 
 ```typescript
-// Lines 208-252
+// Lines 213-229
+let costResult: TransactionCostResult | null = null;
 try {
-  const costInput = items.map(item => ({
-    variantId: item.variantId,
-    quantity: item.quantity,
-  }));
-  const costResult = await calculateTransactionCost(costInput);
-
-  if (costResult.totalCost !== null && costResult.hasAllCosts) {
-    totalCost = costResult.totalCost;
-    costCalculatedAt = new Date();
-    grossMargin = subtractMoney(calculatedSubtotal, totalCost);
-    if (calculatedSubtotal > 0) {
-      marginPercent = roundMoney(divideMoney(grossMargin, calculatedSubtotal) * 100);
-    }
-  }
+  costResult = await calculateTransactionCost(costItems);
 } catch (costError) {
-  logError('Cost calculation failed - transaction proceeding without cost data', {
-    correlationId,
-    error: costError instanceof Error ? costError.message : 'Unknown error',
+  logError('Cost calculation failed during payment processing', {
+    error: costError instanceof Error ? costError.message : String(costError),
+    correlationId: (req as any).correlationId,
   });
 }
 ```
 
-The same pattern exists in the `POST /` endpoint (lines 850-877).
+If cost calculation fails, the transaction proceeds without cost data. `totalCost`, `grossMargin`, and `marginPercent` will all be `null`. This means profit reports will have gaps.
 
-#### Current Impact
-
-When cost calculation fails (e.g., a variant has no recipe, or a stock item has no standard cost), the transaction is created with `totalCost: null`, `costCalculatedAt: null`, `grossMargin: null`, and `marginPercent: null`. This means:
-
-1. The transaction is recorded as revenue but with unknown COGS.
-2. Profitability analytics (profit dashboard, margin reports) exclude or misrepresent these transactions.
-3. Over time, profitability data becomes increasingly incomplete.
-
-#### Potential Risks
-
-- **Incomplete financial data:** A growing number of transactions lack cost information.
-- **Misleading analytics:** Profit reports may show artificially high margins if the most profitable (or most costly) items consistently fail cost calculation.
+This is likely intentional (to not block sales), but it should be documented and monitored. The `costCoveragePercent` metric in `getProfitSummary` already tracks this.
 
 #### Proposed Fix
 
-This is a deliberate design choice for availability (ensuring payments succeed even when cost data is unavailable). The recommended approach is:
-
-1. **Add a flag to the transaction:** Create a `costCalculationFailed` boolean field to track which transactions have incomplete cost data.
-2. **Add a periodic job:** Create a background job that periodically retries cost calculation for transactions where `totalCost IS NULL`.
-3. **Alert administrators:** When a transaction is created without cost data, display a warning in the admin UI.
+No code change required. Add monitoring/alerting when `costCoveragePercent` drops below a threshold. This is a documentation/ops concern.
 
 ---
 
-### MEDIUM-4: Idempotency Key Is Optional
+### NEW-7 (MEDIUM): Receipt Void Is Decoupled From Transaction Void
 
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 62-63 and 180-206
+**Files:** `receiptService.ts:387-430`, `receiptHandler.ts:355-410`
 **Severity:** MEDIUM
-**Status:** Design weakness
+**Status:** Open (likely by design)
 
-#### Root Cause
+#### Evidence
 
-The `idempotencyKey` field in the `process-payment` request body is optional. When not provided, the idempotency check is skipped entirely:
+- Voiding a **transaction** restores stock and marks the transaction as `voided`. The associated receipt status is unchanged.
+- Voiding a **receipt** changes the receipt status to `voided`. The underlying transaction status and stock are unchanged.
 
-```typescript
-// Line 62-63
-const { idempotencyKey: rawIdempotencyKey, ...paymentData } = req.body;
-const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
+There is no cross-status synchronization between receipts and transactions. This means:
+1. A transaction can be voided (stock restored) while its receipt remains in `issued` status.
+2. A receipt can be voided while the transaction remains `completed`.
 
-// Lines 180-206
-if (idempotencyKey) {
-  // Only checks for duplicates if a key is provided
-  const existingTransaction = await tx.transaction.findFirst({
-    where: { idempotencyKey, userId: authenticatedUserId, ... }
-  });
-  if (existingTransaction) {
-    return { isDuplicate: true, transaction: existingTransaction };
-  }
-}
-```
-
-#### Current Impact
-
-The frontend always provides an idempotency key (generated client-side). However, direct API callers can submit payment requests without an idempotency key, which means:
-- Duplicate payments can be submitted via API
-- The retry mechanism in the frontend relies on idempotency; if bypassed, retries create duplicate transactions
-
-#### Potential Risks
-
-- **Duplicate payments:** Network retries or client bugs can result in duplicate transactions, each deducting stock independently.
-- **Double inventory deduction:** Two identical payments for the same items would deduct stock twice.
+For fiscal compliance in many jurisdictions, voiding a transaction should automatically void associated receipts. The reverse (voiding a receipt should prompt consideration of voiding the transaction) is less clear-cut.
 
 #### Proposed Fix
 
-Make the idempotency key mandatory:
+When voiding a transaction, also void associated receipts:
 
 ```typescript
-// Change lines 62-63 to:
-const { idempotencyKey: rawIdempotencyKey, ...paymentData } = req.body;
-const idempotencyKey = validateIdempotencyKey(rawIdempotencyKey);
+// In transactions.ts void handler, after line 747 (status update):
+// Also void all associated receipts
+const associatedReceipts = await tx.receipt.findMany({
+  where: { transactionId: Number(id), status: { not: 'voided' } },
+});
 
-if (!idempotencyKey) {
+for (const receipt of associatedReceipts) {
+  await tx.receipt.update({
+    where: { id: receipt.id },
+    data: {
+      status: 'voided',
+      voidedAt: new Date(),
+      voidReason: `Automatically voided: transaction #${id} voided - ${reason.trim()}`,
+      voidedBy: authenticatedUserId,
+    },
+  });
+}
+```
+
+---
+
+### NEW-8 (LOW): Direct Stock Item PUT Sets Quantity Without Audit Trail
+
+**File:** `backend/src/handlers/stockItems.ts`, lines 280-306
+**Severity:** LOW
+**Status:** Open
+
+#### Evidence
+
+The `PUT /stock-items/:id` endpoint allows directly setting `quantity` to any non-negative value:
+
+```typescript
+if (quantity !== undefined) updateData.quantity = quantity;
+
+const stockItem = await prisma.stockItem.update({
+  where: { id },
+  data: updateData,
+});
+```
+
+No `StockAdjustment` record is created when the quantity changes. There is no audit trail of who changed the quantity, when, or why. This is the only quantity-modifying path that does not create an adjustment record.
+
+#### Proposed Fix
+
+When `quantity` changes via PUT, create a StockAdjustment record:
+
+```typescript
+// After the stockItem.update(), if quantity changed:
+if (quantity !== undefined && existingStockItem && quantity !== existingStockItem.quantity) {
+  const delta = quantity - existingStockItem.quantity;
+  await prisma.stockAdjustment.create({
+    data: {
+      stockItemId: id,
+      itemName: existingStockItem.name,
+      quantity: delta,
+      reason: `Direct quantity edit: ${existingStockItem.quantity} -> ${quantity}`,
+      userId: req.user!.id,
+      userName: req.user!.username,
+    },
+  });
+}
+```
+
+This requires fetching the current stock item before the update.
+
+---
+
+### NEW-9 (LOW): Frontend `updateStockLevels` Remains Dead Code
+
+**File:** `frontend/services/inventoryService.ts`, lines 64-101
+**Severity:** LOW
+**Status:** Open
+
+#### Evidence
+
+`updateStockLevels()` is exported from `inventoryService.ts` and re-exported from `apiService.ts` line 59. However, a search of the entire frontend codebase shows zero components or contexts that call this function.
+
+The backend endpoint `PUT /stock-items/update-levels` is functional and now properly requires a reason and creates adjustment records. But since no frontend code calls it, it is effectively dead code exposed as an API endpoint.
+
+#### Proposed Fix
+
+Either:
+- Build a UI for bulk stock updates that uses this endpoint, or
+- Remove the frontend function and consider deprecating the backend endpoint.
+
+---
+
+### NEW-10 (LOW): Idempotency Key Is Optional (Reclassified from MEDIUM-4)
+
+**File:** `backend/prisma/schema.prisma` line 155
+**Severity:** LOW
+**Status:** Open
+
+#### Evidence
+
+```prisma
+idempotencyKey String? @unique
+```
+
+The frontend always generates an idempotency key. However, the API does not require it. Direct API callers can omit the key, bypassing duplicate-transaction protection.
+
+This is low severity because the frontend is the only client and always provides a key. But for API robustness, consider making it required.
+
+#### Proposed Fix
+
+Add validation at the top of the `process-payment` handler:
+
+```typescript
+if (!idempotencyKey || typeof idempotencyKey !== 'string' || idempotencyKey.trim() === '') {
   return res.status(400).json({ error: 'idempotencyKey is required' });
 }
 ```
 
 ---
 
-### MEDIUM-5: Dead Code Exposes Unnecessary Attack Surface
+### NEW-11 (LOW): Transaction Void Items Without productId/variantId Are Skipped Silently
 
-**Files:**
-- `frontend/services/transactionService.ts` lines 17-38 (`saveTransaction`)
-- `frontend/services/inventoryService.ts` lines 64-97 (`updateStockLevels`)
-- `backend/src/handlers/transactions.ts` lines 623-946 (`POST /`)
-- `backend/src/handlers/stockItems.ts` lines 91-208 (`PUT /update-levels`)
+**File:** `backend/src/handlers/transactions.ts`, line 680
+**Severity:** LOW
+**Status:** Open
 
-**Severity:** MEDIUM
-**Status:** Active dead code
+#### Evidence
 
-#### Root Cause
-
-Multiple frontend functions and backend endpoints exist in the codebase but are never called by any component:
-
-| Dead Code | Frontend Function | Backend Endpoint | Called By |
-|-----------|-------------------|------------------|-----------|
-| `saveTransaction()` | Yes | `POST /transactions` | Nothing |
-| `updateStockLevels()` | Yes | `PUT /stock-items/update-levels` | Nothing |
-
-#### Current Impact
-
-These endpoints remain fully exposed, authenticated, and functional. They consume server resources, increase the attack surface, and create confusion for developers who may accidentally wire them to new features.
-
-#### Proposed Fix
-
-Remove all dead code:
+In the void handler:
 
 ```typescript
-// DELETE from frontend/services/transactionService.ts:
-// Lines 17-38 (saveTransaction function)
-
-// DELETE from frontend/services/inventoryService.ts:
-// Lines 64-97 (updateStockLevels function)
-
-// DELETE from frontend/services/apiService.ts:
-// Line 59 (updateStockLevels re-export)
-
-// DELETE from backend/src/handlers/transactions.ts:
-// Lines 622-946 (POST / endpoint)
-
-// DELETE from backend/src/handlers/stockItems.ts:
-// Lines 91-208 (PUT /update-levels endpoint)
+for (const item of items) {
+  if (!item.productId || !item.variantId) continue;
+  // ...
+}
 ```
+
+Items without `productId` or `variantId` are silently skipped. If such items were somehow recorded in a transaction (e.g., custom/manual items), their stock would have been deducted at sale time but not restored on void.
+
+This is unlikely in practice because the `process-payment` handler requires variant IDs for stock deduction. But for robustness, a warning should be logged.
 
 ---
 
-### MEDIUM-6: Complimentary Transactions Still Deduct Stock Without Documentation
+## 6. Complete File Audit Matrix
 
-**File:** `/home/pippo/tev2/backend/src/handlers/transactions.ts` lines 172, 296-314
-**Severity:** MEDIUM
-**Status:** Undocumented behavior
-
-#### Root Cause
-
-When `finalTotal <= 0` (complimentary items, line 172), the transaction status is set to `'complimentary'`:
-
-```typescript
-const finalStatus = finalTotal <= 0 && discountAmount > 0 ? 'complimentary' : 'completed';
-```
-
-However, the stock deduction logic (lines 296-314) is not gated on the `finalStatus` value. Stock is deducted regardless of whether the transaction is `completed` or `complimentary`.
-
-#### Current Impact
-
-This is actually **correct behavior** -- complimentary items still consume physical inventory. However, this behavior is undocumented and could confuse administrators who see stock deductions for zero-revenue transactions.
-
-#### Proposed Fix
-
-Document this behavior clearly in code comments and consider adding a UI indicator:
-
-```typescript
-// Line 172: Add documentation comment
-// Note: Complimentary transactions still deduct inventory because physical
-// ingredients are consumed regardless of payment. Stock deduction logic below
-// runs for both 'completed' and 'complimentary' transaction statuses.
-const finalStatus = finalTotal <= 0 && discountAmount > 0 ? 'complimentary' : 'completed';
-```
-
----
-
-## 5. Complete File Audit Matrix
-
-Every file in the backend that could potentially affect inventory was audited. The results:
-
-| File | Lines | Reads Stock? | Writes Stock Qty? | Deducts on Sale? | Restores on Void? |
-|------|-------|-------------|-------------------|-------------------|-------------------|
-| `handlers/transactions.ts` | 948 | Yes | Yes (process-payment only) | Partial (1 of 2 endpoints) | No |
-| `handlers/stockItems.ts` | 541 | Yes | Yes (update-levels, PUT, POST) | N/A (manual) | No |
-| `handlers/stockAdjustments.ts` | 263 | Yes | Yes (POST adjustment via increment) | No | No |
-| `handlers/products.ts` | 516 | Yes | Yes (recipe CRUD via stockConsumption) | N/A | N/A |
-| `handlers/tabs.ts` | 365 | No | No | No | No |
-| `handlers/orderSessions.ts` | 451 | No | No | No | No |
-| `handlers/tables.ts` | 374 | No | No | No | No |
-| `handlers/dailyClosings.ts` | 205 | Yes (read-only) | No | No | No |
-| `handlers/receiptHandler.ts` | 778 | No | No | No | No |
-| `handlers/consumptionReports.ts` | 185 | Yes (read-only) | No | No | No |
-| `handlers/analytics.ts` | 295 | Yes (read-only) | No | No | No |
-| `handlers/costManagement.ts` | 685 | Yes (cost fields only) | Yes (cost fields only, NOT qty) | No | No |
-| `handlers/ingredients.ts` | 1 | No | No | No | No |
-| `handlers/categories.ts` | -- | No | No | No | No |
-| `handlers/layouts.ts` | -- | No | No | No | No |
-| `handlers/tills.ts` | -- | No | No | No | No |
-| `handlers/users.ts` | -- | No | No | No | No |
-| `handlers/settings.ts` | -- | No | No | No | No |
-| `handlers/rooms.ts` | -- | No | No | No | No |
-| `handlers/taxRates.ts` | -- | No | No | No | No |
-| `handlers/customerHandler.ts` | -- | No | No | No | No |
-| `handlers/orderActivityLogs.ts` | -- | No | No | No | No |
-| `services/costCalculationService.ts` | 241 | Yes | No (variant cost fields only) | No | No |
-| `services/dailyClosingService.ts` | 148 | Yes (read-only) | No | No | No |
-| `services/receiptService.ts` | -- | No | No | No | No |
-| `services/varianceService.ts` | -- | Yes (read-only) | No | No | No |
-| `services/analyticsService.ts` | -- | Yes (read-only) | No | No | No |
-
-**Frontend Files:**
-
-| File | Lines | Calls process-payment? | Calls POST /transactions? | Calls update-levels? | Calls stock-adjustments? |
-|------|-------|----------------------|--------------------------|---------------------|------------------------|
-| `services/transactionService.ts` | 184 | Yes (active) | Yes (dead code) | No | No |
-| `services/inventoryService.ts` | 132 | No | No | Yes (dead code) | Yes (active) |
-| `contexts/PaymentContext.tsx` | -- | Yes | No | No | No |
-| `components/PaymentModal.tsx` | -- | Yes (via context) | No | No | No |
-| `components/InventoryManagement.tsx` | -- | No | No | No | Yes (saveStockAdjustment) |
-
----
-
-## 6. Strategic Recommendations
-
-### Priority 1: Immediate Actions (CRITICAL)
-
-1. **Remove or fix `POST /transactions`** (CRITICAL-1): This is the most straightforward fix. Either remove the dead endpoint entirely or add the full inventory deduction logic. This should be deployed immediately as it represents an active vulnerability.
-
-2. **Add transaction voiding with stock restoration** (CRITICAL-2): Implement the `POST /transactions/:id/void` endpoint as described above. This is essential for operational correctness and will be needed as soon as the system goes into production.
-
-3. **Validate recipe existence on sale** (CRITICAL-3): Add a check after consumption collection to ensure all sold items have valid recipes. This prevents silent stock drift.
-
-### Priority 2: Short-Term Actions (HIGH)
-
-4. **Remove dead code** (MEDIUM-5 + HIGH-1): Remove `saveTransaction()`, `updateStockLevels()`, `POST /transactions`, and `PUT /stock-items/update-levels`. This reduces attack surface and prevents future developer confusion.
-
-5. **Add database constraint** (MEDIUM-1): Add a CHECK constraint on `stock_items.quantity >= 0` via a Prisma migration.
-
-6. **Implement recipe versioning** (HIGH-2): Create a `StockConsumptionVersion` model to preserve historical recipe data before destructive replacement.
-
-### Priority 3: Medium-Term Actions (MEDIUM)
-
-7. **Create `TransactionItem` relational model** (HIGH-3): Supplement the existing JSON items field with a proper relational table for queryability and integrity.
-
-8. **Rewrite reconciliation endpoint** (MEDIUM-2): Make it functional by actually parsing transaction items and computing consumed quantities.
-
-9. **Make idempotency keys mandatory** (MEDIUM-4): Prevent duplicate payments through API.
-
-10. **Add cost calculation retry mechanism** (MEDIUM-3): Create a background job to retry cost calculation for transactions with null cost data.
-
-### Implementation Order
-
-```
-Week 1:
-  - Remove dead code (CRITICAL-1 Option A + MEDIUM-5 + HIGH-1)
-  - Add recipe validation (CRITICAL-3)
-  - Add DB constraint (MEDIUM-1)
-
-Week 2:
-  - Implement transaction voiding (CRITICAL-2)
-  - Update all queries to exclude voided transactions
-
-Week 3-4:
-  - Implement recipe versioning (HIGH-2)
-  - Create TransactionItem model (HIGH-3)
-  - Rewrite reconciliation (MEDIUM-2)
-```
+| File | Lines | Inventory Impact | Issues Found |
+|------|-------|-----------------|-------------|
+| `prisma/schema.prisma` | 765 | Defines all models | No CHECK constraint on stock quantity |
+| `transactions.ts` | 798 | Primary: creates transactions, decrements stock, voids with restoration | NEW-2 (recipe drift on void), NEW-11 (skipped items) |
+| `stockItems.ts` | 556 | Secondary: CRUD, bulk update, integrity checks | NEW-8 (no audit trail on PUT) |
+| `stockAdjustments.ts` | 263 | Secondary: manual adjustments | NEW-3 (can go negative) |
+| `products.ts` | 547 | Indirect: recipe management | Recipe versioning implemented correctly |
+| `consumptionReports.ts` | 188 | Read-only: reports consumption | NEW-4 (status filter inconsistency) |
+| `costCalculationService.ts` | 241 | Read-only: calculates costs | Works correctly, non-blocking on failure |
+| `dailyClosingService.ts` | 151 | Read-only: daily summaries | NEW-4 (status filter inconsistency) |
+| `analyticsService.ts` | 1018 | Read-only: product performance, hourly, profit | NEW-4 (status filter inconsistency) |
+| `varianceService.ts` | ~320 | Read-only: variance reports | Correctly uses `status: 'completed'` |
+| `receiptService.ts` | ~430 | Receipt lifecycle only | NEW-7 (decoupled from transaction void) |
+| `transactionService.ts` (frontend) | 200 | Calls process-payment, void | Dead `updateStockLevels` reference removed |
+| `inventoryService.ts` (frontend) | 136 | Stock management UI calls | NEW-9 (dead `updateStockLevels`) |
 
 ---
 
 ## 7. Proposed Fixes With Exact Code
 
-All proposed fixes are detailed within each finding section above. The fixes are designed to be:
+### Fix Priority Matrix
 
-1. **Non-breaking:** All fixes are additive or remove dead code. No existing functionality is altered.
-2. **Atomic:** Each fix can be deployed independently without requiring other fixes.
-3. **Backward-compatible:** The TransactionItem model (HIGH-3) supplements the existing JSON field rather than replacing it.
-
----
-
-## 8. Appendix: Inventory Deduction Verification Flow
-
-For the **sole active payment path** (`POST /process-payment`), the step-by-step verification of the inventory deduction logic:
-
-### Step 1: Item Validation (Lines 83-117)
-- Validates `items` is a non-empty array
-- Validates each item has: `name` (string, non-empty), `id`, `variantId`, `productId`, `price` (number), `quantity` (number)
-- **Verdict:** Correct
-
-### Step 2: Consumption Collection (Lines 254-268)
-- For each item, fetches `ProductVariant.stockConsumption` via `product.variants[0].stockConsumption`
-- Aggregates: `consumptions.set(stockItemId, currentQty + (sc.quantity * item.quantity))`
-- **Verdict:** Correct aggregation, but silently skips items with no recipe (see CRITICAL-3)
-
-### Step 3: Transaction Creation (Lines 270-294)
-- Creates the transaction record with all financial data, cost data, and idempotency key
-- **Verdict:** Correct
-
-### Step 4: Stock Decrement (Lines 296-314)
-- Uses `updateMany` with `where: { id: stockItemId, quantity: { gte: quantity } }` and `data: { quantity: { decrement: quantity } }`
-- This is an atomic database-level operation: the WHERE clause and the UPDATE happen in a single SQL statement
-- If `updateResult.count === 0`, the stock item either doesn't exist or has insufficient quantity
-- **Verdict:** Correct. The `updateMany` with `gte` condition provides row-level locking in PostgreSQL, preventing race conditions within the same `prisma.$transaction()`.
-
-### Step 5: Insufficient Stock Error (Lines 306-313)
-- Throws an error that causes the entire `prisma.$transaction()` to roll back
-- The rollback undoes: transaction creation, all previous stock decrements, order session updates
-- **Verdict:** Correct. The entire transaction is atomic.
-
-### Step 6: Order Session Completion (Lines 317-329)
-- Uses optimistic locking: `where: { id, version }` with `data: { version: { increment: 1 } }`
-- If `updateResult.count === 0`, another transaction modified the session concurrently
-- **Verdict:** Correct optimistic locking implementation
-
-### Step 7: Tab Deletion and Table Status (Lines 331-344)
-- Deletes the tab if `activeTabId` was provided (catches errors silently)
-- Updates table status to `available` if `tableId` was provided
-- **Verdict:** Correct, though tab deletion catching errors silently could mask issues
-
-### Overall Verdict
-
-The `process-payment` endpoint's inventory deduction logic is **correctly implemented** with proper atomicity, optimistic locking, insufficient stock checking, and rollback behavior. The issues identified in this audit are in the **surrounding system**: the dead alternative endpoint, the absence of voiding, the silent recipe-less sales, and the lack of recipe versioning.
+| Priority | Finding ID | Title | Effort |
+|----------|-----------|-------|--------|
+| 1 | NEW-1 | Add DB CHECK constraint for non-negative stock | Small (1 migration) |
+| 2 | NEW-3 | Add sufficiency check in stock adjustment POST | Small (5 lines) |
+| 3 | NEW-2 | Snapshot recipes at sale time for void restoration | Medium (new field + migration + logic) |
+| 4 | NEW-4 | Standardize status filtering across all modules | Small (constant + find-replace) |
+| 5 | NEW-7 | Auto-void receipts on transaction void | Small (5 lines in void handler) |
+| 6 | NEW-5 | Log warning for items without recipes | Small (3 lines) |
+| 7 | NEW-8 | Add audit trail to stock item PUT | Small (10 lines) |
+| 8 | NEW-10 | Make idempotency key required | Small (3 lines) |
+| 9 | NEW-9 | Remove or use dead `updateStockLevels` | Small (cleanup) |
+| 10 | NEW-11 | Log warning for skipped void items | Small (2 lines) |
+| 11 | NEW-6 | Monitor cost calculation coverage | Ops concern |
 
 ---
 
-*End of Report*
+### Fix 1: Database CHECK Constraint (NEW-1)
+
+```sql
+-- File: backend/prisma/migrations/YYYYMMDDHHMMSS_add_stock_quantity_check/migration.sql
+
+-- First, correct any existing negative quantities
+UPDATE "stock_items" SET "quantity" = 0 WHERE "quantity" < 0;
+
+-- Add the constraint
+ALTER TABLE "stock_items" ADD CONSTRAINT "stock_items_quantity_non_negative"
+  CHECK ("quantity" >= 0);
+```
+
+```bash
+cd backend
+npx prisma migrate dev --name add_stock_quantity_check
+```
+
+---
+
+### Fix 2: Stock Adjustment Sufficiency Check (NEW-3)
+
+**File:** `backend/src/handlers/stockAdjustments.ts`
+
+Replace lines 72-95:
+
+```typescript
+const stockAdjustment = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+  const currentItem = await tx.stockItem.findUnique({
+    where: { id: stockItemId },
+  });
+
+  if (!currentItem) {
+    throw new Error('NOT_FOUND');
+  }
+
+  const newQuantity = currentItem.quantity + quantity;
+  if (newQuantity < 0) {
+    throw new Error(
+      `INSUFFICIENT_STOCK:${itemName}:${currentItem.quantity}:${quantity}`
+    );
+  }
+
+  await tx.stockItem.update({
+    where: { id: stockItemId },
+    data: {
+      quantity: newQuantity,
+    },
+  });
+
+  return tx.stockAdjustment.create({
+    data: {
+      stockItemId,
+      itemName,
+      quantity,
+      reason,
+      userId,
+      userName,
+      createdAt: new Date(),
+    },
+  });
+});
+```
+
+Update the error handler to catch these specific errors:
+
+```typescript
+} catch (error) {
+  if (error instanceof Error) {
+    if (error.message === 'NOT_FOUND') {
+      return res.status(404).json({ error: 'Stock item not found' });
+    }
+    if (error.message.startsWith('INSUFFICIENT_STOCK:')) {
+      const parts = error.message.split(':');
+      return res.status(400).json({
+        error: `Insufficient stock for ${parts[1]}: available ${parts[2]}, cannot adjust by ${parts[3]}`
+      });
+    }
+  }
+  logError(error instanceof Error ? error : 'Error creating stock adjustment', {
+    correlationId: (req as any).correlationId,
+  });
+  res.status(500).json({ error: i18n.t('errors:stockAdjustments.createFailed') });
+}
+```
+
+---
+
+### Fix 3: Recipe Snapshot for Void Restoration (NEW-2)
+
+**Step 1:** Add `recipeSnapshot` field to `TransactionItem` in `schema.prisma`:
+
+```prisma
+model TransactionItem {
+  id              Int      @id @default(autoincrement())
+  transactionId   Int
+  transaction     Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  productId       Int
+  variantId       Int
+  productName     String
+  variantName     String
+  price           Decimal  @db.Decimal(10, 2)
+  quantity        Int
+  effectiveTaxRate Decimal? @db.Decimal(10, 4)
+  unitCost        Decimal? @db.Decimal(10, 4)
+  totalCost       Decimal? @db.Decimal(10, 4)
+  recipeSnapshot  Json?    // <-- NEW: [{ stockItemId, stockItemName, quantity }]
+
+  @@index([transactionId])
+  @@index([variantId])
+  @@index([productId])
+  @@map("transaction_items")
+}
+```
+
+**Step 2:** Create migration:
+
+```bash
+cd backend && npx prisma migrate dev --name add_recipe_snapshot_to_transaction_items
+```
+
+**Step 3:** Populate `recipeSnapshot` during `process-payment` in `transactions.ts`.
+
+In the TransactionItem creation block (around line 296-308), capture the recipe:
+
+```typescript
+const itemConsumptions = await tx.stockConsumption.findMany({
+  where: { variantId: item.variantId },
+  include: { stockItem: { select: { id: true, name: true } } },
+});
+
+const recipeSnapshot = itemConsumptions.map(sc => ({
+  stockItemId: sc.stockItemId,
+  stockItemName: sc.stockItem.name,
+  quantity: sc.quantity,
+}));
+
+// Inside the TransactionItem create:
+{
+  data: {
+    transactionId: newTransaction.id,
+    productId: item.productId,
+    variantId: item.variantId!,
+    productName: item.name,
+    variantName: item.variantName || '',
+    price: item.price,
+    quantity: item.quantity,
+    effectiveTaxRate: item.effectiveTaxRate
+      ? new Prisma.Decimal(item.effectiveTaxRate)
+      : null,
+    unitCost: itemCostResult?.unitCost
+      ? new Prisma.Decimal(itemCostResult.unitCost)
+      : null,
+    totalCost: itemCostResult?.totalCost
+      ? new Prisma.Decimal(itemCostResult.totalCost)
+      : null,
+    recipeSnapshot: recipeSnapshot.length > 0 ? recipeSnapshot : null,
+  },
+}
+```
+
+**Step 4:** Update void handler to use the snapshot. Replace lines 676-706:
+
+```typescript
+for (const item of items) {
+  if (!item.productId || !item.variantId) continue;
+
+  // Try to find the TransactionItem with recipe snapshot
+  const transactionItem = await tx.transactionItem.findFirst({
+    where: {
+      transactionId: Number(id),
+      variantId: item.variantId,
+      productId: item.productId,
+    },
+  });
+
+  if (transactionItem?.recipeSnapshot && Array.isArray(transactionItem.recipeSnapshot)) {
+    // Use the snapshotted recipe from time of sale
+    const snapshot = transactionItem.recipeSnapshot as Array<{
+      stockItemId: string;
+      quantity: number;
+    }>;
+    for (const sc of snapshot) {
+      const current = restorations.get(sc.stockItemId);
+      const restorationQty = sc.quantity * item.quantity;
+      if (current) {
+        current.quantity += restorationQty;
+      } else {
+        restorations.set(sc.stockItemId, { name: '', quantity: restorationQty });
+      }
+    }
+  } else {
+    // Fallback: use current recipe (for pre-migration transactions)
+    const product = await tx.product.findUnique({
+      where: { id: item.productId },
+      include: {
+        variants: {
+          where: { id: item.variantId },
+          include: { stockConsumption: true },
+        },
+      },
+    });
+
+    if (product && product.variants[0]) {
+      for (const sc of product.variants[0].stockConsumption) {
+        const current = restorations.get(sc.stockItemId);
+        const restorationQty = sc.quantity * item.quantity;
+        if (current) {
+          current.quantity += restorationQty;
+        } else {
+          restorations.set(sc.stockItemId, { name: '', quantity: restorationQty });
+        }
+      }
+    }
+  }
+}
+```
+
+---
+
+### Fix 4: Standardize Status Filtering (NEW-4)
+
+**File:** Create `backend/src/constants/transactionStatuses.ts`:
+
+```typescript
+export const REPORTABLE_STATUSES = ['completed', 'complimentary'] as const;
+export const PROFIT_REPORTABLE_STATUSES = ['completed'] as const;
+```
+
+**Then replace in these files:**
+
+`analyticsService.ts` line 111:
+```typescript
+// Before:
+whereClause.status = { not: 'voided' };
+// After:
+whereClause.status = { in: REPORTABLE_STATUSES };
+```
+
+`analyticsService.ts` line 356:
+```typescript
+// Before:
+status: { not: 'voided' },
+// After:
+status: { in: REPORTABLE_STATUSES },
+```
+
+`dailyClosingService.ts` lines 46-47:
+```typescript
+// Before:
+status: { not: 'voided' }
+// After:
+status: { in: REPORTABLE_STATUSES }
+```
+
+`consumptionReports.ts` line 39:
+```typescript
+// Before:
+transactionWhere.status = { not: 'voided' };
+// After:
+transactionWhere.status = { in: REPORTABLE_STATUSES };
+```
+
+---
+
+### Fix 5: Auto-Void Receipts on Transaction Void (NEW-7)
+
+**File:** `backend/src/handlers/transactions.ts`
+
+After line 747 (the transaction status update), add:
+
+```typescript
+// Auto-void all associated non-voided receipts
+const associatedReceipts = await tx.receipt.findMany({
+  where: {
+    transactionId: Number(id),
+    status: { not: 'voided' },
+  },
+});
+
+for (const receipt of associatedReceipts) {
+  await tx.receipt.update({
+    where: { id: receipt.id },
+    data: {
+      status: 'voided',
+      voidedAt: new Date(),
+      voidReason: `Auto-voided: transaction #${id} voided - ${reason.trim()}`,
+      voidedBy: authenticatedUserId,
+      version: { increment: 1 },
+    },
+  });
+}
+```
+
+---
+
+### Fix 6: Audit Trail on Direct Stock Item PUT (NEW-8)
+
+**File:** `backend/src/handlers/stockItems.ts`
+
+Before the `prisma.stockItem.update()` call (around line 303), fetch the current state:
+
+```typescript
+const existingStockItem = await prisma.stockItem.findUnique({
+  where: { id },
+});
+
+if (!existingStockItem) {
+  return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
+}
+
+const stockItem = await prisma.stockItem.update({
+  where: { id },
+  data: updateData,
+});
+
+// Create audit trail if quantity changed
+if (quantity !== undefined && quantity !== existingStockItem.quantity) {
+  const delta = quantity - existingStockItem.quantity;
+  await prisma.stockAdjustment.create({
+    data: {
+      stockItemId: id,
+      itemName: existingStockItem.name,
+      quantity: delta,
+      reason: `Direct quantity edit: ${existingStockItem.quantity} -> ${quantity}`,
+      userId: req.user!.id,
+      userName: req.user!.username,
+    },
+  });
+}
+```
+
+---
+
+### Fix 7: Make Idempotency Key Required (NEW-10)
+
+**File:** `backend/src/handlers/transactions.ts`
+
+At the top of the `process-payment` handler (around line 64), add:
+
+```typescript
+const { idempotencyKey } = req.body;
+
+if (!idempotencyKey || typeof idempotencyKey !== 'string' || idempotencyKey.trim() === '') {
+  return res.status(400).json({ error: 'idempotencyKey is required' });
+}
+```
+
+---
+
+## Appendix A: Transaction Status Filtering Reference
+
+The following table shows every location that queries transactions and the filter used, for future reference:
+
+| File | Line | Filter | Correct? |
+|------|------|--------|----------|
+| `transactions.ts` GET / | 432 | `status: req.query.status` (optional filter) | Yes (user-facing list) |
+| `transactions.ts` GET /:id | 604 | None (fetch by ID) | Yes (single record) |
+| `transactions.ts` POST /:id/void | 654 | None (fetch by ID) | Yes (needs any status to check) |
+| `analyticsService.ts` | 111 | `{ not: 'voided' }` | **No** - use `{ in: REPORTABLE_STATUSES }` |
+| `analyticsService.ts` | 349 | `{ not: 'voided' }` | **No** - use `{ in: REPORTABLE_STATUSES }` |
+| `analyticsService.ts` | 637 | `'completed'` | Yes |
+| `analyticsService.ts` | 735 | `'completed'` | Yes |
+| `analyticsService.ts` | 828 | `'completed'` | Yes |
+| `analyticsService.ts` | 963 | `'completed'` | Yes |
+| `dailyClosingService.ts` | 46 | `{ not: 'voided' }` | **No** - use `{ in: REPORTABLE_STATUSES }` |
+| `consumptionReports.ts` | 39 | `{ not: 'voided' }` | **No** - use `{ in: REPORTABLE_STATUSES }` |
+| `varianceService.ts` | 227 | `'completed'` | Yes |
+
+## Appendix B: Inventory Deduction Verification Flow
+
+The following pseudocode describes the complete flow from "user clicks Pay" to "stock is deducted":
+
+```
+1. Frontend: PaymentModal -> processPayment(data)
+2. POST /api/transactions/process-payment
+3. Inside prisma.$transaction():
+   a. Check idempotency key uniqueness
+   b. For each order item:
+      - Fetch StockConsumption records where variantId = item.variantId
+      - Accumulate (stockItemId, totalQuantity) in a Map
+   c. For each (stockItemId, quantity) in Map:
+      - UPDATE stock_items SET quantity = quantity - ? WHERE id = ? AND quantity >= ?
+      - If rowCount === 0: THROW insufficient stock error (ROLLBACK)
+   d. INSERT INTO transactions (items, totals, cost fields)
+   e. INSERT INTO transaction_items (one per order line)
+   f. UPDATE order_sessions SET status='completed'
+   g. DELETE tabs WHERE id = activeTabId
+   h. UPDATE tables SET status='available'
+4. IF transaction commits:
+   - Return transaction to frontend
+   - Optionally trigger receipt creation
+5. IF transaction rolls back:
+   - Return error to frontend
+   - No stock was deducted (atomic rollback)
+```
+
+---
+
+*End of Report INV-AUDIT-2026-002*
