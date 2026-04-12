@@ -90,7 +90,11 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
 stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
   try {
-    const { consumptions } = req.body as { consumptions: { stockItemId: string, quantity: number }[] };
+    const { consumptions, reason } = req.body as { consumptions: { stockItemId: string, quantity: number }[]; reason: string };
+
+    if (!reason || typeof reason !== 'string' || reason.trim().length === 0) {
+      return res.status(400).json({ error: 'A reason is required for stock level adjustments' });
+    }
     
     if (!consumptions || !Array.isArray(consumptions)) {
       return res.status(400).json({ error: i18n.t('errors:stockItems.invalidConsumptionsData') });
@@ -179,6 +183,17 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
             quantity: {
               decrement: quantity
             }
+          }
+        });
+
+        await tx.stockAdjustment.create({
+          data: {
+            stockItemId,
+            itemName: currentItem.name,
+            quantity: -quantity,
+            reason: `Bulk stock update: ${reason.trim()}`,
+            userId: req.user!.id,
+            userName: req.user!.username,
           }
         });
       }

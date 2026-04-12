@@ -61,13 +61,17 @@ export const deleteStockItem = async (itemId: string): Promise<{ success: boolea
   }
 };
 
-export const updateStockLevels = async (consumptions: { stockItemId: string, quantity: number }[]): Promise<void> => {
+export const updateStockLevels = async (reason: string, consumptions: { stockItemId: string, quantity: number }[]): Promise<void> => {
   try {
+     if (!reason || typeof reason !== 'string' || reason.trim() === '') {
+       throw new Error('A reason is required for stock level updates');
+     }
+
      const response = await fetch(apiUrl('/api/stock-items/update-levels'), {
        method: 'PUT',
        headers: getAuthHeaders(),
        credentials: 'include',
-       body: JSON.stringify({ consumptions })
+       body: JSON.stringify({ consumptions, reason })
      });
      
      if (!response.ok) {
