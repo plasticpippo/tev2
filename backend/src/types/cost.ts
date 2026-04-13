@@ -94,6 +94,7 @@ export interface CostHistoryDTO {
     changePercent: number;
     reason: string;
     effectiveFrom: Date;
+    notes: string | null;
     createdBy: number;
     createdAt: Date;
 }
@@ -112,6 +113,7 @@ export function toCostHistoryDTO(data: any): CostHistoryDTO {
         changePercent: data.changePercent,
         reason: data.reason,
         effectiveFrom: data.effectiveFrom,
+        notes: data.notes ?? null,
         createdBy: data.createdBy,
         createdAt: data.createdAt,
     };
@@ -126,6 +128,7 @@ export function toCostHistoryWithDetailsDTO(data: any): CostHistoryWithDetailsDT
         changePercent: data.changePercent,
         reason: data.reason,
         effectiveFrom: data.effectiveFrom,
+        notes: data.notes ?? null,
         createdBy: data.createdBy,
         createdAt: data.createdAt,
         stockItemName: data.stockItem?.name ?? '',

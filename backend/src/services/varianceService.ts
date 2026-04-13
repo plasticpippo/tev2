@@ -544,6 +544,19 @@ export async function updateVarianceReportStatus(
       throw new Error(`VarianceReport with id ${reportId} not found`);
     }
 
+    // Enforce sequential status transitions: draft -> reviewed -> final
+    const validTransitions: Record<string, string[]> = {
+      draft: ['reviewed'],
+      reviewed: ['final'],
+      final: [],
+    };
+    const allowed = validTransitions[existing.status];
+    if (!allowed || !allowed.includes(status)) {
+      throw new Error(
+        `Cannot transition from "${existing.status}" to "${status}". Allowed transitions: ${allowed?.join(', ') || 'none'}`
+      );
+    }
+
     const updateData: { status: string; reviewedAt?: Date; reviewedBy?: number } = {
       status,
     };

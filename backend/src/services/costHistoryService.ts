@@ -14,7 +14,8 @@ export async function updateIngredientCost(
     newCost: number,
     reason: string,
     userId: number,
-    effectiveFrom?: Date
+    effectiveFrom?: Date,
+    notes?: string
 ): Promise<CostHistoryWithDetailsDTO> {
     if (newCost < 0) {
         throw new Error('Cost must be a positive number');
@@ -53,6 +54,7 @@ export async function updateIngredientCost(
                 changePercent: new Decimal(changePercent),
                 reason: reason.trim(),
                 effectiveFrom: effectiveDate,
+                notes: notes || null,
                 createdBy: userId,
             },
             include: {

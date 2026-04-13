@@ -214,6 +214,7 @@ let totalCost: number | null = null;
 let costCalculatedAt: Date | null = null;
 let grossMargin: number | null = null;
 let marginPercent: number | null = null;
+const itemCostMap = new Map<number, { unitCost: number | null; totalCost: number | null }>();
 
 try {
   const costInput = items.map(item => ({
@@ -221,6 +222,14 @@ try {
     quantity: item.quantity,
   }));
   const costResult = await calculateTransactionCost(costInput);
+  
+  // Build per-variant cost lookup for TransactionItem records
+  for (const itemCost of costResult.items) {
+    itemCostMap.set(itemCost.variantId, {
+      unitCost: itemCost.unitCost,
+      totalCost: itemCost.totalCost,
+    });
+  }
   
   if (costResult.totalCost !== null && costResult.hasAllCosts) {
     totalCost = costResult.totalCost;
@@ -299,16 +308,21 @@ const transaction = await tx.transaction.create({
 
       // 3b. Create relational TransactionItem records for queryability and integrity
       await tx.transactionItem.createMany({
-        data: items.map((item: { productId: number; variantId: number; name: string; price: number; quantity: number; effectiveTaxRate?: number }) => ({
-          transactionId: transaction.id,
-          productId: item.productId,
-          variantId: item.variantId,
-          productName: item.name,
-          variantName: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          effectiveTaxRate: item.effectiveTaxRate ?? null,
-        })),
+        data: items.map((item: { productId: number; variantId: number; name: string; price: number; quantity: number; effectiveTaxRate?: number }) => {
+          const itemCost = itemCostMap.get(item.variantId);
+          return {
+            transactionId: transaction.id,
+            productId: item.productId,
+            variantId: item.variantId,
+            productName: item.name,
+            variantName: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            effectiveTaxRate: item.effectiveTaxRate ?? null,
+            unitCost: itemCost?.unitCost ?? null,
+            totalCost: itemCost?.totalCost ?? null,
+          };
+        }),
       });
 
       // 4. Decrement stock levels (if any consumptions)

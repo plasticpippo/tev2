@@ -944,46 +944,62 @@ export const getMarginTrend = async (
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(`${endDate}T23:59:59.999`);
 
+  // Build day list using local date strings to avoid timezone issues
   const days: string[] = [];
   const current = new Date(start);
   while (current <= end) {
-    days.push(current.toISOString().split('T')[0]);
+    const year = current.getFullYear();
+    const month = String(current.getMonth() + 1).padStart(2, '0');
+    const day = String(current.getDate()).padStart(2, '0');
+    days.push(`${year}-${month}-${day}`);
     current.setDate(current.getDate() + 1);
   }
 
-  const trend: MarginTrendPoint[] = [];
+  // Single query for the entire period
+  const transactions = await prisma.transaction.findMany({
+    where: {
+      createdAt: { gte: start, lte: end },
+      status: 'completed',
+    },
+    select: {
+      createdAt: true,
+      subtotal: true,
+      totalCost: true,
+    },
+  });
 
+  // Group by day using local date strings
+  const dayMap = new Map<string, { revenue: number; cogs: number; count: number }>();
   for (const day of days) {
-    const dayStart = new Date(`${day}T00:00:00`);
-    const dayEnd = new Date(`${day}T23:59:59.999`);
+    dayMap.set(day, { revenue: 0, cogs: 0, count: 0 });
+  }
 
-    const transactions = await prisma.transaction.findMany({
-      where: {
-        createdAt: { gte: dayStart, lte: dayEnd },
-        status: 'completed',
-      },
-    });
+  for (const tx of transactions) {
+    const txDate = new Date(tx.createdAt);
+    const dayKey = `${txDate.getFullYear()}-${String(txDate.getMonth() + 1).padStart(2, '0')}-${String(txDate.getDate()).padStart(2, '0')}`;
+    const entry = dayMap.get(dayKey);
+    if (!entry) continue;
 
-    let dayRevenue = 0;
-    let dayCOGS = 0;
-
-    for (const tx of transactions) {
-      dayRevenue = addMoney(dayRevenue, decimalToNumber(tx.subtotal));
-      if (tx.totalCost) {
-        dayCOGS = addMoney(dayCOGS, decimalToNumber(tx.totalCost));
-      }
+    entry.revenue = addMoney(entry.revenue, decimalToNumber(tx.subtotal));
+    if (tx.totalCost) {
+      entry.cogs = addMoney(entry.cogs, decimalToNumber(tx.totalCost));
     }
+    entry.count += 1;
+  }
 
-    const grossProfit = subtractMoney(dayRevenue, dayCOGS);
-    const marginPercent = dayRevenue > 0 ? safePercentage(grossProfit, dayRevenue) : 0;
+  const trend: MarginTrendPoint[] = [];
+  for (const day of days) {
+    const entry = dayMap.get(day)!;
+    const grossProfit = subtractMoney(entry.revenue, entry.cogs);
+    const marginPercent = entry.revenue > 0 ? safePercentage(grossProfit, entry.revenue) : 0;
 
     trend.push({
       date: day,
-      revenue: roundMoney(dayRevenue),
-      cogs: roundMoney(dayCOGS),
+      revenue: roundMoney(entry.revenue),
+      cogs: roundMoney(entry.cogs),
       grossProfit: roundMoney(grossProfit),
       marginPercent,
-      transactionCount: transactions.length,
+      transactionCount: entry.count,
     });
   }
 

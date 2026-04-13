@@ -430,5 +430,57 @@
     "emailFailed": "Impossibile inviare l'email della ricevuta",
     "emailQueued": "L'email della ricevuta e stata accodata per l'invio",
     "messageTooLong": "Il messaggio deve essere di massimo 1000 caratteri"
+  },
+  "costManagement": {
+    "ingredients": {
+      "fetchFailed": "Impossibile recuperare le informazioni sui costi degli ingredienti.",
+      "notFound": "Ingrediente non trovato.",
+      "invalidCost": "Il costo deve essere un numero positivo.",
+      "reasonRequired": "Il motivo e obbligatorio per gli aggiornamenti dei costi.",
+      "updateFailed": "Impossibile aggiornare il costo dell'ingrediente.",
+      "historyFetchFailed": "Impossibile recuperare lo storico dei costi."
+    },
+    "recentChanges": {
+      "invalidLimit": "Il limite deve essere un numero tra 1 e 100.",
+      "fetchFailed": "Impossibile recuperare le modifiche recenti ai costi."
+    },
+    "variants": {
+      "invalidId": "ID variante non valido.",
+      "notFound": "Variante non trovata.",
+      "costFetchFailed": "Impossibile recuperare il dettaglio dei costi della variante.",
+      "recalculateFailed": "Impossibile ricalcolare il costo della variante.",
+      "summaryFetchFailed": "Impossibile recuperare il riepilogo dei costi delle varianti.",
+      "bulkRecalculateFailed": "Impossibile ricalcolare i costi di tutte le varianti."
+    },
+    "inventoryCounts": {
+      "fetchFailed": "Impossibile recuperare i conteggi di inventario.",
+      "notFound": "Conteggio di inventario non trovato.",
+      "invalidId": "ID conteggio di inventario non valido.",
+      "dateRequired": "La data del conteggio e obbligatoria.",
+      "invalidCountType": "Il tipo di conteggio deve essere: full, partial o spot.",
+      "itemsRequired": "Almeno un articolo di inventario e obbligatorio.",
+      "invalidItemStockId": "ID articolo magazzino non valido negli elementi di inventario.",
+      "invalidItemQuantity": "La quantita deve essere un numero non negativo.",
+      "createFailed": "Impossibile creare il conteggio di inventario.",
+      "notDraft": "Solo i conteggi in bozza possono essere inviati.",
+      "notSubmitted": "Solo i conteggi inviati possono essere approvati.",
+      "submitFailed": "Impossibile inviare il conteggio di inventario.",
+      "approveFailed": "Impossibile approvare il conteggio di inventario."
+    },
+    "varianceReports": {
+      "fetchFailed": "Impossibile recuperare i report di varianza.",
+      "notFound": "Report di varianza non trovato.",
+      "invalidId": "ID report di varianza non valido.",
+      "invalidPage": "La pagina deve essere un numero positivo.",
+      "invalidLimit": "Il limite deve essere un numero tra 1 e 100.",
+      "periodStartRequired": "La data di inizio periodo e obbligatoria.",
+      "periodEndRequired": "La data di fine periodo e obbligatoria.",
+      "invalidPeriodStart": "Formato data di inizio periodo non valido.",
+      "invalidPeriodEnd": "Formato data di fine periodo non valido.",
+      "invalidPeriodRange": "La data di inizio deve essere precedente alla data di fine.",
+      "generateFailed": "Impossibile generare il report di varianza.",
+      "invalidStatus": "Lo stato deve essere: draft, reviewed o final.",
+      "statusUpdateFailed": "Impossibile aggiornare lo stato del report di varianza."
+    }
   }
 }

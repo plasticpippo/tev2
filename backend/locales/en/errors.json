@@ -430,5 +430,57 @@
     "emailFailed": "Failed to send receipt email",
     "emailQueued": "Receipt email has been queued for delivery",
     "messageTooLong": "Message must be 1000 characters or less"
+  },
+  "costManagement": {
+    "ingredients": {
+      "fetchFailed": "Failed to fetch ingredient cost information.",
+      "notFound": "Ingredient not found.",
+      "invalidCost": "Cost must be a positive number.",
+      "reasonRequired": "Reason is required for cost updates.",
+      "updateFailed": "Failed to update ingredient cost.",
+      "historyFetchFailed": "Failed to fetch cost history."
+    },
+    "recentChanges": {
+      "invalidLimit": "Limit must be a number between 1 and 100.",
+      "fetchFailed": "Failed to fetch recent cost changes."
+    },
+    "variants": {
+      "invalidId": "Invalid variant ID.",
+      "notFound": "Variant not found.",
+      "costFetchFailed": "Failed to fetch variant cost breakdown.",
+      "recalculateFailed": "Failed to recalculate variant cost.",
+      "summaryFetchFailed": "Failed to fetch variant cost summary.",
+      "bulkRecalculateFailed": "Failed to bulk recalculate variant costs."
+    },
+    "inventoryCounts": {
+      "fetchFailed": "Failed to fetch inventory counts.",
+      "notFound": "Inventory count not found.",
+      "invalidId": "Invalid inventory count ID.",
+      "dateRequired": "Count date is required.",
+      "invalidCountType": "Count type must be one of: full, partial, spot.",
+      "itemsRequired": "At least one inventory item is required.",
+      "invalidItemStockId": "Invalid stock item ID in inventory items.",
+      "invalidItemQuantity": "Quantity must be a non-negative number.",
+      "createFailed": "Failed to create inventory count.",
+      "notDraft": "Only draft inventory counts can be submitted.",
+      "notSubmitted": "Only submitted inventory counts can be approved.",
+      "submitFailed": "Failed to submit inventory count.",
+      "approveFailed": "Failed to approve inventory count."
+    },
+    "varianceReports": {
+      "fetchFailed": "Failed to fetch variance reports.",
+      "notFound": "Variance report not found.",
+      "invalidId": "Invalid variance report ID.",
+      "invalidPage": "Page must be a positive number.",
+      "invalidLimit": "Limit must be a number between 1 and 100.",
+      "periodStartRequired": "Period start date is required.",
+      "periodEndRequired": "Period end date is required.",
+      "invalidPeriodStart": "Invalid period start date format.",
+      "invalidPeriodEnd": "Invalid period end date format.",
+      "invalidPeriodRange": "Period start must be before period end.",
+      "generateFailed": "Failed to generate variance report.",
+      "invalidStatus": "Status must be one of: draft, reviewed, final.",
+      "statusUpdateFailed": "Failed to update variance report status."
+    }
   }
 }

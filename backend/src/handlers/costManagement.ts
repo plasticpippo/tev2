@@ -141,7 +141,7 @@ costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdm
 
     const effectiveFrom = effectiveDate ? new Date(effectiveDate) : undefined;
 
-    const result = await updateIngredientCost(id, cost, reason.trim(), userId, effectiveFrom);
+    const result = await updateIngredientCost(id, cost, reason.trim(), userId, effectiveFrom, notes);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating ingredient cost', {

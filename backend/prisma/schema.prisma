@@ -662,6 +662,7 @@ model CostHistory {
   changePercent Decimal @db.Decimal(6, 2) // Calculated: ((new-prev)/prev)*100
   reason String // supplier, review, adjustment
   effectiveFrom DateTime @default(now())
+  notes String?
   createdBy Int
   createdAt DateTime @default(now())
 

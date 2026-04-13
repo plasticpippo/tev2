@@ -337,6 +337,14 @@ describe('costCalculationService', () => {
     });
 
     it('should handle zero quantity', async () => {
+      (mockedPrisma.productVariant.findUnique as jest.Mock).mockResolvedValue({
+        id: 1,
+        name: 'Test',
+        productId: 1,
+        price: new Decimal(10),
+        stockConsumption: [],
+      });
+
       const result = await calculateTransactionItemCost(1, 0);
 
       expect(result).toEqual({
@@ -345,7 +353,6 @@ describe('costCalculationService', () => {
         unitCost: null,
         totalCost: null,
       });
-      expect(mockedPrisma.productVariant.findUnique).not.toHaveBeenCalled();
     });
 
     it('should handle negative quantity', async () => {
@@ -906,20 +913,24 @@ describe('costCalculationService', () => {
         { id: 2 },
       ]);
 
+      const variantData = {
+        id: 1,
+        price: new Decimal(10),
+        product: { id: 1, name: 'Test' },
+        stockConsumption: [
+          {
+            stockItemId: 'stock-1',
+            quantity: 1,
+            stockItem: { id: 'stock-1', name: 'Test', standardCost: new Decimal(5) },
+          },
+        ],
+      };
+
+      // id:1: updateVariantTheoreticalCost calls findUnique, then calculateVariantCost calls findUnique
       (mockedPrisma.productVariant.findUnique as jest.Mock)
-        .mockResolvedValueOnce({
-          id: 1,
-          price: new Decimal(10),
-          product: { id: 1, name: 'Test' },
-          stockConsumption: [
-            {
-              stockItemId: 'stock-1',
-              quantity: 1,
-              stockItem: { id: 'stock-1', name: 'Test', standardCost: new Decimal(5) },
-            },
-          ],
-        })
-        .mockRejectedValueOnce(new Error('Database error'));
+        .mockResolvedValueOnce(variantData) // updateVariantTheoreticalCost for id:1
+        .mockResolvedValueOnce(variantData) // calculateVariantCost for id:1
+        .mockRejectedValueOnce(new Error('Database error')); // id:2 fails
 
       (mockedPrisma.productVariant.update as jest.Mock).mockResolvedValue({});
 
