@@ -8,19 +8,18 @@
 # - Docker and Docker Compose installation
 # - Interactive environment configuration
 # - Container build and deployment
+# - Upgrade detection and migration from any prior version
 #
 # Usage: ./install.sh [OPTIONS]
 # Options:
 #   -h, --help          Show this help message
 #   -n, --non-interactive  Run in non-interactive mode with defaults
 #   --skip-docker       Skip Docker installation
+#   -v, --verbose       Enable verbose logging
 #===============================================================================
 
 # Strict mode for better error handling
 set -euo pipefail
-
-# Enable error tracing (defined after print_error function)
-# trap will be set up after function definitions
 
 #===============================================================================
 # COLOR DEFINITIONS
@@ -36,23 +35,56 @@ readonly NC='\033[0m' # No Color
 readonly BOLD='\033[1m'
 
 #===============================================================================
-# HELPER FUNCTIONS
+# GLOBAL STATE
+#===============================================================================
+readonly LOG_FILE="./install.log"
+readonly BACKUP_DIR="./backups"
+readonly MAX_BACKUPS=5
+VERBOSE=false
+UPGRADE_IN_PROGRESS=false
+UPGRADE_PHASE=""
+CONTAINER_STARTED_BY_SCRIPT=false
+
+#===============================================================================
+# LOGGING FUNCTIONS
 #===============================================================================
 
+# Internal: write timestamped line to log file
+_log_file() {
+    local ts
+    ts=$(date '+%Y-%m-%d %H:%M:%S')
+    echo "[$ts] $1" >> "$LOG_FILE"
+}
+
 print_info() {
+    local msg="[$(date '+%H:%M:%S')] [INFO] $1"
     printf '%b\n' "${BLUE}[INFO]${NC} $1"
+    _log_file "[INFO] $1"
 }
 
 print_success() {
+    local msg="[$(date '+%H:%M:%S')] [SUCCESS] $1"
     printf '%b\n' "${GREEN}[SUCCESS]${NC} $1"
+    _log_file "[SUCCESS] $1"
 }
 
 print_error() {
+    local msg="[$(date '+%H:%M:%S')] [ERROR] $1"
     printf '%b\n' "${RED}[ERROR]${NC} $1" >&2
+    _log_file "[ERROR] $1"
 }
 
 print_warning() {
+    local msg="[$(date '+%H:%M:%S')] [WARNING] $1"
     printf '%b\n' "${YELLOW}[WARNING]${NC} $1"
+    _log_file "[WARNING] $1"
+}
+
+print_verbose() {
+    if [[ "$VERBOSE" == "true" ]]; then
+        printf '%b\n' "${MAGENTA}[VERBOSE]${NC} $1"
+    fi
+    _log_file "[VERBOSE] $1"
 }
 
 print_header() {
@@ -61,10 +93,12 @@ print_header() {
     printf '%b\n' "${CYAN}${BOLD} $1 ${NC}"
     printf '%b\n' "${CYAN}${BOLD}========================================${NC}"
     printf '\n'
+    _log_file "===== $1 ====="
 }
 
 print_step() {
     printf '%b\n' "${MAGENTA}[STEP]${NC} ${BOLD}$1${NC}"
+    _log_file "[STEP] $1"
 }
 
 print_progress() {
@@ -72,6 +106,7 @@ print_progress() {
     local total=$2
     local message=$3
     printf '%b\n' "${BLUE}[$current/$total]${NC} $message"
+    _log_file "[$current/$total] $message"
 }
 
 print_config_summary() {
@@ -171,13 +206,50 @@ generate_jwt_secret() {
 }
 
 #===============================================================================
+# ENV HELPER: read a value from an .env file (no shell sourcing)
+#===============================================================================
+
+env_read() {
+    local env_file="$1"
+    local key="$2"
+    local default="${3:-}"
+    
+    if [[ ! -f "$env_file" ]]; then
+        echo "$default"
+        return
+    fi
+    
+    local val
+    val=$(grep -E "^${key}=" "$env_file" 2>/dev/null | head -1 | cut -d'=' -f2-)
+    if [[ -n "$val" ]]; then
+        echo "$val"
+    else
+        echo "$default"
+    fi
+}
+
+# Write or update a key=value line in an .env file
+env_write() {
+    local env_file="$1"
+    local key="$2"
+    local value="$3"
+    
+    if grep -qE "^${key}=" "$env_file" 2>/dev/null; then
+        # Replace existing: use | as sed delimiter since values may contain /
+        sed -i "s|^${key}=.*|${key}=${value}|" "$env_file"
+    else
+        echo "${key}=${value}" >> "$env_file"
+    fi
+}
+
+#===============================================================================
 # VERSION TRACKING FUNCTIONS
 #===============================================================================
 
 # Get current installed version
 get_installed_version() {
     if [[ -f ".version" ]]; then
-        grep "VERSION=" .version | cut -d'=' -f2
+        grep "^VERSION=" .version | cut -d'=' -f2
     else
         echo "0.0.0"
     fi
@@ -186,7 +258,7 @@ get_installed_version() {
 # Get new version from VERSION file
 get_new_version() {
     if [[ -f "VERSION" ]]; then
-        grep "VERSION=" VERSION | cut -d'=' -f2
+        grep "^VERSION=" VERSION | cut -d'=' -f2
     else
         echo "unknown"
     fi
@@ -202,37 +274,246 @@ compare_versions() {
         return 0
     fi
     
-    # Simple version comparison
-    if [[ "$(printf '%s\n' "$current" "$new" | sort -V | head -n1)" != "$new" ]]; then
-        return 0  # Upgrade needed
+    # If versions are identical, no upgrade needed
+    if [[ "$current" == "$new" ]]; then
+        return 1
     fi
-    return 1  # Same or newer installed
+    
+    # Semantic version comparison: split into major.minor.patch
+    local cur_major cur_minor cur_patch new_major new_minor new_patch
+    IFS='.' read -r cur_major cur_minor cur_patch <<< "$current"
+    IFS='.' read -r new_major new_minor new_patch <<< "$new"
+    
+    # Default missing components to 0
+    cur_major=${cur_major:-0}; cur_minor=${cur_minor:-0}; cur_patch=${cur_patch:-0}
+    new_major=${new_major:-0}; new_minor=${new_minor:-0}; new_patch=${new_patch:-0}
+    
+    if [[ $new_major -gt $cur_major ]]; then return 0; fi
+    if [[ $new_major -lt $cur_major ]]; then return 1; fi
+    if [[ $new_minor -gt $cur_minor ]]; then return 0; fi
+    if [[ $new_minor -lt $cur_minor ]]; then return 1; fi
+    if [[ $new_patch -gt $cur_patch ]]; then return 0; fi
+    return 1
 }
 
-# Save installed version
+# Save installed version, appending to upgrade history
 save_installed_version() {
     local version="$1"
-    echo "VERSION=$version" > .version
-    echo "INSTALL_DATE=$(date -I)" >> .version
-    echo "INSTALL_TYPE=upgrade" >> .version
+    local install_type="${2:-upgrade}"
+    local prev_version="${3:-0.0.0}"
+    
+    # Preserve history lines from existing .version
+    local history=""
+    if [[ -f ".version" ]]; then
+        history=$(grep "^HISTORY=" .version | cut -d'=' -f2- || true)
+    fi
+    
+    local new_entry="${prev_version} -> ${version} ($(date -I))"
+    if [[ -n "$history" ]]; then
+        history="${history}; ${new_entry}"
+    else
+        history="$new_entry"
+    fi
+    
+    cat > .version << EOF
+VERSION=$version
+INSTALL_DATE=$(date -I)
+INSTALL_TYPE=$install_type
+HISTORY=$history
+EOF
+    
+    print_verbose "Saved version: $version (type: $install_type)"
+    print_verbose "Upgrade history: $history"
+}
+
+#===============================================================================
+# INSTALLATION DETECTION
+#===============================================================================
+
+# Detect whether TEV2 was previously installed, even before .version existed
+detect_previous_installation() {
+    local signals=0
+    local detection_log=""
+    
+    # Signal 1: .version file exists
+    if [[ -f ".version" ]]; then
+        detection_log+="  .version file found\n"
+        ((signals++))
+    fi
+    
+    # Signal 2: .env file exists with TEV2-specific keys
+    if [[ -f ".env" ]]; then
+        if grep -qE "^POSTGRES_DB=|^JWT_SECRET=|^URL=" .env 2>/dev/null; then
+            detection_log+="  .env file with TEV2 configuration found\n"
+            ((signals++))
+        fi
+    fi
+    
+    # Signal 3: Docker containers from a previous run exist (running or stopped)
+    if command -v docker &>/dev/null; then
+        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qE 'bar_pos_(backend|frontend|nginx|backend_db)'; then
+            detection_log+="  Existing TEV2 Docker containers detected\n"
+            ((signals++))
+        fi
+    fi
+    
+    # Signal 4: Docker volume exists
+    if command -v docker &>/dev/null; then
+        if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q 'tev2_postgres_data\|postgres_data\|bar_pos'; then
+            detection_log+="  Existing Docker data volumes detected\n"
+            ((signals++))
+        fi
+    fi
+    
+    # Signal 5: backups directory exists with files
+    if [[ -d "$BACKUP_DIR" ]] && compgen -G "${BACKUP_DIR}/*.sql" >/dev/null 2>&1; then
+        detection_log+="  Existing database backups found\n"
+        ((signals++))
+    fi
+    
+    if [[ $signals -ge 2 ]]; then
+        print_info "Previous installation detected ($signals signals):"
+        printf "$detection_log"
+        return 0  # Previous installation found
+    fi
+    
+    return 1  # No previous installation
+}
+
+# Determine the installed version even if .version is missing
+# Returns the best guess of the installed version
+detect_installed_version() {
+    local version
+    
+    # Primary: .version file
+    version=$(get_installed_version)
+    if [[ "$version" != "0.0.0" ]]; then
+        echo "$version"
+        return
+    fi
+    
+    # Fallback: check .env for APP_VERSION
+    if [[ -f ".env" ]]; then
+        version=$(env_read .env APP_VERSION "")
+        if [[ -n "$version" && "$version" != "dev" ]]; then
+            print_verbose "Detected version from .env APP_VERSION: $version"
+            echo "$version"
+            return
+        fi
+    fi
+    
+    # Fallback: check running container labels
+    if command -v docker &>/dev/null; then
+        version=$(docker inspect bar_pos_backend --format '{{index .Config.Labels "app.version"}}' 2>/dev/null || true)
+        if [[ -n "$version" && "$version" != "dev" ]]; then
+            print_verbose "Detected version from container label: $version"
+            echo "$version"
+            return
+        fi
+    fi
+    
+    # Pre-versioning installation: containers exist but no version info
+    if command -v docker &>/dev/null; then
+        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q 'bar_pos_backend'; then
+            print_verbose "Pre-versioning installation detected (no version info available)"
+            echo "0.0.0-pre"  # Signals: old install, version unknown
+            return
+        fi
+    fi
+    
+    echo "0.0.0"
+}
+
+#===============================================================================
+# PRE-FLIGHT CHECKS
+#===============================================================================
+
+preflight_checks() {
+    local target="${1:-upgrade}"
+    local errors=0
+    
+    print_step "Running pre-flight checks..."
+    
+    # Check disk space (need at least 2GB free)
+    local avail_kb
+    avail_kb=$(df -k . | awk 'NR==2 {print $4}')
+    local avail_gb=$((avail_kb / 1024 / 1024))
+    if [[ $avail_gb -lt 2 ]]; then
+        print_error "Insufficient disk space: ${avail_gb}GB available, need at least 2GB"
+        ((errors++))
+    else
+        print_verbose "Disk space: ${avail_gb}GB available"
+    fi
+    
+    # Check Docker daemon is running (only if Docker is installed)
+    if command -v docker &>/dev/null; then
+        if ! docker info &>/dev/null 2>&1; then
+            print_error "Docker daemon is not running"
+            print_info "Start Docker with: sudo systemctl start docker"
+            ((errors++))
+        else
+            print_verbose "Docker daemon is running"
+        fi
+    fi
+    
+    # For upgrade: verify database is accessible
+    if [[ "$target" == "upgrade" ]]; then
+        if docker compose ps 2>/dev/null | grep -q "db.*running\|backend_db.*running"; then
+            print_verbose "Database container is running"
+        else
+            print_warning "Database container is not running - will start it during upgrade"
+        fi
+    fi
+    
+    # Verify VERSION file exists
+    if [[ ! -f "VERSION" ]]; then
+        print_error "VERSION file not found. Ensure you are in the TEV2 project root directory."
+        ((errors++))
+    fi
+    
+    # Verify docker-compose.yml exists
+    if [[ ! -f "docker-compose.yml" ]]; then
+        print_error "docker-compose.yml not found. Ensure you are in the TEV2 project root directory."
+        ((errors++))
+    fi
+    
+    if [[ $errors -gt 0 ]]; then
+        print_error "Pre-flight checks failed with $errors error(s)"
+        return 1
+    fi
+    
+    print_success "Pre-flight checks passed"
+    return 0
 }
 
 #===============================================================================
 # DATABASE BACKUP FUNCTIONS
 #===============================================================================
 
+# Read database credentials from .env (with fallback defaults)
+_get_db_user() {
+    env_read .env POSTGRES_USER "totalevo_user"
+}
+
+_get_db_name() {
+    env_read .env POSTGRES_DB "bar_pos"
+}
+
 # Backup database before upgrade
 backup_database() {
-    local backup_dir="./backups"
+    local backup_dir="$BACKUP_DIR"
     local timestamp=$(date +%Y%m%d_%H%M%S)
     local backup_file="${backup_dir}/db_backup_${timestamp}.sql"
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
     
     mkdir -p "$backup_dir"
     
     print_info "Creating database backup..."
+    print_verbose "Backup target: $backup_file (user=$db_user db=$db_name)"
     
     # Run pg_dump inside the database container
-    if docker compose exec -T db pg_dump -U totalevo_user bar_pos > "$backup_file" 2>/dev/null; then
+    if docker compose exec -T db pg_dump -U "$db_user" "$db_name" > "$backup_file" 2>/dev/null; then
         # Verify backup file was created and is not empty
         if [[ ! -f "$backup_file" ]]; then
             print_error "Backup file was not created!"
@@ -250,6 +531,10 @@ backup_database() {
         local size=$(du -h "$backup_file" | cut -f1)
         print_success "Database backup created: $backup_file ($size)"
         echo "$backup_file" > "${backup_dir}/.last_backup"
+        
+        # Rotate old backups
+        rotate_backups
+        
         return 0
     else
         print_error "Database backup failed!"
@@ -260,20 +545,34 @@ backup_database() {
 # Restore database from backup
 restore_database() {
     local backup_file="$1"
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
     
     if [[ ! -f "$backup_file" ]]; then
         print_error "Backup file not found: $backup_file"
         return 1
     fi
     
+    # Validate backup file is not empty
+    local backup_size
+    backup_size=$(wc -c < "$backup_file")
+    if [[ "$backup_size" -eq 0 ]]; then
+        print_error "Backup file is empty, cannot restore"
+        return 1
+    fi
+    
     print_info "Restoring database from: $backup_file"
+    print_verbose "Restore target: user=$db_user db=$db_name"
     
     # Drop existing connections and restore
-    docker compose exec -T db psql -U totalevo_user -d postgres -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = 'bar_pos' AND pid <> pg_backend_pid();" 2>/dev/null
-    docker compose exec -T db psql -U totalevo_user -d postgres -c "DROP DATABASE IF EXISTS bar_pos;" 2>/dev/null
-    docker compose exec -T db psql -U totalevo_user -d postgres -c "CREATE DATABASE bar_pos;" 2>/dev/null
+    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${db_name}' AND pid <> pg_backend_pid();" 2>/dev/null
+    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+        "DROP DATABASE IF EXISTS ${db_name};" 2>/dev/null
+    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+        "CREATE DATABASE ${db_name};" 2>/dev/null
     
-    if cat "$backup_file" | docker compose exec -T db psql -U totalevo_user bar_pos > /dev/null 2>&1; then
+    if cat "$backup_file" | docker compose exec -T db psql -U "$db_user" "$db_name" > /dev/null 2>&1; then
         print_success "Database restored successfully"
         return 0
     else
@@ -284,18 +583,45 @@ restore_database() {
 
 # Get last backup file
 get_last_backup() {
-    if [[ -f "./backups/.last_backup" ]]; then
-        cat "./backups/.last_backup"
+    if [[ -f "${BACKUP_DIR}/.last_backup" ]]; then
+        cat "${BACKUP_DIR}/.last_backup"
     else
         echo ""
     fi
+}
+
+# Rotate backups, keeping only the most recent MAX_BACKUPS
+rotate_backups() {
+    local count
+    count=$(find "$BACKUP_DIR" -name 'db_backup_*.sql' 2>/dev/null | wc -l)
+    count=$(printf '%s' "$count" | tr -cd '0-9')
+    count=${count:-0}
+    
+    if [[ "$count" -le $MAX_BACKUPS ]]; then
+        return 0
+    fi
+    
+    local to_delete=$((count - MAX_BACKUPS))
+    print_info "Rotating old backups (keeping $MAX_BACKUPS most recent, removing $to_delete)..."
+    
+    find "$BACKUP_DIR" -name 'db_backup_*.sql' -type f | sort | head -n "$to_delete" | while read -r f; do
+        print_verbose "Removing old backup: $f"
+        rm -f "$f"
+    done
 }
 
 #===============================================================================
 # ENVIRONMENT VARIABLE MERGE FUNCTIONS
 #===============================================================================
 
-# Merge new environment variables from .env.example
+# Deprecated environment variables that should be removed or renamed
+# Format: "old_name:new_name" or "old_name:" (colon-only means remove)
+readonly DEPRECATED_ENV_VARS=(
+    # Add entries here as variables are deprecated in future versions
+    # Example: "OLD_VAR:NEW_VAR"
+)
+
+# Merge new environment variables from .env.example while preserving existing values
 merge_env_variables() {
     local env_file=".env"
     local example_file=".env.example"
@@ -313,20 +639,40 @@ merge_env_variables() {
     
     print_info "Checking for new environment variables..."
     
-    local new_vars=0
-    local temp_file=$(mktemp)
+    # Handle deprecated variable renames/removals
+    for entry in "${DEPRECATED_ENV_VARS[@]}"; do
+        local old_name="${entry%%:*}"
+        local new_name="${entry##*:}"
+        
+        if grep -qE "^${old_name}=" "$env_file" 2>/dev/null; then
+            if [[ -n "$new_name" ]]; then
+                # Rename
+                local old_value
+                old_value=$(env_read "$env_file" "$old_name")
+                print_warning "Migrating deprecated variable: $old_name -> $new_name"
+                env_write "$env_file" "$new_name" "$old_value"
+            fi
+            # Remove old name
+            sed -i "/^${old_name}=/d" "$env_file"
+        fi
+    done
     
-    # Read existing variables
+    # Find new variables in .env.example that are missing from .env
+    local new_vars=0
+    local temp_file
+    temp_file=$(mktemp)
+    
+    # Read existing variables into associative array
     declare -A existing_vars
     while IFS='=' read -r key value; do
         [[ -z "$key" || "$key" =~ ^# ]] && continue
         existing_vars["$key"]=1
     done < "$env_file"
     
-    # Check for new variables in example
+    # Check for new variables in example (use default from example)
     while IFS='=' read -r key value; do
         [[ -z "$key" || "$key" =~ ^# ]] && continue
-        if [[ -z "${existing_vars[$key]}" ]]; then
+        if [[ -z "${existing_vars[$key]:-}" ]]; then
             echo "$key=$value" >> "$temp_file"
             print_info "  Adding new variable: $key"
             ((new_vars++))
@@ -337,13 +683,57 @@ merge_env_variables() {
         echo "" >> "$env_file"
         echo "# === Added during upgrade ($(date -I)) ===" >> "$env_file"
         cat "$temp_file" >> "$env_file"
-        print_success "Added $new_vars new environment variables to .env"
+        print_success "Added $new_vars new environment variable(s) to .env"
     else
         print_info "No new environment variables to add"
     fi
     
     rm -f "$temp_file"
+    
+    # Preserve critical secrets from existing .env during upgrade
+    preserve_existing_secrets
+    
     return 0
+}
+
+# Preserve existing secrets/passwords that should not be regenerated during upgrade
+preserve_existing_secrets() {
+    local env_file=".env"
+    local backend_env_file="backend/.env"
+    
+    # Keys whose values must be preserved during upgrade (never overwrite)
+    local -a preserve_keys=(
+        "POSTGRES_PASSWORD"
+        "JWT_SECRET"
+        "POSTGRES_USER"
+        "POSTGRES_DB"
+    )
+    
+    for key in "${preserve_keys[@]}"; do
+        local current_val
+        current_val=$(env_read "$env_file" "$key" "")
+        if [[ -n "$current_val" ]]; then
+            print_verbose "Preserving existing value for $key"
+        fi
+    done
+    
+    # Ensure backend DATABASE_URL stays in sync with root credentials
+    if [[ -f "$backend_env_file" ]]; then
+        local db_user db_pass db_name
+        db_user=$(env_read "$env_file" POSTGRES_USER "totalevo_user")
+        db_pass=$(env_read "$env_file" POSTGRES_PASSWORD "")
+        db_name=$(env_read "$env_file" POSTGRES_DB "bar_pos")
+        
+        if [[ -n "$db_pass" ]]; then
+            local new_url="postgresql://${db_user}:${db_pass}@postgres:5432/${db_name}?schema=public"
+            local old_url
+            old_url=$(env_read "$backend_env_file" DATABASE_URL "")
+            if [[ "$old_url" != "$new_url" ]]; then
+                env_write "$backend_env_file" "DATABASE_URL" "$new_url"
+                print_info "Updated backend DATABASE_URL to match root credentials"
+            fi
+        fi
+    fi
 }
 
 #===============================================================================
@@ -356,39 +746,69 @@ validate_upgrade() {
     local errors=0
     
     # Check if containers are running
-    if ! docker compose ps | grep -q "backend.*running"; then
+    if ! docker compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
         print_error "Backend container is not running"
         ((errors++))
+    else
+        print_verbose "Backend container: running"
     fi
     
-    if ! docker compose ps | grep -q "frontend.*running"; then
+    if ! docker compose ps 2>/dev/null | grep -qE "frontend.*running|bar_pos_frontend.*running"; then
         print_error "Frontend container is not running"
         ((errors++))
+    else
+        print_verbose "Frontend container: running"
     fi
     
-    if ! docker compose ps | grep -q "db.*running"; then
+    if ! docker compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
         print_error "Database container is not running"
         ((errors++))
+    else
+        print_verbose "Database container: running"
     fi
     
-    # Check database connectivity
-    if ! docker compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+    # Check database connectivity using credentials from .env
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
+    if ! docker compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
         print_error "Database is not ready"
         ((errors++))
+    else
+        print_verbose "Database connectivity: OK"
     fi
     
-    # Check backend health endpoint
-    if command -v curl &> /dev/null; then
-        if ! curl -sf http://localhost:3000/api/health > /dev/null 2>&1; then
-            print_warning "Backend health check failed (may still be starting)"
+    # Check backend health endpoint through the configured URL
+    local url
+    url=$(env_read .env URL "http://localhost")
+    local nginx_port
+    nginx_port=$(env_read .env NGINX_PORT "80")
+    
+    if command -v curl &>/dev/null; then
+        local health_url="${url}:${nginx_port}/api/health"
+        print_verbose "Checking health endpoint: $health_url"
+        if ! curl -sf "$health_url" > /dev/null 2>&1; then
+            print_warning "Backend health check failed at $health_url (may still be starting)"
+        else
+            print_verbose "Backend health endpoint: OK"
         fi
+    fi
+    
+    # Verify migration status in the database
+    local pending_count
+    pending_count=$(docker compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
+    if [[ -n "$pending_count" && "$pending_count" -gt 0 ]]; then
+        print_error "Found $pending_count unresolved migrations in the database"
+        ((errors++))
+    else
+        print_verbose "Database migrations: all resolved"
     fi
     
     if [[ $errors -eq 0 ]]; then
         print_success "Upgrade validation passed"
         return 0
     else
-        print_error "Upgrade validation failed with $errors errors"
+        print_error "Upgrade validation failed with $errors error(s)"
         return 1
     fi
 }
@@ -401,15 +821,18 @@ validate_upgrade() {
 resolve_failed_migrations() {
     print_info "Checking for failed migrations..."
     
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
+    
     # Check if the database container is running
-    if ! docker compose ps | grep -q "db.*running"; then
+    if ! docker compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
         print_warning "Database container is not running, skipping migration check"
         return 0
     fi
     
     # Check for failed migrations in _prisma_migrations table
     local failed_count
-    failed_count=$(docker compose exec -T db psql -U totalevo_user -d bar_pos -t -c \
+    failed_count=$(docker compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
         "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
     
     if [[ -z "$failed_count" ]]; then
@@ -423,12 +846,12 @@ resolve_failed_migrations() {
         
         # Get list of failed migrations
         print_info "Failed migrations:"
-        docker compose exec -T db psql -U totalevo_user -d bar_pos -c \
+        docker compose exec -T db psql -U "$db_user" -d "$db_name" -c \
             "SELECT migration_name, started_at FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
         
         # Delete failed migration records to allow retry
         print_info "Marking failed migrations as rolled back..."
-        docker compose exec -T db psql -U totalevo_user -d bar_pos -c \
+        docker compose exec -T db psql -U "$db_user" -d "$db_name" -c \
             "DELETE FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
         
         print_success "Failed migrations have been cleared"
@@ -446,9 +869,9 @@ verify_migrations() {
     
     print_info "Verifying database migrations..."
     
-    # Wait for backend to be ready
+    # Wait for backend container to be running
     while [[ $attempt -lt $max_attempts ]]; do
-        if docker compose exec -T backend pg_isready -h db -U totalevo_user > /dev/null 2>&1; then
+        if docker compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
             break
         fi
         attempt=$((attempt + 1))
@@ -460,10 +883,16 @@ verify_migrations() {
         return 0  # Don't fail, migrations may still be running
     fi
     
+    # Wait a moment for backend to fully initialize
+    sleep 3
+    
     # Run prisma migrate status inside backend container
     local migrate_status
     migrate_status=$(docker compose exec -T backend npx prisma migrate status 2>&1)
     local status_code=$?
+    
+    print_verbose "Migration status exit code: $status_code"
+    print_verbose "Migration status output: $migrate_status"
     
     if [[ $status_code -eq 0 ]]; then
         print_success "Database migrations verified successfully"
@@ -488,42 +917,191 @@ verify_migrations() {
 # UPGRADE FLOW FUNCTIONS
 #===============================================================================
 
+# Cleanup function called on error during upgrade
+upgrade_cleanup() {
+    local exit_code=$?
+    
+    if [[ "$UPGRADE_IN_PROGRESS" != "true" ]]; then
+        return
+    fi
+    
+    print_error "Upgrade interrupted during phase: ${UPGRADE_PHASE:-unknown}"
+    print_error "Exit code: $exit_code"
+    
+    # If we started containers, warn about state
+    if [[ "$CONTAINER_STARTED_BY_SCRIPT" == "true" ]]; then
+        print_info "Containers may be in an inconsistent state"
+        print_info "To attempt manual recovery:"
+        print_info "  1. Check container status: docker compose ps"
+        print_info "  2. Check logs: docker compose logs"
+        print_info "  3. To rollback: ./install.sh --restore-backup"
+        print_info "  4. To retry upgrade: ./install.sh"
+    fi
+    
+    _log_file "UPGRADE FAILED during phase: ${UPGRADE_PHASE:-unknown} (exit code: $exit_code)"
+}
+
 # Main upgrade function
 perform_upgrade() {
-    local current_version=$(get_installed_version)
-    local new_version=$(get_new_version)
+    local current_version="$1"
+    local new_version
+    new_version=$(get_new_version)
+    
+    UPGRADE_IN_PROGRESS=true
+    trap upgrade_cleanup EXIT
     
     print_header "UPGRADE MODE"
     print_info "Current version: $current_version"
     print_info "New version: $new_version"
+    _log_file "UPGRADE START: $current_version -> $new_version"
     
-    # 1. Backup database
-    if ! backup_database; then
-        print_error "Database backup failed. Aborting upgrade."
+    # Phase 1: Pre-flight
+    UPGRADE_PHASE="preflight"
+    if ! preflight_checks "upgrade"; then
+        print_error "Pre-flight checks failed. Aborting upgrade."
+        UPGRADE_IN_PROGRESS=false
+        trap - EXIT
         return 1
     fi
     
-    # 2. Stop containers
+    # Phase 2: Database backup
+    UPGRADE_PHASE="backup"
+    if ! backup_database; then
+        print_error "Database backup failed. Aborting upgrade."
+        print_info "Ensure the database container is running: docker compose up -d db"
+        UPGRADE_IN_PROGRESS=false
+        trap - EXIT
+        return 1
+    fi
+    
+    # Phase 3: Stop containers
+    UPGRADE_PHASE="stop-containers"
     print_info "Stopping containers..."
     docker compose down
+    print_verbose "Containers stopped"
     
-    # 3. Merge environment variables
+    # Phase 4: Merge environment variables (preserves existing secrets)
+    UPGRADE_PHASE="env-merge"
     merge_env_variables
     
-    # 4. Pull new images / rebuild
+    # Phase 5: Rebuild containers
+    UPGRADE_PHASE="rebuild"
     print_info "Building new containers..."
     docker compose build --no-cache
     
-    # 5. Start database container first
+    # Phase 6: Start database first
+    UPGRADE_PHASE="start-database"
     print_info "Starting database container..."
     docker compose up -d db
+    CONTAINER_STARTED_BY_SCRIPT=true
     
     # Wait for database to be ready
     print_info "Waiting for database to be ready..."
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
     local db_attempts=0
     while [[ $db_attempts -lt 30 ]]; do
-        if docker compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+        if docker compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
             print_success "Database is ready"
+            break
+        fi
+        db_attempts=$((db_attempts + 1))
+        sleep 1
+    done
+    
+    if [[ $db_attempts -ge 30 ]]; then
+        print_error "Database failed to start"
+        UPGRADE_IN_PROGRESS=false
+        trap - EXIT
+        return 1
+    fi
+    
+    # Phase 7: Resolve any failed migrations before starting backend
+    UPGRADE_PHASE="resolve-migrations"
+    resolve_failed_migrations
+    
+    # Phase 8: Start remaining containers (migrations run automatically via entrypoint)
+    UPGRADE_PHASE="start-containers"
+    print_info "Starting containers..."
+    docker compose up -d
+    
+    # Phase 9: Wait for containers to stabilise
+    UPGRADE_PHASE="wait-for-healthy"
+    print_info "Waiting for containers to start..."
+    sleep 10
+    
+    # Phase 10: Verify migrations
+    UPGRADE_PHASE="verify-migrations"
+    verify_migrations
+    
+    # Phase 11: Validate upgrade
+    UPGRADE_PHASE="validate"
+    if validate_upgrade; then
+        save_installed_version "$new_version" "upgrade" "$current_version"
+        UPGRADE_IN_PROGRESS=false
+        trap - EXIT
+        
+        print_success "=========================================="
+        print_success "UPGRADE COMPLETE: $current_version -> $new_version"
+        print_success "=========================================="
+        print_info ""
+        print_info "Upgrade Summary:"
+        print_info "  - Database backup created in $BACKUP_DIR/"
+        print_info "  - Containers rebuilt with new version"
+        print_info "  - Database migrations applied automatically"
+        print_info "  - Existing configuration and secrets preserved"
+        print_info ""
+        print_info "To rollback if needed: ./install.sh --restore-backup"
+        
+        _log_file "UPGRADE COMPLETE: $current_version -> $new_version"
+        return 0
+    else
+        UPGRADE_IN_PROGRESS=false
+        trap - EXIT
+        
+        print_error "=========================================="
+        print_error "UPGRADE VALIDATION FAILED"
+        print_error "=========================================="
+        print_info "To rollback, run: ./install.sh --restore-backup"
+        print_info "To check logs: docker compose logs"
+        
+        _log_file "UPGRADE VALIDATION FAILED: $current_version -> $new_version"
+        return 1
+    fi
+}
+
+# Restore from backup option
+restore_from_backup() {
+    local backup_file
+    backup_file=$(get_last_backup)
+    
+    if [[ -z "$backup_file" ]]; then
+        print_error "No backup found to restore"
+        print_info "Backups are stored in $BACKUP_DIR/"
+        return 1
+    fi
+    
+    if [[ ! -f "$backup_file" ]]; then
+        print_error "Last backup file not found: $backup_file"
+        return 1
+    fi
+    
+    print_info "This will restore the database from: $backup_file"
+    print_warning "All data created after this backup will be lost!"
+    
+    if ! confirm "Continue with restore?" "n"; then
+        print_info "Restore cancelled"
+        return 1
+    fi
+    
+    print_info "Starting database container..."
+    docker compose up -d db
+    
+    print_info "Waiting for database to be ready..."
+    local db_attempts=0
+    local db_user=$(_get_db_user)
+    while [[ $db_attempts -lt 30 ]]; do
+        if docker compose exec -T db pg_isready -U "$db_user" > /dev/null 2>&1; then
             break
         fi
         db_attempts=$((db_attempts + 1))
@@ -535,68 +1113,18 @@ perform_upgrade() {
         return 1
     fi
     
-    # 6. Resolve any failed migrations before starting backend
-    resolve_failed_migrations
-    
-    # 7. Start remaining containers (migrations run automatically)
-    print_info "Starting containers..."
-    docker compose up -d
-    
-    # 8. Wait for containers to be ready
-    print_info "Waiting for containers to start..."
-    sleep 10
-    
-    # 9. Verify migrations
-    verify_migrations
-    
-    # 10. Validate upgrade
-    if validate_upgrade; then
-        save_installed_version "$new_version"
-        print_success "=========================================="
-        print_success "UPGRADE COMPLETE: $current_version -> $new_version"
-        print_success "=========================================="
-        print_info ""
-        print_info "Upgrade Summary:"
-        print_info "  - Database backup created in ./backups/"
-        print_info "  - Containers rebuilt with new version"
-        print_info "  - Database migrations applied automatically"
-        if [[ "$new_version" =~ "2026.02.20" ]] || [[ "$new_version" > "2026.02.19" ]]; then
-            print_info "  - Payment method normalization migration applied (if applicable)"
-        fi
+    if restore_database "$backup_file"; then
+        print_info "Restarting all containers..."
+        docker compose up -d
+        print_success "Restore complete"
         return 0
     else
-        print_error "=========================================="
-        print_error "UPGRADE VALIDATION FAILED"
-        print_error "=========================================="
-        print_info "To rollback, run: ./install.sh --restore-backup"
         return 1
     fi
-}
-
-# Restore from backup option
-restore_from_backup() {
-    local backup_file=$(get_last_backup)
-    
-    if [[ -z "$backup_file" ]]; then
-        print_error "No backup found to restore"
-        return 1
-    fi
-    
-    print_info "This will restore the database from: $backup_file"
-    read -p "Continue? (y/N) " -n 1 -r
-    echo
-    if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-        print_info "Restore cancelled"
-        return 1
-    fi
-    
-    docker compose up -d db
-    sleep 5
-    restore_database "$backup_file"
 }
 
 # Set up error trap after functions are defined
-trap 'print_error "Error on line $LINENO. Command: $BASH_COMMAND"' ERR
+trap 'print_error "Error on line $LINENO (phase: ${UPGRADE_PHASE:-main}). Command: $BASH_COMMAND"; _log_file "ERROR on line $LINENO: $BASH_COMMAND"' ERR
 
 #===============================================================================
 # HELP FUNCTION
@@ -611,8 +1139,10 @@ Usage: ./install.sh [OPTIONS]
 Options:
   -h, --help            Show this help message and exit
   -n, --non-interactive Run in non-interactive mode with default values
+  -v, --verbose         Enable verbose output for detailed tracking
   --skip-docker         Skip Docker installation (use if Docker is already installed)
   --reset-db            Reset the database volume (WARNING: deletes all data!)
+  --restore-backup      Restore database from the most recent backup
   --url URL             Set application URL (for non-interactive mode)
   --nginx-port PORT     Set Nginx port (for non-interactive mode)
   --db-user USER        Set database username (for non-interactive mode)
@@ -620,12 +1150,20 @@ Options:
   --db-name NAME        Set database name (for non-interactive mode)
   --env ENV             Set environment (development/production)
 
+Upgrade Behaviour:
+  - Automatically detects previous installations (even pre-versioning)
+  - Preserves all existing configuration and secrets during upgrade
+  - Creates a database backup before any migration
+  - Logs all operations to ./install.log
+
 Examples:
   ./install.sh                    # Interactive installation
   ./install.sh --non-interactive  # Non-interactive with defaults
+  ./install.sh --verbose          # Verbose mode with detailed tracking
   ./install.sh --skip-docker      # Skip Docker installation
   ./install.sh --url http://192.168.1.100 --nginx-port 8080
   ./install.sh --reset-db         # Reset database and start fresh
+  ./install.sh --restore-backup   # Restore from last backup
 
 EOF
     exit 0
@@ -679,13 +1217,13 @@ check_prerequisites() {
 
 install_basic_tools() {
     # Call detect_distro if not already detected
-    if [[ -z "$DISTRO_FAMILY" ]]; then
+    if [[ -z "${DISTRO_FAMILY:-}" ]]; then
         detect_distro
     fi
     
     print_info "Installing basic tools (curl, wget, openssl, gawk, hostname)..."
     
-    case "$DISTRO_FAMILY" in
+    case "${DISTRO_FAMILY:-}" in
         debian)
             $SUDO apt-get update -qq
             DEBIAN_FRONTEND=noninteractive $SUDO apt-get install -y -qq curl wget openssl gawk hostname
@@ -1199,6 +1737,19 @@ configure_environment() {
         return 0
     fi
     
+    # When reconfiguring during upgrade, preserve existing secrets by reading them first
+    local existing_postgres_password=""
+    local existing_jwt_secret=""
+    local existing_postgres_user=""
+    local existing_postgres_db=""
+    
+    if [[ -f ".env" ]]; then
+        existing_postgres_password=$(env_read .env POSTGRES_PASSWORD "")
+        existing_jwt_secret=$(env_read .env JWT_SECRET "")
+        existing_postgres_user=$(env_read .env POSTGRES_USER "")
+        existing_postgres_db=$(env_read .env POSTGRES_DB "")
+    fi
+    
     print_info "Let's configure your application. Press Enter to accept defaults."
     printf '\n'
     
@@ -1279,25 +1830,37 @@ configure_environment() {
     # Database Configuration
     print_step "Configuring database settings..."
     
-    POSTGRES_USER=$(prompt_input "Database username" "${CLI_DB_USER:-totalevo_user}")
+    # Preserve existing user/db or use defaults
+    POSTGRES_USER=$(prompt_input "Database username" "${CLI_DB_USER:-${existing_postgres_user:-totalevo_user}}")
     
     printf '\n'
     print_info "Database Password: A secure password is recommended for production."
-    if confirm "Generate a secure password automatically?" "y"; then
-        POSTGRES_PASSWORD=$(generate_secure_password)
-        print_success "Generated secure password"
+    if [[ -n "$existing_postgres_password" ]]; then
+        print_info "An existing database password was found in .env and will be preserved."
+        POSTGRES_PASSWORD="$existing_postgres_password"
+        print_success "Preserving existing database password"
     else
-        POSTGRES_PASSWORD=$(prompt_input "Database password" "${CLI_DB_PASSWORD:-totalevo_password}" "true")
+        if confirm "Generate a secure password automatically?" "y"; then
+            POSTGRES_PASSWORD=$(generate_secure_password)
+            print_success "Generated secure password"
+        else
+            POSTGRES_PASSWORD=$(prompt_input "Database password" "${CLI_DB_PASSWORD:-totalevo_password}" "true")
+        fi
     fi
     
-    POSTGRES_DB=$(prompt_input "Database name" "${CLI_DB_NAME:-bar_pos}")
+    POSTGRES_DB=$(prompt_input "Database name" "${CLI_DB_NAME:-${existing_postgres_db:-bar_pos}}")
     
     # JWT Secret
     printf '\n'
     print_info "JWT Secret: A secret key used to sign authentication tokens."
     print_info "This should be a long, random string (64+ characters)."
-    JWT_SECRET=$(generate_jwt_secret)
-    print_success "Generated secure JWT secret (128 characters)"
+    if [[ -n "$existing_jwt_secret" ]]; then
+        JWT_SECRET="$existing_jwt_secret"
+        print_success "Preserving existing JWT secret"
+    else
+        JWT_SECRET=$(generate_jwt_secret)
+        print_success "Generated secure JWT secret (128 characters)"
+    fi
     
     # Node Environment
     printf '\n'
@@ -1502,9 +2065,11 @@ build_and_run() {
     
     # Wait for database to be ready
     print_info "Waiting for database to be ready..."
+    local db_user=$(_get_db_user)
+    local db_name=$(_get_db_name)
     local db_attempts=0
     while [[ $db_attempts -lt 30 ]]; do
-        if $DOCKER_CMD compose exec -T db pg_isready -U totalevo_user > /dev/null 2>&1; then
+        if $DOCKER_CMD compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
             print_success "Database is ready"
             break
         fi
@@ -1647,6 +2212,10 @@ main() {
                 NON_INTERACTIVE=true
                 shift
                 ;;
+            -v|--verbose)
+                VERBOSE=true
+                shift
+                ;;
             --skip-docker)
                 SKIP_DOCKER=true
                 shift
@@ -1692,6 +2261,13 @@ main() {
         esac
     done
     
+    # Initialise log file
+    mkdir -p "$(dirname "$LOG_FILE")"
+    _log_file "===== TEV2 INSTALL STARTED ====="
+    _log_file "Arguments: $*"
+    _log_file "Verbose: $VERBOSE"
+    _log_file "Non-interactive: $NON_INTERACTIVE"
+    
     # Handle restore mode
     if [[ "$RESTORE_MODE" == "true" ]]; then
         restore_from_backup
@@ -1700,27 +2276,43 @@ main() {
     
     # Print banner
     printf '\n'
-    printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-    printf '%b\n' "${CYAN}${BOLD}║                    TEV2 INSTALLER                          ║${NC}"
-    printf '%b\n' "${CYAN}${BOLD}║              Total Evolution POS System                    ║${NC}"
-    printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
+    printf '%b\n' "${CYAN}${BOLD}+------------------------------------------------------------+${NC}"
+    printf '%b\n' "${CYAN}${BOLD}|                    TEV2 INSTALLER                          |${NC}"
+    printf '%b\n' "${CYAN}${BOLD}|              Total Evolution POS System                    |${NC}"
+    printf '%b\n' "${CYAN}${BOLD}+------------------------------------------------------------+${NC}"
     printf '\n'
     
     if [[ "$NON_INTERACTIVE" == "true" ]]; then
         print_info "Running in non-interactive mode"
     fi
+    if [[ "$VERBOSE" == "true" ]]; then
+        print_info "Verbose mode enabled (detailed logging to $LOG_FILE)"
+    fi
     
     # Detect if this is an upgrade or fresh install
-    local current_version=$(get_installed_version)
-    local new_version=$(get_new_version)
+    local current_version
+    current_version=$(detect_installed_version)
+    local new_version
+    new_version=$(get_new_version)
+    
+    _log_file "Detected installed version: $current_version"
+    _log_file "Target version: $new_version"
     
     if [[ "$current_version" != "0.0.0" ]]; then
-        # Existing installation detected
+        # Existing installation detected (includes 0.0.0-pre for pre-versioning installs)
         if compare_versions "$current_version" "$new_version"; then
             print_info "Existing installation detected (version: $current_version)"
             print_info "New version available: $new_version"
+            
+            # In non-interactive mode, default to proceeding with upgrade
+            if [[ "$NON_INTERACTIVE" == "true" ]]; then
+                print_info "Non-interactive mode: proceeding with upgrade"
+                perform_upgrade "$current_version"
+                exit $?
+            fi
+            
             if confirm "Do you want to upgrade?" "y"; then
-                perform_upgrade
+                perform_upgrade "$current_version"
                 exit $?
             else
                 print_info "Upgrade cancelled. Use 'docker compose up -d --build' to rebuild without version change"
@@ -1729,12 +2321,36 @@ main() {
         else
             print_info "Installed version ($current_version) is same or newer than target ($new_version)"
             print_info "Use 'docker compose up -d --build' to rebuild without version change"
+            
+            # If same version but user ran install.sh, offer rebuild
+            if [[ "$current_version" == "$new_version" ]] && [[ "$NON_INTERACTIVE" != "true" ]]; then
+                if confirm "Would you like to rebuild containers anyway?" "n"; then
+                    merge_env_variables
+                    docker compose build --no-cache
+                    docker compose up -d
+                    print_success "Containers rebuilt"
+                fi
+            fi
             exit 0
         fi
     fi
     
     # Fresh installation
+    # But first, check for orphaned signals (partial previous install)
+    if detect_previous_installation; then
+        print_warning "Signs of a previous installation were detected, but no version information was found."
+        print_info "This may be a pre-versioning installation or an incomplete setup."
+        if [[ "$NON_INTERACTIVE" != "true" ]]; then
+            if ! confirm "Proceed with fresh installation? (Existing data may be preserved in Docker volumes)" "y"; then
+                print_info "Installation cancelled"
+                exit 0
+            fi
+        fi
+        _log_file "Proceeding with fresh install despite detected previous installation signals"
+    fi
+    
     print_info "Performing fresh installation..."
+    _log_file "Installation type: fresh"
     
     # Execute installation steps
     check_prerequisites
@@ -1750,8 +2366,9 @@ main() {
     build_and_run
     
     # Save installed version after successful installation
-    save_installed_version "$new_version"
+    save_installed_version "$new_version" "fresh" "0.0.0"
     
+    _log_file "Fresh installation completed successfully"
     print_success "Installation completed successfully!"
 }
 

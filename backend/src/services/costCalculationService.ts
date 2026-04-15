@@ -119,8 +119,8 @@ export async function updateVariantTheoreticalCost(variantId: number): Promise<V
 
   let currentMargin: number | null = null;
   if (theoreticalCost !== null && theoreticalCost > 0 && price > 0) {
-    const marginValue = subtractMoney(price, theoreticalCost);
-    currentMargin = roundMoney(divideMoney(marginValue, price) * 100);
+    const marginValue = price - roundCost(theoreticalCost);
+    currentMargin = roundMoney((marginValue / price) * 100);
   }
 
   const costStatus = theoreticalCost !== null ? 'current' : 'pending';

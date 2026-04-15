@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { formatCurrency, formatCost, formatDate } from '../utils/formatting';
 import * as costApi from '../services/costManagementService';
 import type { IngredientCostInfo, CostHistoryEntry, VariantCostSummary, VariantCostBreakdown } from '../services/costManagementService';
+import { VKeyboardInput } from './VKeyboardInput';
 
 interface CostManagementPanelProps {
   stockItems: any[];
@@ -53,6 +54,11 @@ const UpdateCostModal: React.FC<UpdateCostModalProps> = ({ ingredient, onClose, 
       setError(t('costManagement.invalidCost'));
       return;
     }
+    const costStr = newCost.toString();
+    if (costStr.includes('.') && costStr.split('.')[1]?.length > 6) {
+      setError(t('costManagement.costDecimalsLimit'));
+      return;
+    }
     if (!reason.trim()) {
       setError(t('costManagement.reasonRequired'));
       return;
@@ -82,15 +88,18 @@ const UpdateCostModal: React.FC<UpdateCostModalProps> = ({ ingredient, onClose, 
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1">{t('costManagement.newCost')}</label>
-            <input
+            <VKeyboardInput
+              k-type="numeric"
               type="number"
               step="0.000001"
               min="0"
               value={newCost}
               onChange={e => setNewCost(e.target.value)}
+              placeholder={t('costManagement.newCostPlaceholder')}
               className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-white"
               required
             />
+            <p className="text-xs text-slate-500 mt-1">{t('costManagement.costPrecisionInfo')}</p>
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1">{t('costManagement.reason')}</label>

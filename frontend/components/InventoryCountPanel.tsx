@@ -529,7 +529,7 @@ const InventoryCountPanel: React.FC = () => {
                                       {formatCost(item.unitCost)}
                                     </td>
                                     <td className="px-3 py-2 text-sm text-white">
-                                      {formatCurrency(item.extendedValue)}
+                                      {formatCost(item.extendedValue, 2)}
                                     </td>
                                     <td className="px-3 py-2 text-sm text-slate-400">
                                       {item.notes || '-'}

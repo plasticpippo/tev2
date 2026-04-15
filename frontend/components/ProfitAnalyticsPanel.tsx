@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { format, subDays, startOfMonth, endOfMonth } from 'date-fns';
-import { formatCurrency } from '../utils/formatting';
+import { formatCurrency, formatCost } from '../utils/formatting';
 import { getAuthHeaders, isAuthTokenReady } from '../services/apiBase';
 import {
   fetchProfitDashboard,
@@ -227,7 +227,7 @@ export const ProfitAnalyticsPanel: React.FC = () => {
               <p className="text-sm text-slate-400 mb-1">
                 {t('profitAnalytics.cogs', 'COGS')}
               </p>
-              <p className="text-2xl font-bold text-white">{formatCurrency(summary.cogs)}</p>
+              <p className="text-2xl font-bold text-white">{formatCost(summary.cogs, 2)}</p>
               {comparison && (
                 <div className="mt-2">
                   <ChangeIndicator value={comparison.changes.cogsChangePercent} />
@@ -327,7 +327,7 @@ export const ProfitAnalyticsPanel: React.FC = () => {
                         {t('profitAnalytics.revenue', 'Rev')}: {formatCurrency(cat.revenue)}
                       </span>
                       <span className="text-xs text-red-400">
-                        {t('profitAnalytics.cogs', 'COGS')}: {formatCurrency(cat.cogs)}
+                        {t('profitAnalytics.cogs', 'COGS')}: {formatCost(cat.cogs, 2)}
                       </span>
                     </div>
                   </div>
@@ -374,7 +374,7 @@ export const ProfitAnalyticsPanel: React.FC = () => {
                           {formatCurrency(p.revenue)}
                         </td>
                         <td className="py-3 px-2 text-right text-slate-400">
-                          {formatCurrency(p.cogs)}
+                          {formatCost(p.cogs, 2)}
                         </td>
                         <td className="py-3 px-2 text-right text-slate-300">
                           {formatCurrency(p.grossProfit)}

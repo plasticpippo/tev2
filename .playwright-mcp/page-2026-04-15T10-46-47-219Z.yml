@@ -1,0 +1,246 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e627] [cursor=pointer]:
+          - img [ref=e629]
+          - generic [ref=e631]: Dashboard
+        - button "Analytics" [ref=e632] [cursor=pointer]:
+          - img [ref=e634]
+          - generic [ref=e636]: Analytics
+        - button "Profit Analytics" [ref=e637] [cursor=pointer]:
+          - img [ref=e639]
+          - generic [ref=e641]: Profit Analytics
+        - button "Transactions" [ref=e642] [cursor=pointer]:
+          - img [ref=e644]
+          - generic [ref=e646]: Transactions
+        - button "Receipts 13" [ref=e647] [cursor=pointer]:
+          - img [ref=e649]
+          - generic [ref=e651]: Receipts
+          - button "13" [ref=e652]
+        - button "Activity Log" [ref=e653] [cursor=pointer]:
+          - img [ref=e655]
+          - generic [ref=e657]: Activity Log
+        - button "Daily Closing Summary" [ref=e658] [cursor=pointer]:
+          - img [ref=e660]
+          - generic [ref=e662]: Daily Closing Summary
+        - button "Customers" [ref=e663] [cursor=pointer]:
+          - img [ref=e665]
+          - generic [ref=e667]: Customers
+        - button "Products" [ref=e668] [cursor=pointer]:
+          - img [ref=e670]
+          - generic [ref=e672]: Products
+        - button "Categories" [ref=e673] [cursor=pointer]:
+          - img [ref=e675]
+          - generic [ref=e677]: Categories
+        - button "Stock Items" [ref=e678] [cursor=pointer]:
+          - img [ref=e680]
+          - generic [ref=e682]: Stock Items
+        - button "Inventory" [ref=e683] [cursor=pointer]:
+          - img [ref=e685]
+          - generic [ref=e687]: Inventory
+        - button "Cost Management" [ref=e688] [cursor=pointer]:
+          - img [ref=e690]
+          - generic [ref=e692]: Cost Management
+        - button "Inventory Counts" [ref=e693] [cursor=pointer]:
+          - img [ref=e695]
+          - generic [ref=e697]: Inventory Counts
+        - button "Variance Reports" [ref=e698] [cursor=pointer]:
+          - img [ref=e700]
+          - generic [ref=e702]: Variance Reports
+        - button "Users" [ref=e703] [cursor=pointer]:
+          - img [ref=e705]
+          - generic [ref=e707]: Users
+        - button "Tills" [ref=e708] [cursor=pointer]:
+          - img [ref=e710]
+          - generic [ref=e712]: Tills
+        - button "Tables & Layout" [ref=e713] [cursor=pointer]:
+          - img [ref=e715]
+          - generic [ref=e717]: Tables & Layout
+        - button "Itemised Consumption" [ref=e718] [cursor=pointer]:
+          - img [ref=e720]
+          - generic [ref=e722]: Itemised Consumption
+        - button "Settings" [ref=e723] [cursor=pointer]:
+          - img [ref=e725]
+          - generic [ref=e728]: Settings
+      - main [ref=e236]:
+        - generic [ref=e433]:
+          - generic [ref=e434]:
+            - button "Ingredient Costs" [ref=e435] [cursor=pointer]
+            - button "Variant Costs" [ref=e436] [cursor=pointer]
+            - button "Recent Changes" [active] [ref=e437] [cursor=pointer]
+          - table [ref=e886]:
+            - rowgroup [ref=e887]:
+              - row "Date Ingredient Previous Cost New Cost Change % Reason Updated By" [ref=e888]:
+                - columnheader "Date" [ref=e889]
+                - columnheader "Ingredient" [ref=e890]
+                - columnheader "Previous Cost" [ref=e891]
+                - columnheader "New Cost" [ref=e892]
+                - columnheader "Change %" [ref=e893]
+                - columnheader "Reason" [ref=e894]
+                - columnheader "Updated By" [ref=e895]
+            - rowgroup [ref=e896]:
+              - row "15/04/2026, 12:43 Campari €0,000001 €0,001342 +134100.00% nuovo Admin User" [ref=e897]:
+                - cell "15/04/2026, 12:43" [ref=e898]
+                - cell "Campari" [ref=e899]
+                - cell "€0,000001" [ref=e900]
+                - cell "€0,001342" [ref=e901]
+                - cell "+134100.00%" [ref=e902]:
+                  - generic [ref=e903]: +134100.00%
+                - cell "nuovo" [ref=e904]
+                - cell "Admin User" [ref=e905]
+              - row "15/04/2026, 12:43 Gin Gordon's €0,000000 €0,000001 +100.00% test precision Admin User" [ref=e906]:
+                - cell "15/04/2026, 12:43" [ref=e907]
+                - cell "Gin Gordon's" [ref=e908]
+                - cell "€0,000000" [ref=e909]
+                - cell "€0,000001" [ref=e910]
+                - cell "+100.00%" [ref=e911]:
+                  - generic [ref=e912]: +100.00%
+                - cell "test precision" [ref=e913]
+                - cell "Admin User" [ref=e914]
+              - row "15/04/2026, 12:39 Coca Cola €0,000000 €0,000001 +100.00% Testing 6 decimal places precision Admin User" [ref=e915]:
+                - cell "15/04/2026, 12:39" [ref=e916]
+                - cell "Coca Cola" [ref=e917]
+                - cell "€0,000000" [ref=e918]
+                - cell "€0,000001" [ref=e919]
+                - cell "+100.00%" [ref=e920]:
+                  - generic [ref=e921]: +100.00%
+                - cell "Testing 6 decimal places precision" [ref=e922]
+                - cell "Admin User" [ref=e923]
+              - row "15/04/2026, 00:29 Bibita Pompelma €0,654321 €15,500000 +2268.87% restore Admin User" [ref=e924]:
+                - cell "15/04/2026, 00:29" [ref=e925]
+                - cell "Bibita Pompelma" [ref=e926]
+                - cell "€0,654321" [ref=e927]
+                - cell "€15,500000" [ref=e928]
+                - cell "+2268.87%" [ref=e929]:
+                  - generic [ref=e930]: +2268.87%
+                - cell "restore" [ref=e931]
+                - cell "Admin User" [ref=e932]
+              - row "15/04/2026, 00:28 Bibita Pompelma €15,500000 €0,654321 -95.78% Auto-refresh test Admin User" [ref=e933]:
+                - cell "15/04/2026, 00:28" [ref=e934]
+                - cell "Bibita Pompelma" [ref=e935]
+                - cell "€15,500000" [ref=e936]
+                - cell "€0,654321" [ref=e937]
+                - cell "-95.78%" [ref=e938]:
+                  - generic [ref=e939]: "-95.78%"
+                - cell "Auto-refresh test" [ref=e940]
+                - cell "Admin User" [ref=e941]
+              - row "14/04/2026, 22:46 Bibita Pompelma €0,123456 €15,500000 +12455.08% restore Admin User" [ref=e942]:
+                - cell "14/04/2026, 22:46" [ref=e943]
+                - cell "Bibita Pompelma" [ref=e944]
+                - cell "€0,123456" [ref=e945]
+                - cell "€15,500000" [ref=e946]
+                - cell "+12455.08%" [ref=e947]:
+                  - generic [ref=e948]: +12455.08%
+                - cell "restore" [ref=e949]
+                - cell "Admin User" [ref=e950]
+              - row "14/04/2026, 22:43 Bibita Pompelma €15,500000 €0,123456 -99.20% variance test Admin User" [ref=e951]:
+                - cell "14/04/2026, 22:43" [ref=e952]
+                - cell "Bibita Pompelma" [ref=e953]
+                - cell "€15,500000" [ref=e954]
+                - cell "€0,123456" [ref=e955]
+                - cell "-99.20%" [ref=e956]:
+                  - generic [ref=e957]: "-99.20%"
+                - cell "variance test" [ref=e958]
+                - cell "Admin User" [ref=e959]
+              - row "14/04/2026, 22:38 Bibita Pompelma €0,123456 €15,500000 +12455.08% restore Admin User" [ref=e960]:
+                - cell "14/04/2026, 22:38" [ref=e961]
+                - cell "Bibita Pompelma" [ref=e962]
+                - cell "€0,123456" [ref=e963]
+                - cell "€15,500000" [ref=e964]
+                - cell "+12455.08%" [ref=e965]:
+                  - generic [ref=e966]: +12455.08%
+                - cell "restore" [ref=e967]
+                - cell "Admin User" [ref=e968]
+              - row "14/04/2026, 22:37 Bibita Pompelma €15,500000 €0,123456 -99.20% test Admin User" [ref=e969]:
+                - cell "14/04/2026, 22:37" [ref=e970]
+                - cell "Bibita Pompelma" [ref=e971]
+                - cell "€15,500000" [ref=e972]
+                - cell "€0,123456" [ref=e973]
+                - cell "-99.20%" [ref=e974]:
+                  - generic [ref=e975]: "-99.20%"
+                - cell "test" [ref=e976]
+                - cell "Admin User" [ref=e977]
+              - row "14/04/2026, 22:20 Campari €0,123456 €0,000001 -100.00% Restoring after test Admin User" [ref=e978]:
+                - cell "14/04/2026, 22:20" [ref=e979]
+                - cell "Campari" [ref=e980]
+                - cell "€0,123456" [ref=e981]
+                - cell "€0,000001" [ref=e982]
+                - cell "-100.00%" [ref=e983]:
+                  - generic [ref=e984]: "-100.00%"
+                - cell "Restoring after test" [ref=e985]
+                - cell "Admin User" [ref=e986]
+              - row "14/04/2026, 22:13 Campari €0,000000 €0,123456 +100.00% Precision test Admin User" [ref=e987]:
+                - cell "14/04/2026, 22:13" [ref=e988]
+                - cell "Campari" [ref=e989]
+                - cell "€0,000000" [ref=e990]
+                - cell "€0,123456" [ref=e991]
+                - cell "+100.00%" [ref=e992]:
+                  - generic [ref=e993]: +100.00%
+                - cell "Precision test" [ref=e994]
+                - cell "Admin User" [ref=e995]
+              - row "14/04/2026, 22:09 Bibita Pompelma €0,123456 €15,500000 +12455.08% restoring after variant test Admin User" [ref=e996]:
+                - cell "14/04/2026, 22:09" [ref=e997]
+                - cell "Bibita Pompelma" [ref=e998]
+                - cell "€0,123456" [ref=e999]
+                - cell "€15,500000" [ref=e1000]
+                - cell "+12455.08%" [ref=e1001]:
+                  - generic [ref=e1002]: +12455.08%
+                - cell "restoring after variant test" [ref=e1003]
+                - cell "Admin User" [ref=e1004]
+              - row "14/04/2026, 22:08 Bibita Pompelma €15,500000 €0,123456 -99.20% variant propagation test Admin User" [ref=e1005]:
+                - cell "14/04/2026, 22:08" [ref=e1006]
+                - cell "Bibita Pompelma" [ref=e1007]
+                - cell "€15,500000" [ref=e1008]
+                - cell "€0,123456" [ref=e1009]
+                - cell "-99.20%" [ref=e1010]:
+                  - generic [ref=e1011]: "-99.20%"
+                - cell "variant propagation test" [ref=e1012]
+                - cell "Admin User" [ref=e1013]
+              - row "14/04/2026, 22:06 Bibita Pompelma €0,000123 €15,500000 +12601526.02% restoring after test Admin User" [ref=e1014]:
+                - cell "14/04/2026, 22:06" [ref=e1015]
+                - cell "Bibita Pompelma" [ref=e1016]
+                - cell "€0,000123" [ref=e1017]
+                - cell "€15,500000" [ref=e1018]
+                - cell "+12601526.02%" [ref=e1019]:
+                  - generic [ref=e1020]: +12601526.02%
+                - cell "restoring after test" [ref=e1021]
+                - cell "Admin User" [ref=e1022]
+              - row "14/04/2026, 22:02 Bibita Pompelma €0,123456 €0,000123 -99.90% small value precision test Admin User" [ref=e1023]:
+                - cell "14/04/2026, 22:02" [ref=e1024]
+                - cell "Bibita Pompelma" [ref=e1025]
+                - cell "€0,123456" [ref=e1026]
+                - cell "€0,000123" [ref=e1027]
+                - cell "-99.90%" [ref=e1028]:
+                  - generic [ref=e1029]: "-99.90%"
+                - cell "small value precision test" [ref=e1030]
+                - cell "Admin User" [ref=e1031]
+              - row "14/04/2026, 22:01 Bibita Pompelma €15,500000 €0,123456 -99.20% 6dp precision test Admin User" [ref=e1032]:
+                - cell "14/04/2026, 22:01" [ref=e1033]
+                - cell "Bibita Pompelma" [ref=e1034]
+                - cell "€15,500000" [ref=e1035]
+                - cell "€0,123456" [ref=e1036]
+                - cell "-99.20%" [ref=e1037]:
+                  - generic [ref=e1038]: "-99.20%"
+                - cell "6dp precision test" [ref=e1039]
+                - cell "Admin User" [ref=e1040]
+              - row "09/04/2026, 21:17 Bibita Pompelma €0,000000 €15,500000 +100.00% test_cost_entry Admin User" [ref=e1041]:
+                - cell "09/04/2026, 21:17" [ref=e1042]
+                - cell "Bibita Pompelma" [ref=e1043]
+                - cell "€0,000000" [ref=e1044]
+                - cell "€15,500000" [ref=e1045]
+                - cell "+100.00%" [ref=e1046]:
+                  - generic [ref=e1047]: +100.00%
+                - cell "test_cost_entry" [ref=e1048]
+                - cell "Admin User" [ref=e1049]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
