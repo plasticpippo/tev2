@@ -77,7 +77,7 @@ model ProductVariant {
   taxRateId Int?
   
   // Profitability Analytics Fields
-  theoreticalCost Decimal? @db.Decimal(10, 4) // Calculated recipe cost
+  theoreticalCost Decimal? @db.Decimal(12, 6) // Calculated recipe cost
   currentMargin Decimal? @db.Decimal(5, 2) // Current margin %
   lastCostCalc DateTime? // Last recalculation timestamp
   costStatus String? @default("pending") // pending, current, stale
@@ -184,8 +184,8 @@ model TransactionItem {
   price           Decimal  @db.Decimal(10, 2)
   quantity        Int
   effectiveTaxRate Decimal? @db.Decimal(10, 4)
-  unitCost        Decimal? @db.Decimal(10, 4)
-  totalCost       Decimal? @db.Decimal(10, 4)
+  unitCost        Decimal? @db.Decimal(12, 6)
+  totalCost       Decimal? @db.Decimal(12, 6)
 
   @@index([transactionId])
   @@index([variantId])
@@ -258,8 +258,8 @@ model StockItem {
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   
   // Profitability Analytics Fields
-  standardCost Decimal @default(0) @db.Decimal(10, 4) // Cost per base unit
-  costPerUnit Decimal @default(0) @db.Decimal(10, 4) // Display cost per serving
+  standardCost Decimal @default(0) @db.Decimal(12, 6) // Cost per base unit
+  costPerUnit Decimal @default(0) @db.Decimal(12, 6) // Display cost per serving
   lastCostUpdate DateTime @default(now())
   costUpdateReason String?
   
@@ -657,9 +657,9 @@ model ReceiptGenerationQueue {
 model CostHistory {
   id Int @id @default(autoincrement())
   stockItemId String @db.Uuid
-  previousCost Decimal @db.Decimal(10, 4)
-  newCost Decimal @db.Decimal(10, 4)
-  changePercent Decimal @db.Decimal(6, 2) // Calculated: ((new-prev)/prev)*100
+  previousCost Decimal @db.Decimal(12, 6)
+  newCost Decimal @db.Decimal(12, 6)
+  changePercent Decimal @db.Decimal(10, 2)
   reason String // supplier, review, adjustment
   effectiveFrom DateTime @default(now())
   notes String?
@@ -700,8 +700,8 @@ model InventoryCountItem {
   inventoryCountId Int
   stockItemId String @db.Uuid
   quantity Decimal @db.Decimal(10, 2)
-  unitCost Decimal @db.Decimal(10, 4) // Cost at count time
-  extendedValue Decimal @db.Decimal(10, 2) // quantity * unitCost
+  unitCost Decimal @db.Decimal(12, 6) // Cost at count time
+  extendedValue Decimal @db.Decimal(14, 6) // quantity * unitCost
   notes String?
 
   inventoryCount InventoryCount @relation(fields: [inventoryCountId], references: [id], onDelete: Cascade)
@@ -719,9 +719,9 @@ model VarianceReport {
   status String @default("draft") // draft, reviewed, final
 
   // Summary values
-  theoreticalCost Decimal @db.Decimal(10, 2)
-  actualCost Decimal @db.Decimal(10, 2)
-  varianceValue Decimal @db.Decimal(10, 2)
+  theoreticalCost Decimal @db.Decimal(14, 6)
+  actualCost Decimal @db.Decimal(14, 6)
+  varianceValue Decimal @db.Decimal(14, 6)
   variancePercent Decimal @db.Decimal(6, 2)
 
   // Beginning/Ending inventory references
@@ -750,8 +750,8 @@ model VarianceReportItem {
   actualQty Decimal @db.Decimal(10, 2)
   varianceQty Decimal @db.Decimal(10, 2)
 
-  unitCost Decimal @db.Decimal(10, 4)
-  varianceValue Decimal @db.Decimal(10, 2)
+  unitCost Decimal @db.Decimal(12, 6)
+  varianceValue Decimal @db.Decimal(14, 6)
   variancePercent Decimal @db.Decimal(6, 2)
 
   status String @default("ok") // ok, warning, critical

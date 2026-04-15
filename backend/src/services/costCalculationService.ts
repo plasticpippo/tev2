@@ -1,6 +1,6 @@
 import { prisma } from '../prisma';
 import { Decimal } from '@prisma/client/runtime/library';
-import { decimalToNumber, roundMoney, multiplyMoney, subtractMoney, divideMoney } from '../utils/money';
+import { decimalToNumber, roundMoney, multiplyMoney, subtractMoney, divideMoney, multiplyCost, addCost, roundCost } from '../utils/money';
 import {
   CostBreakdown,
   TransactionItemInput,
@@ -35,13 +35,13 @@ export async function calculateVariantCost(variantId: number): Promise<number | 
     const quantity = consumption.quantity;
 
     if (standardCost > 0 && quantity > 0) {
-      const ingredientCost = multiplyMoney(standardCost, quantity);
-      totalCost = roundMoney(totalCost + ingredientCost);
+      const ingredientCost = multiplyCost(standardCost, quantity);
+      totalCost = addCost(totalCost, ingredientCost);
       hasValidCosts = true;
     }
   }
 
-  return hasValidCosts ? roundMoney(totalCost) : null;
+  return hasValidCosts ? roundCost(totalCost) : null;
 }
 
 export async function calculateTransactionItemCost(
@@ -59,13 +59,13 @@ export async function calculateTransactionItemCost(
     };
   }
 
-  const totalCost = multiplyMoney(unitCost, quantity);
+  const totalCost = multiplyCost(unitCost, quantity);
 
   return {
     variantId,
     quantity,
-    unitCost: roundMoney(unitCost),
-    totalCost: roundMoney(totalCost),
+    unitCost: roundCost(unitCost),
+    totalCost: roundCost(totalCost),
   };
 }
 
@@ -89,7 +89,7 @@ export async function calculateTransactionCost(
     itemResults.push(itemCost);
 
     if (itemCost.totalCost !== null) {
-      totalCost = roundMoney(totalCost + itemCost.totalCost);
+      totalCost = addCost(totalCost, itemCost.totalCost);
     } else {
       hasAllCosts = false;
     }
@@ -97,7 +97,7 @@ export async function calculateTransactionCost(
 
   return {
     items: itemResults,
-    totalCost: hasAllCosts ? roundMoney(totalCost) : null,
+    totalCost: hasAllCosts ? roundCost(totalCost) : null,
     hasAllCosts,
   };
 }
@@ -168,18 +168,18 @@ export async function getVariantCostBreakdown(variantId: number): Promise<CostBr
   for (const consumption of variant.stockConsumption) {
     const standardCost = decimalToNumber(consumption.stockItem.standardCost);
     const quantity = consumption.quantity;
-    const ingredientCost = standardCost > 0 ? multiplyMoney(standardCost, quantity) : 0;
+    const ingredientCost = standardCost > 0 ? multiplyCost(standardCost, quantity) : 0;
 
     ingredientCosts.push({
       stockItemId: consumption.stockItemId,
       stockItemName: consumption.stockItem.name,
       quantity,
-      standardCost: roundMoney(standardCost),
-      ingredientCost: roundMoney(ingredientCost),
+      standardCost: roundCost(standardCost),
+      ingredientCost: roundCost(ingredientCost),
     });
 
     if (standardCost > 0 && quantity > 0) {
-      totalCost = roundMoney(totalCost + ingredientCost);
+      totalCost = addCost(totalCost, ingredientCost);
       hasValidCosts = true;
     }
   }
@@ -190,7 +190,7 @@ export async function getVariantCostBreakdown(variantId: number): Promise<CostBr
     productId: variant.productId,
     productName: variant.product.name,
     ingredientCosts,
-    totalCost: hasValidCosts ? roundMoney(totalCost) : null,
+    totalCost: hasValidCosts ? roundCost(totalCost) : null,
     hasValidCosts,
   };
 }

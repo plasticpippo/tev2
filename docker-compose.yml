@@ -10,6 +10,10 @@ services:
   db:
     image: postgres:15
     container_name: bar_pos_backend_db
+    labels:
+      app.name: "bar-pos-database"
+      app.version: ${APP_VERSION:-dev}
+      app.build_date: ${BUILD_DATE:-unknown}
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
@@ -42,7 +46,14 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
+      args:
+        - APP_VERSION=${APP_VERSION:-dev}
+        - BUILD_DATE=${BUILD_DATE:-unknown}
     container_name: bar_pos_backend
+    labels:
+      app.name: "bar-pos-backend"
+      app.version: ${APP_VERSION:-dev}
+      app.build_date: ${BUILD_DATE:-unknown}
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}?connection_limit=5&pool_timeout=10
       - PORT=3001
@@ -61,6 +72,9 @@ services:
       - PDF_CACHE_TTL=${PDF_CACHE_TTL:-3600}
       # Limit Node.js heap to 640MB - prevents heap from consuming all container memory
       - NODE_OPTIONS=--max-old-space-size=640
+      # Version tracking
+      - APP_VERSION=${APP_VERSION:-dev}
+      - BUILD_DATE=${BUILD_DATE:-unknown}
     volumes:
       - uploads_data:/app/uploads
     depends_on:
@@ -96,7 +110,13 @@ services:
         - VITE_API_URL=${URL}:${NGINX_PORT}/api
         - VITE_HOST=0.0.0.0
         - VITE_PORT=3000
+        - APP_VERSION=${APP_VERSION:-dev}
+        - BUILD_DATE=${BUILD_DATE:-unknown}
     container_name: bar_pos_frontend
+    labels:
+      app.name: "bar-pos-frontend"
+      app.version: ${APP_VERSION:-dev}
+      app.build_date: ${BUILD_DATE:-unknown}
     environment:
       - VITE_API_URL=${URL}:${NGINX_PORT}/api
       - VITE_HOST=0.0.0.0
@@ -127,6 +147,10 @@ services:
   nginx:
     image: nginx:alpine
     container_name: bar_pos_nginx
+    labels:
+      app.name: "bar-pos-nginx"
+      app.version: ${APP_VERSION:-dev}
+      app.build_date: ${BUILD_DATE:-unknown}
     ports:
       - "${NGINX_PORT:-80}:80"
     volumes:

@@ -50,4 +50,16 @@ router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });
 });
 
+// Version endpoint - returns application version information
+router.get('/version', (req, res) => {
+  res.json({
+    name: 'bar-pos-backend',
+    version: process.env.APP_VERSION || 'unknown',
+    buildDate: process.env.BUILD_DATE || 'unknown',
+    environment: process.env.NODE_ENV || 'development',
+    nodeVersion: process.version,
+    timestamp: new Date().toISOString()
+  });
+});
+
 export default router;

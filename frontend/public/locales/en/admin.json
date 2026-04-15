@@ -1054,6 +1054,9 @@
     "bulkRecalculateSuccess": "Recalculated {{updated}} variants ({{failed}} failed, {{skipped}} skipped)",
     "costUpdateSuccess": "Cost updated successfully",
     "recalculateSuccess": "Variant cost recalculated",
+    "newCostPlaceholder": "e.g., 0.123456",
+    "costPrecisionInfo": "Up to 6 decimal places supported",
+    "costDecimalsLimit": "Cost must not exceed 6 decimal places",
     "statuses": {
       "pending": "Pending",
       "current": "Current",

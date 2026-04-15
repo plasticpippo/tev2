@@ -8,7 +8,7 @@ import { logError } from '../utils/logger';
 import i18n from '../i18n';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import { decimalToNumber } from '../utils/money';
+import { decimalToNumber, multiplyCost, roundCost } from '../utils/money';
 
 export const costManagementRouter = express.Router();
 
@@ -125,6 +125,12 @@ costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdm
 
     if (!cost || typeof cost !== 'number' || cost <= 0) {
       res.status(400).json({ error: i18n.t('errors.costManagement.ingredients.invalidCost') });
+      return;
+    }
+
+    const costStr = String(cost);
+    if (costStr.includes('.') && costStr.split('.')[1]?.length > 6) {
+      res.status(400).json({ error: 'Cost must not exceed 6 decimal places' });
       return;
     }
 
@@ -410,7 +416,7 @@ costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, 
           create: items.map((item: any) => {
             const stockItem = stockItemMap.get(item.stockItemId)!;
             const unitCost = decimalToNumber(stockItem.standardCost);
-            const extendedValue = item.quantity * unitCost;
+            const extendedValue = multiplyCost(item.quantity, unitCost);
             return {
               stockItemId: item.stockItemId,
               quantity: item.quantity,

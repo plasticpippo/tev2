@@ -12,6 +12,18 @@ export const formatCurrency = (amount: number | string | null | undefined): stri
     return `€${numAmount.toFixed(2).replace('.', ',')}`;
 };
 
+/**
+ * Format a cost value with specified decimal places (default 6)
+ * Uses manual toFixed() for consistency with formatCurrency
+ * Output format: €1,234567 (6 decimal places)
+ */
+export const formatCost = (amount: number | string | null | undefined, decimals: number = 6): string => {
+    if (amount === null || amount === undefined) return `€${(0).toFixed(decimals).replace('.', ',')}`;
+    const numAmount = typeof amount === 'string' ? parseFloat(amount) : amount;
+    if (isNaN(numAmount)) return `€${(0).toFixed(decimals).replace('.', ',')}`;
+    return `€${numAmount.toFixed(decimals).replace('.', ',')}`;
+};
+
 export const formatDate = (dateString: string): string => {
     return new Date(dateString).toLocaleString('en-GB', {
         day: '2-digit',

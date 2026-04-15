@@ -1,0 +1,18 @@
+- generic [active]:
+  - generic:
+    - generic [ref=e8]:
+      - button "Change Language" [ref=e11] [cursor=pointer]:
+        - generic [ref=e12]: EN
+        - img [ref=e13]
+      - heading "Bar POS Pro" [level=2] [ref=e15]
+      - paragraph [ref=e16]: "Till: globalDataContext.unknownTill"
+      - generic [ref=e17]:
+        - generic [ref=e18]:
+          - generic [ref=e19]: Username
+          - textbox [ref=e20]
+        - generic [ref=e21]:
+          - generic [ref=e22]: Password
+          - textbox [ref=e23]
+        - button "Login" [ref=e24] [cursor=pointer]
+    - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+      - img [ref=e5]

@@ -1,6 +1,6 @@
 import { prisma } from '../prisma';
 import { Decimal } from '@prisma/client/runtime/library';
-import { decimalToNumber, roundMoney, divideMoney, subtractMoney } from '../utils/money';
+import { decimalToNumber, roundMoney, divideMoney, subtractMoney, subtractCost, divideCost, roundCost } from '../utils/money';
 import {
     CostHistoryDTO,
     CostHistoryWithDetailsDTO,
@@ -38,8 +38,8 @@ export async function updateIngredientCost(
         let changePercent = 0;
 
         if (previousCost > 0) {
-            const change = subtractMoney(newCost, previousCost);
-            changePercent = roundMoney(divideMoney(change, previousCost) * 100);
+            const change = subtractCost(newCost, previousCost);
+            changePercent = roundMoney(divideCost(change, previousCost) * 100);
         } else if (newCost > 0) {
             changePercent = 100;
         }
@@ -49,8 +49,8 @@ export async function updateIngredientCost(
         const costHistory = await tx.costHistory.create({
             data: {
                 stockItemId,
-                previousCost: new Decimal(previousCost),
-                newCost: new Decimal(newCost),
+                previousCost: new Decimal(roundCost(previousCost)),
+                newCost: new Decimal(roundCost(newCost)),
                 changePercent: new Decimal(changePercent),
                 reason: reason.trim(),
                 effectiveFrom: effectiveDate,
@@ -66,7 +66,7 @@ export async function updateIngredientCost(
         await tx.stockItem.update({
             where: { id: stockItemId },
             data: {
-                standardCost: new Decimal(newCost),
+                standardCost: new Decimal(roundCost(newCost)),
                 lastCostUpdate: new Date(),
                 costUpdateReason: reason.trim(),
             },

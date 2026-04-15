@@ -6,7 +6,7 @@ import { logPaymentEvent, logError, logInfo, logDebug } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
-import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber } from '../utils/money';
+import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber, roundCost } from '../utils/money';
 import i18n from '../i18n';
 import { requireRole } from '../middleware/authorization';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
@@ -232,7 +232,7 @@ try {
   }
   
   if (costResult.totalCost !== null && costResult.hasAllCosts) {
-    totalCost = costResult.totalCost;
+    totalCost = roundMoney(costResult.totalCost);
     costCalculatedAt = new Date();
     
     // Calculate gross margin: subtotal - totalCost

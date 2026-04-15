@@ -836,6 +836,9 @@
     "bulkRecalculateSuccess": "Ricalcolate {{updated}} varianti ({{failed}} fallite, {{skipped}} saltate)",
     "costUpdateSuccess": "Costo aggiornato con successo",
     "recalculateSuccess": "Costo variante ricalcolato",
+    "newCostPlaceholder": "es., 0,123456",
+    "costPrecisionInfo": "Supportato fino a 6 cifre decimali",
+    "costDecimalsLimit": "Il costo non deve superare 6 cifre decimali",
     "statuses": {
       "pending": "In attesa",
       "current": "Aggiornato",

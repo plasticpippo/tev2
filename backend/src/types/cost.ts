@@ -4,7 +4,9 @@ export interface IngredientCostDetail {
   stockItemId: string;
   stockItemName: string;
   quantity: number;
+  /** @precision 6 decimal places */
   standardCost: number;
+  /** @precision 6 decimal places */
   ingredientCost: number;
 }
 
@@ -14,6 +16,7 @@ export interface CostBreakdown {
   productId: number;
   productName: string;
   ingredientCosts: IngredientCostDetail[];
+  /** @precision 6 decimal places */
   totalCost: number | null;
   hasValidCosts: boolean;
 }
@@ -26,12 +29,15 @@ export interface TransactionItemInput {
 export interface TransactionItemCostResult {
   variantId: number;
   quantity: number;
+  /** @precision 6 decimal places */
   unitCost: number | null;
+  /** @precision 6 decimal places */
   totalCost: number | null;
 }
 
 export interface TransactionCostResult {
   items: TransactionItemCostResult[];
+  /** @precision 6 decimal places */
   totalCost: number | null;
   hasAllCosts: boolean;
 }
@@ -43,6 +49,7 @@ export interface RecipeCostInput {
 
 export interface VariantCostUpdate {
   variantId: number;
+  /** @precision 6 decimal places */
   theoreticalCost: number | null;
   currentMargin: number | null;
   costStatus: string;
@@ -80,6 +87,7 @@ export function toTransactionItemCostResultDTO(data: any): TransactionItemCostRe
 
 export interface CostHistoryInput {
     stockItemId: string;
+    /** @precision 6 decimal places */
     newCost: number;
     reason: string;
     effectiveFrom?: Date;
@@ -89,7 +97,9 @@ export interface CostHistoryInput {
 export interface CostHistoryDTO {
     id: number;
     stockItemId: string;
+    /** @precision 6 decimal places */
     previousCost: number;
+    /** @precision 6 decimal places */
     newCost: number;
     changePercent: number;
     reason: string;

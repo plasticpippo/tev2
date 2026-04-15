@@ -1349,6 +1349,23 @@ configure_environment() {
 write_env_files() {
     print_step "Writing environment files..."
     
+    # Read version information
+    local APP_VERSION="dev"
+    local BUILD_DATE="unknown"
+    
+    if [[ -f "VERSION" ]]; then
+        APP_VERSION=$(grep "^VERSION=" VERSION | cut -d'=' -f2)
+        BUILD_DATE_FROM_FILE=$(grep "^BUILD_DATE=" VERSION | cut -d'=' -f2)
+        if [[ -n "$BUILD_DATE_FROM_FILE" ]]; then
+            BUILD_DATE="$BUILD_DATE_FROM_FILE"
+        fi
+    fi
+    
+    # If no BUILD_DATE in VERSION file, use current date
+    if [[ "$BUILD_DATE" == "unknown" ]]; then
+        BUILD_DATE=$(date +%Y-%m-%d)
+    fi
+    
     # Construct DATABASE_URL
     DATABASE_URL="postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public"
     
@@ -1379,6 +1396,10 @@ JWT_SECRET=${JWT_SECRET}
 
 # Environment
 NODE_ENV=${NODE_ENV}
+
+# Application Version Tracking
+APP_VERSION=${APP_VERSION}
+BUILD_DATE=${BUILD_DATE}
 EOF
 
     # Write backend .env

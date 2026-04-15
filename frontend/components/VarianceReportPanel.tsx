@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatCurrency, formatDate } from '../utils/formatting';
+import { formatCost, formatDate } from '../utils/formatting';
 import * as costApi from '../services/costManagementService';
 import type { VarianceReportSummary, VarianceReportDetail } from '../services/costManagementService';
 
@@ -161,16 +161,16 @@ const ReportDetailPanel: React.FC<{
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
           <div>
             <p className="text-sm text-slate-400">{t('varianceReport.theoreticalCost', 'Theoretical Cost')}</p>
-            <p className="text-xl font-bold text-white">{formatCurrency(report.theoreticalCost)}</p>
+            <p className="text-xl font-bold text-white">{formatCost(report.theoreticalCost)}</p>
           </div>
           <div>
             <p className="text-sm text-slate-400">{t('varianceReport.actualCost', 'Actual Cost')}</p>
-            <p className="text-xl font-bold text-white">{formatCurrency(report.actualCost)}</p>
+            <p className="text-xl font-bold text-white">{formatCost(report.actualCost)}</p>
           </div>
           <div>
             <p className="text-sm text-slate-400">{t('varianceReport.varianceValue', 'Variance Value')}</p>
             <p className={`text-xl font-bold ${variancePercentColor(report.variancePercent)}`}>
-              {formatCurrency(report.varianceValue)}
+              {formatCost(report.varianceValue)}
             </p>
           </div>
           <div>
@@ -228,9 +228,9 @@ const ReportDetailPanel: React.FC<{
                     <td className={`px-4 py-3 text-right font-medium ${variancePercentColor(item.variancePercent)}`}>
                       {item.varianceQty.toFixed(2)}
                     </td>
-                    <td className="px-4 py-3 text-right text-slate-300">{formatCurrency(item.unitCost)}</td>
+                    <td className="px-4 py-3 text-right text-slate-300">{formatCost(item.unitCost)}</td>
                     <td className={`px-4 py-3 text-right font-medium ${variancePercentColor(item.variancePercent)}`}>
-                      {formatCurrency(item.varianceValue)}
+                      {formatCost(item.varianceValue)}
                     </td>
                     <td className={`px-4 py-3 text-right font-medium ${variancePercentColor(item.variancePercent)}`}>
                       {item.variancePercent.toFixed(1)}%
@@ -401,7 +401,7 @@ const VarianceReportPanel: React.FC = () => {
                           </p>
                         </td>
                         <td className={`px-4 py-3 text-right font-medium ${variancePercentColor(r.variancePercent)}`}>
-                          {formatCurrency(r.varianceValue)}
+                          {formatCost(r.varianceValue)}
                         </td>
                         <td className={`px-4 py-3 text-right font-medium ${variancePercentColor(r.variancePercent)}`}>
                           {r.variancePercent.toFixed(1)}%

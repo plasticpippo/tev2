@@ -203,3 +203,89 @@ export function distributeMoney(value: number, parts: number): number[] {
   
   return result;
 }
+
+// ==================================================================
+// HIGH-PRECISION COST CALCULATION UTILITIES
+// Precision: 6 decimal places for unit costs and intermediate values
+// ==================================================================
+
+const COST_PRECISION = 6;
+const COST_CURRENCY_CONFIG: Parameters<typeof currency>[1] = {
+  symbol: '',
+  decimal: '.',
+  separator: ',',
+  precision: COST_PRECISION,
+};
+
+/**
+ * Creates a currency.js instance configured for 6dp cost calculations
+ */
+function createCostMoney(value: number): currency {
+  return currency(value, COST_CURRENCY_CONFIG);
+}
+
+/**
+ * Rounds a number to 6 decimal places for cost calculations
+ * @param value - The value to round
+ * @returns The rounded value to 6 decimal places, or 0 if invalid
+ */
+export function roundCost(value: number): number {
+  if (!isMoneyValid(value)) return 0;
+  return createCostMoney(value).value;
+}
+
+/**
+ * Multiplies two numbers with 6 decimal precision
+ * @param value - The cost value to multiply
+ * @param multiplier - The multiplier
+ * @returns The product rounded to 6 decimal places, or 0 if either input is invalid
+ */
+export function multiplyCost(value: number, multiplier: number): number {
+  if (!isMoneyValid(value) || !isMoneyValid(multiplier)) return 0;
+  return createCostMoney(value).multiply(multiplier).value;
+}
+
+/**
+ * Adds two numbers with 6 decimal precision
+ * @param a - First cost value
+ * @param b - Second cost value
+ * @returns The sum rounded to 6 decimal places, or 0 if either input is invalid
+ */
+export function addCost(a: number, b: number): number {
+  if (!isMoneyValid(a) || !isMoneyValid(b)) return 0;
+  return createCostMoney(a).add(b).value;
+}
+
+/**
+ * Subtracts two numbers with 6 decimal precision
+ * @param a - First cost value (minuend)
+ * @param b - Second cost value (subtrahend)
+ * @returns The difference rounded to 6 decimal places, or 0 if either input is invalid
+ */
+export function subtractCost(a: number, b: number): number {
+  if (!isMoneyValid(a) || !isMoneyValid(b)) return 0;
+  return createCostMoney(a).subtract(b).value;
+}
+
+/**
+ * Divides two numbers with 6 decimal precision
+ * @param value - The cost value to divide
+ * @param divisor - The divisor
+ * @returns The quotient rounded to 6 decimal places, or 0 if either input is invalid or divisor is zero
+ */
+export function divideCost(value: number, divisor: number): number {
+  if (!isMoneyValid(value) || !isMoneyValid(divisor) || divisor === 0) return 0;
+  return createCostMoney(value).divide(divisor).value;
+}
+
+/**
+ * Formats a cost value with specified decimal places (default 6)
+ * Returns a plain number string without currency symbol
+ * @param value - The cost value to format
+ * @param decimals - Number of decimal places (default 6)
+ * @returns The formatted string, e.g. "0.123456"
+ */
+export function formatCost(value: number, decimals: number = 6): string {
+  if (!isMoneyValid(value)) return '0.' + '0'.repeat(decimals);
+  return value.toFixed(decimals);
+}

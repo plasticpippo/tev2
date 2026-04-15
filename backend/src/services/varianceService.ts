@@ -7,6 +7,11 @@ import {
   subtractMoney,
   divideMoney,
   addMoney,
+  multiplyCost,
+  addCost,
+  subtractCost,
+  roundCost,
+  divideCost,
 } from '../utils/money';
 
 interface TransactionItem {
@@ -326,11 +331,11 @@ export async function generateVarianceReport(
       }
 
       const varianceQty = roundMoney(subtractMoney(actualQty, theoreticalQty));
-      const varianceValue = roundMoney(multiplyMoney(varianceQty, unitCost));
+      const varianceValue = roundCost(multiplyCost(varianceQty, unitCost));
       let variancePercent = 0;
 
       if (theoreticalQty > 0) {
-        variancePercent = roundMoney(divideMoney(Math.abs(varianceQty), theoreticalQty) * 100);
+        variancePercent = roundMoney(divideCost(Math.abs(varianceQty), theoreticalQty) * 100);
       } else if (actualQty > 0) {
         variancePercent = 100;
       }
@@ -353,17 +358,15 @@ export async function generateVarianceReport(
         notes,
       });
 
-      totalTheoretical = roundMoney(
-        addMoney(totalTheoretical, multiplyMoney(theoreticalQty, unitCost))
-      );
-      totalActual = roundMoney(addMoney(totalActual, multiplyMoney(actualQty, unitCost)));
+      totalTheoretical = addCost(totalTheoretical, multiplyCost(theoreticalQty, unitCost));
+      totalActual = addCost(totalActual, multiplyCost(actualQty, unitCost));
     }
 
-    const totalVarianceValue = roundMoney(subtractMoney(totalActual, totalTheoretical));
+    const totalVarianceValue = subtractCost(totalActual, totalTheoretical);
     let totalVariancePercent = 0;
     if (totalTheoretical > 0) {
       totalVariancePercent = roundMoney(
-        divideMoney(Math.abs(totalVarianceValue), totalTheoretical) * 100
+        divideCost(Math.abs(totalVarianceValue), totalTheoretical) * 100
       );
     }
 

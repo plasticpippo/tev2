@@ -1,6 +1,17 @@
 # Use Node.js 20 Alpine as base image
 FROM node:20-alpine
 
+# Accept build arguments for version tracking
+ARG APP_VERSION=dev
+ARG BUILD_DATE=unknown
+
+# Set labels for version tracking
+LABEL app.name="bar-pos-backend" \
+      app.version="${APP_VERSION}" \
+      app.build.date="${BUILD_DATE}" \
+      org.opencontainers.image.title="Bar POS Backend" \
+      org.opencontainers.image.version="${APP_VERSION}"
+
 # Set working directory
 WORKDIR /app
 

@@ -2,7 +2,7 @@ import { prisma } from '../prisma';
 import { AnalyticsParams } from '../utils/validation';
 import { OrderItem } from '../types';
 import { getBusinessDayRange, parseTimeString, getHoursInBusinessDay } from '../utils/businessDay';
-import { addMoney, roundMoney, divideMoney, multiplyMoney, subtractMoney, decimalToNumber } from '../utils/money';
+import { addMoney, roundMoney, divideMoney, multiplyMoney, subtractMoney, decimalToNumber, addCost, multiplyCost } from '../utils/money';
 import { Product, Category, Transaction } from '@prisma/client';
 
 interface ProductPerformance {
@@ -905,7 +905,7 @@ export const getMarginByProduct = async (
       metrics.quantitySold += item.quantity;
 
       if (variantInfo.theoreticalCost !== null) {
-        metrics.cogs = addMoney(metrics.cogs, multiplyMoney(variantInfo.theoreticalCost, item.quantity));
+        metrics.cogs = addCost(metrics.cogs, multiplyCost(variantInfo.theoreticalCost, item.quantity));
       }
     }
   }

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatCurrency } from '../utils/formatting';
+import { formatCurrency, formatCost } from '../utils/formatting';
 import * as costApi from '../services/costManagementService';
 
 type ViewMode = 'list' | 'create';
@@ -526,7 +526,7 @@ const InventoryCountPanel: React.FC = () => {
                                     </td>
                                     <td className="px-3 py-2 text-sm text-white">{item.quantity}</td>
                                     <td className="px-3 py-2 text-sm text-white">
-                                      {formatCurrency(item.unitCost)}
+                                      {formatCost(item.unitCost)}
                                     </td>
                                     <td className="px-3 py-2 text-sm text-white">
                                       {formatCurrency(item.extendedValue)}

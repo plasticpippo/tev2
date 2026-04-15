@@ -1,0 +1,247 @@
+- generic [ref=e2]:
+  - generic [ref=e134]:
+    - banner [ref=e135]:
+      - generic [ref=e137]:
+        - heading "Admin Panel" [level=1] [ref=e138]
+        - paragraph [ref=e139]: Logged in as Admin User
+      - generic [ref=e140]:
+        - button "Switch to POS" [ref=e141] [cursor=pointer]
+        - button "Logout" [ref=e142] [cursor=pointer]
+    - generic [ref=e143]:
+      - navigation [ref=e144]:
+        - button "Collapse sidebar" [ref=e146] [cursor=pointer]:
+          - img [ref=e147]
+        - button "Dashboard" [ref=e350] [cursor=pointer]:
+          - img [ref=e352]
+          - generic [ref=e354]: Dashboard
+        - button "Analytics" [ref=e355] [cursor=pointer]:
+          - img [ref=e357]
+          - generic [ref=e359]: Analytics
+        - button "Profit Analytics" [ref=e360] [cursor=pointer]:
+          - img [ref=e362]
+          - generic [ref=e364]: Profit Analytics
+        - button "Transactions" [ref=e365] [cursor=pointer]:
+          - img [ref=e367]
+          - generic [ref=e369]: Transactions
+        - button "Receipts 13" [ref=e370] [cursor=pointer]:
+          - img [ref=e372]
+          - generic [ref=e374]: Receipts
+          - button "13" [ref=e375]
+        - button "Activity Log" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Activity Log
+        - button "Daily Closing Summary" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Daily Closing Summary
+        - button "Customers" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Customers
+        - button "Products" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Products
+        - button "Categories" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Categories
+        - button "Stock Items" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Stock Items
+        - button "Inventory" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Inventory
+        - button "Cost Management" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Cost Management
+        - button "Inventory Counts" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Inventory Counts
+        - button "Variance Reports" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Variance Reports
+        - button "Users" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e430]: Users
+        - button "Tills" [ref=e431] [cursor=pointer]:
+          - img [ref=e433]
+          - generic [ref=e435]: Tills
+        - button "Tables & Layout" [ref=e436] [cursor=pointer]:
+          - img [ref=e438]
+          - generic [ref=e440]: Tables & Layout
+        - button "Itemised Consumption" [ref=e441] [cursor=pointer]:
+          - img [ref=e443]
+          - generic [ref=e445]: Itemised Consumption
+        - button "Settings" [ref=e446] [cursor=pointer]:
+          - img [ref=e448]
+          - generic [ref=e451]: Settings
+      - main [ref=e255]:
+        - generic [ref=e452]:
+          - generic [ref=e453]:
+            - button "Ingredient Costs" [ref=e454] [cursor=pointer]
+            - button "Variant Costs" [ref=e455] [cursor=pointer]
+            - button "Recent Changes" [ref=e456] [cursor=pointer]
+          - generic [ref=e458]:
+            - generic [ref=e459]:
+              - textbox "Search ingredients..." [ref=e461]
+              - table [ref=e463]:
+                - rowgroup [ref=e464]:
+                  - row "Name Type Base Unit Standard Cost Last Update Status" [ref=e465]:
+                    - columnheader "Name" [ref=e466]
+                    - columnheader "Type" [ref=e467]
+                    - columnheader "Base Unit" [ref=e468]
+                    - columnheader "Standard Cost" [ref=e469]
+                    - columnheader "Last Update" [ref=e470]
+                    - columnheader "Status" [ref=e471]
+                - rowgroup [ref=e472]:
+                  - row "Bibita Pompelma Ingredient ml €15,500000 14/04/2026, 22:09 current" [ref=e473] [cursor=pointer]:
+                    - cell "Bibita Pompelma" [ref=e474]
+                    - cell "Ingredient" [ref=e475]
+                    - cell "ml" [ref=e476]
+                    - cell "€15,500000" [ref=e477]
+                    - cell "14/04/2026, 22:09" [ref=e478]
+                    - cell "current" [ref=e479]
+                  - row "Birra Beck's Sellable Good pcs €0,000000 08/04/2026, 14:23 pending" [ref=e480] [cursor=pointer]:
+                    - cell "Birra Beck's" [ref=e481]
+                    - cell "Sellable Good" [ref=e482]
+                    - cell "pcs" [ref=e483]
+                    - cell "€0,000000" [ref=e484]
+                    - cell "08/04/2026, 14:23" [ref=e485]
+                    - cell "pending" [ref=e486]
+                  - row "Birra Wuhrer Sellable Good pcs €0,000000 08/04/2026, 14:23 pending" [ref=e487] [cursor=pointer]:
+                    - cell "Birra Wuhrer" [ref=e488]
+                    - cell "Sellable Good" [ref=e489]
+                    - cell "pcs" [ref=e490]
+                    - cell "€0,000000" [ref=e491]
+                    - cell "08/04/2026, 14:23" [ref=e492]
+                    - cell "pending" [ref=e493]
+                  - row "Campari Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e494] [cursor=pointer]:
+                    - cell "Campari" [ref=e495]
+                    - cell "Ingredient" [ref=e496]
+                    - cell "ml" [ref=e497]
+                    - cell "€0,000000" [ref=e498]
+                    - cell "08/04/2026, 14:23" [ref=e499]
+                    - cell "pending" [ref=e500]
+                  - row "Coca Cola Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e501] [cursor=pointer]:
+                    - cell "Coca Cola" [ref=e502]
+                    - cell "Ingredient" [ref=e503]
+                    - cell "ml" [ref=e504]
+                    - cell "€0,000000" [ref=e505]
+                    - cell "08/04/2026, 14:23" [ref=e506]
+                    - cell "pending" [ref=e507]
+                  - row "Ginger Beer Fever Tree Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e508] [cursor=pointer]:
+                    - cell "Ginger Beer Fever Tree" [ref=e509]
+                    - cell "Ingredient" [ref=e510]
+                    - cell "ml" [ref=e511]
+                    - cell "€0,000000" [ref=e512]
+                    - cell "08/04/2026, 14:23" [ref=e513]
+                    - cell "pending" [ref=e514]
+                  - row "Gin Gordon's Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e515] [cursor=pointer]:
+                    - cell "Gin Gordon's" [ref=e516]
+                    - cell "Ingredient" [ref=e517]
+                    - cell "ml" [ref=e518]
+                    - cell "€0,000000" [ref=e519]
+                    - cell "08/04/2026, 14:23" [ref=e520]
+                    - cell "pending" [ref=e521]
+                  - row "H2O Sellable Good pcs €0,000000 08/04/2026, 14:23 pending" [ref=e522] [cursor=pointer]:
+                    - cell "H2O" [ref=e523]
+                    - cell "Sellable Good" [ref=e524]
+                    - cell "pcs" [ref=e525]
+                    - cell "€0,000000" [ref=e526]
+                    - cell "08/04/2026, 14:23" [ref=e527]
+                    - cell "pending" [ref=e528]
+                  - row "Hierbas Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e529] [cursor=pointer]:
+                    - cell "Hierbas" [ref=e530]
+                    - cell "Ingredient" [ref=e531]
+                    - cell "ml" [ref=e532]
+                    - cell "€0,000000" [ref=e533]
+                    - cell "08/04/2026, 14:23" [ref=e534]
+                    - cell "pending" [ref=e535]
+                  - row "Lemonsoda Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e536] [cursor=pointer]:
+                    - cell "Lemonsoda" [ref=e537]
+                    - cell "Ingredient" [ref=e538]
+                    - cell "ml" [ref=e539]
+                    - cell "€0,000000" [ref=e540]
+                    - cell "08/04/2026, 14:23" [ref=e541]
+                    - cell "pending" [ref=e542]
+                  - row "Rum Pampero Bianco Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e543] [cursor=pointer]:
+                    - cell "Rum Pampero Bianco" [ref=e544]
+                    - cell "Ingredient" [ref=e545]
+                    - cell "ml" [ref=e546]
+                    - cell "€0,000000" [ref=e547]
+                    - cell "08/04/2026, 14:23" [ref=e548]
+                    - cell "pending" [ref=e549]
+                  - row "Sipsmith Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e550] [cursor=pointer]:
+                    - cell "Sipsmith" [ref=e551]
+                    - cell "Ingredient" [ref=e552]
+                    - cell "ml" [ref=e553]
+                    - cell "€0,000000" [ref=e554]
+                    - cell "08/04/2026, 14:23" [ref=e555]
+                    - cell "pending" [ref=e556]
+                  - row "Tequila Sierra Silver Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e557] [cursor=pointer]:
+                    - cell "Tequila Sierra Silver" [ref=e558]
+                    - cell "Ingredient" [ref=e559]
+                    - cell "ml" [ref=e560]
+                    - cell "€0,000000" [ref=e561]
+                    - cell "08/04/2026, 14:23" [ref=e562]
+                    - cell "pending" [ref=e563]
+                  - row "Tessera ARCI Sellable Good pcs €0,000000 08/04/2026, 14:23 pending" [ref=e564] [cursor=pointer]:
+                    - cell "Tessera ARCI" [ref=e565]
+                    - cell "Sellable Good" [ref=e566]
+                    - cell "pcs" [ref=e567]
+                    - cell "€0,000000" [ref=e568]
+                    - cell "08/04/2026, 14:23" [ref=e569]
+                    - cell "pending" [ref=e570]
+                  - row "Tonica Fever Tree Ingredient ml €0,010000 08/04/2026, 14:23 current" [ref=e571] [cursor=pointer]:
+                    - cell "Tonica Fever Tree" [ref=e572]
+                    - cell "Ingredient" [ref=e573]
+                    - cell "ml" [ref=e574]
+                    - cell "€0,010000" [ref=e575]
+                    - cell "08/04/2026, 14:23" [ref=e576]
+                    - cell "current" [ref=e577]
+                  - row "Vermouth Carpano Rosso Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e578] [cursor=pointer]:
+                    - cell "Vermouth Carpano Rosso" [ref=e579]
+                    - cell "Ingredient" [ref=e580]
+                    - cell "ml" [ref=e581]
+                    - cell "€0,000000" [ref=e582]
+                    - cell "08/04/2026, 14:23" [ref=e583]
+                    - cell "pending" [ref=e584]
+                  - row "Vino Bianco Ingredient ml €0,000000 08/04/2026, 14:23 pending" [ref=e585] [cursor=pointer]:
+                    - cell "Vino Bianco" [ref=e586]
+                    - cell "Ingredient" [ref=e587]
+                    - cell "ml" [ref=e588]
+                    - cell "€0,000000" [ref=e589]
+                    - cell "08/04/2026, 14:23" [ref=e590]
+                    - cell "pending" [ref=e591]
+                  - row "Vodka Moskovskaya Ingredient ml €0,015000 08/04/2026, 14:23 current" [ref=e592] [cursor=pointer]:
+                    - cell "Vodka Moskovskaya" [ref=e593]
+                    - cell "Ingredient" [ref=e594]
+                    - cell "ml" [ref=e595]
+                    - cell "€0,015000" [ref=e596]
+                    - cell "08/04/2026, 14:23" [ref=e597]
+                    - cell "current" [ref=e598]
+            - generic [ref=e600]:
+              - generic [ref=e601]:
+                - heading "Campari" [level=3] [ref=e602]
+                - button "×" [ref=e603] [cursor=pointer]
+              - generic [ref=e604]:
+                - generic [ref=e605]:
+                  - generic [ref=e606]: Type
+                  - generic [ref=e607]: Ingredient
+                - generic [ref=e608]:
+                  - generic [ref=e609]: Base Unit
+                  - generic [ref=e610]: ml
+                - generic [ref=e611]:
+                  - generic [ref=e612]: Standard Cost
+                  - generic [ref=e613]: €0,000000
+                - generic [ref=e614]:
+                  - generic [ref=e615]: Cost Per Unit
+                  - generic [ref=e616]: €0,000000
+                - generic [ref=e617]:
+                  - generic [ref=e618]: Last Update
+                  - generic [ref=e619]: 08/04/2026, 14:23
+                - generic [ref=e620]:
+                  - generic [ref=e621]: Status
+                  - generic [ref=e622]: pending
+              - button "Update Cost" [ref=e623] [cursor=pointer]
+              - heading "Recent History" [level=4] [ref=e624]
+              - paragraph [ref=e625]: No cost history available
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { formatCurrency, formatDate } from '../utils/formatting';
+import { formatCurrency, formatCost, formatDate } from '../utils/formatting';
 import * as costApi from '../services/costManagementService';
 import type { IngredientCostInfo, CostHistoryEntry, VariantCostSummary, VariantCostBreakdown } from '../services/costManagementService';
 
@@ -49,7 +49,7 @@ const UpdateCostModal: React.FC<UpdateCostModalProps> = ({ ingredient, onClose, 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const cost = parseFloat(newCost);
-    if (isNaN(cost) || cost < 0) {
+    if (isNaN(cost) || cost <= 0) {
       setError(t('costManagement.invalidCost'));
       return;
     }
@@ -78,13 +78,13 @@ const UpdateCostModal: React.FC<UpdateCostModalProps> = ({ ingredient, onClose, 
         <div className="space-y-4">
           <div>
             <label className="block text-sm text-slate-400 mb-1">{t('costManagement.currentCost')}</label>
-            <p className="text-white font-semibold">{formatCurrency(ingredient.standardCost)} / {ingredient.baseUnit}</p>
+            <p className="text-white font-semibold">{formatCost(ingredient.standardCost)} / {ingredient.baseUnit}</p>
           </div>
           <div>
             <label className="block text-sm text-slate-400 mb-1">{t('costManagement.newCost')}</label>
             <input
               type="number"
-              step="0.01"
+              step="0.000001"
               min="0"
               value={newCost}
               onChange={e => setNewCost(e.target.value)}
@@ -115,7 +115,7 @@ const UpdateCostModal: React.FC<UpdateCostModalProps> = ({ ingredient, onClose, 
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
           <button type="button" onClick={onClose} className="px-4 py-2 bg-slate-700 hover:bg-slate-600 text-white rounded-md transition min-h-11">
-            {t('buttons.cancel')}
+            {t('costManagement.cancel')}
           </button>
           <button type="submit" disabled={saving} className="bg-amber-500 hover:bg-amber-600 text-white font-bold py-2 px-4 min-h-11 rounded-md transition disabled:opacity-50">
             {saving ? t('costManagement.saving') : t('costManagement.updateCost')}
@@ -169,11 +169,11 @@ const IngredientDetailPanel: React.FC<IngredientDetailPanelProps> = ({ ingredien
         </div>
         <div className="flex justify-between">
           <span className="text-slate-400">{t('costManagement.standardCost')}</span>
-          <span className="text-white font-semibold">{formatCurrency(ingredient.standardCost)}</span>
+          <span className="text-white font-semibold">{formatCost(ingredient.standardCost)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-slate-400">{t('costManagement.costPerUnit')}</span>
-          <span className="text-white">{formatCurrency(ingredient.costPerUnit)}</span>
+          <span className="text-white">{formatCost(ingredient.costPerUnit)}</span>
         </div>
         <div className="flex justify-between">
           <span className="text-slate-400">{t('costManagement.lastUpdate')}</span>
@@ -202,9 +202,9 @@ const IngredientDetailPanel: React.FC<IngredientDetailPanelProps> = ({ ingredien
           {history.map(entry => (
             <div key={entry.id} className="bg-slate-700 rounded p-3 text-sm">
               <div className="flex justify-between text-slate-300">
-                <span>{formatCurrency(entry.previousCost)}</span>
+                <span>{formatCost(entry.previousCost)}</span>
                 <span className="text-slate-500">&rarr;</span>
-                <span className="font-semibold">{formatCurrency(entry.newCost)}</span>
+                <span className="font-semibold">{formatCost(entry.newCost)}</span>
               </div>
               <p className="text-slate-400 text-xs mt-1">{entry.reason}</p>
               <p className="text-slate-500 text-xs">{formatDate(entry.createdAt)}</p>
@@ -258,7 +258,7 @@ const VariantBreakdownPanel: React.FC<VariantBreakdownPanelProps> = ({ variantId
         <>
           <div className="flex justify-between mb-4">
             <span className="text-slate-400">{t('costManagement.totalCost')}</span>
-            <span className="text-white font-semibold">{breakdown.totalCost !== null ? formatCurrency(breakdown.totalCost) : 'N/A'}</span>
+            <span className="text-white font-semibold">{breakdown.totalCost !== null ? formatCost(breakdown.totalCost) : 'N/A'}</span>
           </div>
           <h4 className="text-sm font-semibold text-slate-300 mb-2">{t('costManagement.ingredientCosts')}</h4>
           <div className="space-y-2">
@@ -266,10 +266,10 @@ const VariantBreakdownPanel: React.FC<VariantBreakdownPanelProps> = ({ variantId
               <div key={idx} className="bg-slate-700 rounded p-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-white">{ic.stockItemName}</span>
-                  <span className="text-white font-semibold">{formatCurrency(ic.ingredientCost)}</span>
+                  <span className="text-white font-semibold">{formatCost(ic.ingredientCost)}</span>
                 </div>
                 <div className="flex justify-between text-xs text-slate-400 mt-1">
-                  <span>{ic.quantity} x {formatCurrency(ic.standardCost)}</span>
+                  <span>{ic.quantity} x {formatCost(ic.standardCost)}</span>
                 </div>
               </div>
             ))}
@@ -280,7 +280,7 @@ const VariantBreakdownPanel: React.FC<VariantBreakdownPanelProps> = ({ variantId
   );
 };
 
-const IngredientCostsTab: React.FC<{ onModalOpen: (ingredient: IngredientCostInfo) => void }> = ({ onModalOpen }) => {
+const IngredientCostsTab: React.FC<{ onModalOpen: (ingredient: IngredientCostInfo) => void; refreshTrigger: number }> = ({ onModalOpen, refreshTrigger }) => {
   const { t } = useTranslation('admin');
   const [ingredients, setIngredients] = useState<IngredientCostInfo[]>([]);
   const [loading, setLoading] = useState(true);
@@ -301,7 +301,7 @@ const IngredientCostsTab: React.FC<{ onModalOpen: (ingredient: IngredientCostInf
 
   useEffect(() => {
     loadIngredients();
-  }, [loadIngredients]);
+  }, [loadIngredients, refreshTrigger]);
 
   const selectedIngredient = selectedId ? ingredients.find(i => i.id === selectedId) || null : null;
 
@@ -344,7 +344,7 @@ const IngredientCostsTab: React.FC<{ onModalOpen: (ingredient: IngredientCostInf
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ing.name}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ing.type}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ing.baseUnit}</td>
-                    <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCurrency(ing.standardCost)}</td>
+                    <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCost(ing.standardCost)}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatDate(ing.lastCostUpdate)}</td>
                     <td className="px-4 py-3 text-sm border-t border-slate-700"><CostStatusBadge status={ing.costStatus} /></td>
                   </tr>
@@ -466,7 +466,7 @@ const VariantCostsTab: React.FC = () => {
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{v.productName}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{(v as any).categoryName || ''}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCurrency(v.price)}</td>
-                    <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{v.theoreticalCost !== null ? formatCurrency(v.theoreticalCost) : 'N/A'}</td>
+                    <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{v.theoreticalCost !== null ? formatCost(v.theoreticalCost) : 'N/A'}</td>
                     <td className="px-4 py-3 text-sm text-white border-t border-slate-700">
                       {v.currentMargin !== null ? `${Number(v.currentMargin).toFixed(1)}%` : 'N/A'}
                     </td>
@@ -509,7 +509,7 @@ const VariantCostsTab: React.FC = () => {
   );
 };
 
-const RecentChangesTab: React.FC = () => {
+const RecentChangesTab: React.FC<{ refreshTrigger: number }> = ({ refreshTrigger }) => {
   const { t } = useTranslation('admin');
   const [changes, setChanges] = useState<CostHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -528,12 +528,12 @@ const RecentChangesTab: React.FC = () => {
 
   useEffect(() => {
     loadChanges();
-  }, [loadChanges]);
+  }, [loadChanges, refreshTrigger]);
 
   const renderChangePercent = (pct: number) => {
     const isPositive = pct > 0;
     const cls = isPositive ? 'text-red-400' : pct < 0 ? 'text-green-400' : 'text-slate-400';
-    return <span className={`font-semibold ${cls}`}>{isPositive ? '+' : ''}{Number(pct).toFixed(1)}%</span>;
+    return <span className={`font-semibold ${cls}`}>{isPositive ? '+' : ''}{Number(pct).toFixed(2)}%</span>;
   };
 
   return (
@@ -560,8 +560,8 @@ const RecentChangesTab: React.FC = () => {
               <tr key={ch.id} className="hover:bg-slate-700/50 transition">
                 <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatDate(ch.createdAt)}</td>
                 <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ch.stockItemName || ch.stockItemId}</td>
-                <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCurrency(ch.previousCost)}</td>
-                <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCurrency(ch.newCost)}</td>
+                <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCost(ch.previousCost)}</td>
+                <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{formatCost(ch.newCost)}</td>
                 <td className="px-4 py-3 text-sm border-t border-slate-700">{renderChangePercent(ch.changePercent)}</td>
                 <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ch.reason}</td>
                 <td className="px-4 py-3 text-sm text-white border-t border-slate-700">{ch.createdByName || ch.createdBy}</td>
@@ -585,6 +585,7 @@ const CostManagementPanel: React.FC<CostManagementPanelProps> = () => {
   const { t } = useTranslation('admin');
   const [activeTab, setActiveTab] = useState<TabKey>('ingredients');
   const [modalIngredient, setModalIngredient] = useState<IngredientCostInfo | null>(null);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
 
   const tabs: { key: TabKey; label: string }[] = [
     { key: 'ingredients', label: t('costManagement.ingredientCosts') },
@@ -611,16 +612,16 @@ const CostManagementPanel: React.FC<CostManagementPanelProps> = () => {
       </div>
       <div className="flex-1 overflow-hidden">
         {activeTab === 'ingredients' && (
-          <IngredientCostsTab onModalOpen={ing => setModalIngredient(ing)} />
+          <IngredientCostsTab onModalOpen={ing => setModalIngredient(ing)} refreshTrigger={refreshTrigger} />
         )}
         {activeTab === 'variants' && <VariantCostsTab />}
-        {activeTab === 'changes' && <RecentChangesTab />}
+        {activeTab === 'changes' && <RecentChangesTab refreshTrigger={refreshTrigger} />}
       </div>
       {modalIngredient && (
         <UpdateCostModal
           ingredient={modalIngredient}
           onClose={() => setModalIngredient(null)}
-          onSaved={() => setModalIngredient(null)}
+          onSaved={() => { setModalIngredient(null); setRefreshTrigger(prev => prev + 1); }}
         />
       )}
     </div>

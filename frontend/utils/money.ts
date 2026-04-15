@@ -48,6 +48,15 @@ export function divideMoney(value: number, divisor: number): number {
 }
 
 /**
+ * Round a number to specified decimal places (default 6) for cost calculations
+ */
+export function roundCost(value: number, precision: number = 6): number {
+  if (!isMoneyValid(value)) return 0;
+  const factor = Math.pow(10, precision);
+  return Math.round(value * factor) / factor;
+}
+
+/**
  * Formats a number as currency string
  */
 export function formatMoney(value: number, locale: string = 'it-IT', currencyCode: string = 'EUR'): string {
