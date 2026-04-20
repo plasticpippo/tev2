@@ -1,0 +1,128 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e331] [cursor=pointer]:
+          - img [ref=e333]
+          - generic [ref=e335]: Dashboard
+        - button "Analytics" [ref=e336] [cursor=pointer]:
+          - img [ref=e338]
+          - generic [ref=e340]: Analytics
+        - button "Profit Analytics" [ref=e341] [cursor=pointer]:
+          - img [ref=e343]
+          - generic [ref=e345]: Profit Analytics
+        - button "Transactions" [ref=e346] [cursor=pointer]:
+          - img [ref=e348]
+          - generic [ref=e350]: Transactions
+        - button "Receipts 13" [ref=e351] [cursor=pointer]:
+          - img [ref=e353]
+          - generic [ref=e355]: Receipts
+          - button "13" [ref=e356]
+        - button "Activity Log" [ref=e357] [cursor=pointer]:
+          - img [ref=e359]
+          - generic [ref=e361]: Activity Log
+        - button "Daily Closing Summary" [ref=e362] [cursor=pointer]:
+          - img [ref=e364]
+          - generic [ref=e366]: Daily Closing Summary
+        - button "Customers" [ref=e367] [cursor=pointer]:
+          - img [ref=e369]
+          - generic [ref=e371]: Customers
+        - button "Products" [ref=e372] [cursor=pointer]:
+          - img [ref=e374]
+          - generic [ref=e376]: Products
+        - button "Categories" [ref=e377] [cursor=pointer]:
+          - img [ref=e379]
+          - generic [ref=e381]: Categories
+        - button "Stock Items" [ref=e382] [cursor=pointer]:
+          - img [ref=e384]
+          - generic [ref=e386]: Stock Items
+        - button "Inventory" [ref=e387] [cursor=pointer]:
+          - img [ref=e389]
+          - generic [ref=e391]: Inventory
+        - button "Cost Management" [ref=e392] [cursor=pointer]:
+          - img [ref=e394]
+          - generic [ref=e396]: Cost Management
+        - button "Inventory Counts" [ref=e397] [cursor=pointer]:
+          - img [ref=e399]
+          - generic [ref=e401]: Inventory Counts
+        - button "Variance Reports" [ref=e402] [cursor=pointer]:
+          - img [ref=e404]
+          - generic [ref=e406]: Variance Reports
+        - button "Users" [ref=e407] [cursor=pointer]:
+          - img [ref=e409]
+          - generic [ref=e411]: Users
+        - button "Tills" [ref=e412] [cursor=pointer]:
+          - img [ref=e414]
+          - generic [ref=e416]: Tills
+        - button "Tables & Layout" [ref=e417] [cursor=pointer]:
+          - img [ref=e419]
+          - generic [ref=e421]: Tables & Layout
+        - button "Itemised Consumption" [ref=e422] [cursor=pointer]:
+          - img [ref=e424]
+          - generic [ref=e426]: Itemised Consumption
+        - button "Settings" [ref=e427] [cursor=pointer]:
+          - img [ref=e429]
+          - generic [ref=e432]: Settings
+      - main [ref=e236]:
+        - generic [ref=e433]:
+          - generic [ref=e434]:
+            - heading "Category Management" [level=3] [ref=e435]
+            - button "Add Category" [ref=e436] [cursor=pointer]
+          - generic [ref=e438]:
+            - textbox "Search categories..." [ref=e439]
+            - generic:
+              - img
+          - generic [ref=e440]:
+            - generic [ref=e441]:
+              - generic [ref=e442]:
+                - paragraph [ref=e443]: Shots
+                - paragraph [ref=e444]: "Visible on: Main Bar"
+              - generic [ref=e445]:
+                - button "Edit" [ref=e446] [cursor=pointer]
+                - button "Delete" [ref=e447] [cursor=pointer]
+            - generic [ref=e448]:
+              - generic [ref=e449]:
+                - paragraph [ref=e450]: Beer
+                - paragraph [ref=e451]: "Visible on: Main Bar"
+              - generic [ref=e452]:
+                - button "Edit" [ref=e453] [cursor=pointer]
+                - button "Delete" [ref=e454] [cursor=pointer]
+            - generic [ref=e455]:
+              - generic [ref=e456]:
+                - paragraph [ref=e457]: Cocktails
+                - paragraph [ref=e458]: "Visible on: Main Bar"
+              - generic [ref=e459]:
+                - button "Edit" [ref=e460] [cursor=pointer]
+                - button "Delete" [ref=e461] [cursor=pointer]
+            - generic [ref=e462]:
+              - generic [ref=e463]:
+                - paragraph [ref=e464]: Soft Drinks
+                - paragraph [ref=e465]: "Visible on: Main Bar"
+              - generic [ref=e466]:
+                - button "Edit" [ref=e467] [cursor=pointer]
+                - button "Delete" [ref=e468] [cursor=pointer]
+            - generic [ref=e469]:
+              - generic [ref=e470]:
+                - paragraph [ref=e471]: Entrata
+                - paragraph [ref=e472]: "Visible on: Entrata"
+              - generic [ref=e473]:
+                - button "Edit" [ref=e474] [cursor=pointer]
+                - button "Delete" [ref=e475] [cursor=pointer]
+            - generic [ref=e476]:
+              - generic [ref=e477]:
+                - paragraph [ref=e478]: Vino
+                - paragraph [ref=e479]: "Visible on: Main Bar"
+              - generic [ref=e480]:
+                - button "Edit" [ref=e481] [cursor=pointer]
+                - button "Delete" [ref=e482] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

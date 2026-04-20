@@ -1,0 +1,136 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e483] [cursor=pointer]:
+          - img [ref=e485]
+          - generic [ref=e487]: Dashboard
+        - button "Analytics" [ref=e488] [cursor=pointer]:
+          - img [ref=e490]
+          - generic [ref=e492]: Analytics
+        - button "Profit Analytics" [ref=e493] [cursor=pointer]:
+          - img [ref=e495]
+          - generic [ref=e497]: Profit Analytics
+        - button "Transactions" [ref=e498] [cursor=pointer]:
+          - img [ref=e500]
+          - generic [ref=e502]: Transactions
+        - button "Receipts 13" [ref=e503] [cursor=pointer]:
+          - img [ref=e505]
+          - generic [ref=e507]: Receipts
+          - button "13" [ref=e508]
+        - button "Activity Log" [ref=e509] [cursor=pointer]:
+          - img [ref=e511]
+          - generic [ref=e513]: Activity Log
+        - button "Daily Closing Summary" [ref=e514] [cursor=pointer]:
+          - img [ref=e516]
+          - generic [ref=e518]: Daily Closing Summary
+        - button "Customers" [ref=e519] [cursor=pointer]:
+          - img [ref=e521]
+          - generic [ref=e523]: Customers
+        - button "Products" [ref=e524] [cursor=pointer]:
+          - img [ref=e526]
+          - generic [ref=e528]: Products
+        - button "Categories" [ref=e529] [cursor=pointer]:
+          - img [ref=e531]
+          - generic [ref=e533]: Categories
+        - button "Stock Items" [ref=e534] [cursor=pointer]:
+          - img [ref=e536]
+          - generic [ref=e538]: Stock Items
+        - button "Inventory" [ref=e539] [cursor=pointer]:
+          - img [ref=e541]
+          - generic [ref=e543]: Inventory
+        - button "Cost Management" [ref=e544] [cursor=pointer]:
+          - img [ref=e546]
+          - generic [ref=e548]: Cost Management
+        - button "Inventory Counts" [ref=e549] [cursor=pointer]:
+          - img [ref=e551]
+          - generic [ref=e553]: Inventory Counts
+        - button "Variance Reports" [ref=e554] [cursor=pointer]:
+          - img [ref=e556]
+          - generic [ref=e558]: Variance Reports
+        - button "Users" [ref=e559] [cursor=pointer]:
+          - img [ref=e561]
+          - generic [ref=e563]: Users
+        - button "Tills" [ref=e564] [cursor=pointer]:
+          - img [ref=e566]
+          - generic [ref=e568]: Tills
+        - button "Tables & Layout" [ref=e569] [cursor=pointer]:
+          - img [ref=e571]
+          - generic [ref=e573]: Tables & Layout
+        - button "Itemised Consumption" [ref=e574] [cursor=pointer]:
+          - img [ref=e576]
+          - generic [ref=e578]: Itemised Consumption
+        - button "Settings" [ref=e579] [cursor=pointer]:
+          - img [ref=e581]
+          - generic [ref=e584]: Settings
+      - main [ref=e236]:
+        - generic [ref=e585]:
+          - heading "Variance Analysis Report" [level=2] [ref=e586]
+          - button "Generate New Report" [ref=e588] [cursor=pointer]:
+            - heading "Generate New Report" [level=3] [ref=e589]
+            - img [ref=e590]
+          - generic [ref=e592]:
+            - generic [ref=e594]:
+              - heading "Reports (6)" [level=3] [ref=e596]
+              - table [ref=e598]:
+                - rowgroup [ref=e599]:
+                  - row "Period Variance Var % Status" [ref=e600]:
+                    - columnheader "Period" [ref=e601]
+                    - columnheader "Variance" [ref=e602]
+                    - columnheader "Var %" [ref=e603]
+                    - columnheader "Status" [ref=e604]
+                - rowgroup [ref=e605]:
+                  - row "01/04/2026 14/04/2026 €-3,702432 0.0% draft" [ref=e606] [cursor=pointer]:
+                    - cell "01/04/2026 14/04/2026" [ref=e607]:
+                      - paragraph [ref=e608]: 01/04/2026
+                      - paragraph [ref=e609]: 14/04/2026
+                    - cell "€-3,702432" [ref=e610]
+                    - cell "0.0%" [ref=e611]
+                    - cell "draft" [ref=e612]
+                  - row "01/04/2026 16/04/2026 €0,000000 0.0% draft" [ref=e613] [cursor=pointer]:
+                    - cell "01/04/2026 16/04/2026" [ref=e614]:
+                      - paragraph [ref=e615]: 01/04/2026
+                      - paragraph [ref=e616]: 16/04/2026
+                    - cell "€0,000000" [ref=e617]
+                    - cell "0.0%" [ref=e618]
+                    - cell "draft" [ref=e619]
+                  - row "01/04/2026 10/04/2026 €0,000000 0.0% draft" [ref=e620] [cursor=pointer]:
+                    - cell "01/04/2026 10/04/2026" [ref=e621]:
+                      - paragraph [ref=e622]: 01/04/2026
+                      - paragraph [ref=e623]: 10/04/2026
+                    - cell "€0,000000" [ref=e624]
+                    - cell "0.0%" [ref=e625]
+                    - cell "draft" [ref=e626]
+                  - row "01/04/2026 15/04/2026 €0,000000 0.0% draft" [ref=e627] [cursor=pointer]:
+                    - cell "01/04/2026 15/04/2026" [ref=e628]:
+                      - paragraph [ref=e629]: 01/04/2026
+                      - paragraph [ref=e630]: 15/04/2026
+                    - cell "€0,000000" [ref=e631]
+                    - cell "0.0%" [ref=e632]
+                    - cell "draft" [ref=e633]
+                  - row "01/04/2026 10/04/2026 €0,000000 0.0% draft" [ref=e634] [cursor=pointer]:
+                    - cell "01/04/2026 10/04/2026" [ref=e635]:
+                      - paragraph [ref=e636]: 01/04/2026
+                      - paragraph [ref=e637]: 10/04/2026
+                    - cell "€0,000000" [ref=e638]
+                    - cell "0.0%" [ref=e639]
+                    - cell "draft" [ref=e640]
+                  - row "01/04/2026 09/04/2026 €-775,000000 0.0% draft" [ref=e641] [cursor=pointer]:
+                    - cell "01/04/2026 09/04/2026" [ref=e642]:
+                      - paragraph [ref=e643]: 01/04/2026
+                      - paragraph [ref=e644]: 09/04/2026
+                    - cell "€-775,000000" [ref=e645]
+                    - cell "0.0%" [ref=e646]
+                    - cell "draft" [ref=e647]
+            - generic [ref=e649]: Select a report to view details
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

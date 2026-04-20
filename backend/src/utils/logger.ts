@@ -650,7 +650,7 @@ export interface LoggerMetadata {
  * @param input - String to sanitize
  * @returns Sanitized string safe for logging
  */
-export function sanitizeForLogInjection(input: string): string {
+function sanitizeForLogInjection(input: string): string {
   if (typeof input !== 'string') {
     return String(input);
   }
@@ -740,7 +740,7 @@ export function redactSensitiveData(data: any, depth: number = 0): any {
  * 
  * @returns Unique correlation ID
  */
-export function generateCorrelationId(): string {
+function generateCorrelationId(): string {
   return `corr_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
 }
 
@@ -750,7 +750,7 @@ export function generateCorrelationId(): string {
  * @param headers - Request headers
  * @returns Correlation ID
  */
-export function getCorrelationId(headers?: Record<string, string>): string {
+function getCorrelationId(headers?: Record<string, string>): string {
   if (headers) {
     // Check common correlation ID header names
     const correlationHeaders = [
@@ -1006,7 +1006,7 @@ export function logDebug(message: string | object, metadata?: LoggerMetadata): v
  * @param path - Request path
  * @param metadata - Additional metadata
  */
-export function logRequest(method: string, path: string, metadata?: LoggerMetadata): void {
+function logRequest(method: string, path: string, metadata?: LoggerMetadata): void {
   logger.info(`${method} ${path}`, metadata);
 }
 
@@ -1019,7 +1019,7 @@ export function logRequest(method: string, path: string, metadata?: LoggerMetada
  * @param responseTime - Response time in milliseconds
  * @param metadata - Additional metadata
  */
-export function logResponse(
+function logResponse(
   method: string,
   path: string,
   statusCode: number,
@@ -1181,33 +1181,6 @@ export function logSecurityAlert(
   );
 }
 
-/**
- * Create a child logger with predefined metadata
- * 
- * @param metadata - Metadata to include in all log entries
- * @returns Child logger function
- */
-export function createChildLogger(metadata: LoggerMetadata): {
-  error: (message: string | Error | object, additionalMetadata?: LoggerMetadata) => void;
-  warn: (message: string | object, additionalMetadata?: LoggerMetadata) => void;
-  info: (message: string | object, additionalMetadata?: LoggerMetadata) => void;
-  debug: (message: string | object, additionalMetadata?: LoggerMetadata) => void;
-} {
-  return {
-    error: (message: string | Error | object, additionalMetadata?: LoggerMetadata) => {
-      logError(message, { ...metadata, ...additionalMetadata });
-    },
-    warn: (message: string | object, additionalMetadata?: LoggerMetadata) => {
-      logWarn(message, { ...metadata, ...additionalMetadata });
-    },
-    info: (message: string | object, additionalMetadata?: LoggerMetadata) => {
-      logInfo(message, { ...metadata, ...additionalMetadata });
-    },
-    debug: (message: string | object, additionalMetadata?: LoggerMetadata) => {
-      logDebug(message, { ...metadata, ...additionalMetadata });
-    },
-  };
-}
 
 // ============================================================================
 // EXPRESS MIDDLEWARE
@@ -1278,7 +1251,6 @@ export default {
   logDataAccess,
   logPaymentEvent,
   logSecurityAlert,
-  createChildLogger,
   correlationIdMiddleware,
   requestLoggerMiddleware,
   redactSensitiveData,

@@ -217,7 +217,16 @@
     "neverLoggedIn": "Never logged in",
     "confirmDelete": "Are you sure you want to delete the user \"{{name}}\"?",
     "noUsers": "No users found",
-    "passwordChanged": "Password changed successfully"
+    "passwordChanged": "Password changed successfully",
+    "validation": {
+      "nameRequired": "Full name is required",
+      "usernameRequired": "Username is required",
+      "passwordRequired": "Password is required"
+    },
+    "errors": {
+      "failedToSave": "Failed to save user. Please check the details and try again.",
+      "duplicateUsername": "A user with this username already exists."
+    }
   },
   "tills": {
     "title": "Till Management",
@@ -543,6 +552,9 @@
       "tip": "Tip",
       "total": "Total"
     }
+  },
+  "hourlySalesChart": {
+    "title": "Hourly Sales Performance"
   },
   "analytics": {
     "title": "Analytics Dashboard",

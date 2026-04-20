@@ -655,5 +655,14 @@
   "fullscreen": {
     "enter": "Enter Fullscreen",
     "exit": "Exit Fullscreen"
+  },
+  "globalDataContext": {
+    "fetchDataNotAuthenticated": "User not authenticated, skipping data fetch",
+    "failedToFetchInitialData": "Failed to fetch initial data",
+    "authTokenTimeout": "Authentication token timeout",
+    "variantInvalidStockRefs": "Variant {{variantId}} ({{productName}} - {{variantName}}) has invalid stock references",
+    "tillNotConfigured": "Not Configured",
+    "unknownTill": "Unknown Till",
+    "contextError": "useGlobalDataContext must be used within a GlobalDataProvider"
   }
 }

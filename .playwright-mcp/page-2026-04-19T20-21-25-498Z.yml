@@ -1,0 +1,5 @@
+- generic [ref=e162]:
+  - img [ref=e164]
+  - heading "boundary.title" [level=3] [ref=e166]
+  - paragraph [ref=e167]: boundary.message
+  - button "boundary.retry" [ref=e169] [cursor=pointer]

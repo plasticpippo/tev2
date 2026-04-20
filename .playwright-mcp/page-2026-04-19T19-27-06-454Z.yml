@@ -1,0 +1,127 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - button "Enter Fullscreen" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "Admin Panel" [ref=e11] [cursor=pointer]
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Products" [level=2] [ref=e18]
+            - generic [ref=e19]:
+              - button "Favourites" [ref=e20] [cursor=pointer]
+              - button "Shots" [ref=e21] [cursor=pointer]
+              - button "Beer" [ref=e22] [cursor=pointer]
+              - button "Cocktails" [active] [ref=e23] [cursor=pointer]
+              - button "Soft Drinks" [ref=e24] [cursor=pointer]
+              - button "Vino" [ref=e25] [cursor=pointer]
+              - button "All" [ref=e26] [cursor=pointer]
+          - generic [ref=e29]:
+            - generic [ref=e115] [cursor=pointer]:
+              - paragraph [ref=e116]: Sipsmith Tonic
+              - generic [ref=e117]:
+                - paragraph [ref=e118]: Standard
+                - paragraph [ref=e119]: €12,00
+            - generic [ref=e120] [cursor=pointer]:
+              - paragraph [ref=e121]: Vodka Ginger Beer
+              - generic [ref=e122]:
+                - paragraph [ref=e123]: Standard
+                - paragraph [ref=e124]: €8,00
+            - generic [ref=e125] [cursor=pointer]:
+              - paragraph [ref=e126]: Gin Ginger Beer
+              - generic [ref=e127]:
+                - paragraph [ref=e128]: Standard
+                - paragraph [ref=e129]: €8,00
+            - generic [ref=e130] [cursor=pointer]:
+              - paragraph [ref=e131]: Pirlo Campari
+              - generic [ref=e132]:
+                - paragraph [ref=e133]: Standard
+                - paragraph [ref=e134]: €5,00
+              - generic [ref=e135]: FAV
+            - generic [ref=e136] [cursor=pointer]:
+              - paragraph [ref=e137]: Americano
+              - generic [ref=e138]:
+                - paragraph [ref=e139]: Standard
+                - paragraph [ref=e140]: €8,00
+            - generic [ref=e141] [cursor=pointer]:
+              - paragraph [ref=e142]: Negroni
+              - generic [ref=e143]:
+                - paragraph [ref=e144]: Standard
+                - paragraph [ref=e145]: €8,00
+            - generic [ref=e146] [cursor=pointer]:
+              - paragraph [ref=e147]: Vodka Lemon
+              - generic [ref=e148]:
+                - paragraph [ref=e149]: Standard
+                - paragraph [ref=e150]: €8,00
+              - generic [ref=e151]: FAV
+            - generic [ref=e152] [cursor=pointer]:
+              - paragraph [ref=e153]: Vodka Lemon
+              - generic [ref=e154]:
+                - paragraph [ref=e155]: Carico
+                - paragraph [ref=e156]: €10,00
+            - generic [ref=e157] [cursor=pointer]:
+              - paragraph [ref=e158]: Paloma
+              - generic [ref=e159]:
+                - paragraph [ref=e160]: Standard
+                - paragraph [ref=e161]: €8,00
+            - generic [ref=e162] [cursor=pointer]:
+              - paragraph [ref=e163]: Gin Tonic
+              - generic [ref=e164]:
+                - paragraph [ref=e165]: Standard
+                - paragraph [ref=e166]: €8,00
+              - generic [ref=e167]: FAV
+            - generic [ref=e168] [cursor=pointer]:
+              - paragraph [ref=e169]: Gin Tonic
+              - generic [ref=e170]:
+                - paragraph [ref=e171]: Carico
+                - paragraph [ref=e172]: €10,00
+            - generic [ref=e173] [cursor=pointer]:
+              - paragraph [ref=e174]: Gin Lemon
+              - generic [ref=e175]:
+                - paragraph [ref=e176]: Standard
+                - paragraph [ref=e177]: €8,00
+              - generic [ref=e178]: FAV
+            - generic [ref=e179] [cursor=pointer]:
+              - paragraph [ref=e180]: Gin Lemon
+              - generic [ref=e181]:
+                - paragraph [ref=e182]: Carico
+                - paragraph [ref=e183]: €10,00
+            - generic [ref=e184] [cursor=pointer]:
+              - paragraph [ref=e185]: Sipsmith Lemon
+              - generic [ref=e186]:
+                - paragraph [ref=e187]: Standard
+                - paragraph [ref=e188]: €12,00
+            - generic [ref=e189] [cursor=pointer]:
+              - paragraph [ref=e190]: Coca Rum
+              - generic [ref=e191]:
+                - paragraph [ref=e192]: Standard
+                - paragraph [ref=e193]: €8,00
+            - generic [ref=e194] [cursor=pointer]:
+              - paragraph [ref=e195]: Vodka Tonic
+              - generic [ref=e196]:
+                - paragraph [ref=e197]: Carico
+                - paragraph [ref=e198]: €10,00
+            - generic [ref=e199] [cursor=pointer]:
+              - paragraph [ref=e200]: Vodka Tonic
+              - generic [ref=e201]:
+                - paragraph [ref=e202]: Standard
+                - paragraph [ref=e203]: €8,00
+              - generic [ref=e204]: FAV
+        - generic [ref=e97]:
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - paragraph [ref=e100]: "Logged in as:"
+              - paragraph [ref=e101]:
+                - text: Admin User
+                - generic [ref=e102]: (Admin)
+            - button "Logout" [ref=e103] [cursor=pointer]
+          - generic [ref=e104]:
+            - heading "Current Order" [level=2] [ref=e105]
+            - generic [ref=e107]: Select products to add them here.
+          - button "EDIT Edit Layout" [ref=e109] [cursor=pointer]:
+            - generic [ref=e110]: EDIT
+            - generic [ref=e111]: Edit Layout
+          - button "View Open Tabs" [ref=e114] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

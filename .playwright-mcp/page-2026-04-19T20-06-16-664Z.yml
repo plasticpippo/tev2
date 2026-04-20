@@ -1,0 +1,306 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e1254] [cursor=pointer]:
+          - img [ref=e1256]
+          - generic [ref=e1258]: Dashboard
+        - button "Analytics" [ref=e1259] [cursor=pointer]:
+          - img [ref=e1261]
+          - generic [ref=e1263]: Analytics
+        - button "Profit Analytics" [ref=e1264] [cursor=pointer]:
+          - img [ref=e1266]
+          - generic [ref=e1268]: Profit Analytics
+        - button "Transactions" [ref=e1269] [cursor=pointer]:
+          - img [ref=e1271]
+          - generic [ref=e1273]: Transactions
+        - button "Receipts 13" [ref=e1274] [cursor=pointer]:
+          - img [ref=e1276]
+          - generic [ref=e1278]: Receipts
+          - button "13" [ref=e1279]
+        - button "Activity Log" [ref=e1280] [cursor=pointer]:
+          - img [ref=e1282]
+          - generic [ref=e1284]: Activity Log
+        - button "Daily Closing Summary" [ref=e1285] [cursor=pointer]:
+          - img [ref=e1287]
+          - generic [ref=e1289]: Daily Closing Summary
+        - button "Customers" [ref=e1290] [cursor=pointer]:
+          - img [ref=e1292]
+          - generic [ref=e1294]: Customers
+        - button "Products" [ref=e1295] [cursor=pointer]:
+          - img [ref=e1297]
+          - generic [ref=e1299]: Products
+        - button "Categories" [ref=e1300] [cursor=pointer]:
+          - img [ref=e1302]
+          - generic [ref=e1304]: Categories
+        - button "Stock Items" [ref=e1305] [cursor=pointer]:
+          - img [ref=e1307]
+          - generic [ref=e1309]: Stock Items
+        - button "Inventory" [ref=e1310] [cursor=pointer]:
+          - img [ref=e1312]
+          - generic [ref=e1314]: Inventory
+        - button "Cost Management" [ref=e1315] [cursor=pointer]:
+          - img [ref=e1317]
+          - generic [ref=e1319]: Cost Management
+        - button "Inventory Counts" [ref=e1320] [cursor=pointer]:
+          - img [ref=e1322]
+          - generic [ref=e1324]: Inventory Counts
+        - button "Variance Reports" [ref=e1325] [cursor=pointer]:
+          - img [ref=e1327]
+          - generic [ref=e1329]: Variance Reports
+        - button "Users" [ref=e1330] [cursor=pointer]:
+          - img [ref=e1332]
+          - generic [ref=e1334]: Users
+        - button "Tills" [ref=e1335] [cursor=pointer]:
+          - img [ref=e1337]
+          - generic [ref=e1339]: Tills
+        - button "Tables & Layout" [ref=e1340] [cursor=pointer]:
+          - img [ref=e1342]
+          - generic [ref=e1344]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1345] [cursor=pointer]:
+          - img [ref=e1347]
+          - generic [ref=e1349]: Itemised Consumption
+        - button "Settings" [ref=e1350] [cursor=pointer]:
+          - img [ref=e1352]
+          - generic [ref=e1355]: Settings
+      - main [ref=e236]:
+        - generic [ref=e1356]:
+          - generic [ref=e1357]:
+            - heading "Daily Closing Summaries" [level=1] [ref=e1358]
+            - paragraph [ref=e1359]: View detailed breakdowns of daily business closings
+          - generic [ref=e1361]:
+            - generic [ref=e1362]:
+              - generic [ref=e1363]: From Date
+              - textbox [ref=e1364]
+            - generic [ref=e1365]:
+              - generic [ref=e1366]: To Date
+              - textbox [ref=e1367]
+            - button "Clear Filters" [ref=e1369] [cursor=pointer]
+          - generic [ref=e1370]:
+            - generic [ref=e1371]:
+              - heading "Total Transactions" [level=3] [ref=e1372]
+              - paragraph [ref=e1373]: "70"
+            - generic [ref=e1374]:
+              - heading "Total Sales" [level=3] [ref=e1375]
+              - paragraph [ref=e1376]: 746,00 €
+            - generic [ref=e1377]:
+              - heading "Total Tax" [level=3] [ref=e1378]
+              - paragraph [ref=e1379]: 13,22 €
+            - generic [ref=e1380]:
+              - heading "Total Tips" [level=3] [ref=e1381]
+              - paragraph [ref=e1382]: 0,00 €
+          - table [ref=e1385]:
+            - rowgroup [ref=e1386]:
+              - row "Date/Time User Transactions Total Sales Actions" [ref=e1387]:
+                - columnheader "Date/Time" [ref=e1388]
+                - columnheader "User" [ref=e1389]
+                - columnheader "Transactions" [ref=e1390]
+                - columnheader "Total Sales" [ref=e1391]
+                - columnheader "Actions" [ref=e1392]
+            - rowgroup [ref=e1393]:
+              - row "Apr 04, 2026 11:00 Admin User 0 0,00 € View Details" [ref=e1394] [cursor=pointer]:
+                - cell "Apr 04, 2026 11:00" [ref=e1395]:
+                  - generic [ref=e1396]: Apr 04, 2026 11:00
+                - cell "Admin User" [ref=e1397]:
+                  - generic [ref=e1398]: Admin User
+                - cell "0" [ref=e1399]:
+                  - generic [ref=e1400]: "0"
+                - cell "0,00 €" [ref=e1401]:
+                  - generic [ref=e1402]: 0,00 €
+                - cell "View Details" [ref=e1403]:
+                  - button "View Details" [ref=e1404]
+              - row "Apr 03, 2026 11:00 Admin User 0 0,00 € View Details" [ref=e1405] [cursor=pointer]:
+                - cell "Apr 03, 2026 11:00" [ref=e1406]:
+                  - generic [ref=e1407]: Apr 03, 2026 11:00
+                - cell "Admin User" [ref=e1408]:
+                  - generic [ref=e1409]: Admin User
+                - cell "0" [ref=e1410]:
+                  - generic [ref=e1411]: "0"
+                - cell "0,00 €" [ref=e1412]:
+                  - generic [ref=e1413]: 0,00 €
+                - cell "View Details" [ref=e1414]:
+                  - button "View Details" [ref=e1415]
+              - row "Apr 02, 2026 11:00 Admin User 6 87,00 € View Details" [ref=e1416] [cursor=pointer]:
+                - cell "Apr 02, 2026 11:00" [ref=e1417]:
+                  - generic [ref=e1418]: Apr 02, 2026 11:00
+                - cell "Admin User" [ref=e1419]:
+                  - generic [ref=e1420]: Admin User
+                - cell "6" [ref=e1421]:
+                  - generic [ref=e1422]: "6"
+                - cell "87,00 €" [ref=e1423]:
+                  - generic [ref=e1424]: 87,00 €
+                - cell "View Details" [ref=e1425]:
+                  - button "View Details" [ref=e1426]
+              - row "Apr 01, 2026 11:00 Admin User 0 0,00 € View Details" [ref=e1427] [cursor=pointer]:
+                - cell "Apr 01, 2026 11:00" [ref=e1428]:
+                  - generic [ref=e1429]: Apr 01, 2026 11:00
+                - cell "Admin User" [ref=e1430]:
+                  - generic [ref=e1431]: Admin User
+                - cell "0" [ref=e1432]:
+                  - generic [ref=e1433]: "0"
+                - cell "0,00 €" [ref=e1434]:
+                  - generic [ref=e1435]: 0,00 €
+                - cell "View Details" [ref=e1436]:
+                  - button "View Details" [ref=e1437]
+              - row "Mar 31, 2026 11:00 Admin User 0 0,00 € View Details" [ref=e1438] [cursor=pointer]:
+                - cell "Mar 31, 2026 11:00" [ref=e1439]:
+                  - generic [ref=e1440]: Mar 31, 2026 11:00
+                - cell "Admin User" [ref=e1441]:
+                  - generic [ref=e1442]: Admin User
+                - cell "0" [ref=e1443]:
+                  - generic [ref=e1444]: "0"
+                - cell "0,00 €" [ref=e1445]:
+                  - generic [ref=e1446]: 0,00 €
+                - cell "View Details" [ref=e1447]:
+                  - button "View Details" [ref=e1448]
+              - row "Mar 29, 2026 11:00 Admin User 0 0,00 € View Details" [ref=e1449] [cursor=pointer]:
+                - cell "Mar 29, 2026 11:00" [ref=e1450]:
+                  - generic [ref=e1451]: Mar 29, 2026 11:00
+                - cell "Admin User" [ref=e1452]:
+                  - generic [ref=e1453]: Admin User
+                - cell "0" [ref=e1454]:
+                  - generic [ref=e1455]: "0"
+                - cell "0,00 €" [ref=e1456]:
+                  - generic [ref=e1457]: 0,00 €
+                - cell "View Details" [ref=e1458]:
+                  - button "View Details" [ref=e1459]
+              - row "Mar 28, 2026 10:00 Admin User 34 384,00 € View Details" [ref=e1460] [cursor=pointer]:
+                - cell "Mar 28, 2026 10:00" [ref=e1461]:
+                  - generic [ref=e1462]: Mar 28, 2026 10:00
+                - cell "Admin User" [ref=e1463]:
+                  - generic [ref=e1464]: Admin User
+                - cell "34" [ref=e1465]:
+                  - generic [ref=e1466]: "34"
+                - cell "384,00 €" [ref=e1467]:
+                  - generic [ref=e1468]: 384,00 €
+                - cell "View Details" [ref=e1469]:
+                  - button "View Details" [ref=e1470]
+              - row "Mar 27, 2026 10:00 Admin User 0 0,00 € View Details" [ref=e1471] [cursor=pointer]:
+                - cell "Mar 27, 2026 10:00" [ref=e1472]:
+                  - generic [ref=e1473]: Mar 27, 2026 10:00
+                - cell "Admin User" [ref=e1474]:
+                  - generic [ref=e1475]: Admin User
+                - cell "0" [ref=e1476]:
+                  - generic [ref=e1477]: "0"
+                - cell "0,00 €" [ref=e1478]:
+                  - generic [ref=e1479]: 0,00 €
+                - cell "View Details" [ref=e1480]:
+                  - button "View Details" [ref=e1481]
+              - row "Mar 26, 2026 10:00 Admin User 0 0,00 € View Details" [ref=e1482] [cursor=pointer]:
+                - cell "Mar 26, 2026 10:00" [ref=e1483]:
+                  - generic [ref=e1484]: Mar 26, 2026 10:00
+                - cell "Admin User" [ref=e1485]:
+                  - generic [ref=e1486]: Admin User
+                - cell "0" [ref=e1487]:
+                  - generic [ref=e1488]: "0"
+                - cell "0,00 €" [ref=e1489]:
+                  - generic [ref=e1490]: 0,00 €
+                - cell "View Details" [ref=e1491]:
+                  - button "View Details" [ref=e1492]
+              - row "Mar 25, 2026 10:00 Admin User 0 0,00 € View Details" [ref=e1493] [cursor=pointer]:
+                - cell "Mar 25, 2026 10:00" [ref=e1494]:
+                  - generic [ref=e1495]: Mar 25, 2026 10:00
+                - cell "Admin User" [ref=e1496]:
+                  - generic [ref=e1497]: Admin User
+                - cell "0" [ref=e1498]:
+                  - generic [ref=e1499]: "0"
+                - cell "0,00 €" [ref=e1500]:
+                  - generic [ref=e1501]: 0,00 €
+                - cell "View Details" [ref=e1502]:
+                  - button "View Details" [ref=e1503]
+              - row "Mar 24, 2026 10:00 Admin User 0 0,00 € View Details" [ref=e1504] [cursor=pointer]:
+                - cell "Mar 24, 2026 10:00" [ref=e1505]:
+                  - generic [ref=e1506]: Mar 24, 2026 10:00
+                - cell "Admin User" [ref=e1507]:
+                  - generic [ref=e1508]: Admin User
+                - cell "0" [ref=e1509]:
+                  - generic [ref=e1510]: "0"
+                - cell "0,00 €" [ref=e1511]:
+                  - generic [ref=e1512]: 0,00 €
+                - cell "View Details" [ref=e1513]:
+                  - button "View Details" [ref=e1514]
+              - row "Mar 23, 2026 10:00 Admin User 0 0,00 € View Details" [ref=e1515] [cursor=pointer]:
+                - cell "Mar 23, 2026 10:00" [ref=e1516]:
+                  - generic [ref=e1517]: Mar 23, 2026 10:00
+                - cell "Admin User" [ref=e1518]:
+                  - generic [ref=e1519]: Admin User
+                - cell "0" [ref=e1520]:
+                  - generic [ref=e1521]: "0"
+                - cell "0,00 €" [ref=e1522]:
+                  - generic [ref=e1523]: 0,00 €
+                - cell "View Details" [ref=e1524]:
+                  - button "View Details" [ref=e1525]
+              - row "Mar 22, 2026 10:00 Admin User 23 241,00 € View Details" [ref=e1526] [cursor=pointer]:
+                - cell "Mar 22, 2026 10:00" [ref=e1527]:
+                  - generic [ref=e1528]: Mar 22, 2026 10:00
+                - cell "Admin User" [ref=e1529]:
+                  - generic [ref=e1530]: Admin User
+                - cell "23" [ref=e1531]:
+                  - generic [ref=e1532]: "23"
+                - cell "241,00 €" [ref=e1533]:
+                  - generic [ref=e1534]: 241,00 €
+                - cell "View Details" [ref=e1535]:
+                  - button "View Details" [ref=e1536]
+              - row "Mar 21, 2026 10:00 Admin User 3 0,00 € View Details" [ref=e1537] [cursor=pointer]:
+                - cell "Mar 21, 2026 10:00" [ref=e1538]:
+                  - generic [ref=e1539]: Mar 21, 2026 10:00
+                - cell "Admin User" [ref=e1540]:
+                  - generic [ref=e1541]: Admin User
+                - cell "3" [ref=e1542]:
+                  - generic [ref=e1543]: "3"
+                - cell "0,00 €" [ref=e1544]:
+                  - generic [ref=e1545]: 0,00 €
+                - cell "View Details" [ref=e1546]:
+                  - button "View Details" [ref=e1547]
+              - row "Mar 05, 2026 22:40 Admin User 3 -4,00 € View Details" [ref=e1548] [cursor=pointer]:
+                - cell "Mar 05, 2026 22:40" [ref=e1549]:
+                  - generic [ref=e1550]: Mar 05, 2026 22:40
+                - cell "Admin User" [ref=e1551]:
+                  - generic [ref=e1552]: Admin User
+                - cell "3" [ref=e1553]:
+                  - generic [ref=e1554]: "3"
+                - cell "-4,00 €" [ref=e1555]:
+                  - generic [ref=e1556]: "-4,00 €"
+                - cell "View Details" [ref=e1557]:
+                  - button "View Details" [ref=e1558]
+              - row "Feb 28, 2026 19:02 Admin User 1 38,00 € View Details" [ref=e1559] [cursor=pointer]:
+                - cell "Feb 28, 2026 19:02" [ref=e1560]:
+                  - generic [ref=e1561]: Feb 28, 2026 19:02
+                - cell "Admin User" [ref=e1562]:
+                  - generic [ref=e1563]: Admin User
+                - cell "1" [ref=e1564]:
+                  - generic [ref=e1565]: "1"
+                - cell "38,00 €" [ref=e1566]:
+                  - generic [ref=e1567]: 38,00 €
+                - cell "View Details" [ref=e1568]:
+                  - button "View Details" [ref=e1569]
+          - generic [ref=e1570]:
+            - generic [ref=e1571]:
+              - heading "Combined Payment Methods" [level=3] [ref=e1572]
+              - generic [ref=e1573]:
+                - generic [ref=e1574]:
+                  - generic [ref=e1575]: card
+                  - generic [ref=e1576]: 32 transactions, 344,00 €
+                - generic [ref=e1577]:
+                  - generic [ref=e1578]: cash
+                  - generic [ref=e1579]: 38 transactions, 412,00 €
+            - generic [ref=e1580]:
+              - heading "Combined Till Summary" [level=3] [ref=e1581]
+              - generic [ref=e1582]:
+                - generic [ref=e1583]:
+                  - generic [ref=e1584]: Main_Bar
+                  - generic [ref=e1585]: 37 transactions, 298,00 €
+                - generic [ref=e1586]:
+                  - generic [ref=e1587]: Entrata
+                  - generic [ref=e1588]: 33 transactions, 458,00 €
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

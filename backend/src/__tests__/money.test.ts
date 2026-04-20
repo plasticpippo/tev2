@@ -6,7 +6,6 @@ import {
   multiplyMoney,
   divideMoney,
   formatMoney,
-  distributeMoney,
 } from '../utils/money';
 
 describe('money utilities', () => {
@@ -176,42 +175,6 @@ describe('money utilities', () => {
     it('should throw on invalid input', () => {
       expect(() => formatMoney(NaN as unknown as number)).toThrow('Invalid monetary value');
       expect(() => formatMoney(Infinity as unknown as number)).toThrow('Invalid monetary value');
-    });
-  });
-
-  describe('distributeMoney', () => {
-    it('should distribute money into equal parts', () => {
-      const result = distributeMoney(100, 3);
-      expect(result).toHaveLength(3);
-    });
-
-    it('should sum of parts should equal original value', () => {
-      const result = distributeMoney(100, 3);
-      const sum = addMoney(addMoney(result[0], result[1]), result[2]);
-      expect(sum).toBe(100);
-    });
-
-    it('should distribute correctly with decimal values', () => {
-      const result = distributeMoney(10, 3);
-      const sum = addMoney(addMoney(result[0], result[1]), result[2]);
-      expect(sum).toBe(10);
-    });
-
-    it('should handle edge cases', () => {
-      const result1 = distributeMoney(0, 3);
-      expect(result1).toHaveLength(3);
-      expect(addMoney(addMoney(result1[0], result1[1]), result1[2])).toBe(0);
-
-      const result2 = distributeMoney(100, 1);
-      expect(result2).toHaveLength(1);
-      expect(result2[0]).toBe(100);
-    });
-
-    it('should throw on invalid input', () => {
-      expect(() => distributeMoney(NaN as unknown as number, 3)).toThrow('Invalid monetary value');
-      expect(() => distributeMoney(100, 0)).toThrow('Parts must be a positive integer');
-      expect(() => distributeMoney(100, -1)).toThrow('Parts must be a positive integer');
-      expect(() => distributeMoney(100, 1.5)).toThrow('Parts must be a positive integer');
     });
   });
 });

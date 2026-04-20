@@ -1,0 +1,14 @@
+- generic [active]:
+  - generic:
+    - generic [ref=e2]:
+      - button "Change Language" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: EN
+        - img [ref=e7]
+      - heading "Bar POS Pro" [level=2] [ref=e9]
+      - paragraph [ref=e10]: "Till: Not Configured"
+      - generic [ref=e11]:
+        - generic [ref=e13]: Username
+        - generic [ref=e15]: Password
+        - button "Login" [ref=e16] [cursor=pointer]
+    - button "Enable virtual keyboard" [ref=e17] [cursor=pointer]:
+      - img [ref=e18]

@@ -8,6 +8,7 @@ import * as settingApi from '../services/settingService';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
 import { UserPerformanceReportModal } from './UserPerformanceReportModal';
+import ErrorMessage from './ErrorMessage';
 
 interface UserModalProps {
   user?: User;
@@ -21,11 +22,42 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
   const [username, setUsername] = useState(user?.username || '');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<'Admin' | 'Cashier'>(user?.role || 'Cashier');
-  
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
+
+  const removeError = (key: string) => {
+    setErrors(prev => {
+      const { [key]: _, ...rest } = prev;
+      return rest;
+    });
+  };
+
+  const validateForm = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!name.trim()) {
+      newErrors.name = t('users.validation.nameRequired');
+    }
+
+    if (!username.trim()) {
+      newErrors.username = t('users.validation.usernameRequired');
+    }
+
+    if (!user && !password.trim()) {
+      newErrors.password = t('users.validation.passwordRequired');
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim() || !username.trim() || (!user && !password.trim())) return;
-    
+    setApiError(null);
+
+    if (!validateForm()) return;
+
     const userData = {
         id: user?.id,
         name,
@@ -34,18 +66,70 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
         role
     };
 
-    await userApi.saveUser(userData);
-    onSave();
+    setIsSaving(true);
+    try {
+      await userApi.saveUser(userData);
+      onSave();
+    } catch (error) {
+      console.error('Error saving user:', error);
+      const message = error instanceof Error ? error.message : t('users.errors.failedToSave');
+      // Check for duplicate username
+      if (message.includes('duplicate') || message.includes('already exists') || message.includes('409')) {
+        setApiError(t('users.errors.duplicateUsername'));
+      } else {
+        setApiError(message);
+      }
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
       <form onSubmit={handleSubmit} className="bg-slate-900 rounded-lg shadow-xl w-full max-w-xs sm:max-w-md p-6 border border-slate-700">
         <h3 className="text-xl font-bold text-amber-400 mb-4">{user ? t('users.editUser') : t('users.addUser')}</h3>
+
+        {apiError && (
+          <div className="mb-4">
+            <ErrorMessage message={apiError} type="error" onClear={() => setApiError(null)} showClear={true} />
+          </div>
+        )}
+
         <div className="space-y-4">
-          <VKeyboardInput k-type="full" type="text" placeholder={t('users.fullName')} value={name} onChange={(e) => setName(e.target.value)} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md" required autoFocus />
-          <VKeyboardInput k-type="full" type="text" placeholder={t('users.username')} value={username} onChange={(e) => setUsername(e.target.value)} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md" required />
-          <VKeyboardInput k-type="full" type="password" placeholder={user ? t('users.newPasswordOptional') : t('users.password')} value={password} onChange={(e) => setPassword(e.target.value)} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md" required={!user} />
+          <div>
+            <VKeyboardInput
+              k-type="full"
+              type="text"
+              placeholder={t('users.fullName')}
+              value={name}
+              onChange={(e) => { setName(e.target.value); removeError('name'); }}
+              className={`w-full p-3 bg-slate-800 border rounded-md ${errors.name ? 'border-red-500' : 'border-slate-700'}`}
+              autoFocus
+            />
+            {errors.name && <p className="text-red-400 text-xs mt-1">{errors.name}</p>}
+          </div>
+          <div>
+            <VKeyboardInput
+              k-type="full"
+              type="text"
+              placeholder={t('users.username')}
+              value={username}
+              onChange={(e) => { setUsername(e.target.value); removeError('username'); }}
+              className={`w-full p-3 bg-slate-800 border rounded-md ${errors.username ? 'border-red-500' : 'border-slate-700'}`}
+            />
+            {errors.username && <p className="text-red-400 text-xs mt-1">{errors.username}</p>}
+          </div>
+          <div>
+            <VKeyboardInput
+              k-type="full"
+              type="password"
+              placeholder={user ? t('users.newPasswordOptional') : t('users.password')}
+              value={password}
+              onChange={(e) => { setPassword(e.target.value); removeError('password'); }}
+              className={`w-full p-3 bg-slate-800 border rounded-md ${errors.password ? 'border-red-500' : 'border-slate-700'}`}
+            />
+            {errors.password && <p className="text-red-400 text-xs mt-1">{errors.password}</p>}
+          </div>
           <select value={role} onChange={e => setRole(e.target.value as any)} className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md">
             <option value="Cashier">{t('users.roles.cashier')}</option>
             <option value="Admin">{t('users.roles.admin')}</option>
@@ -53,7 +137,7 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
         </div>
         <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
           <button type="button" onClick={onClose} className="btn btn-secondary">{t('buttons.cancel', { ns: 'common' })}</button>
-          <button type="submit" className="btn btn-primary">{t('buttons.save', { ns: 'common' })}</button>
+          <button type="submit" disabled={isSaving} className="btn btn-primary">{isSaving ? t('status.saving', { ns: 'common' }) : t('buttons.save', { ns: 'common' })}</button>
         </div>
       </form>
     </div>

@@ -655,5 +655,14 @@
   "fullscreen": {
     "enter": "Schermo Intero",
     "exit": "Esci da Schermo Intero"
+  },
+  "globalDataContext": {
+    "fetchDataNotAuthenticated": "Utente non autenticato, recupero dati saltato",
+    "failedToFetchInitialData": "Impossibile recuperare i dati iniziali",
+    "authTokenTimeout": "Timeout del token di autenticazione",
+    "variantInvalidStockRefs": "La variante {{variantId}} ({{productName}} - {{variantName}}) ha riferimenti di stock non validi",
+    "tillNotConfigured": "Non Configurata",
+    "unknownTill": "Cassa Sconosciuta",
+    "contextError": "useGlobalDataContext deve essere utilizzato all'interno di un GlobalDataProvider"
   }
 }

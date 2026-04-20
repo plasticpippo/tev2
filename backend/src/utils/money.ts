@@ -159,51 +159,6 @@ export function decimalToNumber(value: unknown): number {
   return Number(value);
 }
 
-/**
- * Distributes a monetary value into equal parts (useful for split payments)
- * Distributes the remainder to ensure the total equals the original value
- * @param value - The total monetary value to distribute
- * @param parts - The number of parts to split into
- * @returns An array of values that sum up to the original value
- * @throws Error if value is not a valid monetary number or parts is invalid
- */
-export function distributeMoney(value: number, parts: number): number[] {
-  if (!isMoneyValid(value)) {
-    throw new Error('Invalid monetary value');
-  }
-  if (!Number.isInteger(parts) || parts <= 0) {
-    throw new Error('Parts must be a positive integer');
-  }
-  
-  // Use currency.js to handle the distribution with proper precision
-  const total = createMoney(value);
-  const partValue = total.divide(parts);
-  const result: number[] = [];
-  
-  // Calculate the base value and remainder
-  const baseValue = partValue.value;
-  const remainder = createMoney(value).subtract(createMoney(baseValue).multiply(parts)).value;
-  
-  // Distribute values, giving the remainder to the first parts
-  for (let i = 0; i < parts; i++) {
-    // Add 0.01 to each of the first 'remainder / 0.01' parts to account for rounding
-    if (i < Math.round(remainder / 0.01)) {
-      result.push(createMoney(baseValue).add(0.01).value);
-    } else {
-      result.push(baseValue);
-    }
-  }
-  
-  // Verify the sum matches the original value
-  const sum = result.reduce((acc, val) => createMoney(acc).add(val).value, 0);
-  if (createMoney(sum).subtract(value).value !== 0) {
-    // If there's still a rounding discrepancy, adjust the first element
-    result[0] = createMoney(result[0]).add(createMoney(value).subtract(sum).value).value;
-  }
-  
-  return result;
-}
-
 // ==================================================================
 // HIGH-PRECISION COST CALCULATION UTILITIES
 // Precision: 6 decimal places for unit costs and intermediate values
@@ -278,14 +233,3 @@ export function divideCost(value: number, divisor: number): number {
   return createCostMoney(value).divide(divisor).value;
 }
 
-/**
- * Formats a cost value with specified decimal places (default 6)
- * Returns a plain number string without currency symbol
- * @param value - The cost value to format
- * @param decimals - Number of decimal places (default 6)
- * @returns The formatted string, e.g. "0.123456"
- */
-export function formatCost(value: number, decimals: number = 6): string {
-  if (!isMoneyValid(value)) return '0.' + '0'.repeat(decimals);
-  return value.toFixed(decimals);
-}

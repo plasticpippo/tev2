@@ -194,6 +194,39 @@
     "searchResults": "{{count}} rettifica/e trovata/e",
     "noSearchResults": "Nessuna rettifica trovata corrispondente alla ricerca"
   },
+  "users": {
+    "title": "Gestione Utenti",
+    "addUser": "Aggiungi Utente",
+    "editUser": "Modifica Utente",
+    "userName": "Nome Utente",
+    "fullName": "Nome Completo",
+    "username": "Nome Utente",
+    "password": "Password",
+    "newPasswordOptional": "Nuova Password (opzionale)",
+    "role": "Ruolo",
+    "report": "Report",
+    "roles": {
+      "admin": "Amministratore",
+      "cashier": "Cassiere",
+      "manager": "Responsabile"
+    },
+    "active": "Attivo",
+    "inactive": "Inattivo",
+    "lastLogin": "Ultimo Accesso",
+    "neverLoggedIn": "Mai effettuato l'accesso",
+    "confirmDelete": "Sei sicuro di voler eliminare l'utente \"{{name}}\"?",
+    "noUsers": "Nessun utente trovato",
+    "passwordChanged": "Password modificata con successo",
+    "validation": {
+      "nameRequired": "Il nome completo e obbligatorio",
+      "usernameRequired": "Il nome utente e obbligatorio",
+      "passwordRequired": "La password e obbligatoria"
+    },
+    "errors": {
+      "failedToSave": "Impossibile salvare l'utente. Verifica i dati e riprova.",
+      "duplicateUsername": "Esiste gia un utente con questo nome utente."
+    }
+  },
   "categories": {
     "title": "Gestione Categorie",
     "addCategory": "Aggiungi Categoria",
@@ -319,6 +352,9 @@
       "tip": "Mancia",
       "total": "Totale"
     }
+  },
+  "hourlySalesChart": {
+    "title": "Prestazioni Vendite Orarie"
   },
   "analytics": {
     "title": "Dashboard Analisi",

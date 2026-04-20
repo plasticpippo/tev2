@@ -1,0 +1,2010 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e331] [cursor=pointer]:
+          - img [ref=e333]
+          - generic [ref=e335]: Dashboard
+        - button "Analytics" [ref=e336] [cursor=pointer]:
+          - img [ref=e338]
+          - generic [ref=e340]: Analytics
+        - button "Profit Analytics" [ref=e341] [cursor=pointer]:
+          - img [ref=e343]
+          - generic [ref=e345]: Profit Analytics
+        - button "Transactions" [ref=e346] [cursor=pointer]:
+          - img [ref=e348]
+          - generic [ref=e350]: Transactions
+        - button "Receipts 13" [ref=e351] [cursor=pointer]:
+          - img [ref=e353]
+          - generic [ref=e355]: Receipts
+          - button "13" [ref=e356]
+        - button "Activity Log" [ref=e357] [cursor=pointer]:
+          - img [ref=e359]
+          - generic [ref=e361]: Activity Log
+        - button "Daily Closing Summary" [ref=e362] [cursor=pointer]:
+          - img [ref=e364]
+          - generic [ref=e366]: Daily Closing Summary
+        - button "Customers" [ref=e367] [cursor=pointer]:
+          - img [ref=e369]
+          - generic [ref=e371]: Customers
+        - button "Products" [ref=e372] [cursor=pointer]:
+          - img [ref=e374]
+          - generic [ref=e376]: Products
+        - button "Categories" [ref=e377] [cursor=pointer]:
+          - img [ref=e379]
+          - generic [ref=e381]: Categories
+        - button "Stock Items" [ref=e382] [cursor=pointer]:
+          - img [ref=e384]
+          - generic [ref=e386]: Stock Items
+        - button "Inventory" [ref=e387] [cursor=pointer]:
+          - img [ref=e389]
+          - generic [ref=e391]: Inventory
+        - button "Cost Management" [ref=e392] [cursor=pointer]:
+          - img [ref=e394]
+          - generic [ref=e396]: Cost Management
+        - button "Inventory Counts" [ref=e397] [cursor=pointer]:
+          - img [ref=e399]
+          - generic [ref=e401]: Inventory Counts
+        - button "Variance Reports" [ref=e402] [cursor=pointer]:
+          - img [ref=e404]
+          - generic [ref=e406]: Variance Reports
+        - button "Users" [ref=e407] [cursor=pointer]:
+          - img [ref=e409]
+          - generic [ref=e411]: Users
+        - button "Tills" [ref=e412] [cursor=pointer]:
+          - img [ref=e414]
+          - generic [ref=e416]: Tills
+        - button "Tables & Layout" [ref=e417] [cursor=pointer]:
+          - img [ref=e419]
+          - generic [ref=e421]: Tables & Layout
+        - button "Itemised Consumption" [ref=e422] [cursor=pointer]:
+          - img [ref=e424]
+          - generic [ref=e426]: Itemised Consumption
+        - button "Settings" [ref=e427] [cursor=pointer]:
+          - img [ref=e429]
+          - generic [ref=e432]: Settings
+      - main [ref=e236]:
+        - generic [ref=e433]:
+          - heading "Transactions" [level=2] [ref=e434]
+          - generic [ref=e435]:
+            - generic [ref=e436]:
+              - 'button "Filter by {{filter}}" [ref=e437] [cursor=pointer]': Today
+              - 'button "Filter by {{filter}}" [ref=e438] [cursor=pointer]': Yesterday
+              - 'button "Filter by {{filter}}" [ref=e439] [cursor=pointer]': Last 7 Days
+              - 'button "Filter by {{filter}}" [pressed] [ref=e440] [cursor=pointer]': Last 30 Days
+              - button "Filter by custom date range" [ref=e441] [cursor=pointer]: Custom
+            - generic [ref=e443]:
+              - generic [ref=e444]:
+                - generic [ref=e445]: Till
+                - combobox "Filter by till" [ref=e446]:
+                  - option "All Tills" [selected]
+                  - option "Main Bar"
+                  - option "Entrata"
+              - generic [ref=e447]:
+                - generic [ref=e448]: User
+                - combobox "Filter by user" [ref=e449]:
+                  - option "All Users" [selected]
+                  - option "Bar"
+                  - option "Cassa"
+                  - option "Admin User"
+          - generic [ref=e450]: 267 transactions found
+          - generic [ref=e451]:
+            - generic [ref=e452]:
+              - button "View details for transaction 544" [ref=e454] [cursor=pointer]:
+                - generic [ref=e455]:
+                  - generic [ref=e456]: €4,00
+                  - generic [ref=e457]: Main Bar
+                - generic [ref=e458]:
+                  - generic [ref=e459]: admin (Card)
+                  - generic [ref=e460]: 19/04/2026, 21:33
+                - generic [ref=e462]: "Receipt #R000020"
+              - button "View details for transaction 543" [ref=e464] [cursor=pointer]:
+                - generic [ref=e465]:
+                  - generic [ref=e466]: €11,00
+                  - generic [ref=e467]: Main Bar
+                - generic [ref=e468]:
+                  - generic [ref=e469]: admin (Cash)
+                  - generic [ref=e470]: 19/04/2026, 21:32
+                - generic [ref=e472]: "Receipt #R000019"
+              - button "View details for transaction 542" [ref=e474] [cursor=pointer]:
+                - generic [ref=e475]:
+                  - generic [ref=e476]: €8,00
+                  - generic [ref=e477]: Main Bar
+                - generic [ref=e478]:
+                  - generic [ref=e479]: admin (cash)
+                  - generic [ref=e480]: 09/04/2026, 20:47
+                - generic [ref=e481]:
+                  - generic [ref=e482]: VOIDED
+                  - generic [ref=e483]: Test void - API verification
+              - button "View details for transaction 541" [ref=e485] [cursor=pointer]:
+                - generic [ref=e486]:
+                  - generic [ref=e487]: €4,00
+                  - generic [ref=e488]: Main Bar
+                - generic [ref=e489]:
+                  - generic [ref=e490]: admin (Cash)
+                  - generic [ref=e491]: 09/04/2026, 02:28
+                - generic [ref=e493]: "Receipt #R000018"
+              - button "View details for transaction 540" [ref=e495] [cursor=pointer]:
+                - generic [ref=e496]:
+                  - generic [ref=e497]: €8,00
+                  - generic [ref=e498]: Main Bar
+                - generic [ref=e499]:
+                  - generic [ref=e500]: admin (Cash)
+                  - generic [ref=e501]: 09/04/2026, 02:20
+                - generic [ref=e503]: "Receipt #R000017"
+              - button "View details for transaction 539" [ref=e505] [cursor=pointer]:
+                - generic [ref=e506]:
+                  - generic [ref=e507]: €37,00
+                  - generic [ref=e508]: Main Bar
+                - generic [ref=e509]:
+                  - generic [ref=e510]: admin (Card)
+                  - generic [ref=e511]: 08/04/2026, 07:47
+                - generic [ref=e513]: "Receipt #R000016"
+              - button "View details for transaction 538" [ref=e515] [cursor=pointer]:
+                - generic [ref=e516]:
+                  - generic [ref=e517]: €12,00
+                  - generic [ref=e518]: Main Bar
+                - generic [ref=e519]:
+                  - generic [ref=e520]: admin (Card)
+                  - generic [ref=e521]: 07/04/2026, 00:07
+                - generic [ref=e523]: "Receipt #R000015"
+              - button "View details for transaction 537" [ref=e525] [cursor=pointer]:
+                - generic [ref=e526]:
+                  - generic [ref=e527]: €4,00
+                  - generic [ref=e528]: Main Bar
+                - generic [ref=e529]:
+                  - generic [ref=e530]: admin (Card)
+                  - generic [ref=e531]: 05/04/2026, 20:25
+                - generic [ref=e533]: "Receipt #R000014"
+              - button "View details for transaction 536" [ref=e535] [cursor=pointer]:
+                - generic [ref=e536]:
+                  - generic [ref=e537]: €8,00
+                  - generic [ref=e538]: Main Bar
+                - generic [ref=e539]:
+                  - generic [ref=e540]: admin (Cash)
+                  - generic [ref=e541]: 05/04/2026, 20:19
+                - generic [ref=e543]: "Receipt #DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438"
+              - button "View details for transaction 535" [ref=e545] [cursor=pointer]:
+                - generic [ref=e546]:
+                  - generic [ref=e547]: €11,00
+                  - generic [ref=e548]: Main Bar
+                - generic [ref=e549]:
+                  - generic [ref=e550]: admin (Cash)
+                  - generic [ref=e551]: 05/04/2026, 20:13
+                - generic [ref=e553]: "Receipt #R000013"
+              - button "View details for transaction 534" [ref=e555] [cursor=pointer]:
+                - generic [ref=e556]:
+                  - generic [ref=e557]: €8,00
+                  - generic [ref=e558]: Main Bar
+                - generic [ref=e559]:
+                  - generic [ref=e560]: admin (Cash)
+                  - generic [ref=e561]: 05/04/2026, 18:36
+                - generic [ref=e563]: "Receipt #R000012"
+              - button "View details for transaction 533" [ref=e565] [cursor=pointer]:
+                - generic [ref=e566]:
+                  - generic [ref=e567]: €8,00
+                  - generic [ref=e568]: Main Bar
+                - generic [ref=e569]:
+                  - generic [ref=e570]: admin (Cash)
+                  - generic [ref=e571]: 05/04/2026, 18:25
+                - generic [ref=e573]: "Receipt #DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939"
+              - button "View details for transaction 532" [ref=e575] [cursor=pointer]:
+                - generic [ref=e576]:
+                  - generic [ref=e577]: €17,00
+                  - generic [ref=e578]: Main Bar
+                - generic [ref=e579]:
+                  - generic [ref=e580]: admin (Cash)
+                  - generic [ref=e581]: 05/04/2026, 16:12
+              - button "View details for transaction 531" [ref=e583] [cursor=pointer]:
+                - generic [ref=e584]:
+                  - generic [ref=e585]: €0,00
+                  - generic [ref=e586]: Main Bar
+                - generic [ref=e587]:
+                  - generic [ref=e588]: admin (Card)
+                  - generic [ref=e589]: 05/04/2026, 14:34
+                - generic [ref=e591]: Complimentary
+              - button "View details for transaction 530" [ref=e593] [cursor=pointer]:
+                - generic [ref=e594]:
+                  - generic [ref=e595]: €8,00
+                  - generic [ref=e596]: Main Bar
+                - generic [ref=e597]:
+                  - generic [ref=e598]: admin (Cash)
+                  - generic [ref=e599]: 05/04/2026, 13:34
+                - generic [ref=e601]: "Receipt #R000010"
+              - button "View details for transaction 529" [ref=e603] [cursor=pointer]:
+                - generic [ref=e604]:
+                  - generic [ref=e605]: €3,00
+                  - generic [ref=e606]: Main Bar
+                - generic [ref=e607]:
+                  - generic [ref=e608]: admin (Cash)
+                  - generic [ref=e609]: 05/04/2026, 13:34
+                - generic [ref=e611]: "Receipt #R000011"
+              - button "View details for transaction 528" [ref=e613] [cursor=pointer]:
+                - generic [ref=e614]:
+                  - generic [ref=e615]: €3,00
+                  - generic [ref=e616]: Main Bar
+                - generic [ref=e617]:
+                  - generic [ref=e618]: admin (Cash)
+                  - generic [ref=e619]: 05/04/2026, 13:26
+              - button "View details for transaction 527" [ref=e621] [cursor=pointer]:
+                - generic [ref=e622]:
+                  - generic [ref=e623]: €3,00
+                  - generic [ref=e624]: Main Bar
+                - generic [ref=e625]:
+                  - generic [ref=e626]: admin (Cash)
+                  - generic [ref=e627]: 05/04/2026, 13:24
+                - generic [ref=e629]: "Receipt #R000009"
+              - button "View details for transaction 526" [ref=e631] [cursor=pointer]:
+                - generic [ref=e632]:
+                  - generic [ref=e633]: €8,00
+                  - generic [ref=e634]: Main Bar
+                - generic [ref=e635]:
+                  - generic [ref=e636]: admin (Cash)
+                  - generic [ref=e637]: 05/04/2026, 13:23
+                - generic [ref=e639]: "Receipt #DRAFT-9f3346e5-56e2-4e17-959c-9e2085e3a4f5"
+              - button "View details for transaction 525" [ref=e641] [cursor=pointer]:
+                - generic [ref=e642]:
+                  - generic [ref=e643]: €8,00
+                  - generic [ref=e644]: Main Bar
+                - generic [ref=e645]:
+                  - generic [ref=e646]: admin (Cash)
+                  - generic [ref=e647]: 05/04/2026, 13:06
+                - generic [ref=e649]: "Receipt #R000008"
+              - button "View details for transaction 524" [ref=e651] [cursor=pointer]:
+                - generic [ref=e652]:
+                  - generic [ref=e653]: €8,00
+                  - generic [ref=e654]: Main Bar
+                - generic [ref=e655]:
+                  - generic [ref=e656]: admin (Cash)
+                  - generic [ref=e657]: 05/04/2026, 13:01
+                - generic [ref=e659]: "Receipt #DRAFT-cd074215-f737-4ab7-b336-ed13126d5937"
+              - button "View details for transaction 523" [ref=e661] [cursor=pointer]:
+                - generic [ref=e662]:
+                  - generic [ref=e663]: €8,00
+                  - generic [ref=e664]: Main Bar
+                - generic [ref=e665]:
+                  - generic [ref=e666]: admin (Cash)
+                  - generic [ref=e667]: 05/04/2026, 08:17
+              - button "View details for transaction 522" [ref=e669] [cursor=pointer]:
+                - generic [ref=e670]:
+                  - generic [ref=e671]: €10,00
+                  - generic [ref=e672]: Main Bar
+                - generic [ref=e673]:
+                  - generic [ref=e674]: admin (Card)
+                  - generic [ref=e675]: 03/04/2026, 16:54
+              - button "View details for transaction 521" [ref=e677] [cursor=pointer]:
+                - generic [ref=e678]:
+                  - generic [ref=e679]: €42,00
+                  - generic [ref=e680]: Main Bar
+                - generic [ref=e681]:
+                  - generic [ref=e682]: admin (Card)
+                  - generic [ref=e683]: 02/04/2026, 11:17
+                - generic [ref=e685]: "Receipt #R000003"
+              - button "View details for transaction 520" [ref=e687] [cursor=pointer]:
+                - generic [ref=e688]:
+                  - generic [ref=e689]: €24,00
+                  - generic [ref=e690]: Main Bar
+                - generic [ref=e691]:
+                  - generic [ref=e692]: admin (Cash)
+                  - generic [ref=e693]: 02/04/2026, 10:53
+                - generic [ref=e695]: "Receipt #R000002"
+              - button "View details for transaction 519" [ref=e697] [cursor=pointer]:
+                - generic [ref=e698]:
+                  - generic [ref=e699]: €24,00
+                  - generic [ref=e700]: Main Bar
+                - generic [ref=e701]:
+                  - generic [ref=e702]: admin (Cash)
+                  - generic [ref=e703]: 02/04/2026, 10:02
+                - generic [ref=e705]: "Receipt #R000004"
+              - button "View details for transaction 518" [ref=e707] [cursor=pointer]:
+                - generic [ref=e708]:
+                  - generic [ref=e709]: €13,00
+                  - generic [ref=e710]: Main Bar
+                - generic [ref=e711]:
+                  - generic [ref=e712]: admin (Cash)
+                  - generic [ref=e713]: 02/04/2026, 05:30
+                - generic [ref=e715]: "Receipt #R000005"
+              - button "View details for transaction 517" [ref=e717] [cursor=pointer]:
+                - generic [ref=e718]:
+                  - generic [ref=e719]: €12,00
+                  - generic [ref=e720]: Main Bar
+                - generic [ref=e721]:
+                  - generic [ref=e722]: admin (Cash)
+                  - generic [ref=e723]: 02/04/2026, 02:43
+                - generic [ref=e725]: "Receipt #R000006"
+              - button "View details for transaction 516" [ref=e727] [cursor=pointer]:
+                - generic [ref=e728]:
+                  - generic [ref=e729]: €6,00
+                  - generic [ref=e730]: Main Bar
+                - generic [ref=e731]:
+                  - generic [ref=e732]: admin (Card)
+                  - generic [ref=e733]: 02/04/2026, 02:24
+              - button "View details for transaction 515" [ref=e735] [cursor=pointer]:
+                - generic [ref=e736]:
+                  - generic [ref=e737]: €8,00
+                  - generic [ref=e738]: Main Bar
+                - generic [ref=e739]:
+                  - generic [ref=e740]: admin (Cash)
+                  - generic [ref=e741]: 02/04/2026, 02:20
+              - button "View details for transaction 514" [ref=e743] [cursor=pointer]:
+                - generic [ref=e744]:
+                  - generic [ref=e745]: €0,00
+                  - generic [ref=e746]: Main Bar
+                - generic [ref=e747]:
+                  - generic [ref=e748]: admin (Card)
+                  - generic [ref=e749]: 30/03/2026, 22:32
+                - generic [ref=e751]: Complimentary
+              - button "View details for transaction 513" [ref=e753] [cursor=pointer]:
+                - generic [ref=e754]:
+                  - generic [ref=e755]: €19,00
+                  - generic [ref=e756]: Main Bar
+                - generic [ref=e757]:
+                  - generic [ref=e758]: admin (Cash)
+                  - generic [ref=e759]: 30/03/2026, 22:31
+                - generic [ref=e761]: "Receipt #R000001"
+              - button "View details for transaction 512" [ref=e763] [cursor=pointer]:
+                - generic [ref=e764]:
+                  - generic [ref=e765]: €8,00
+                  - generic [ref=e766]: Main Bar
+                - generic [ref=e767]:
+                  - generic [ref=e768]: admin (Cash)
+                  - generic [ref=e769]: 30/03/2026, 22:26
+              - button "View details for transaction 511" [ref=e771] [cursor=pointer]:
+                - generic [ref=e772]:
+                  - generic [ref=e773]: €8,00
+                  - generic [ref=e774]: Main Bar
+                - generic [ref=e775]:
+                  - generic [ref=e776]: admin (Cash)
+                  - generic [ref=e777]: 30/03/2026, 22:23
+              - button "View details for transaction 510" [ref=e779] [cursor=pointer]:
+                - generic [ref=e780]:
+                  - generic [ref=e781]: €8,00
+                  - generic [ref=e782]: Main Bar
+                - generic [ref=e783]:
+                  - generic [ref=e784]: admin (Cash)
+                  - generic [ref=e785]: 30/03/2026, 22:14
+              - button "View details for transaction 509" [ref=e787] [cursor=pointer]:
+                - generic [ref=e788]:
+                  - generic [ref=e789]: €4,00
+                  - generic [ref=e790]: Main Bar
+                - generic [ref=e791]:
+                  - generic [ref=e792]: Admin User (Cash)
+                  - generic [ref=e793]: 30/03/2026, 21:32
+                - generic [ref=e795]: "Receipt #R000007"
+              - button "View details for transaction 508" [ref=e797] [cursor=pointer]:
+                - generic [ref=e798]:
+                  - generic [ref=e799]: €24,00
+                  - generic [ref=e800]: Main Bar
+                - generic [ref=e801]:
+                  - generic [ref=e802]: Admin User (Cash)
+                  - generic [ref=e803]: 30/03/2026, 21:28
+              - button "View details for transaction 507" [ref=e805] [cursor=pointer]:
+                - generic [ref=e806]:
+                  - generic [ref=e807]: €8,00
+                  - generic [ref=e808]: Main Bar
+                - generic [ref=e809]:
+                  - generic [ref=e810]: Admin User (Cash)
+                  - generic [ref=e811]: 30/03/2026, 18:16
+              - button "View details for transaction 506" [ref=e813] [cursor=pointer]:
+                - generic [ref=e814]:
+                  - generic [ref=e815]: €8,00
+                  - generic [ref=e816]: Main Bar
+                - generic [ref=e817]:
+                  - generic [ref=e818]: Admin User (Cash)
+                  - generic [ref=e819]: 30/03/2026, 18:06
+              - button "View details for transaction 505" [ref=e821] [cursor=pointer]:
+                - generic [ref=e822]:
+                  - generic [ref=e823]: €11,00
+                  - generic [ref=e824]: Main Bar
+                - generic [ref=e825]:
+                  - generic [ref=e826]: Admin User (Card)
+                  - generic [ref=e827]: 30/03/2026, 17:58
+              - button "View details for transaction 504" [ref=e829] [cursor=pointer]:
+                - generic [ref=e830]:
+                  - generic [ref=e831]: €14,00
+                  - generic [ref=e832]: Main Bar
+                - generic [ref=e833]:
+                  - generic [ref=e834]: Admin User (Cash)
+                  - generic [ref=e835]: 30/03/2026, 17:56
+              - button "View details for transaction 503" [ref=e837] [cursor=pointer]:
+                - generic [ref=e838]:
+                  - generic [ref=e839]: €0,00
+                  - generic [ref=e840]: Main Bar
+                - generic [ref=e841]:
+                  - generic [ref=e842]: Admin User (Cash)
+                  - generic [ref=e843]: 30/03/2026, 17:19
+                - generic [ref=e845]: Complimentary
+              - button "View details for transaction 502" [ref=e847] [cursor=pointer]:
+                - generic [ref=e848]:
+                  - generic [ref=e849]: €9,00
+                  - generic [ref=e850]: Main Bar
+                - generic [ref=e851]:
+                  - generic [ref=e852]: Admin User (Cash)
+                  - generic [ref=e853]: 30/03/2026, 16:57
+              - button "View details for transaction 501" [ref=e855] [cursor=pointer]:
+                - generic [ref=e856]:
+                  - generic [ref=e857]: €8,00
+                  - generic [ref=e858]: Main Bar
+                - generic [ref=e859]:
+                  - generic [ref=e860]: Admin User (Card)
+                  - generic [ref=e861]: 30/03/2026, 16:50
+              - button "View details for transaction 500" [ref=e863] [cursor=pointer]:
+                - generic [ref=e864]:
+                  - generic [ref=e865]: €8,00
+                  - generic [ref=e866]: Main Bar
+                - generic [ref=e867]:
+                  - generic [ref=e868]: Admin User (Cash)
+                  - generic [ref=e869]: 30/03/2026, 16:48
+              - button "View details for transaction 499" [ref=e871] [cursor=pointer]:
+                - generic [ref=e872]:
+                  - generic [ref=e873]: €8,00
+                  - generic [ref=e874]: Main Bar
+                - generic [ref=e875]:
+                  - generic [ref=e876]: Admin User (Cash)
+                  - generic [ref=e877]: 30/03/2026, 16:24
+              - button "View details for transaction 498" [ref=e879] [cursor=pointer]:
+                - generic [ref=e880]:
+                  - generic [ref=e881]: €4,00
+                  - generic [ref=e882]: Main Bar
+                - generic [ref=e883]:
+                  - generic [ref=e884]: Admin User (cash)
+                  - generic [ref=e885]: 30/03/2026, 16:06
+              - button "View details for transaction 497" [ref=e887] [cursor=pointer]:
+                - generic [ref=e888]:
+                  - generic [ref=e889]: €4,00
+                  - generic [ref=e890]: Main Bar
+                - generic [ref=e891]:
+                  - generic [ref=e892]: Admin User (cash)
+                  - generic [ref=e893]: 30/03/2026, 16:06
+              - button "View details for transaction 496" [ref=e895] [cursor=pointer]:
+                - generic [ref=e896]:
+                  - generic [ref=e897]: €4,00
+                  - generic [ref=e898]: Main Bar
+                - generic [ref=e899]:
+                  - generic [ref=e900]: Admin User (cash)
+                  - generic [ref=e901]: 30/03/2026, 16:06
+              - button "View details for transaction 494" [ref=e903] [cursor=pointer]:
+                - generic [ref=e904]:
+                  - generic [ref=e905]: €18,00
+                  - generic [ref=e906]: Main Bar
+                - generic [ref=e907]:
+                  - generic [ref=e908]: Admin User (Cash)
+                  - generic [ref=e909]: 30/03/2026, 15:03
+              - button "View details for transaction 493" [ref=e911] [cursor=pointer]:
+                - generic [ref=e912]:
+                  - generic [ref=e913]: €16,00
+                  - generic [ref=e914]: Main Bar
+                - generic [ref=e915]:
+                  - generic [ref=e916]: Bar (Cash)
+                  - generic [ref=e917]: 30/03/2026, 09:56
+              - button "View details for transaction 492" [ref=e919] [cursor=pointer]:
+                - generic [ref=e920]:
+                  - generic [ref=e921]: €1,00
+                  - generic [ref=e922]: Main Bar
+                - generic [ref=e923]:
+                  - generic [ref=e924]: Admin User (Cash)
+                  - generic [ref=e925]: 30/03/2026, 09:49
+              - button "View details for transaction 491" [ref=e927] [cursor=pointer]:
+                - generic [ref=e928]:
+                  - generic [ref=e929]: €16,00
+                  - generic [ref=e930]: Main Bar
+                - generic [ref=e931]:
+                  - generic [ref=e932]: Admin User (CASH)
+                  - generic [ref=e933]: 30/03/2026, 08:47
+              - button "View details for transaction 490" [ref=e935] [cursor=pointer]:
+                - generic [ref=e936]:
+                  - generic [ref=e937]: €16,00
+                  - generic [ref=e938]: Main Bar
+                - generic [ref=e939]:
+                  - generic [ref=e940]: Admin User (Cash)
+                  - generic [ref=e941]: 30/03/2026, 08:34
+              - button "View details for transaction 488" [ref=e943] [cursor=pointer]:
+                - generic [ref=e944]:
+                  - generic [ref=e945]: €3,00
+                  - generic [ref=e946]: Main Bar
+                - generic [ref=e947]:
+                  - generic [ref=e948]: Admin User (Cash)
+                  - generic [ref=e949]: 30/03/2026, 08:01
+              - button "View details for transaction 487" [ref=e951] [cursor=pointer]:
+                - generic [ref=e952]:
+                  - generic [ref=e953]: €8,00
+                  - generic [ref=e954]: Main Bar
+                - generic [ref=e955]:
+                  - generic [ref=e956]: Admin User (Cash)
+                  - generic [ref=e957]: 30/03/2026, 08:01
+              - button "View details for transaction 486" [ref=e959] [cursor=pointer]:
+                - generic [ref=e960]:
+                  - generic [ref=e961]: €8,00
+                  - generic [ref=e962]: Main Bar
+                - generic [ref=e963]:
+                  - generic [ref=e964]: Admin User (Cash)
+                  - generic [ref=e965]: 30/03/2026, 08:00
+              - button "View details for transaction 485" [ref=e967] [cursor=pointer]:
+                - generic [ref=e968]:
+                  - generic [ref=e969]: €8,00
+                  - generic [ref=e970]: Main Bar
+                - generic [ref=e971]:
+                  - generic [ref=e972]: Admin User (Cash)
+                  - generic [ref=e973]: 30/03/2026, 07:55
+              - button "View details for transaction 484" [ref=e975] [cursor=pointer]:
+                - generic [ref=e976]:
+                  - generic [ref=e977]: €8,00
+                  - generic [ref=e978]: Main Bar
+                - generic [ref=e979]:
+                  - generic [ref=e980]: Admin User (Cash)
+                  - generic [ref=e981]: 30/03/2026, 07:55
+              - button "View details for transaction 483" [ref=e983] [cursor=pointer]:
+                - generic [ref=e984]:
+                  - generic [ref=e985]: €8,00
+                  - generic [ref=e986]: Main Bar
+                - generic [ref=e987]:
+                  - generic [ref=e988]: Admin User (Cash)
+                  - generic [ref=e989]: 30/03/2026, 07:49
+              - button "View details for transaction 482" [ref=e991] [cursor=pointer]:
+                - generic [ref=e992]:
+                  - generic [ref=e993]: €16,00
+                  - generic [ref=e994]: Main Bar
+                - generic [ref=e995]:
+                  - generic [ref=e996]: Admin User (Cash)
+                  - generic [ref=e997]: 30/03/2026, 07:40
+              - button "View details for transaction 481" [ref=e999] [cursor=pointer]:
+                - generic [ref=e1000]:
+                  - generic [ref=e1001]: €23,00
+                  - generic [ref=e1002]: Main Bar
+                - generic [ref=e1003]:
+                  - generic [ref=e1004]: Admin User (cash)
+                  - generic [ref=e1005]: 30/03/2026, 07:33
+              - button "View details for transaction 480" [ref=e1007] [cursor=pointer]:
+                - generic [ref=e1008]:
+                  - generic [ref=e1009]: €24,00
+                  - generic [ref=e1010]: Main Bar
+                - generic [ref=e1011]:
+                  - generic [ref=e1012]: Admin User (Cash)
+                  - generic [ref=e1013]: 30/03/2026, 06:44
+              - button "View details for transaction 479" [ref=e1015] [cursor=pointer]:
+                - generic [ref=e1016]:
+                  - generic [ref=e1017]: €32,00
+                  - generic [ref=e1018]: Main Bar
+                - generic [ref=e1019]:
+                  - generic [ref=e1020]: Admin User (Cash)
+                  - generic [ref=e1021]: 30/03/2026, 06:42
+              - button "View details for transaction 478" [ref=e1023] [cursor=pointer]:
+                - generic [ref=e1024]:
+                  - generic [ref=e1025]: €24,00
+                  - generic [ref=e1026]: Main Bar
+                - generic [ref=e1027]:
+                  - generic [ref=e1028]: Admin User (Cash)
+                  - generic [ref=e1029]: 30/03/2026, 06:40
+              - button "View details for transaction 477" [ref=e1031] [cursor=pointer]:
+                - generic [ref=e1032]:
+                  - generic [ref=e1033]: €24,00
+                  - generic [ref=e1034]: Main Bar
+                - generic [ref=e1035]:
+                  - generic [ref=e1036]: Admin User (Cash)
+                  - generic [ref=e1037]: 30/03/2026, 06:40
+              - button "View details for transaction 476" [ref=e1039] [cursor=pointer]:
+                - generic [ref=e1040]:
+                  - generic [ref=e1041]: €24,00
+                  - generic [ref=e1042]: Main Bar
+                - generic [ref=e1043]:
+                  - generic [ref=e1044]: Admin User (Cash)
+                  - generic [ref=e1045]: 30/03/2026, 06:40
+              - button "View details for transaction 475" [ref=e1047] [cursor=pointer]:
+                - generic [ref=e1048]:
+                  - generic [ref=e1049]: €8,00
+                  - generic [ref=e1050]: Main Bar
+                - generic [ref=e1051]:
+                  - generic [ref=e1052]: Admin User (Cash)
+                  - generic [ref=e1053]: 30/03/2026, 06:10
+              - button "View details for transaction 474" [ref=e1055] [cursor=pointer]:
+                - generic [ref=e1056]:
+                  - generic [ref=e1057]: €3,00
+                  - generic [ref=e1058]: Main Bar
+                - generic [ref=e1059]:
+                  - generic [ref=e1060]: Admin User (Cash)
+                  - generic [ref=e1061]: 30/03/2026, 05:56
+              - button "View details for transaction 473" [ref=e1063] [cursor=pointer]:
+                - generic [ref=e1064]:
+                  - generic [ref=e1065]: €16,00
+                  - generic [ref=e1066]: Main Bar
+                - generic [ref=e1067]:
+                  - generic [ref=e1068]: Admin User (Cash)
+                  - generic [ref=e1069]: 30/03/2026, 05:44
+              - button "View details for transaction 472" [ref=e1071] [cursor=pointer]:
+                - generic [ref=e1072]:
+                  - generic [ref=e1073]: €28,00
+                  - generic [ref=e1074]: Till 1
+                - generic [ref=e1075]:
+                  - generic [ref=e1076]: Impersonated User (CASH)
+                  - generic [ref=e1077]: 30/03/2026, 05:02
+              - button "View details for transaction 471" [ref=e1079] [cursor=pointer]:
+                - generic [ref=e1080]:
+                  - generic [ref=e1081]: €128,00
+                  - generic [ref=e1082]: Main Bar
+                - generic [ref=e1083]:
+                  - generic [ref=e1084]: Admin User (Cash)
+                  - generic [ref=e1085]: 30/03/2026, 00:54
+              - button "View details for transaction 469" [ref=e1087] [cursor=pointer]:
+                - generic [ref=e1088]:
+                  - generic [ref=e1089]: €0,00
+                  - generic [ref=e1090]: Main Bar
+                - generic [ref=e1091]:
+                  - generic [ref=e1092]: Admin User (Cash)
+                  - generic [ref=e1093]: 30/03/2026, 00:30
+                - generic [ref=e1095]: Complimentary
+              - button "View details for transaction 468" [ref=e1097] [cursor=pointer]:
+                - generic [ref=e1098]:
+                  - generic [ref=e1099]: €8,00
+                  - generic [ref=e1100]: Invalid Till
+                - generic [ref=e1101]:
+                  - generic [ref=e1102]: Admin User (cash)
+                  - generic [ref=e1103]: 30/03/2026, 00:28
+              - button "View details for transaction 467" [ref=e1105] [cursor=pointer]:
+                - generic [ref=e1106]:
+                  - generic [ref=e1107]: €10,00
+                  - generic [ref=e1108]: Main Bar
+                - generic [ref=e1109]:
+                  - generic [ref=e1110]: Admin User (Cash)
+                  - generic [ref=e1111]: 30/03/2026, 00:01
+              - button "View details for transaction 466" [ref=e1113] [cursor=pointer]:
+                - generic [ref=e1114]:
+                  - generic [ref=e1115]: €8,00
+                  - generic [ref=e1116]: Main Bar
+                - generic [ref=e1117]:
+                  - generic [ref=e1118]: Admin User (Cash)
+                  - generic [ref=e1119]: 29/03/2026, 23:22
+              - button "View details for transaction 465" [ref=e1121] [cursor=pointer]:
+                - generic [ref=e1122]:
+                  - generic [ref=e1123]: €8,00
+                  - generic [ref=e1124]: Main Bar
+                - generic [ref=e1125]:
+                  - generic [ref=e1126]: Admin User (Card)
+                  - generic [ref=e1127]: 29/03/2026, 23:13
+              - button "View details for transaction 464" [ref=e1129] [cursor=pointer]:
+                - generic [ref=e1130]:
+                  - generic [ref=e1131]: €0,00
+                  - generic [ref=e1132]: Main Bar
+                - generic [ref=e1133]:
+                  - generic [ref=e1134]: Admin User (Card)
+                  - generic [ref=e1135]: 29/03/2026, 22:36
+                - generic [ref=e1137]: Complimentary
+              - button "View details for transaction 463" [ref=e1139] [cursor=pointer]:
+                - generic [ref=e1140]:
+                  - generic [ref=e1141]: €4,00
+                  - generic [ref=e1142]: Main Bar
+                - generic [ref=e1143]:
+                  - generic [ref=e1144]: Admin User (Cash)
+                  - generic [ref=e1145]: 29/03/2026, 22:35
+              - button "View details for transaction 462" [ref=e1147] [cursor=pointer]:
+                - generic [ref=e1148]:
+                  - generic [ref=e1149]: €30,00
+                  - generic [ref=e1150]: Main Bar
+                - generic [ref=e1151]:
+                  - generic [ref=e1152]: Admin User (Cash)
+                  - generic [ref=e1153]: 29/03/2026, 20:12
+              - button "View details for transaction 461" [ref=e1155] [cursor=pointer]:
+                - generic [ref=e1156]:
+                  - generic [ref=e1157]: €8,00
+                  - generic [ref=e1158]: Main Bar
+                - generic [ref=e1159]:
+                  - generic [ref=e1160]: Admin User (Cash)
+                  - generic [ref=e1161]: 29/03/2026, 19:57
+              - button "View details for transaction 460" [ref=e1163] [cursor=pointer]:
+                - generic [ref=e1164]:
+                  - generic [ref=e1165]: €10,00
+                  - generic [ref=e1166]: Main Bar
+                - generic [ref=e1167]:
+                  - generic [ref=e1168]: Admin User (Cash)
+                  - generic [ref=e1169]: 29/03/2026, 19:52
+              - button "View details for transaction 459" [ref=e1171] [cursor=pointer]:
+                - generic [ref=e1172]:
+                  - generic [ref=e1173]: €0,00
+                  - generic [ref=e1174]: Main Bar
+                - generic [ref=e1175]:
+                  - generic [ref=e1176]: Admin User (Cash)
+                  - generic [ref=e1177]: 29/03/2026, 19:49
+                - generic [ref=e1179]: Complimentary
+              - button "View details for transaction 458" [ref=e1181] [cursor=pointer]:
+                - generic [ref=e1182]:
+                  - generic [ref=e1183]: €22,00
+                  - generic [ref=e1184]: Main Bar
+                - generic [ref=e1185]:
+                  - generic [ref=e1186]: Admin User (Card)
+                  - generic [ref=e1187]: 29/03/2026, 19:46
+              - button "View details for transaction 457" [ref=e1189] [cursor=pointer]:
+                - generic [ref=e1190]:
+                  - generic [ref=e1191]: €3,00
+                  - generic [ref=e1192]: Main Bar
+                - generic [ref=e1193]:
+                  - generic [ref=e1194]: Admin User (CASH)
+                  - generic [ref=e1195]: 29/03/2026, 16:08
+              - button "View details for transaction 456" [ref=e1197] [cursor=pointer]:
+                - generic [ref=e1198]:
+                  - generic [ref=e1199]: €3,00
+                  - generic [ref=e1200]: Main Bar
+                - generic [ref=e1201]:
+                  - generic [ref=e1202]: Admin User (CASH)
+                  - generic [ref=e1203]: 29/03/2026, 16:08
+              - button "View details for transaction 455" [ref=e1205] [cursor=pointer]:
+                - generic [ref=e1206]:
+                  - generic [ref=e1207]: €5,00
+                  - generic [ref=e1208]: Main Bar
+                - generic [ref=e1209]:
+                  - generic [ref=e1210]: Admin User (CASH)
+                  - generic [ref=e1211]: 29/03/2026, 14:35
+              - button "View details for transaction 454" [ref=e1213] [cursor=pointer]:
+                - generic [ref=e1214]:
+                  - generic [ref=e1215]: €5,00
+                  - generic [ref=e1216]: Main Bar
+                - generic [ref=e1217]:
+                  - generic [ref=e1218]: Admin User (CASH)
+                  - generic [ref=e1219]: 29/03/2026, 14:35
+              - button "View details for transaction 453" [ref=e1221] [cursor=pointer]:
+                - generic [ref=e1222]:
+                  - generic [ref=e1223]: €10,00
+                  - generic [ref=e1224]: Main Bar
+                - generic [ref=e1225]:
+                  - generic [ref=e1226]: Admin User (CARD)
+                  - generic [ref=e1227]: 29/03/2026, 14:34
+              - button "View details for transaction 452" [ref=e1229] [cursor=pointer]:
+                - generic [ref=e1230]:
+                  - generic [ref=e1231]: €8,00
+                  - generic [ref=e1232]: Main Bar
+                - generic [ref=e1233]:
+                  - generic [ref=e1234]: Admin User (CASH)
+                  - generic [ref=e1235]: 29/03/2026, 14:32
+              - button "View details for transaction 451" [ref=e1237] [cursor=pointer]:
+                - generic [ref=e1238]:
+                  - generic [ref=e1239]: €8,00
+                  - generic [ref=e1240]: Main Bar
+                - generic [ref=e1241]:
+                  - generic [ref=e1242]: Admin User (Cash)
+                  - generic [ref=e1243]: 29/03/2026, 13:50
+              - button "View details for transaction 450" [ref=e1245] [cursor=pointer]:
+                - generic [ref=e1246]:
+                  - generic [ref=e1247]: €16,00
+                  - generic [ref=e1248]: Main Bar
+                - generic [ref=e1249]:
+                  - generic [ref=e1250]: Admin User (Cash)
+                  - generic [ref=e1251]: 29/03/2026, 13:36
+              - button "View details for transaction 449" [ref=e1253] [cursor=pointer]:
+                - generic [ref=e1254]:
+                  - generic [ref=e1255]: €12,00
+                  - generic [ref=e1256]: Main Bar
+                - generic [ref=e1257]:
+                  - generic [ref=e1258]: Admin User (Card)
+                  - generic [ref=e1259]: 29/03/2026, 13:30
+              - button "View details for transaction 448" [ref=e1261] [cursor=pointer]:
+                - generic [ref=e1262]:
+                  - generic [ref=e1263]: €20,00
+                  - generic [ref=e1264]: Main Bar
+                - generic [ref=e1265]:
+                  - generic [ref=e1266]: Admin User (Cash)
+                  - generic [ref=e1267]: 29/03/2026, 13:28
+              - button "View details for transaction 447" [ref=e1269] [cursor=pointer]:
+                - generic [ref=e1270]:
+                  - generic [ref=e1271]: €8,00
+                  - generic [ref=e1272]: Main Bar
+                - generic [ref=e1273]:
+                  - generic [ref=e1274]: Admin User (Cash)
+                  - generic [ref=e1275]: 29/03/2026, 13:20
+              - button "View details for transaction 446" [ref=e1277] [cursor=pointer]:
+                - generic [ref=e1278]:
+                  - generic [ref=e1279]: €6,00
+                  - generic [ref=e1280]: Main Bar
+                - generic [ref=e1281]:
+                  - generic [ref=e1282]: Bar (Card)
+                  - generic [ref=e1283]: 28/03/2026, 04:49
+              - button "View details for transaction 445" [ref=e1285] [cursor=pointer]:
+                - generic [ref=e1286]:
+                  - generic [ref=e1287]: €10,00
+                  - generic [ref=e1288]: Main Bar
+                - generic [ref=e1289]:
+                  - generic [ref=e1290]: Bar (Cash)
+                  - generic [ref=e1291]: 28/03/2026, 04:45
+              - button "View details for transaction 444" [ref=e1293] [cursor=pointer]:
+                - generic [ref=e1294]:
+                  - generic [ref=e1295]: €12,00
+                  - generic [ref=e1296]: Main Bar
+                - generic [ref=e1297]:
+                  - generic [ref=e1298]: Bar (Cash)
+                  - generic [ref=e1299]: 28/03/2026, 04:44
+              - button "View details for transaction 443" [ref=e1301] [cursor=pointer]:
+                - generic [ref=e1302]:
+                  - generic [ref=e1303]: €2,00
+                  - generic [ref=e1304]: Main Bar
+                - generic [ref=e1305]:
+                  - generic [ref=e1306]: Bar (Cash)
+                  - generic [ref=e1307]: 28/03/2026, 04:19
+              - button "View details for transaction 442" [ref=e1309] [cursor=pointer]:
+                - generic [ref=e1310]:
+                  - generic [ref=e1311]: €4,00
+                  - generic [ref=e1312]: Main Bar
+                - generic [ref=e1313]:
+                  - generic [ref=e1314]: Bar (Card)
+                  - generic [ref=e1315]: 28/03/2026, 04:01
+              - button "View details for transaction 441" [ref=e1317] [cursor=pointer]:
+                - generic [ref=e1318]:
+                  - generic [ref=e1319]: €9,00
+                  - generic [ref=e1320]: Main Bar
+                - generic [ref=e1321]:
+                  - generic [ref=e1322]: Bar (Cash)
+                  - generic [ref=e1323]: 28/03/2026, 03:45
+              - button "View details for transaction 440" [ref=e1325] [cursor=pointer]:
+                - generic [ref=e1326]:
+                  - generic [ref=e1327]: €6,00
+                  - generic [ref=e1328]: Main Bar
+                - generic [ref=e1329]:
+                  - generic [ref=e1330]: Bar (Card)
+                  - generic [ref=e1331]: 28/03/2026, 03:38
+              - button "View details for transaction 439" [ref=e1333] [cursor=pointer]:
+                - generic [ref=e1334]:
+                  - generic [ref=e1335]: €70,00
+                  - generic [ref=e1336]: Entrata
+                - generic [ref=e1337]:
+                  - generic [ref=e1338]: Cassa (Cash)
+                  - generic [ref=e1339]: 28/03/2026, 03:19
+              - button "View details for transaction 438" [ref=e1341] [cursor=pointer]:
+                - generic [ref=e1342]:
+                  - generic [ref=e1343]: €20,00
+                  - generic [ref=e1344]: Entrata
+                - generic [ref=e1345]:
+                  - generic [ref=e1346]: Cassa (Card)
+                  - generic [ref=e1347]: 28/03/2026, 03:19
+              - button "View details for transaction 437" [ref=e1349] [cursor=pointer]:
+                - generic [ref=e1350]:
+                  - generic [ref=e1351]: €9,00
+                  - generic [ref=e1352]: Main Bar
+                - generic [ref=e1353]:
+                  - generic [ref=e1354]: Bar (Cash)
+                  - generic [ref=e1355]: 28/03/2026, 03:01
+              - button "View details for transaction 436" [ref=e1357] [cursor=pointer]:
+                - generic [ref=e1358]:
+                  - generic [ref=e1359]: €10,00
+                  - generic [ref=e1360]: Entrata
+                - generic [ref=e1361]:
+                  - generic [ref=e1362]: Cassa (Cash)
+                  - generic [ref=e1363]: 28/03/2026, 02:53
+              - button "View details for transaction 435" [ref=e1365] [cursor=pointer]:
+                - generic [ref=e1366]:
+                  - generic [ref=e1367]: €9,00
+                  - generic [ref=e1368]: Main Bar
+                - generic [ref=e1369]:
+                  - generic [ref=e1370]: Bar (Cash)
+                  - generic [ref=e1371]: 28/03/2026, 02:50
+              - button "View details for transaction 434" [ref=e1373] [cursor=pointer]:
+                - generic [ref=e1374]:
+                  - generic [ref=e1375]: €20,00
+                  - generic [ref=e1376]: Entrata
+                - generic [ref=e1377]:
+                  - generic [ref=e1378]: Cassa (Card)
+                  - generic [ref=e1379]: 28/03/2026, 02:48
+              - button "View details for transaction 433" [ref=e1381] [cursor=pointer]:
+                - generic [ref=e1382]:
+                  - generic [ref=e1383]: €10,00
+                  - generic [ref=e1384]: Entrata
+                - generic [ref=e1385]:
+                  - generic [ref=e1386]: Cassa (Cash)
+                  - generic [ref=e1387]: 28/03/2026, 02:40
+              - button "View details for transaction 432" [ref=e1389] [cursor=pointer]:
+                - generic [ref=e1390]:
+                  - generic [ref=e1391]: €8,00
+                  - generic [ref=e1392]: Main Bar
+                - generic [ref=e1393]:
+                  - generic [ref=e1394]: Bar (Card)
+                  - generic [ref=e1395]: 28/03/2026, 02:39
+              - button "View details for transaction 431" [ref=e1397] [cursor=pointer]:
+                - generic [ref=e1398]:
+                  - generic [ref=e1399]: €3,00
+                  - generic [ref=e1400]: Main Bar
+                - generic [ref=e1401]:
+                  - generic [ref=e1402]: Bar (Cash)
+                  - generic [ref=e1403]: 28/03/2026, 02:33
+              - button "View details for transaction 430" [ref=e1405] [cursor=pointer]:
+                - generic [ref=e1406]:
+                  - generic [ref=e1407]: €20,00
+                  - generic [ref=e1408]: Entrata
+                - generic [ref=e1409]:
+                  - generic [ref=e1410]: Cassa (Card)
+                  - generic [ref=e1411]: 28/03/2026, 02:28
+              - button "View details for transaction 429" [ref=e1413] [cursor=pointer]:
+                - generic [ref=e1414]:
+                  - generic [ref=e1415]: €20,00
+                  - generic [ref=e1416]: Entrata
+                - generic [ref=e1417]:
+                  - generic [ref=e1418]: Cassa (Card)
+                  - generic [ref=e1419]: 28/03/2026, 02:26
+              - button "View details for transaction 428" [ref=e1421] [cursor=pointer]:
+                - generic [ref=e1422]:
+                  - generic [ref=e1423]: €20,00
+                  - generic [ref=e1424]: Entrata
+                - generic [ref=e1425]:
+                  - generic [ref=e1426]: Cassa (Card)
+                  - generic [ref=e1427]: 28/03/2026, 02:16
+              - button "View details for transaction 427" [ref=e1429] [cursor=pointer]:
+                - generic [ref=e1430]:
+                  - generic [ref=e1431]: €6,00
+                  - generic [ref=e1432]: Main Bar
+                - generic [ref=e1433]:
+                  - generic [ref=e1434]: Bar (Cash)
+                  - generic [ref=e1435]: 28/03/2026, 02:12
+              - button "View details for transaction 426" [ref=e1437] [cursor=pointer]:
+                - generic [ref=e1438]:
+                  - generic [ref=e1439]: €10,00
+                  - generic [ref=e1440]: Entrata
+                - generic [ref=e1441]:
+                  - generic [ref=e1442]: Cassa (Cash)
+                  - generic [ref=e1443]: 28/03/2026, 02:04
+              - button "View details for transaction 425" [ref=e1445] [cursor=pointer]:
+                - generic [ref=e1446]:
+                  - generic [ref=e1447]: €8,00
+                  - generic [ref=e1448]: Main Bar
+                - generic [ref=e1449]:
+                  - generic [ref=e1450]: Bar (Card)
+                  - generic [ref=e1451]: 28/03/2026, 01:54
+              - button "View details for transaction 424" [ref=e1453] [cursor=pointer]:
+                - generic [ref=e1454]:
+                  - generic [ref=e1455]: €4,00
+                  - generic [ref=e1456]: Main Bar
+                - generic [ref=e1457]:
+                  - generic [ref=e1458]: Bar (Cash)
+                  - generic [ref=e1459]: 28/03/2026, 01:53
+              - button "View details for transaction 423" [ref=e1461] [cursor=pointer]:
+                - generic [ref=e1462]:
+                  - generic [ref=e1463]: €8,00
+                  - generic [ref=e1464]: Main Bar
+                - generic [ref=e1465]:
+                  - generic [ref=e1466]: Bar (Card)
+                  - generic [ref=e1467]: 28/03/2026, 01:46
+              - button "View details for transaction 422" [ref=e1469] [cursor=pointer]:
+                - generic [ref=e1470]:
+                  - generic [ref=e1471]: €0,00
+                  - generic [ref=e1472]: Entrata
+                - generic [ref=e1473]:
+                  - generic [ref=e1474]: Cassa (Cash)
+                  - generic [ref=e1475]: 28/03/2026, 01:43
+              - button "View details for transaction 421" [ref=e1477] [cursor=pointer]:
+                - generic [ref=e1478]:
+                  - generic [ref=e1479]: €20,00
+                  - generic [ref=e1480]: Entrata
+                - generic [ref=e1481]:
+                  - generic [ref=e1482]: Cassa (Card)
+                  - generic [ref=e1483]: 28/03/2026, 01:17
+              - button "View details for transaction 420" [ref=e1485] [cursor=pointer]:
+                - generic [ref=e1486]:
+                  - generic [ref=e1487]: €10,00
+                  - generic [ref=e1488]: Entrata
+                - generic [ref=e1489]:
+                  - generic [ref=e1490]: Cassa (Cash)
+                  - generic [ref=e1491]: 28/03/2026, 01:16
+              - button "View details for transaction 419" [ref=e1493] [cursor=pointer]:
+                - generic [ref=e1494]:
+                  - generic [ref=e1495]: €10,00
+                  - generic [ref=e1496]: Entrata
+                - generic [ref=e1497]:
+                  - generic [ref=e1498]: Cassa (Cash)
+                  - generic [ref=e1499]: 28/03/2026, 01:15
+              - button "View details for transaction 418" [ref=e1501] [cursor=pointer]:
+                - generic [ref=e1502]:
+                  - generic [ref=e1503]: €10,00
+                  - generic [ref=e1504]: Entrata
+                - generic [ref=e1505]:
+                  - generic [ref=e1506]: Cassa (Cash)
+                  - generic [ref=e1507]: 28/03/2026, 01:15
+              - button "View details for transaction 417" [ref=e1509] [cursor=pointer]:
+                - generic [ref=e1510]:
+                  - generic [ref=e1511]: €10,00
+                  - generic [ref=e1512]: Entrata
+                - generic [ref=e1513]:
+                  - generic [ref=e1514]: Cassa (Card)
+                  - generic [ref=e1515]: 28/03/2026, 01:12
+              - button "View details for transaction 416" [ref=e1517] [cursor=pointer]:
+                - generic [ref=e1518]:
+                  - generic [ref=e1519]: €10,00
+                  - generic [ref=e1520]: Entrata
+                - generic [ref=e1521]:
+                  - generic [ref=e1522]: Cassa (Card)
+                  - generic [ref=e1523]: 28/03/2026, 01:12
+              - button "View details for transaction 415" [ref=e1525] [cursor=pointer]:
+                - generic [ref=e1526]:
+                  - generic [ref=e1527]: €10,00
+                  - generic [ref=e1528]: Main Bar
+                - generic [ref=e1529]:
+                  - generic [ref=e1530]: Bar (Cash)
+                  - generic [ref=e1531]: 28/03/2026, 00:52
+              - button "View details for transaction 414" [ref=e1533] [cursor=pointer]:
+                - generic [ref=e1534]:
+                  - generic [ref=e1535]: €0,00
+                  - generic [ref=e1536]: Entrata
+                - generic [ref=e1537]:
+                  - generic [ref=e1538]: Cassa (Cash)
+                  - generic [ref=e1539]: 28/03/2026, 00:44
+              - button "View details for transaction 413" [ref=e1541] [cursor=pointer]:
+                - generic [ref=e1542]:
+                  - generic [ref=e1543]: €0,00
+                  - generic [ref=e1544]: Entrata
+                - generic [ref=e1545]:
+                  - generic [ref=e1546]: Cassa (Cash)
+                  - generic [ref=e1547]: 27/03/2026, 22:30
+              - button "View details for transaction 412" [ref=e1549] [cursor=pointer]:
+                - generic [ref=e1550]:
+                  - generic [ref=e1551]: €4,00
+                  - generic [ref=e1552]: Main Bar
+                - generic [ref=e1553]:
+                  - generic [ref=e1554]: Bar (Cash)
+                  - generic [ref=e1555]: 22/03/2026, 05:13
+              - button "View details for transaction 411" [ref=e1557] [cursor=pointer]:
+                - generic [ref=e1558]:
+                  - generic [ref=e1559]: €2,00
+                  - generic [ref=e1560]: Main Bar
+                - generic [ref=e1561]:
+                  - generic [ref=e1562]: Bar (Card)
+                  - generic [ref=e1563]: 22/03/2026, 05:12
+              - button "View details for transaction 410" [ref=e1565] [cursor=pointer]:
+                - generic [ref=e1566]:
+                  - generic [ref=e1567]: €10,00
+                  - generic [ref=e1568]: Entrata
+                - generic [ref=e1569]:
+                  - generic [ref=e1570]: Cassa (Card)
+                  - generic [ref=e1571]: 22/03/2026, 04:35
+              - button "View details for transaction 409" [ref=e1573] [cursor=pointer]:
+                - generic [ref=e1574]:
+                  - generic [ref=e1575]: €16,00
+                  - generic [ref=e1576]: Main Bar
+                - generic [ref=e1577]:
+                  - generic [ref=e1578]: Bar (Card)
+                  - generic [ref=e1579]: 22/03/2026, 04:28
+              - button "View details for transaction 408" [ref=e1581] [cursor=pointer]:
+                - generic [ref=e1582]:
+                  - generic [ref=e1583]: €0,00
+                  - generic [ref=e1584]: Entrata
+                - generic [ref=e1585]:
+                  - generic [ref=e1586]: Cassa (Cash)
+                  - generic [ref=e1587]: 22/03/2026, 04:17
+              - button "View details for transaction 407" [ref=e1589] [cursor=pointer]:
+                - generic [ref=e1590]:
+                  - generic [ref=e1591]: €16,00
+                  - generic [ref=e1592]: Main Bar
+                - generic [ref=e1593]:
+                  - generic [ref=e1594]: Bar (Cash)
+                  - generic [ref=e1595]: 22/03/2026, 03:41
+              - button "View details for transaction 406" [ref=e1597] [cursor=pointer]:
+                - generic [ref=e1598]:
+                  - generic [ref=e1599]: €8,00
+                  - generic [ref=e1600]: Main Bar
+                - generic [ref=e1601]:
+                  - generic [ref=e1602]: Bar (Card)
+                  - generic [ref=e1603]: 22/03/2026, 03:33
+              - button "View details for transaction 405" [ref=e1605] [cursor=pointer]:
+                - generic [ref=e1606]:
+                  - generic [ref=e1607]: €8,00
+                  - generic [ref=e1608]: Main Bar
+                - generic [ref=e1609]:
+                  - generic [ref=e1610]: Bar (Cash)
+                  - generic [ref=e1611]: 22/03/2026, 03:28
+              - button "View details for transaction 404" [ref=e1613] [cursor=pointer]:
+                - generic [ref=e1614]:
+                  - generic [ref=e1615]: €10,00
+                  - generic [ref=e1616]: Entrata
+                - generic [ref=e1617]:
+                  - generic [ref=e1618]: Cassa (Card)
+                  - generic [ref=e1619]: 22/03/2026, 03:24
+              - button "View details for transaction 403" [ref=e1621] [cursor=pointer]:
+                - generic [ref=e1622]:
+                  - generic [ref=e1623]: €20,00
+                  - generic [ref=e1624]: Entrata
+                - generic [ref=e1625]:
+                  - generic [ref=e1626]: Cassa (Cash)
+                  - generic [ref=e1627]: 22/03/2026, 03:23
+              - button "View details for transaction 402" [ref=e1629] [cursor=pointer]:
+                - generic [ref=e1630]:
+                  - generic [ref=e1631]: €30,00
+                  - generic [ref=e1632]: Entrata
+                - generic [ref=e1633]:
+                  - generic [ref=e1634]: Cassa (Cash)
+                  - generic [ref=e1635]: 22/03/2026, 02:58
+              - button "View details for transaction 401" [ref=e1637] [cursor=pointer]:
+                - generic [ref=e1638]:
+                  - generic [ref=e1639]: €2,00
+                  - generic [ref=e1640]: Main Bar
+                - generic [ref=e1641]:
+                  - generic [ref=e1642]: Bar (Cash)
+                  - generic [ref=e1643]: 22/03/2026, 02:50
+              - button "View details for transaction 400" [ref=e1645] [cursor=pointer]:
+                - generic [ref=e1646]:
+                  - generic [ref=e1647]: €10,00
+                  - generic [ref=e1648]: Entrata
+                - generic [ref=e1649]:
+                  - generic [ref=e1650]: Cassa (Card)
+                  - generic [ref=e1651]: 22/03/2026, 02:46
+              - button "View details for transaction 399" [ref=e1653] [cursor=pointer]:
+                - generic [ref=e1654]:
+                  - generic [ref=e1655]: €10,00
+                  - generic [ref=e1656]: Entrata
+                - generic [ref=e1657]:
+                  - generic [ref=e1658]: Cassa (Card)
+                  - generic [ref=e1659]: 22/03/2026, 02:45
+              - button "View details for transaction 398" [ref=e1661] [cursor=pointer]:
+                - generic [ref=e1662]:
+                  - generic [ref=e1663]: €10,00
+                  - generic [ref=e1664]: Entrata
+                - generic [ref=e1665]:
+                  - generic [ref=e1666]: Cassa (Card)
+                  - generic [ref=e1667]: 22/03/2026, 02:44
+              - button "View details for transaction 397" [ref=e1669] [cursor=pointer]:
+                - generic [ref=e1670]:
+                  - generic [ref=e1671]: €20,00
+                  - generic [ref=e1672]: Entrata
+                - generic [ref=e1673]:
+                  - generic [ref=e1674]: Cassa (Card)
+                  - generic [ref=e1675]: 22/03/2026, 02:36
+              - button "View details for transaction 396" [ref=e1677] [cursor=pointer]:
+                - generic [ref=e1678]:
+                  - generic [ref=e1679]: €8,00
+                  - generic [ref=e1680]: Main Bar
+                - generic [ref=e1681]:
+                  - generic [ref=e1682]: Bar (Card)
+                  - generic [ref=e1683]: 22/03/2026, 02:36
+              - button "View details for transaction 395" [ref=e1685] [cursor=pointer]:
+                - generic [ref=e1686]:
+                  - generic [ref=e1687]: €0,00
+                  - generic [ref=e1688]: Entrata
+                - generic [ref=e1689]:
+                  - generic [ref=e1690]: Cassa (Cash)
+                  - generic [ref=e1691]: 22/03/2026, 02:28
+              - button "View details for transaction 394" [ref=e1693] [cursor=pointer]:
+                - generic [ref=e1694]:
+                  - generic [ref=e1695]: €10,00
+                  - generic [ref=e1696]: Entrata
+                - generic [ref=e1697]:
+                  - generic [ref=e1698]: Cassa (Cash)
+                  - generic [ref=e1699]: 22/03/2026, 02:21
+              - button "View details for transaction 393" [ref=e1701] [cursor=pointer]:
+                - generic [ref=e1702]:
+                  - generic [ref=e1703]: €10,00
+                  - generic [ref=e1704]: Main Bar
+                - generic [ref=e1705]:
+                  - generic [ref=e1706]: Bar (Card)
+                  - generic [ref=e1707]: 22/03/2026, 01:25
+              - button "View details for transaction 392" [ref=e1709] [cursor=pointer]:
+                - generic [ref=e1710]:
+                  - generic [ref=e1711]: €17,00
+                  - generic [ref=e1712]: Main Bar
+                - generic [ref=e1713]:
+                  - generic [ref=e1714]: Bar (Cash)
+                  - generic [ref=e1715]: 22/03/2026, 00:52
+              - button "View details for transaction 391" [ref=e1717] [cursor=pointer]:
+                - generic [ref=e1718]:
+                  - generic [ref=e1719]: €20,00
+                  - generic [ref=e1720]: Entrata
+                - generic [ref=e1721]:
+                  - generic [ref=e1722]: Cassa (Cash)
+                  - generic [ref=e1723]: 22/03/2026, 00:48
+              - button "View details for transaction 390" [ref=e1725] [cursor=pointer]:
+                - generic [ref=e1726]:
+                  - generic [ref=e1727]: €0,00
+                  - generic [ref=e1728]: Entrata
+                - generic [ref=e1729]:
+                  - generic [ref=e1730]: Cassa (Cash)
+                  - generic [ref=e1731]: 21/03/2026, 23:57
+              - button "View details for transaction 389" [ref=e1733] [cursor=pointer]:
+                - generic [ref=e1734]:
+                  - generic [ref=e1735]: €0,00
+                  - generic [ref=e1736]: Main Bar
+                - generic [ref=e1737]:
+                  - generic [ref=e1738]: Admin User (Card)
+                  - generic [ref=e1739]: 21/03/2026, 07:10
+                - generic [ref=e1741]: Complimentary
+              - button "View details for transaction 388" [ref=e1743] [cursor=pointer]:
+                - generic [ref=e1744]:
+                  - generic [ref=e1745]: €0,00
+                  - generic [ref=e1746]: Main Bar
+                - generic [ref=e1747]:
+                  - generic [ref=e1748]: Admin User (Card)
+                  - generic [ref=e1749]: 21/03/2026, 07:10
+                - generic [ref=e1751]: Complimentary
+              - button "View details for transaction 387" [ref=e1753] [cursor=pointer]:
+                - generic [ref=e1754]:
+                  - generic [ref=e1755]: €0,00
+                  - generic [ref=e1756]: Main Bar
+                - generic [ref=e1757]:
+                  - generic [ref=e1758]: Admin User (Cash)
+                  - generic [ref=e1759]: 21/03/2026, 07:09
+                - generic [ref=e1761]: Complimentary
+              - button "View details for transaction 386" [ref=e1763] [cursor=pointer]:
+                - generic [ref=e1764]:
+                  - generic [ref=e1765]: €0,00
+                  - generic [ref=e1766]: Main Bar
+                - generic [ref=e1767]:
+                  - generic [ref=e1768]: Admin User (Card)
+                  - generic [ref=e1769]: 21/03/2026, 06:36
+                - generic [ref=e1771]: Complimentary
+              - button "View details for transaction 385" [ref=e1773] [cursor=pointer]:
+                - generic [ref=e1774]:
+                  - generic [ref=e1775]: €16,00
+                  - generic [ref=e1776]: Main Bar
+                - generic [ref=e1777]:
+                  - generic [ref=e1778]: Bar (Cash)
+                  - generic [ref=e1779]: 21/03/2026, 05:33
+              - button "View details for transaction 384" [ref=e1781] [cursor=pointer]:
+                - generic [ref=e1782]:
+                  - generic [ref=e1783]: €8,00
+                  - generic [ref=e1784]: Main Bar
+                - generic [ref=e1785]:
+                  - generic [ref=e1786]: Bar (Cash)
+                  - generic [ref=e1787]: 21/03/2026, 05:23
+              - button "View details for transaction 383" [ref=e1789] [cursor=pointer]:
+                - generic [ref=e1790]:
+                  - generic [ref=e1791]: €2,00
+                  - generic [ref=e1792]: Main Bar
+                - generic [ref=e1793]:
+                  - generic [ref=e1794]: Bar (Cash)
+                  - generic [ref=e1795]: 21/03/2026, 05:15
+              - button "View details for transaction 382" [ref=e1797] [cursor=pointer]:
+                - generic [ref=e1798]:
+                  - generic [ref=e1799]: €6,00
+                  - generic [ref=e1800]: Main Bar
+                - generic [ref=e1801]:
+                  - generic [ref=e1802]: Bar (Cash)
+                  - generic [ref=e1803]: 21/03/2026, 05:11
+              - button "View details for transaction 381" [ref=e1805] [cursor=pointer]:
+                - generic [ref=e1806]:
+                  - generic [ref=e1807]: €3,00
+                  - generic [ref=e1808]: Main Bar
+                - generic [ref=e1809]:
+                  - generic [ref=e1810]: Bar (Cash)
+                  - generic [ref=e1811]: 21/03/2026, 05:11
+              - button "View details for transaction 380" [ref=e1813] [cursor=pointer]:
+                - generic [ref=e1814]:
+                  - generic [ref=e1815]: €6,00
+                  - generic [ref=e1816]: Main Bar
+                - generic [ref=e1817]:
+                  - generic [ref=e1818]: Bar (Cash)
+                  - generic [ref=e1819]: 21/03/2026, 05:11
+              - button "View details for transaction 379" [ref=e1821] [cursor=pointer]:
+                - generic [ref=e1822]:
+                  - generic [ref=e1823]: €4,00
+                  - generic [ref=e1824]: Main Bar
+                - generic [ref=e1825]:
+                  - generic [ref=e1826]: Bar (Cash)
+                  - generic [ref=e1827]: 21/03/2026, 05:01
+              - button "View details for transaction 378" [ref=e1829] [cursor=pointer]:
+                - generic [ref=e1830]:
+                  - generic [ref=e1831]: €10,00
+                  - generic [ref=e1832]: Main Bar
+                - generic [ref=e1833]:
+                  - generic [ref=e1834]: Bar (Cash)
+                  - generic [ref=e1835]: 21/03/2026, 04:56
+              - button "View details for transaction 377" [ref=e1837] [cursor=pointer]:
+                - generic [ref=e1838]:
+                  - generic [ref=e1839]: €8,00
+                  - generic [ref=e1840]: Main Bar
+                - generic [ref=e1841]:
+                  - generic [ref=e1842]: Bar (Cash)
+                  - generic [ref=e1843]: 21/03/2026, 04:55
+              - button "View details for transaction 376" [ref=e1845] [cursor=pointer]:
+                - generic [ref=e1846]:
+                  - generic [ref=e1847]: €3,00
+                  - generic [ref=e1848]: Main Bar
+                - generic [ref=e1849]:
+                  - generic [ref=e1850]: Bar (Cash)
+                  - generic [ref=e1851]: 21/03/2026, 04:48
+              - button "View details for transaction 375" [ref=e1853] [cursor=pointer]:
+                - generic [ref=e1854]:
+                  - generic [ref=e1855]: €11,00
+                  - generic [ref=e1856]: Main Bar
+                - generic [ref=e1857]:
+                  - generic [ref=e1858]: Bar (Cash)
+                  - generic [ref=e1859]: 21/03/2026, 04:46
+              - button "View details for transaction 374" [ref=e1861] [cursor=pointer]:
+                - generic [ref=e1862]:
+                  - generic [ref=e1863]: €10,00
+                  - generic [ref=e1864]: Entrata
+                - generic [ref=e1865]:
+                  - generic [ref=e1866]: Admin User (Card)
+                  - generic [ref=e1867]: 21/03/2026, 04:45
+              - button "View details for transaction 373" [ref=e1869] [cursor=pointer]:
+                - generic [ref=e1870]:
+                  - generic [ref=e1871]: €10,00
+                  - generic [ref=e1872]: Entrata
+                - generic [ref=e1873]:
+                  - generic [ref=e1874]: Admin User (Cash)
+                  - generic [ref=e1875]: 21/03/2026, 04:44
+              - button "View details for transaction 372" [ref=e1877] [cursor=pointer]:
+                - generic [ref=e1878]:
+                  - generic [ref=e1879]: €10,00
+                  - generic [ref=e1880]: Entrata
+                - generic [ref=e1881]:
+                  - generic [ref=e1882]: Admin User (Card)
+                  - generic [ref=e1883]: 21/03/2026, 04:44
+              - button "View details for transaction 371" [ref=e1885] [cursor=pointer]:
+                - generic [ref=e1886]:
+                  - generic [ref=e1887]: €30,00
+                  - generic [ref=e1888]: Main Bar
+                - generic [ref=e1889]:
+                  - generic [ref=e1890]: Bar (Cash)
+                  - generic [ref=e1891]: 21/03/2026, 04:42
+              - button "View details for transaction 370" [ref=e1893] [cursor=pointer]:
+                - generic [ref=e1894]:
+                  - generic [ref=e1895]: €20,00
+                  - generic [ref=e1896]: Entrata
+                - generic [ref=e1897]:
+                  - generic [ref=e1898]: Admin User (Cash)
+                  - generic [ref=e1899]: 21/03/2026, 04:39
+              - button "View details for transaction 369" [ref=e1901] [cursor=pointer]:
+                - generic [ref=e1902]:
+                  - generic [ref=e1903]: €10,00
+                  - generic [ref=e1904]: Main Bar
+                - generic [ref=e1905]:
+                  - generic [ref=e1906]: Bar (Card)
+                  - generic [ref=e1907]: 21/03/2026, 04:37
+              - button "View details for transaction 368" [ref=e1909] [cursor=pointer]:
+                - generic [ref=e1910]:
+                  - generic [ref=e1911]: €6,00
+                  - generic [ref=e1912]: Main Bar
+                - generic [ref=e1913]:
+                  - generic [ref=e1914]: Bar (Cash)
+                  - generic [ref=e1915]: 21/03/2026, 04:34
+              - button "View details for transaction 367" [ref=e1917] [cursor=pointer]:
+                - generic [ref=e1918]:
+                  - generic [ref=e1919]: €3,00
+                  - generic [ref=e1920]: Main Bar
+                - generic [ref=e1921]:
+                  - generic [ref=e1922]: Bar (Cash)
+                  - generic [ref=e1923]: 21/03/2026, 04:34
+              - button "View details for transaction 366" [ref=e1925] [cursor=pointer]:
+                - generic [ref=e1926]:
+                  - generic [ref=e1927]: €0,00
+                  - generic [ref=e1928]: Entrata
+                - generic [ref=e1929]:
+                  - generic [ref=e1930]: Admin User (Cash)
+                  - generic [ref=e1931]: 21/03/2026, 04:33
+              - button "View details for transaction 365" [ref=e1933] [cursor=pointer]:
+                - generic [ref=e1934]:
+                  - generic [ref=e1935]: €20,00
+                  - generic [ref=e1936]: Entrata
+                - generic [ref=e1937]:
+                  - generic [ref=e1938]: Admin User (Cash)
+                  - generic [ref=e1939]: 21/03/2026, 04:32
+              - button "View details for transaction 364" [ref=e1941] [cursor=pointer]:
+                - generic [ref=e1942]:
+                  - generic [ref=e1943]: €20,00
+                  - generic [ref=e1944]: Entrata
+                - generic [ref=e1945]:
+                  - generic [ref=e1946]: Admin User (Cash)
+                  - generic [ref=e1947]: 21/03/2026, 04:31
+              - button "View details for transaction 363" [ref=e1949] [cursor=pointer]:
+                - generic [ref=e1950]:
+                  - generic [ref=e1951]: €40,00
+                  - generic [ref=e1952]: Entrata
+                - generic [ref=e1953]:
+                  - generic [ref=e1954]: Admin User (Cash)
+                  - generic [ref=e1955]: 21/03/2026, 04:30
+              - button "View details for transaction 362" [ref=e1957] [cursor=pointer]:
+                - generic [ref=e1958]:
+                  - generic [ref=e1959]: €30,00
+                  - generic [ref=e1960]: Entrata
+                - generic [ref=e1961]:
+                  - generic [ref=e1962]: Admin User (Cash)
+                  - generic [ref=e1963]: 21/03/2026, 04:29
+              - button "View details for transaction 361" [ref=e1965] [cursor=pointer]:
+                - generic [ref=e1966]:
+                  - generic [ref=e1967]: €30,00
+                  - generic [ref=e1968]: Entrata
+                - generic [ref=e1969]:
+                  - generic [ref=e1970]: Admin User (Cash)
+                  - generic [ref=e1971]: 21/03/2026, 04:28
+              - button "View details for transaction 360" [ref=e1973] [cursor=pointer]:
+                - generic [ref=e1974]:
+                  - generic [ref=e1975]: €8,00
+                  - generic [ref=e1976]: Main Bar
+                - generic [ref=e1977]:
+                  - generic [ref=e1978]: Bar (Cash)
+                  - generic [ref=e1979]: 21/03/2026, 04:28
+              - button "View details for transaction 359" [ref=e1981] [cursor=pointer]:
+                - generic [ref=e1982]:
+                  - generic [ref=e1983]: €2,00
+                  - generic [ref=e1984]: Main Bar
+                - generic [ref=e1985]:
+                  - generic [ref=e1986]: Bar (Cash)
+                  - generic [ref=e1987]: 21/03/2026, 04:25
+              - button "View details for transaction 358" [ref=e1989] [cursor=pointer]:
+                - generic [ref=e1990]:
+                  - generic [ref=e1991]: €6,00
+                  - generic [ref=e1992]: Main Bar
+                - generic [ref=e1993]:
+                  - generic [ref=e1994]: Bar (Cash)
+                  - generic [ref=e1995]: 21/03/2026, 04:24
+              - button "View details for transaction 357" [ref=e1997] [cursor=pointer]:
+                - generic [ref=e1998]:
+                  - generic [ref=e1999]: €16,00
+                  - generic [ref=e2000]: Main Bar
+                - generic [ref=e2001]:
+                  - generic [ref=e2002]: Bar (Card)
+                  - generic [ref=e2003]: 21/03/2026, 04:19
+              - button "View details for transaction 356" [ref=e2005] [cursor=pointer]:
+                - generic [ref=e2006]:
+                  - generic [ref=e2007]: €20,00
+                  - generic [ref=e2008]: Entrata
+                - generic [ref=e2009]:
+                  - generic [ref=e2010]: Admin User (Cash)
+                  - generic [ref=e2011]: 21/03/2026, 04:13
+              - button "View details for transaction 355" [ref=e2013] [cursor=pointer]:
+                - generic [ref=e2014]:
+                  - generic [ref=e2015]: €24,00
+                  - generic [ref=e2016]: Main Bar
+                - generic [ref=e2017]:
+                  - generic [ref=e2018]: Bar (Card)
+                  - generic [ref=e2019]: 21/03/2026, 04:03
+              - button "View details for transaction 354" [ref=e2021] [cursor=pointer]:
+                - generic [ref=e2022]:
+                  - generic [ref=e2023]: €4,00
+                  - generic [ref=e2024]: Main Bar
+                - generic [ref=e2025]:
+                  - generic [ref=e2026]: Bar (Cash)
+                  - generic [ref=e2027]: 21/03/2026, 03:57
+              - button "View details for transaction 353" [ref=e2029] [cursor=pointer]:
+                - generic [ref=e2030]:
+                  - generic [ref=e2031]: €11,00
+                  - generic [ref=e2032]: Main Bar
+                - generic [ref=e2033]:
+                  - generic [ref=e2034]: Bar (Cash)
+                  - generic [ref=e2035]: 21/03/2026, 03:49
+              - button "View details for transaction 352" [ref=e2037] [cursor=pointer]:
+                - generic [ref=e2038]:
+                  - generic [ref=e2039]: €8,00
+                  - generic [ref=e2040]: Main Bar
+                - generic [ref=e2041]:
+                  - generic [ref=e2042]: Bar (Cash)
+                  - generic [ref=e2043]: 21/03/2026, 03:46
+              - button "View details for transaction 351" [ref=e2045] [cursor=pointer]:
+                - generic [ref=e2046]:
+                  - generic [ref=e2047]: €0,00
+                  - generic [ref=e2048]: Entrata
+                - generic [ref=e2049]:
+                  - generic [ref=e2050]: Admin User (Cash)
+                  - generic [ref=e2051]: 21/03/2026, 03:42
+              - button "View details for transaction 350" [ref=e2053] [cursor=pointer]:
+                - generic [ref=e2054]:
+                  - generic [ref=e2055]: €20,00
+                  - generic [ref=e2056]: Entrata
+                - generic [ref=e2057]:
+                  - generic [ref=e2058]: Admin User (Cash)
+                  - generic [ref=e2059]: 21/03/2026, 03:39
+              - button "View details for transaction 349" [ref=e2061] [cursor=pointer]:
+                - generic [ref=e2062]:
+                  - generic [ref=e2063]: €20,00
+                  - generic [ref=e2064]: Entrata
+                - generic [ref=e2065]:
+                  - generic [ref=e2066]: Admin User (Cash)
+                  - generic [ref=e2067]: 21/03/2026, 03:38
+              - button "View details for transaction 348" [ref=e2069] [cursor=pointer]:
+                - generic [ref=e2070]:
+                  - generic [ref=e2071]: €6,00
+                  - generic [ref=e2072]: Main Bar
+                - generic [ref=e2073]:
+                  - generic [ref=e2074]: Bar (Cash)
+                  - generic [ref=e2075]: 21/03/2026, 03:37
+              - button "View details for transaction 347" [ref=e2077] [cursor=pointer]:
+                - generic [ref=e2078]:
+                  - generic [ref=e2079]: €3,00
+                  - generic [ref=e2080]: Main Bar
+                - generic [ref=e2081]:
+                  - generic [ref=e2082]: Bar (Cash)
+                  - generic [ref=e2083]: 21/03/2026, 03:36
+              - button "View details for transaction 346" [ref=e2085] [cursor=pointer]:
+                - generic [ref=e2086]:
+                  - generic [ref=e2087]: €20,00
+                  - generic [ref=e2088]: Entrata
+                - generic [ref=e2089]:
+                  - generic [ref=e2090]: Admin User (Cash)
+                  - generic [ref=e2091]: 21/03/2026, 03:34
+              - button "View details for transaction 345" [ref=e2093] [cursor=pointer]:
+                - generic [ref=e2094]:
+                  - generic [ref=e2095]: €10,00
+                  - generic [ref=e2096]: Main Bar
+                - generic [ref=e2097]:
+                  - generic [ref=e2098]: Bar (Cash)
+                  - generic [ref=e2099]: 21/03/2026, 03:34
+              - button "View details for transaction 344" [ref=e2101] [cursor=pointer]:
+                - generic [ref=e2102]:
+                  - generic [ref=e2103]: €10,00
+                  - generic [ref=e2104]: Entrata
+                - generic [ref=e2105]:
+                  - generic [ref=e2106]: Admin User (Card)
+                  - generic [ref=e2107]: 21/03/2026, 03:33
+              - button "View details for transaction 343" [ref=e2109] [cursor=pointer]:
+                - generic [ref=e2110]:
+                  - generic [ref=e2111]: €3,00
+                  - generic [ref=e2112]: Main Bar
+                - generic [ref=e2113]:
+                  - generic [ref=e2114]: Bar (Cash)
+                  - generic [ref=e2115]: 21/03/2026, 03:32
+              - button "View details for transaction 342" [ref=e2117] [cursor=pointer]:
+                - generic [ref=e2118]:
+                  - generic [ref=e2119]: €20,00
+                  - generic [ref=e2120]: Entrata
+                - generic [ref=e2121]:
+                  - generic [ref=e2122]: Admin User (Cash)
+                  - generic [ref=e2123]: 21/03/2026, 03:32
+              - button "View details for transaction 341" [ref=e2125] [cursor=pointer]:
+                - generic [ref=e2126]:
+                  - generic [ref=e2127]: €30,00
+                  - generic [ref=e2128]: Entrata
+                - generic [ref=e2129]:
+                  - generic [ref=e2130]: Admin User (Card)
+                  - generic [ref=e2131]: 21/03/2026, 03:31
+              - button "View details for transaction 340" [ref=e2133] [cursor=pointer]:
+                - generic [ref=e2134]:
+                  - generic [ref=e2135]: €8,00
+                  - generic [ref=e2136]: Main Bar
+                - generic [ref=e2137]:
+                  - generic [ref=e2138]: Bar (Cash)
+                  - generic [ref=e2139]: 21/03/2026, 03:27
+              - button "View details for transaction 339" [ref=e2141] [cursor=pointer]:
+                - generic [ref=e2142]:
+                  - generic [ref=e2143]: €20,00
+                  - generic [ref=e2144]: Entrata
+                - generic [ref=e2145]:
+                  - generic [ref=e2146]: Admin User (Card)
+                  - generic [ref=e2147]: 21/03/2026, 03:24
+              - button "View details for transaction 338" [ref=e2149] [cursor=pointer]:
+                - generic [ref=e2150]:
+                  - generic [ref=e2151]: €20,00
+                  - generic [ref=e2152]: Entrata
+                - generic [ref=e2153]:
+                  - generic [ref=e2154]: Admin User (Card)
+                  - generic [ref=e2155]: 21/03/2026, 03:24
+              - button "View details for transaction 337" [ref=e2157] [cursor=pointer]:
+                - generic [ref=e2158]:
+                  - generic [ref=e2159]: €5,00
+                  - generic [ref=e2160]: Main Bar
+                - generic [ref=e2161]:
+                  - generic [ref=e2162]: Bar (Cash)
+                  - generic [ref=e2163]: 21/03/2026, 03:23
+              - button "View details for transaction 336" [ref=e2165] [cursor=pointer]:
+                - generic [ref=e2166]:
+                  - generic [ref=e2167]: €10,00
+                  - generic [ref=e2168]: Entrata
+                - generic [ref=e2169]:
+                  - generic [ref=e2170]: Admin User (Card)
+                  - generic [ref=e2171]: 21/03/2026, 03:19
+              - button "View details for transaction 335" [ref=e2173] [cursor=pointer]:
+                - generic [ref=e2174]:
+                  - generic [ref=e2175]: €10,00
+                  - generic [ref=e2176]: Entrata
+                - generic [ref=e2177]:
+                  - generic [ref=e2178]: Admin User (Card)
+                  - generic [ref=e2179]: 21/03/2026, 03:18
+              - button "View details for transaction 334" [ref=e2181] [cursor=pointer]:
+                - generic [ref=e2182]:
+                  - generic [ref=e2183]: €10,00
+                  - generic [ref=e2184]: Entrata
+                - generic [ref=e2185]:
+                  - generic [ref=e2186]: Admin User (Card)
+                  - generic [ref=e2187]: 21/03/2026, 03:15
+              - button "View details for transaction 333" [ref=e2189] [cursor=pointer]:
+                - generic [ref=e2190]:
+                  - generic [ref=e2191]: €10,00
+                  - generic [ref=e2192]: Entrata
+                - generic [ref=e2193]:
+                  - generic [ref=e2194]: Admin User (Card)
+                  - generic [ref=e2195]: 21/03/2026, 03:14
+              - button "View details for transaction 332" [ref=e2197] [cursor=pointer]:
+                - generic [ref=e2198]:
+                  - generic [ref=e2199]: €10,00
+                  - generic [ref=e2200]: Entrata
+                - generic [ref=e2201]:
+                  - generic [ref=e2202]: Admin User (Card)
+                  - generic [ref=e2203]: 21/03/2026, 03:13
+              - button "View details for transaction 331" [ref=e2205] [cursor=pointer]:
+                - generic [ref=e2206]:
+                  - generic [ref=e2207]: €3,00
+                  - generic [ref=e2208]: Main Bar
+                - generic [ref=e2209]:
+                  - generic [ref=e2210]: Bar (Cash)
+                  - generic [ref=e2211]: 21/03/2026, 03:06
+              - button "View details for transaction 330" [ref=e2213] [cursor=pointer]:
+                - generic [ref=e2214]:
+                  - generic [ref=e2215]: €20,00
+                  - generic [ref=e2216]: Entrata
+                - generic [ref=e2217]:
+                  - generic [ref=e2218]: Admin User (Cash)
+                  - generic [ref=e2219]: 21/03/2026, 02:58
+              - button "View details for transaction 329" [ref=e2221] [cursor=pointer]:
+                - generic [ref=e2222]:
+                  - generic [ref=e2223]: €3,00
+                  - generic [ref=e2224]: Main Bar
+                - generic [ref=e2225]:
+                  - generic [ref=e2226]: Bar (Cash)
+                  - generic [ref=e2227]: 21/03/2026, 02:55
+              - button "View details for transaction 328" [ref=e2229] [cursor=pointer]:
+                - generic [ref=e2230]:
+                  - generic [ref=e2231]: €0,00
+                  - generic [ref=e2232]: Entrata
+                - generic [ref=e2233]:
+                  - generic [ref=e2234]: Admin User (Cash)
+                  - generic [ref=e2235]: 21/03/2026, 02:49
+              - button "View details for transaction 327" [ref=e2237] [cursor=pointer]:
+                - generic [ref=e2238]:
+                  - generic [ref=e2239]: €10,00
+                  - generic [ref=e2240]: Entrata
+                - generic [ref=e2241]:
+                  - generic [ref=e2242]: Admin User (Cash)
+                  - generic [ref=e2243]: 21/03/2026, 02:49
+              - button "View details for transaction 326" [ref=e2245] [cursor=pointer]:
+                - generic [ref=e2246]:
+                  - generic [ref=e2247]: €4,00
+                  - generic [ref=e2248]: Main Bar
+                - generic [ref=e2249]:
+                  - generic [ref=e2250]: Bar (Cash)
+                  - generic [ref=e2251]: 21/03/2026, 02:36
+              - button "View details for transaction 325" [ref=e2253] [cursor=pointer]:
+                - generic [ref=e2254]:
+                  - generic [ref=e2255]: €20,00
+                  - generic [ref=e2256]: Entrata
+                - generic [ref=e2257]:
+                  - generic [ref=e2258]: Admin User (Card)
+                  - generic [ref=e2259]: 21/03/2026, 02:34
+              - button "View details for transaction 324" [ref=e2261] [cursor=pointer]:
+                - generic [ref=e2262]:
+                  - generic [ref=e2263]: €20,00
+                  - generic [ref=e2264]: Entrata
+                - generic [ref=e2265]:
+                  - generic [ref=e2266]: Admin User (Cash)
+                  - generic [ref=e2267]: 21/03/2026, 02:30
+              - button "View details for transaction 323" [ref=e2269] [cursor=pointer]:
+                - generic [ref=e2270]:
+                  - generic [ref=e2271]: €40,00
+                  - generic [ref=e2272]: Entrata
+                - generic [ref=e2273]:
+                  - generic [ref=e2274]: Admin User (Cash)
+                  - generic [ref=e2275]: 21/03/2026, 02:26
+              - button "View details for transaction 322" [ref=e2277] [cursor=pointer]:
+                - generic [ref=e2278]:
+                  - generic [ref=e2279]: €10,00
+                  - generic [ref=e2280]: Entrata
+                - generic [ref=e2281]:
+                  - generic [ref=e2282]: Admin User (Cash)
+                  - generic [ref=e2283]: 21/03/2026, 02:19
+              - button "View details for transaction 321" [ref=e2285] [cursor=pointer]:
+                - generic [ref=e2286]:
+                  - generic [ref=e2287]: €10,00
+                  - generic [ref=e2288]: Entrata
+                - generic [ref=e2289]:
+                  - generic [ref=e2290]: Admin User (Card)
+                  - generic [ref=e2291]: 21/03/2026, 02:19
+              - button "View details for transaction 320" [ref=e2293] [cursor=pointer]:
+                - generic [ref=e2294]:
+                  - generic [ref=e2295]: €8,00
+                  - generic [ref=e2296]: Main Bar
+                - generic [ref=e2297]:
+                  - generic [ref=e2298]: Bar (Card)
+                  - generic [ref=e2299]: 21/03/2026, 02:19
+              - button "View details for transaction 319" [ref=e2301] [cursor=pointer]:
+                - generic [ref=e2302]:
+                  - generic [ref=e2303]: €20,00
+                  - generic [ref=e2304]: Entrata
+                - generic [ref=e2305]:
+                  - generic [ref=e2306]: Admin User (Cash)
+                  - generic [ref=e2307]: 21/03/2026, 02:17
+              - button "View details for transaction 318" [ref=e2309] [cursor=pointer]:
+                - generic [ref=e2310]:
+                  - generic [ref=e2311]: €20,00
+                  - generic [ref=e2312]: Entrata
+                - generic [ref=e2313]:
+                  - generic [ref=e2314]: Admin User (Cash)
+                  - generic [ref=e2315]: 21/03/2026, 02:16
+              - button "View details for transaction 317" [ref=e2317] [cursor=pointer]:
+                - generic [ref=e2318]:
+                  - generic [ref=e2319]: €20,00
+                  - generic [ref=e2320]: Entrata
+                - generic [ref=e2321]:
+                  - generic [ref=e2322]: Admin User (Cash)
+                  - generic [ref=e2323]: 21/03/2026, 02:15
+              - button "View details for transaction 316" [ref=e2325] [cursor=pointer]:
+                - generic [ref=e2326]:
+                  - generic [ref=e2327]: €10,00
+                  - generic [ref=e2328]: Entrata
+                - generic [ref=e2329]:
+                  - generic [ref=e2330]: Admin User (Cash)
+                  - generic [ref=e2331]: 21/03/2026, 02:14
+              - button "View details for transaction 315" [ref=e2333] [cursor=pointer]:
+                - generic [ref=e2334]:
+                  - generic [ref=e2335]: €10,00
+                  - generic [ref=e2336]: Entrata
+                - generic [ref=e2337]:
+                  - generic [ref=e2338]: Admin User (Card)
+                  - generic [ref=e2339]: 21/03/2026, 02:14
+              - button "View details for transaction 314" [ref=e2341] [cursor=pointer]:
+                - generic [ref=e2342]:
+                  - generic [ref=e2343]: €0,00
+                  - generic [ref=e2344]: Entrata
+                - generic [ref=e2345]:
+                  - generic [ref=e2346]: Admin User (Cash)
+                  - generic [ref=e2347]: 21/03/2026, 02:13
+              - button "View details for transaction 313" [ref=e2349] [cursor=pointer]:
+                - generic [ref=e2350]:
+                  - generic [ref=e2351]: €10,00
+                  - generic [ref=e2352]: Entrata
+                - generic [ref=e2353]:
+                  - generic [ref=e2354]: Admin User (Card)
+                  - generic [ref=e2355]: 21/03/2026, 02:12
+              - button "View details for transaction 312" [ref=e2357] [cursor=pointer]:
+                - generic [ref=e2358]:
+                  - generic [ref=e2359]: €40,00
+                  - generic [ref=e2360]: Entrata
+                - generic [ref=e2361]:
+                  - generic [ref=e2362]: Admin User (Card)
+                  - generic [ref=e2363]: 21/03/2026, 02:12
+              - button "View details for transaction 311" [ref=e2365] [cursor=pointer]:
+                - generic [ref=e2366]:
+                  - generic [ref=e2367]: €4,00
+                  - generic [ref=e2368]: Main Bar
+                - generic [ref=e2369]:
+                  - generic [ref=e2370]: Bar (Cash)
+                  - generic [ref=e2371]: 21/03/2026, 02:11
+              - button "View details for transaction 310" [ref=e2373] [cursor=pointer]:
+                - generic [ref=e2374]:
+                  - generic [ref=e2375]: €10,00
+                  - generic [ref=e2376]: Entrata
+                - generic [ref=e2377]:
+                  - generic [ref=e2378]: Admin User (Cash)
+                  - generic [ref=e2379]: 21/03/2026, 02:09
+              - button "View details for transaction 309" [ref=e2381] [cursor=pointer]:
+                - generic [ref=e2382]:
+                  - generic [ref=e2383]: €40,00
+                  - generic [ref=e2384]: Entrata
+                - generic [ref=e2385]:
+                  - generic [ref=e2386]: Admin User (Cash)
+                  - generic [ref=e2387]: 21/03/2026, 01:55
+              - button "View details for transaction 308" [ref=e2389] [cursor=pointer]:
+                - generic [ref=e2390]:
+                  - generic [ref=e2391]: €3,00
+                  - generic [ref=e2392]: Main Bar
+                - generic [ref=e2393]:
+                  - generic [ref=e2394]: Bar (Cash)
+                  - generic [ref=e2395]: 21/03/2026, 01:55
+              - button "View details for transaction 307" [ref=e2397] [cursor=pointer]:
+                - generic [ref=e2398]:
+                  - generic [ref=e2399]: €20,00
+                  - generic [ref=e2400]: Entrata
+                - generic [ref=e2401]:
+                  - generic [ref=e2402]: Admin User (Cash)
+                  - generic [ref=e2403]: 21/03/2026, 01:53
+              - button "View details for transaction 306" [ref=e2405] [cursor=pointer]:
+                - generic [ref=e2406]:
+                  - generic [ref=e2407]: €20,00
+                  - generic [ref=e2408]: Entrata
+                - generic [ref=e2409]:
+                  - generic [ref=e2410]: Admin User (Card)
+                  - generic [ref=e2411]: 21/03/2026, 01:51
+              - button "View details for transaction 305" [ref=e2413] [cursor=pointer]:
+                - generic [ref=e2414]:
+                  - generic [ref=e2415]: €20,00
+                  - generic [ref=e2416]: Entrata
+                - generic [ref=e2417]:
+                  - generic [ref=e2418]: Admin User (Card)
+                  - generic [ref=e2419]: 21/03/2026, 01:50
+              - button "View details for transaction 304" [ref=e2421] [cursor=pointer]:
+                - generic [ref=e2422]:
+                  - generic [ref=e2423]: €2,00
+                  - generic [ref=e2424]: Main Bar
+                - generic [ref=e2425]:
+                  - generic [ref=e2426]: Bar (Cash)
+                  - generic [ref=e2427]: 21/03/2026, 01:50
+              - button "View details for transaction 303" [ref=e2429] [cursor=pointer]:
+                - generic [ref=e2430]:
+                  - generic [ref=e2431]: €20,00
+                  - generic [ref=e2432]: Entrata
+                - generic [ref=e2433]:
+                  - generic [ref=e2434]: Admin User (Cash)
+                  - generic [ref=e2435]: 21/03/2026, 01:48
+              - button "View details for transaction 302" [ref=e2437] [cursor=pointer]:
+                - generic [ref=e2438]:
+                  - generic [ref=e2439]: €20,00
+                  - generic [ref=e2440]: Entrata
+                - generic [ref=e2441]:
+                  - generic [ref=e2442]: Admin User (Card)
+                  - generic [ref=e2443]: 21/03/2026, 01:48
+              - button "View details for transaction 301" [ref=e2445] [cursor=pointer]:
+                - generic [ref=e2446]:
+                  - generic [ref=e2447]: €8,00
+                  - generic [ref=e2448]: Main Bar
+                - generic [ref=e2449]:
+                  - generic [ref=e2450]: Bar (Cash)
+                  - generic [ref=e2451]: 21/03/2026, 01:42
+              - button "View details for transaction 300" [ref=e2453] [cursor=pointer]:
+                - generic [ref=e2454]:
+                  - generic [ref=e2455]: €2,00
+                  - generic [ref=e2456]: Main Bar
+                - generic [ref=e2457]:
+                  - generic [ref=e2458]: Bar (Cash)
+                  - generic [ref=e2459]: 21/03/2026, 01:40
+              - button "View details for transaction 299" [ref=e2461] [cursor=pointer]:
+                - generic [ref=e2462]:
+                  - generic [ref=e2463]: €4,00
+                  - generic [ref=e2464]: Main Bar
+                - generic [ref=e2465]:
+                  - generic [ref=e2466]: Bar (Card)
+                  - generic [ref=e2467]: 21/03/2026, 01:40
+              - button "View details for transaction 298" [ref=e2469] [cursor=pointer]:
+                - generic [ref=e2470]:
+                  - generic [ref=e2471]: €10,00
+                  - generic [ref=e2472]: Entrata
+                - generic [ref=e2473]:
+                  - generic [ref=e2474]: Admin User (Cash)
+                  - generic [ref=e2475]: 21/03/2026, 01:13
+              - button "View details for transaction 297" [ref=e2477] [cursor=pointer]:
+                - generic [ref=e2478]:
+                  - generic [ref=e2479]: €10,00
+                  - generic [ref=e2480]: Entrata
+                - generic [ref=e2481]:
+                  - generic [ref=e2482]: Admin User (Cash)
+                  - generic [ref=e2483]: 21/03/2026, 01:12
+              - button "View details for transaction 296" [ref=e2485] [cursor=pointer]:
+                - generic [ref=e2486]:
+                  - generic [ref=e2487]: €8,00
+                  - generic [ref=e2488]: Main Bar
+                - generic [ref=e2489]:
+                  - generic [ref=e2490]: Bar (Card)
+                  - generic [ref=e2491]: 21/03/2026, 00:56
+              - button "View details for transaction 295" [ref=e2493] [cursor=pointer]:
+                - generic [ref=e2494]:
+                  - generic [ref=e2495]: €6,00
+                  - generic [ref=e2496]: Main Bar
+                - generic [ref=e2497]:
+                  - generic [ref=e2498]: Bar (Cash)
+                  - generic [ref=e2499]: 21/03/2026, 00:54
+              - button "View details for transaction 294" [ref=e2501] [cursor=pointer]:
+                - generic [ref=e2502]:
+                  - generic [ref=e2503]: €16,00
+                  - generic [ref=e2504]: Main Bar
+                - generic [ref=e2505]:
+                  - generic [ref=e2506]: Bar (Cash)
+                  - generic [ref=e2507]: 21/03/2026, 00:54
+              - button "View details for transaction 293" [ref=e2509] [cursor=pointer]:
+                - generic [ref=e2510]:
+                  - generic [ref=e2511]: €4,00
+                  - generic [ref=e2512]: Main Bar
+                - generic [ref=e2513]:
+                  - generic [ref=e2514]: Bar (Card)
+                  - generic [ref=e2515]: 21/03/2026, 00:50
+              - button "View details for transaction 292" [ref=e2517] [cursor=pointer]:
+                - generic [ref=e2518]:
+                  - generic [ref=e2519]: €4,00
+                  - generic [ref=e2520]: Main Bar
+                - generic [ref=e2521]:
+                  - generic [ref=e2522]: Bar (Card)
+                  - generic [ref=e2523]: 21/03/2026, 00:45
+              - button "View details for transaction 291" [ref=e2525] [cursor=pointer]:
+                - generic [ref=e2526]:
+                  - generic [ref=e2527]: €5,00
+                  - generic [ref=e2528]: Main Bar
+                - generic [ref=e2529]:
+                  - generic [ref=e2530]: Bar (Cash)
+                  - generic [ref=e2531]: 21/03/2026, 00:44
+              - button "View details for transaction 290" [ref=e2533] [cursor=pointer]:
+                - generic [ref=e2534]:
+                  - generic [ref=e2535]: €8,00
+                  - generic [ref=e2536]: Main Bar
+                - generic [ref=e2537]:
+                  - generic [ref=e2538]: Bar (Card)
+                  - generic [ref=e2539]: 21/03/2026, 00:42
+              - button "View details for transaction 289" [ref=e2541] [cursor=pointer]:
+                - generic [ref=e2542]:
+                  - generic [ref=e2543]: €2,00
+                  - generic [ref=e2544]: Main Bar
+                - generic [ref=e2545]:
+                  - generic [ref=e2546]: Bar (Cash)
+                  - generic [ref=e2547]: 21/03/2026, 00:42
+              - button "View details for transaction 288" [ref=e2549] [cursor=pointer]:
+                - generic [ref=e2550]:
+                  - generic [ref=e2551]: €15,00
+                  - generic [ref=e2552]: Entrata
+                - generic [ref=e2553]:
+                  - generic [ref=e2554]: Admin User (Cash)
+                  - generic [ref=e2555]: 21/03/2026, 00:41
+              - button "View details for transaction 287" [ref=e2557] [cursor=pointer]:
+                - generic [ref=e2558]:
+                  - generic [ref=e2559]: €5,00
+                  - generic [ref=e2560]: Entrata
+                - generic [ref=e2561]:
+                  - generic [ref=e2562]: Admin User (Cash)
+                  - generic [ref=e2563]: 21/03/2026, 00:39
+              - button "View details for transaction 286" [ref=e2565] [cursor=pointer]:
+                - generic [ref=e2566]:
+                  - generic [ref=e2567]: €10,00
+                  - generic [ref=e2568]: Entrata
+                - generic [ref=e2569]:
+                  - generic [ref=e2570]: Admin User (Cash)
+                  - generic [ref=e2571]: 21/03/2026, 00:38
+              - button "View details for transaction 285" [ref=e2573] [cursor=pointer]:
+                - generic [ref=e2574]:
+                  - generic [ref=e2575]: €8,00
+                  - generic [ref=e2576]: Main Bar
+                - generic [ref=e2577]:
+                  - generic [ref=e2578]: Bar (Cash)
+                  - generic [ref=e2579]: 21/03/2026, 00:35
+              - button "View details for transaction 284" [ref=e2581] [cursor=pointer]:
+                - generic [ref=e2582]:
+                  - generic [ref=e2583]: €16,00
+                  - generic [ref=e2584]: Main Bar
+                - generic [ref=e2585]:
+                  - generic [ref=e2586]: Bar (Cash)
+                  - generic [ref=e2587]: 20/03/2026, 23:50
+              - button "View details for transaction 283" [ref=e2589] [cursor=pointer]:
+                - generic [ref=e2590]:
+                  - generic [ref=e2591]: €15,00
+                  - generic [ref=e2592]: Entrata
+                - generic [ref=e2593]:
+                  - generic [ref=e2594]: Admin User (Card)
+                  - generic [ref=e2595]: 20/03/2026, 23:49
+              - button "View details for transaction 282" [ref=e2597] [cursor=pointer]:
+                - generic [ref=e2598]:
+                  - generic [ref=e2599]: €8,00
+                  - generic [ref=e2600]: Main Bar
+                - generic [ref=e2601]:
+                  - generic [ref=e2602]: Bar (Cash)
+                  - generic [ref=e2603]: 20/03/2026, 23:48
+              - button "View details for transaction 281" [ref=e2605] [cursor=pointer]:
+                - generic [ref=e2606]:
+                  - generic [ref=e2607]: €15,00
+                  - generic [ref=e2608]: Entrata
+                - generic [ref=e2609]:
+                  - generic [ref=e2610]: Admin User (Card)
+                  - generic [ref=e2611]: 20/03/2026, 23:46
+              - button "View details for transaction 280" [ref=e2613] [cursor=pointer]:
+                - generic [ref=e2614]:
+                  - generic [ref=e2615]: €15,00
+                  - generic [ref=e2616]: Entrata
+                - generic [ref=e2617]:
+                  - generic [ref=e2618]: Admin User (Card)
+                  - generic [ref=e2619]: 20/03/2026, 23:44
+              - button "View details for transaction 279" [ref=e2621] [cursor=pointer]:
+                - generic [ref=e2622]:
+                  - generic [ref=e2623]: €15,00
+                  - generic [ref=e2624]: Entrata
+                - generic [ref=e2625]:
+                  - generic [ref=e2626]: Admin User (Card)
+                  - generic [ref=e2627]: 20/03/2026, 23:43
+              - button "View details for transaction 278" [ref=e2629] [cursor=pointer]:
+                - generic [ref=e2630]:
+                  - generic [ref=e2631]: €8,00
+                  - generic [ref=e2632]: Main Bar
+                - generic [ref=e2633]:
+                  - generic [ref=e2634]: Bar (Cash)
+                  - generic [ref=e2635]: 20/03/2026, 23:42
+              - button "View details for transaction 277" [ref=e2637] [cursor=pointer]:
+                - generic [ref=e2638]:
+                  - generic [ref=e2639]: €8,00
+                  - generic [ref=e2640]: Main Bar
+                - generic [ref=e2641]:
+                  - generic [ref=e2642]: Bar (Cash)
+                  - generic [ref=e2643]: 20/03/2026, 23:40
+              - button "View details for transaction 276" [ref=e2645] [cursor=pointer]:
+                - generic [ref=e2646]:
+                  - generic [ref=e2647]: €15,00
+                  - generic [ref=e2648]: Entrata
+                - generic [ref=e2649]:
+                  - generic [ref=e2650]: Admin User (Cash)
+                  - generic [ref=e2651]: 20/03/2026, 23:40
+              - button "View details for transaction 275" [ref=e2653] [cursor=pointer]:
+                - generic [ref=e2654]:
+                  - generic [ref=e2655]: €15,00
+                  - generic [ref=e2656]: Entrata
+                - generic [ref=e2657]:
+                  - generic [ref=e2658]: Admin User (Cash)
+                  - generic [ref=e2659]: 20/03/2026, 23:36
+            - paragraph [ref=e2661]: Select a transaction to view details
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

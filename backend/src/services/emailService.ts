@@ -151,95 +151,6 @@ async function getTransporter(config: EmailConfig): Promise<nodemailer.Transport
   return transporter;
 }
 
-export function clearTransporterCache(): void {
-  if (cachedTransporter) {
-    cachedTransporter.close();
-    cachedTransporter = null;
-    lastConfigChecksum = null;
-  }
-}
-
-export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
-  try {
-    const config = await getEmailConfig();
-
-    if (!config.enabled) {
-      logError('Email service is disabled');
-      return {
-        success: false,
-        error: 'Email service is disabled',
-        errorCode: 'EMAIL_SERVICE_DISABLED',
-      };
-    }
-
-    const validation = validateSmtpConfig(config);
-    if (!validation.valid) {
-      logError(validation.error || 'Invalid SMTP configuration');
-      return {
-        success: false,
-        error: validation.error,
-        errorCode: validation.errorCode,
-      };
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(options.to)) {
-      return {
-        success: false,
-        error: 'Invalid recipient email address',
-        errorCode: 'INVALID_RECIPIENT',
-      };
-    }
-
-const transporter = await getTransporter(config);
-
-const fromAddress = config.fromName
-  ? `"${config.fromName}" <${config.fromAddress}>`
-  : config.fromAddress!;
-
-const mailOptions: nodemailer.SendMailOptions = {
-  from: fromAddress,
-  to: options.to,
-  subject: options.subject,
-  html: options.html,
-  text: options.text,
-  attachments: options.attachments,
-};
-
-    const info = await transporter.sendMail(mailOptions);
-
-    logInfo('Email sent successfully', {
-      messageId: info.messageId,
-      recipient: options.to,
-      subject: options.subject,
-    });
-
-    return {
-      success: true,
-      messageId: info.messageId,
-    };
-  } catch (error) {
-    const errorCode = mapErrorToCode(error);
-    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-
-    logError('Failed to send email', {
-      error: errorMessage,
-      errorCode,
-      recipient: options.to,
-    });
-
-    logDebug('Email send error details', {
-      error: error instanceof Error ? error.stack : error,
-    });
-
-    return {
-      success: false,
-      error: getSafeErrorMessage(errorCode),
-      errorCode,
-    };
-  }
-}
-
 export async function testSmtpConnection(testRecipient?: string): Promise<SmtpTestResult> {
   const startTime = Date.now();
 
@@ -419,8 +330,6 @@ function getSafeErrorMessage(errorCode: string): string {
 }
 
 export default {
-  sendEmail,
   testSmtpConnection,
   getEmailConfig,
-  clearTransporterCache,
 };

@@ -1,0 +1,97 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e453] [cursor=pointer]:
+          - img [ref=e455]
+          - generic [ref=e457]: Dashboard
+        - button "Analytics" [ref=e458] [cursor=pointer]:
+          - img [ref=e460]
+          - generic [ref=e462]: Analytics
+        - button "Profit Analytics" [ref=e463] [cursor=pointer]:
+          - img [ref=e465]
+          - generic [ref=e467]: Profit Analytics
+        - button "Transactions" [ref=e468] [cursor=pointer]:
+          - img [ref=e470]
+          - generic [ref=e472]: Transactions
+        - button "Receipts 13" [ref=e473] [cursor=pointer]:
+          - img [ref=e475]
+          - generic [ref=e477]: Receipts
+          - button "13" [ref=e478]
+        - button "Activity Log" [ref=e479] [cursor=pointer]:
+          - img [ref=e481]
+          - generic [ref=e483]: Activity Log
+        - button "Daily Closing Summary" [ref=e484] [cursor=pointer]:
+          - img [ref=e486]
+          - generic [ref=e488]: Daily Closing Summary
+        - button "Customers" [ref=e489] [cursor=pointer]:
+          - img [ref=e491]
+          - generic [ref=e493]: Customers
+        - button "Products" [ref=e494] [cursor=pointer]:
+          - img [ref=e496]
+          - generic [ref=e498]: Products
+        - button "Categories" [ref=e499] [cursor=pointer]:
+          - img [ref=e501]
+          - generic [ref=e503]: Categories
+        - button "Stock Items" [ref=e504] [cursor=pointer]:
+          - img [ref=e506]
+          - generic [ref=e508]: Stock Items
+        - button "Inventory" [ref=e509] [cursor=pointer]:
+          - img [ref=e511]
+          - generic [ref=e513]: Inventory
+        - button "Cost Management" [ref=e514] [cursor=pointer]:
+          - img [ref=e516]
+          - generic [ref=e518]: Cost Management
+        - button "Inventory Counts" [ref=e519] [cursor=pointer]:
+          - img [ref=e521]
+          - generic [ref=e523]: Inventory Counts
+        - button "Variance Reports" [ref=e524] [cursor=pointer]:
+          - img [ref=e526]
+          - generic [ref=e528]: Variance Reports
+        - button "Users" [ref=e529] [cursor=pointer]:
+          - img [ref=e531]
+          - generic [ref=e533]: Users
+        - button "Tills" [ref=e534] [cursor=pointer]:
+          - img [ref=e536]
+          - generic [ref=e538]: Tills
+        - button "Tables & Layout" [ref=e539] [cursor=pointer]:
+          - img [ref=e541]
+          - generic [ref=e543]: Tables & Layout
+        - button "Itemised Consumption" [ref=e544] [cursor=pointer]:
+          - img [ref=e546]
+          - generic [ref=e548]: Itemised Consumption
+        - button "Settings" [ref=e549] [cursor=pointer]:
+          - img [ref=e551]
+          - generic [ref=e554]: Settings
+      - main [ref=e236]:
+        - generic [ref=e555]:
+          - generic [ref=e556]:
+            - paragraph [ref=e557]: "This device is currently assigned as: Main Bar"
+            - paragraph [ref=e558]: You can re-assign this device to a different till below.
+          - generic [ref=e559]:
+            - heading "Manage All Tills" [level=3] [ref=e560]
+            - button "Add Till" [ref=e561] [cursor=pointer]
+          - generic [ref=e562]:
+            - generic [ref=e563]:
+              - paragraph [ref=e565]: Main Bar
+              - generic [ref=e566]:
+                - generic [ref=e567]: Currently Assigned
+                - button "Edit" [ref=e568] [cursor=pointer]
+                - button "Delete" [ref=e569] [cursor=pointer]
+            - generic [ref=e570]:
+              - paragraph [ref=e572]: Entrata
+              - generic [ref=e573]:
+                - button "Assign This Device" [ref=e574] [cursor=pointer]
+                - button "Edit" [ref=e575] [cursor=pointer]
+                - button "Delete" [ref=e576] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

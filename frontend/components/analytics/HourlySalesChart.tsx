@@ -45,7 +45,7 @@ export const HourlySalesChart: React.FC<HourlySalesChartProps> = ({
   hourlyData: serverData,
   targetDate
 }) => {
-  const { t } = useTranslation();
+  const { t } = useTranslation('admin');
 
   // Use server-side data if available, otherwise fall back to client-side calculation
   const hourlyData = useMemo((): HourData[] => {

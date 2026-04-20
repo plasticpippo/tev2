@@ -1,0 +1,68 @@
+- generic [ref=e2]:
+  - generic [ref=e1072]:
+    - generic [ref=e1073]:
+      - button "Enter Fullscreen" [ref=e1074] [cursor=pointer]:
+        - img [ref=e1075]
+      - button "Admin Panel" [ref=e1077] [cursor=pointer]
+    - main [ref=e1078]:
+      - generic [ref=e1079]:
+        - generic [ref=e1082]:
+          - generic [ref=e1083]:
+            - heading "Products" [level=2] [ref=e1084]
+            - generic [ref=e1085]:
+              - button "Favourites" [ref=e1086] [cursor=pointer]
+              - button "Shots" [ref=e1087] [cursor=pointer]
+              - button "Beer" [ref=e1088] [cursor=pointer]
+              - button "Cocktails" [ref=e1089] [cursor=pointer]
+              - button "Soft Drinks" [active] [ref=e1090] [cursor=pointer]
+              - button "Vino" [ref=e1091] [cursor=pointer]
+              - button "All" [ref=e1092] [cursor=pointer]
+          - generic [ref=e1095]:
+            - generic [ref=e1181] [cursor=pointer]:
+              - paragraph [ref=e1182]: Lemonsoda
+              - generic [ref=e1183]:
+                - paragraph [ref=e1184]: Standard
+                - paragraph [ref=e1185]: €3,00
+            - generic [ref=e1186] [cursor=pointer]:
+              - paragraph [ref=e1187]: Ginger Beer
+              - generic [ref=e1188]:
+                - paragraph [ref=e1189]: Bottiglia 200ml
+                - paragraph [ref=e1190]: €4,00
+            - generic [ref=e1191] [cursor=pointer]:
+              - paragraph [ref=e1192]: Coca Cola
+              - generic [ref=e1193]:
+                - paragraph [ref=e1194]: Can
+                - paragraph [ref=e1195]: €3,00
+            - generic [ref=e1196] [cursor=pointer]:
+              - paragraph [ref=e1197]: Tonica
+              - generic [ref=e1198]:
+                - paragraph [ref=e1199]: Standard
+                - paragraph [ref=e1200]: €4,00
+            - generic [ref=e1138] [cursor=pointer]:
+              - paragraph [ref=e1139]: Acqua
+              - generic [ref=e1140]:
+                - paragraph [ref=e1141]: 50cl
+                - paragraph [ref=e1142]: €2,00
+              - generic [ref=e1143]: FAV
+            - generic [ref=e1201] [cursor=pointer]:
+              - paragraph [ref=e1202]: QA Test Product
+              - generic [ref=e1203]:
+                - paragraph [ref=e1204]: Standard
+                - paragraph [ref=e1205]: €5,99
+        - generic [ref=e1163]:
+          - generic [ref=e1164]:
+            - generic [ref=e1165]:
+              - paragraph [ref=e1166]: "Logged in as:"
+              - paragraph [ref=e1167]:
+                - text: Admin User
+                - generic [ref=e1168]: (Admin)
+            - button "Logout" [ref=e1169] [cursor=pointer]
+          - generic [ref=e1170]:
+            - heading "Current Order" [level=2] [ref=e1171]
+            - generic [ref=e1173]: Select products to add them here.
+          - button "EDIT Edit Layout" [ref=e1175] [cursor=pointer]:
+            - generic [ref=e1176]: EDIT
+            - generic [ref=e1177]: Edit Layout
+          - button "View Open Tabs" [ref=e1180] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

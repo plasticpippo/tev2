@@ -1,0 +1,426 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e2858] [cursor=pointer]:
+          - img [ref=e2860]
+          - generic [ref=e2862]: Dashboard
+        - button "Analytics" [ref=e2863] [cursor=pointer]:
+          - img [ref=e2865]
+          - generic [ref=e2867]: Analytics
+        - button "Profit Analytics" [ref=e2868] [cursor=pointer]:
+          - img [ref=e2870]
+          - generic [ref=e2872]: Profit Analytics
+        - button "Transactions" [ref=e2873] [cursor=pointer]:
+          - img [ref=e2875]
+          - generic [ref=e2877]: Transactions
+        - button "Receipts 13" [ref=e2878] [cursor=pointer]:
+          - img [ref=e2880]
+          - generic [ref=e2882]: Receipts
+          - button "13" [ref=e2883]
+        - button "Activity Log" [ref=e2884] [cursor=pointer]:
+          - img [ref=e2886]
+          - generic [ref=e2888]: Activity Log
+        - button "Daily Closing Summary" [ref=e2889] [cursor=pointer]:
+          - img [ref=e2891]
+          - generic [ref=e2893]: Daily Closing Summary
+        - button "Customers" [ref=e2894] [cursor=pointer]:
+          - img [ref=e2896]
+          - generic [ref=e2898]: Customers
+        - button "Products" [ref=e2899] [cursor=pointer]:
+          - img [ref=e2901]
+          - generic [ref=e2903]: Products
+        - button "Categories" [ref=e2904] [cursor=pointer]:
+          - img [ref=e2906]
+          - generic [ref=e2908]: Categories
+        - button "Stock Items" [ref=e2909] [cursor=pointer]:
+          - img [ref=e2911]
+          - generic [ref=e2913]: Stock Items
+        - button "Inventory" [ref=e2914] [cursor=pointer]:
+          - img [ref=e2916]
+          - generic [ref=e2918]: Inventory
+        - button "Cost Management" [ref=e2919] [cursor=pointer]:
+          - img [ref=e2921]
+          - generic [ref=e2923]: Cost Management
+        - button "Inventory Counts" [ref=e2924] [cursor=pointer]:
+          - img [ref=e2926]
+          - generic [ref=e2928]: Inventory Counts
+        - button "Variance Reports" [ref=e2929] [cursor=pointer]:
+          - img [ref=e2931]
+          - generic [ref=e2933]: Variance Reports
+        - button "Users" [ref=e2934] [cursor=pointer]:
+          - img [ref=e2936]
+          - generic [ref=e2938]: Users
+        - button "Tills" [ref=e2939] [cursor=pointer]:
+          - img [ref=e2941]
+          - generic [ref=e2943]: Tills
+        - button "Tables & Layout" [ref=e2944] [cursor=pointer]:
+          - img [ref=e2946]
+          - generic [ref=e2948]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2949] [cursor=pointer]:
+          - img [ref=e2951]
+          - generic [ref=e2953]: Itemised Consumption
+        - button "Settings" [ref=e2954] [cursor=pointer]:
+          - img [ref=e2956]
+          - generic [ref=e2959]: Settings
+      - main [ref=e236]:
+        - generic [ref=e2960]:
+          - generic [ref=e2961]:
+            - heading "Analytics Dashboard" [level=2] [ref=e2962]
+            - generic [ref=e2963]:
+              - generic [ref=e2964]:
+                - button "Today" [ref=e2965] [cursor=pointer]
+                - button "Last 7 Days" [ref=e2966] [cursor=pointer]
+                - button "Last 30 Days" [ref=e2967] [cursor=pointer]
+                - button "Last 12 Months" [ref=e2968] [cursor=pointer]
+                - button "Custom" [ref=e2969] [cursor=pointer]
+              - generic [ref=e2970]:
+                - generic [ref=e2971]: Comparison Mode
+                - button [ref=e2972] [cursor=pointer]
+          - generic [ref=e2974]:
+            - generic [ref=e2975]:
+              - heading "Hourly Sales PerformanceApr 19, 2026" [level=3] [ref=e2976]
+              - generic [ref=e2977]:
+                - generic [ref=e2978]:
+                  - paragraph [ref=e2979]: analytics.totalSales
+                  - paragraph [ref=e2980]: €15,00
+                - generic [ref=e2981]:
+                  - paragraph [ref=e2982]: analytics.peakHour
+                  - paragraph [ref=e2983]: 19:00
+            - generic [ref=e2985]:
+              - generic [ref=e2986]:
+                - generic:
+                  - generic: 20:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2987]: "20"
+              - generic [ref=e2988]:
+                - generic:
+                  - generic: 21:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2989]: "21"
+              - generic [ref=e2990]:
+                - generic:
+                  - generic: 22:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2991]: "22"
+              - generic [ref=e2992]:
+                - generic:
+                  - generic: 23:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2993]: "23"
+              - generic [ref=e2994]:
+                - generic:
+                  - generic: 00:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2995]: "00"
+              - generic [ref=e2996]:
+                - generic:
+                  - generic: 01:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2997]: "01"
+              - generic [ref=e2998]:
+                - generic:
+                  - generic: 02:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e2999]: "02"
+              - generic [ref=e3000]:
+                - generic:
+                  - generic: 03:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3001]: "03"
+              - generic [ref=e3002]:
+                - generic:
+                  - generic: 04:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3003]: "04"
+              - generic [ref=e3004]:
+                - generic:
+                  - generic: 05:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3005]: "05"
+              - generic [ref=e3006]:
+                - generic:
+                  - generic: 06:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3007]: "06"
+              - generic [ref=e3008]:
+                - generic:
+                  - generic: 07:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3009]: "07"
+              - generic [ref=e3010]:
+                - generic:
+                  - generic: 08:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3011]: "08"
+              - generic [ref=e3012]:
+                - generic:
+                  - generic: 09:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3013]: "09"
+              - generic [ref=e3014]:
+                - generic:
+                  - generic: 10:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3015]: "10"
+              - generic [ref=e3016]:
+                - generic:
+                  - generic: 11:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3017]: "11"
+              - generic [ref=e3018]:
+                - generic:
+                  - generic: 12:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3019]: "12"
+              - generic [ref=e3020]:
+                - generic:
+                  - generic: 13:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3021]: "13"
+              - generic [ref=e3022]:
+                - generic:
+                  - generic: 14:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3023]: "14"
+              - generic [ref=e3024]:
+                - generic:
+                  - generic: 15:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3025]: "15"
+              - generic [ref=e3026]:
+                - generic:
+                  - generic: 16:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3027]: "16"
+              - generic [ref=e3028]:
+                - generic:
+                  - generic: 17:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3029]: "17"
+              - generic [ref=e3030]:
+                - generic:
+                  - generic: 18:00
+                  - generic: €0,00
+                  - generic: 0 transactions
+                - generic [ref=e3031]: "18"
+              - generic [ref=e3032]:
+                - generic:
+                  - generic: 19:00
+                  - generic: €15,00
+                  - generic: 2 transactions
+                - generic [ref=e3034]: "19"
+          - generic [ref=e3036]:
+            - generic [ref=e3037]:
+              - generic [ref=e3038]:
+                - generic [ref=e3039]:
+                  - generic [ref=e3040]: Start Date
+                  - textbox "Start Date" [ref=e3041]
+                - generic [ref=e3042]:
+                  - generic [ref=e3043]: End Date
+                  - textbox "End Date" [ref=e3044]
+                - generic [ref=e3045]:
+                  - generic [ref=e3046]: Start Time
+                  - textbox "Start Time" [ref=e3047]
+                - generic [ref=e3048]:
+                  - generic [ref=e3049]: End Time
+                  - textbox "End Time" [ref=e3050]
+                - paragraph [ref=e3051]: "Optional: Filter by specific time within the date range"
+                - generic [ref=e3052]:
+                  - generic [ref=e3053]: Category
+                  - combobox "Category" [ref=e3054]:
+                    - option "All Categories" [selected]
+                    - option "Shots"
+                    - option "Beer"
+                    - option "Cocktails"
+                    - option "Soft Drinks"
+                    - option "Entrata"
+                    - option "Vino"
+                - generic [ref=e3055]:
+                  - generic [ref=e3056]: Product
+                  - combobox "Product" [ref=e3057]:
+                    - option "All Products" [selected]
+                    - option "Sipsmith Tonic"
+                    - option "Lemonsoda"
+                    - option "Ginger Beer"
+                    - option "Vodka Ginger Beer"
+                    - option "Gin Ginger Beer"
+                    - option "Shot Vodka"
+                    - option "Shot Gin Gordon's"
+                    - option "Shot Campari"
+                    - option "Shot Sipsmith"
+                    - option "Coca Cola"
+                    - option "Gratis"
+                    - option "Entrata"
+                    - option "Vino Bianco"
+                    - option "Tonica"
+                    - option "Pirlo Campari"
+                    - option "Tessera"
+                    - option "Industry Pass"
+                    - option "Shot Tequila"
+                    - option "5 Euro (1am)"
+                    - option "Americano"
+                    - option "Negroni"
+                    - option "Vodka Lemon"
+                    - option "Beck's"
+                    - option "Paloma"
+                    - option "Gin Tonic"
+                    - option "Gin Lemon"
+                    - option "Sipsmith Lemon"
+                    - option "Acqua"
+                    - option "Wuhrer"
+                    - option "Coca Rum"
+                    - option "Shot Rum"
+                    - option "Shot Hierbas"
+                    - option "Vodka Tonic"
+              - generic [ref=e3058]:
+                - generic [ref=e3059]:
+                  - generic [ref=e3060]: Sort By
+                  - radiogroup "Sort By" [ref=e3061]:
+                    - radio "Revenue" [checked] [ref=e3062] [cursor=pointer]
+                    - radio "Quantity" [ref=e3063] [cursor=pointer]
+                    - radio "Name" [ref=e3064] [cursor=pointer]
+                - generic [ref=e3065]:
+                  - generic [ref=e3066]: Order
+                  - radiogroup "Order" [ref=e3067]:
+                    - radio "ASC" [ref=e3068] [cursor=pointer]
+                    - radio "DESC" [checked] [ref=e3069] [cursor=pointer]
+            - generic [ref=e3070]:
+              - heading "Product Performance" [level=3] [ref=e3071]
+              - table [ref=e3072]:
+                - rowgroup [ref=e3073]:
+                  - row "Product Category Quantity Sold Average Price Total Revenue Transactions" [ref=e3074]:
+                    - columnheader "Product" [ref=e3075]
+                    - columnheader "Category" [ref=e3076]
+                    - columnheader "Quantity Sold" [ref=e3077]
+                    - columnheader "Average Price" [ref=e3078]
+                    - columnheader "Total Revenue" [ref=e3079]
+                    - columnheader "Transactions" [ref=e3080]
+                - rowgroup [ref=e3081]:
+                  - row "Entrata Entrata 240 €10,00 €2400,00 202" [ref=e3082]:
+                    - cell "Entrata" [ref=e3083]
+                    - cell "Entrata" [ref=e3084]
+                    - cell "240" [ref=e3085]
+                    - cell "€10,00" [ref=e3086]
+                    - cell "€2400,00" [ref=e3087]
+                    - cell "202" [ref=e3088]
+                  - row "Tessera Entrata 150 €10,00 €1500,00 130" [ref=e3089]:
+                    - cell "Tessera" [ref=e3090]
+                    - cell "Entrata" [ref=e3091]
+                    - cell "150" [ref=e3092]
+                    - cell "€10,00" [ref=e3093]
+                    - cell "€1500,00" [ref=e3094]
+                    - cell "130" [ref=e3095]
+                  - row "Gin Tonic Cocktails 156 €8,05 €1256,00 76" [ref=e3096]:
+                    - cell "Gin Tonic" [ref=e3097]
+                    - cell "Cocktails" [ref=e3098]
+                    - cell "156" [ref=e3099]
+                    - cell "€8,05" [ref=e3100]
+                    - cell "€1256,00" [ref=e3101]
+                    - cell "76" [ref=e3102]
+                  - row "Vodka Lemon Cocktails 89 €8,11 €722,00 46" [ref=e3103]:
+                    - cell "Vodka Lemon" [ref=e3104]
+                    - cell "Cocktails" [ref=e3105]
+                    - cell "89" [ref=e3106]
+                    - cell "€8,11" [ref=e3107]
+                    - cell "€722,00" [ref=e3108]
+                    - cell "46" [ref=e3109]
+                  - row "Beck's Beer 119 €4,00 €476,00 74" [ref=e3110]:
+                    - cell "Beck's" [ref=e3111]
+                    - cell "Beer" [ref=e3112]
+                    - cell "119" [ref=e3113]
+                    - cell "€4,00" [ref=e3114]
+                    - cell "€476,00" [ref=e3115]
+                    - cell "74" [ref=e3116]
+                  - row "Gin Lemon Cocktails 58 €8,07 €468,00 33" [ref=e3117]:
+                    - cell "Gin Lemon" [ref=e3118]
+                    - cell "Cocktails" [ref=e3119]
+                    - cell "58" [ref=e3120]
+                    - cell "€8,07" [ref=e3121]
+                    - cell "€468,00" [ref=e3122]
+                    - cell "33" [ref=e3123]
+                  - row "Vodka Tonic Cocktails 49 €8,00 €392,00 35" [ref=e3124]:
+                    - cell "Vodka Tonic" [ref=e3125]
+                    - cell "Cocktails" [ref=e3126]
+                    - cell "49" [ref=e3127]
+                    - cell "€8,00" [ref=e3128]
+                    - cell "€392,00" [ref=e3129]
+                    - cell "35" [ref=e3130]
+                  - row "Wuhrer Beer 58 €6,00 €348,00 34" [ref=e3131]:
+                    - cell "Wuhrer" [ref=e3132]
+                    - cell "Beer" [ref=e3133]
+                    - cell "58" [ref=e3134]
+                    - cell "€6,00" [ref=e3135]
+                    - cell "€348,00" [ref=e3136]
+                    - cell "34" [ref=e3137]
+                  - row "Shot Hierbas Shots 64 €3,00 €192,00 29" [ref=e3138]:
+                    - cell "Shot Hierbas" [ref=e3139]
+                    - cell "Shots" [ref=e3140]
+                    - cell "64" [ref=e3141]
+                    - cell "€3,00" [ref=e3142]
+                    - cell "€192,00" [ref=e3143]
+                    - cell "29" [ref=e3144]
+                  - row "Pirlo Campari Cocktails 31 €5,00 €155,00 17" [ref=e3145]:
+                    - cell "Pirlo Campari" [ref=e3146]
+                    - cell "Cocktails" [ref=e3147]
+                    - cell "31" [ref=e3148]
+                    - cell "€5,00" [ref=e3149]
+                    - cell "€155,00" [ref=e3150]
+                    - cell "17" [ref=e3151]
+            - generic [ref=e3152]:
+              - generic [ref=e3153]: Showing 1-10 of 24 results
+              - generic [ref=e3154]:
+                - combobox [ref=e3156]:
+                  - option "5"
+                  - option "10" [selected]
+                  - option "20"
+                  - option "50"
+                - button "Previous" [disabled] [ref=e3157]
+                - generic [ref=e3158]:
+                  - button "1" [ref=e3159] [cursor=pointer]
+                  - button "2" [ref=e3160] [cursor=pointer]
+                  - button "3" [ref=e3161] [cursor=pointer]
+                - button "Next" [ref=e3162] [cursor=pointer]
+            - generic [ref=e3163]:
+              - generic [ref=e3164]:
+                - heading "Total Revenue" [level=4] [ref=e3165]
+                - paragraph [ref=e3166]: €8555,00
+              - generic [ref=e3167]:
+                - heading "Total Units Sold" [level=4] [ref=e3168]
+                - paragraph [ref=e3169]: "1233"
+              - generic [ref=e3170]:
+                - heading "Top Product" [level=4] [ref=e3171]
+                - paragraph [ref=e3172]: Entrata
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

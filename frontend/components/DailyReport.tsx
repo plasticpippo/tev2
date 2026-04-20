@@ -1,2 +1,1 @@
-// This component was removed and its functionality merged into TransactionHistory.
-export {};
+// Dead code removed - file was never imported by any production component

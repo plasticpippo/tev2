@@ -54,7 +54,7 @@ export const validateCategoryId = (categoryId: number, t?: TranslateFunction): s
   return null;
 };
 
-export const validateProductPrice = (price: number, t?: TranslateFunction): string | null => {
+const validateProductPrice = (price: number, t?: TranslateFunction): string | null => {
   const translate = t || ((key: string) => key.split('.').pop() || key);
   
   if (typeof price !== 'number') {
@@ -340,7 +340,7 @@ export const validateRoomName = (name: string, existingNames: string[] = [], t?:
   return null;
 };
 
-export const validateRoomDescription = (description: string, t?: TranslateFunction): string | null => {
+const validateRoomDescription = (description: string, t?: TranslateFunction): string | null => {
   const translate = t || ((key: string) => key.split('.').pop() || key);
   
   if (description && description.length > 500) {
@@ -350,7 +350,7 @@ export const validateRoomDescription = (description: string, t?: TranslateFuncti
   return null;
 };
 
-export const validateRoom = (room: any, allRooms: any[] = [], t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
+const validateRoom = (room: any, allRooms: any[] = [], t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
 
   const nameError = validateRoomName(room.name, allRooms.filter(r => r.id !== room.id).map(r => r.name), t);
@@ -370,7 +370,7 @@ export const validateRoom = (room: any, allRooms: any[] = [], t?: TranslateFunct
 };
 
 // Validate datetime format YYYY-MM-DDTHH:MM
-export const isValidDateTime = (value: string): boolean => {
+const isValidDateTime = (value: string): boolean => {
   if (!value || typeof value !== 'string') {
     return false;
   }
@@ -398,27 +398,6 @@ export const isValidDateTime = (value: string): boolean => {
     if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
       return false;
     }
-  }
-  
-  return true;
-};
-
-// Validate time format HH:MM (24-hour)
-export const isValidTime = (value: string): boolean => {
-  if (!value || typeof value !== 'string') {
-    return false;
-  }
-  
-  const timeRegex = /^\d{2}:\d{2}$/;
-  if (!timeRegex.test(value)) {
-    return false;
-  }
-  
-  const [hours, minutes] = value.split(':').map(Number);
-  
-  // Check time validity (24-hour format)
-  if (hours < 0 || hours > 23 || minutes < 0 || minutes > 59) {
-    return false;
   }
   
   return true;

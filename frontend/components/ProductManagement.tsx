@@ -256,7 +256,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ product, categories, stockI
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
-      <form onSubmit={handleSubmit} className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg sm:max-w-2xl lg:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
+      <form onSubmit={handleSubmit} noValidate className="bg-slate-800 rounded-lg shadow-xl w-full max-w-lg sm:max-w-2xl lg:max-w-4xl max-h-[90vh] flex flex-col border border-slate-700">
         <div className="p-6 pb-4 border-b border-slate-700">
             <h3 className="text-xl font-bold text-amber-400">{product ? t('products.editProduct') : t('products.addProduct')}</h3>
             <p className="text-sm text-slate-400">{t('products.productDescription')}</p>
