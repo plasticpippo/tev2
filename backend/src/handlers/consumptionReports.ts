@@ -2,13 +2,13 @@ import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import i18n from '../i18n';
 import { StockConsumption, ProductVariant, Product, StockItem, Category } from '@prisma/client';
 
 export const consumptionReportsRouter = express.Router();
 
 // GET /api/consumption-reports/itemised - Get itemised consumption report with detailed filtering
 consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const {
       startDate,
@@ -181,7 +181,7 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
     logError(error instanceof Error ? error : 'Error fetching itemised consumption report', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:consumptionReports.fetchFailed') });
+    res.status(500).json({ error: t('errors:consumptionReports.fetchFailed') });
   }
 });
 

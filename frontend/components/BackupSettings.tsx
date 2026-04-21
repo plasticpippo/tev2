@@ -22,7 +22,7 @@ export const BackupSettings: React.FC = () => {
             });
 
             if (!response.ok) {
-                let errorMessage = 'Failed to create backup';
+                let errorMessage = t('settings.backupCreateFailed');
                 try {
                     const errorData = await response.json();
                     errorMessage = errorData.error || errorMessage;
@@ -48,9 +48,9 @@ export const BackupSettings: React.FC = () => {
             document.body.removeChild(a);
 
             setLastBackup(new Date().toLocaleString());
-            setSuccess(t('settings.backupSuccess'));
+            setSuccess(t('settings.backup.backupSuccess'));
         } catch (err) {
-            setError(err instanceof Error ? err.message : t('settings.backupFailed'));
+            setError(err instanceof Error ? err.message : t('settings.backup.backupFailed'));
         } finally {
             setIsLoading(false);
         }
@@ -58,9 +58,9 @@ export const BackupSettings: React.FC = () => {
 
     return (
         <div>
-            <h3 className="text-xl font-bold text-slate-300 mb-4">{t('settings.backup')}</h3>
+            <h3 className="text-xl font-bold text-slate-300 mb-4">{t('settings.backup.title')}</h3>
             <div className="space-y-4 bg-slate-800 p-4 rounded-md">
-                <p className="text-slate-400 mb-3">{t('settings.backupDescription')}</p>
+                <p className="text-slate-400 mb-3">{t('settings.backup.description')}</p>
                 
                 {error && (
                     <div className="bg-red-900/50 border border-red-600 text-red-200 px-4 py-3 rounded-md">
@@ -87,21 +87,21 @@ export const BackupSettings: React.FC = () => {
                                 <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                             </svg>
-                            {t('settings.creatingBackup')}
+                            {t('settings.backup.creatingBackup')}
                         </>
                     ) : (
                         <>
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
                             </svg>
-                            {t('settings.createBackup')}
+                            {t('settings.backup.createBackup')}
                         </>
                     )}
                 </button>
 
                 {lastBackup && (
                     <p className="text-sm text-slate-400">
-                        {t('settings.lastBackup')}: {lastBackup}
+                        {t('settings.backup.lastBackup')}: {lastBackup}
                     </p>
                 )}
             </div>

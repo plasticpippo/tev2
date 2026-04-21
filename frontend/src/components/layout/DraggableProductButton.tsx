@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useLayout } from '../../contexts/LayoutContext';
 import type { ProductVariant, Product } from '@shared/types';
 import { formatCurrency } from '../../../utils/formatting';
@@ -144,6 +145,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
   onClick,
   isMakable = true
 }) => {
+  const { t } = useTranslation();
   const { isEditMode, getButtonPosition } = useLayout();
   const [isDragging, setIsDragging] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -257,7 +259,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       {!isMakable && !isEditMode && (
         <div className="product-grid-overlay">
           <span className="product-grid-overlay-text">
-            OUT OF STOCK
+            {t('productGrid.outOfStock')}
           </span>
         </div>
       )}
@@ -280,7 +282,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       {/* Favourite indicator */}
       {variant.isFavourite && !isEditMode && (
         <div className="product-grid-fav">
-          FAV
+          {t('productGrid.fav')}
         </div>
       )}
     </div>

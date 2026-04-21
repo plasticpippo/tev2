@@ -96,8 +96,8 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
             setIsConfirmModalOpen(false);
         } catch (error) {
             console.error('Failed to manually close business day:', error);
-            const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-            setCloseError(t('settings.dailyClosingCreateFailed') || `Failed to create daily closing record: ${errorMessage}`);
+            const errorMessage = error instanceof Error ? error.message : t('settings.unknownError');
+            setCloseError(t('settings.dailyClosingCreateFailed', { errorMessage }));
             // Still update settings even if daily closing creation fails
             onUpdate({
                 ...settings,
@@ -124,19 +124,19 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
     };
 
     const formatDateTime = (isoString: string | null) => {
-        if (!isoString) return t('settings.never');
+        if (!isoString) return t('settings.businessDay.never');
         const date = new Date(isoString);
         return date.toLocaleString();
     };
 
     return (
         <div>
-            <h3 className="text-xl font-bold text-slate-300 mb-4">{t('settings.businessDayManagement')}</h3>
+            <h3 className="text-xl font-bold text-slate-300 mb-4">{t('settings.businessDay.businessDayManagement')}</h3>
             <div className="space-y-4 bg-slate-800 p-4 rounded-md">
                 {/* Auto-Start Time */}
                 <div>
-                    <label htmlFor="auto-start-time" className="font-semibold text-slate-300">{t('settings.autoStartTimeLabel')}</label>
-                    <p className="text-xs text-slate-400 mb-2">{t('settings.autoStartTimeDescription')}</p>
+                    <label htmlFor="auto-start-time" className="font-semibold text-slate-300">{t('settings.businessDay.autoStartTimeLabel')}</label>
+                    <p className="text-xs text-slate-400 mb-2">{t('settings.businessDay.autoStartTimeDescription')}</p>
                     <select
                         id="auto-start-time"
                         value={settings.autoStartTime}
@@ -151,8 +151,8 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
 
                 {/* Business Day End Hour */}
                 <div>
-                    <label htmlFor="business-day-end-hour" className="font-semibold text-slate-300">{t('settings.businessDayEndHourLabel')}</label>
-                    <p className="text-xs text-slate-400 mb-2">{t('settings.businessDayEndHourDescription')}</p>
+                    <label htmlFor="business-day-end-hour" className="font-semibold text-slate-300">{t('settings.businessDay.businessDayEndHourLabel')}</label>
+                    <p className="text-xs text-slate-400 mb-2">{t('settings.businessDay.businessDayEndHourDescription')}</p>
                     <select
                         id="business-day-end-hour"
                         value={settings.businessDayEndHour || '06:00'}
@@ -168,8 +168,8 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
                 {/* Auto-Close Toggle */}
                 <div className="flex items-center justify-between py-3 border-t border-slate-700">
                     <div className="flex-1 pr-4">
-                        <label htmlFor="auto-close-enabled" className="font-semibold text-slate-300">{t('settings.autoCloseEnabledLabel')}</label>
-                        <p className="text-xs text-slate-400">{t('settings.autoCloseEnabledDescription')}</p>
+                        <label htmlFor="auto-close-enabled" className="font-semibold text-slate-300">{t('settings.businessDay.autoCloseEnabledLabel')}</label>
+                        <p className="text-xs text-slate-400">{t('settings.businessDay.autoCloseEnabledDescription')}</p>
                     </div>
                     <button
                         id="auto-close-enabled"
@@ -191,10 +191,10 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
 
                 {/* Current Business Day Status */}
                 <div className="border-t border-slate-700 pt-4">
-                    <h4 className="font-semibold text-slate-300 mb-3">{t('settings.currentBusinessDayStatus')}</h4>
+                    <h4 className="font-semibold text-slate-300 mb-3">{t('settings.businessDay.currentBusinessDayStatus')}</h4>
                     
                     {statusLoading && !status ? (
-                        <p className="text-sm text-slate-400">{t('settings.loading')}</p>
+                        <p className="text-sm text-slate-400">{t('settings.businessDay.loading')}</p>
                     ) : status ? (
                         <div className="space-y-2">
                             {/* Scheduler Status */}
@@ -204,8 +204,8 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
                                 }`} />
                                 <span className="text-sm text-slate-300">
                                     {status.scheduler.isRunning 
-                                        ? t('settings.schedulerRunning') 
-                                        : t('settings.schedulerNotRunning')}
+                                        ? t('settings.businessDay.schedulerRunning') 
+                                        : t('settings.businessDay.schedulerNotRunning')}
                                 </span>
                             </div>
 
@@ -213,47 +213,47 @@ export const BusinessDaySettings: React.FC<BusinessDaySettingsProps> = ({ settin
                             {status.scheduler.isClosingInProgress && (
                                 <div className="flex items-center gap-2">
                                     <span className="inline-block w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
-                                    <span className="text-sm text-amber-400">{t('settings.closingInProgress')}</span>
+                                    <span className="text-sm text-amber-400">{t('settings.businessDay.closingInProgress')}</span>
                                 </div>
                             )}
 
                             {/* Last Close Time */}
                             <div className="text-sm">
-                                <span className="text-slate-400">{t('settings.lastCloseTime')}: </span>
+                                <span className="text-slate-400">{t('settings.businessDay.lastCloseTime')}: </span>
                                 <span className="text-slate-300">{formatDateTime(status.scheduler.lastCloseTime)}</span>
                             </div>
 
                             {/* Next Scheduled Close */}
                             {status.scheduler.isRunning && status.scheduler.nextScheduledClose && (
                                 <div className="text-sm">
-                                    <span className="text-slate-400">{t('settings.nextScheduledClose')}: </span>
+                                    <span className="text-slate-400">{t('settings.businessDay.nextScheduledClose')}: </span>
                                     <span className="text-slate-300">{formatDateTime(status.scheduler.nextScheduledClose)}</span>
                                 </div>
                             )}
                         </div>
                     ) : (
-                        <p className="text-sm text-slate-400">{t('settings.statusUnavailable')}</p>
+                        <p className="text-sm text-slate-400">{t('settings.businessDay.statusUnavailable')}</p>
                     )}
                 </div>
 
                 {/* Manual Close Button */}
                 <div className="border-t border-slate-700 pt-4">
-                    <label className="font-semibold text-slate-300">{t('settings.manualDayCloseLabel')}</label>
-                    <p className="text-xs text-slate-400 mb-2">{t('settings.manualDayCloseDescription')}</p>
+                    <label className="font-semibold text-slate-300">{t('settings.businessDay.manualDayCloseLabel')}</label>
+                    <p className="text-xs text-slate-400 mb-2">{t('settings.businessDay.manualDayCloseDescription')}</p>
                     <button
                         onClick={() => setIsConfirmModalOpen(true)}
                         className="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 rounded-md transition"
                     >
-                        {t('settings.manuallyEndBusinessDay')}
+                        {t('settings.businessDay.manuallyEndBusinessDay')}
                     </button>
                 </div>
             </div>
 
             <ConfirmationModal
                 show={isConfirmModalOpen}
-                title={t('settings.confirmManualCloseTitle')}
-                message={closeError || t('settings.confirmManualCloseMessage')}
-                confirmText={isClosing ? (t('settings.closing') || 'Closing...') : t('settings.confirmManualCloseButton')}
+                title={t('settings.businessDay.confirmManualCloseTitle')}
+                message={closeError || t('settings.businessDay.confirmManualCloseMessage')}
+                confirmText={isClosing ? (t('settings.businessDay.closing') || 'Closing...') : t('settings.businessDay.confirmManualCloseButton')}
                 onConfirm={handleManualClose}
                 onCancel={() => { setIsConfirmModalOpen(false); setCloseError(null); }}
                 disabled={isClosing}

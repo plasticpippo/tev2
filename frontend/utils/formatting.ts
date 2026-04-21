@@ -1,3 +1,5 @@
+import i18n from '../src/i18n';
+
 export const formatCurrency = (amount: number | string | null | undefined): string => {
     // Format as EUR currency with € symbol prefix and comma as decimal separator
     if (amount === null || amount === undefined) {
@@ -24,8 +26,15 @@ export const formatCost = (amount: number | string | null | undefined, decimals:
     return `€${numAmount.toFixed(decimals).replace('.', ',')}`;
 };
 
+export function getLocale(): string {
+    const lang = i18n.language || 'en';
+    if (lang.startsWith('it')) return 'it-IT';
+    if (lang.startsWith('en')) return 'en-GB';
+    return 'en-GB';
+}
+
 export const formatDate = (dateString: string): string => {
-    return new Date(dateString).toLocaleString('en-GB', {
+    return new Date(dateString).toLocaleString(getLocale(), {
         day: '2-digit',
         month: '2-digit',
         year: 'numeric',

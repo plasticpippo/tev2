@@ -5,7 +5,8 @@ import { AppError, NotFoundError, ValidationError } from '../middleware/errorHan
 import { logError, logInfo } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
+import type { TFunction } from 'i18next';
+
 
 export const taxRatesRouter = Router();
 
@@ -33,18 +34,18 @@ function formatTaxRate(taxRate: TaxRate) {
  * @param isUpdate - Whether this is an update operation (fields are optional)
  * @returns Array of error messages (empty if valid)
  */
-function validateTaxRateData(data: any, isUpdate: boolean = false): string[] {
+function validateTaxRateData(data: any, t: TFunction, isUpdate: boolean = false): string[] {
   const errors: string[] = [];
 
   // Name validation
   if (!isUpdate || data.name !== undefined) {
     if (!isUpdate && !data.name) {
-      errors.push(i18n.t('errors:taxRates.nameRequired'));
+      errors.push(t('errors:taxRates.nameRequired'));
     } else if (data.name !== undefined) {
       if (typeof data.name !== 'string' || data.name.trim().length === 0) {
-        errors.push(i18n.t('errors:taxRates.nameInvalid'));
+        errors.push(t('errors:taxRates.nameInvalid'));
       } else if (data.name.length > 100) {
-        errors.push(i18n.t('errors:taxRates.nameTooLong'));
+        errors.push(t('errors:taxRates.nameTooLong'));
       }
     }
   }
@@ -52,13 +53,13 @@ function validateTaxRateData(data: any, isUpdate: boolean = false): string[] {
   // Rate validation
   if (!isUpdate || data.rate !== undefined) {
     if (!isUpdate && data.rate === undefined) {
-      errors.push(i18n.t('errors:taxRates.rateRequired'));
+      errors.push(t('errors:taxRates.rateRequired'));
     } else if (data.rate !== undefined) {
       const rate = typeof data.rate === 'string' ? parseFloat(data.rate) : data.rate;
       if (isNaN(rate)) {
-        errors.push(i18n.t('errors:taxRates.rateInvalid'));
+        errors.push(t('errors:taxRates.rateInvalid'));
       } else if (rate < 0 || rate > 1) {
-        errors.push(i18n.t('errors:taxRates.rateOutOfRange'));
+        errors.push(t('errors:taxRates.rateOutOfRange'));
       }
     }
   }
@@ -73,6 +74,7 @@ function validateTaxRateData(data: any, isUpdate: boolean = false): string[] {
  * - Includes computed ratePercent field
  */
 export const listTaxRates = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const taxRates = await prisma.taxRate.findMany({
       where: {
@@ -88,7 +90,7 @@ export const listTaxRates = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching tax rates', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.fetchFailed') });
+    res.status(500).json({ error: t('errors:taxRates.fetchFailed') });
   }
 };
 
@@ -99,6 +101,7 @@ export const listTaxRates = async (req: Request, res: Response) => {
  * - Includes computed ratePercent field
  */
 export const getTaxRate = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const taxRate = await prisma.taxRate.findUnique({
@@ -106,7 +109,7 @@ export const getTaxRate = async (req: Request, res: Response) => {
     });
 
     if (!taxRate) {
-      return res.status(404).json({ error: i18n.t('errors:taxRates.notFound') });
+      return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
     res.json(formatTaxRate(taxRate));
@@ -114,7 +117,7 @@ export const getTaxRate = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching tax rate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:taxRates.fetchOneFailed') });
   }
 };
 
@@ -127,14 +130,14 @@ export const getTaxRate = async (req: Request, res: Response) => {
  * - If isDefault is true, unsets any existing default first
  */
 export const createTaxRate = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, rate, description, isDefault } = req.body;
 
-    // Validate input
-    const errors = validateTaxRateData(req.body, false);
+    const errors = validateTaxRateData(req.body, t, false);
     if (errors.length > 0) {
       return res.status(400).json({
-        error: i18n.t('errors:taxRates.validationFailed'),
+        error: t('errors:taxRates.validationFailed'),
         details: errors,
       });
     }
@@ -145,7 +148,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
     });
 
     if (existing) {
-      return res.status(400).json({ error: i18n.t('errors:taxRates.nameExists') });
+      return res.status(400).json({ error: t('errors:taxRates.nameExists') });
     }
 
     // Parse rate to number
@@ -178,7 +181,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error creating tax rate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.createFailed') });
+    res.status(500).json({ error: t('errors:taxRates.createFailed') });
   }
 };
 
@@ -191,15 +194,15 @@ export const createTaxRate = async (req: Request, res: Response) => {
  * - If setting isDefault to true, unsets any existing default first
  */
 export const updateTaxRate = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, rate, description, isDefault, isActive } = req.body;
 
-    // Validate input (all fields optional for update)
-    const errors = validateTaxRateData(req.body, true);
+    const errors = validateTaxRateData(req.body, t, true);
     if (errors.length > 0) {
       return res.status(400).json({
-        error: i18n.t('errors:taxRates.validationFailed'),
+        error: t('errors:taxRates.validationFailed'),
         details: errors,
       });
     }
@@ -210,7 +213,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: i18n.t('errors:taxRates.notFound') });
+      return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
     // Check for duplicate name (if name is being changed)
@@ -223,7 +226,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
       });
 
       if (duplicate) {
-        return res.status(400).json({ error: i18n.t('errors:taxRates.nameExists') });
+        return res.status(400).json({ error: t('errors:taxRates.nameExists') });
       }
     }
 
@@ -255,7 +258,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error updating tax rate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.updateFailed') });
+    res.status(500).json({ error: t('errors:taxRates.updateFailed') });
   }
 };
 
@@ -266,6 +269,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
  * - Cannot delete the default tax rate
  */
 export const deleteTaxRate = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -275,12 +279,12 @@ export const deleteTaxRate = async (req: Request, res: Response) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: i18n.t('errors:taxRates.notFound') });
+      return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
     // Check if this is the default tax rate
     if (existing.isDefault) {
-      return res.status(400).json({ error: i18n.t('errors:taxRates.cannotDeleteDefault') });
+      return res.status(400).json({ error: t('errors:taxRates.cannotDeleteDefault') });
     }
 
     // Soft delete (set isActive to false)
@@ -295,7 +299,7 @@ export const deleteTaxRate = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error deactivating tax rate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.deleteFailed') });
+    res.status(500).json({ error: t('errors:taxRates.deleteFailed') });
   }
 };
 
@@ -307,6 +311,7 @@ export const deleteTaxRate = async (req: Request, res: Response) => {
  * - Uses transaction to ensure atomicity
  */
 export const setDefaultTaxRate = async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -316,11 +321,11 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
     });
 
     if (!existing) {
-      return res.status(404).json({ error: i18n.t('errors:taxRates.notFound') });
+      return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
     if (!existing.isActive) {
-      return res.status(400).json({ error: i18n.t('errors:taxRates.cannotSetInactiveAsDefault') });
+      return res.status(400).json({ error: t('errors:taxRates.cannotSetInactiveAsDefault') });
     }
 
     // Set as default in transaction
@@ -349,7 +354,7 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error setting default tax rate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:taxRates.setDefaultFailed') });
+    res.status(500).json({ error: t('errors:taxRates.setDefaultFailed') });
   }
 };
 

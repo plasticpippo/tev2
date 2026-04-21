@@ -1,6 +1,7 @@
 
 
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Settings } from '@shared/types';
 import { LanguageSettings } from './LanguageSettings';
 import { TaxSettings } from './TaxSettings';
@@ -20,6 +21,7 @@ interface SettingsModalProps {
 type SettingsTab = 'language' | 'tax' | 'businessDay' | 'businessInfo' | 'backup' | 'email' | 'receipt';
 
 export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, settings, onUpdate }) => {
+    const { t } = useTranslation('admin');
     const [activeTab, setActiveTab] = useState<SettingsTab>('language');
     
     // In a real app, this modal would be triggered by a button and appear as an overlay.
@@ -51,13 +53,13 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
     }
 
   const tabs: { id: SettingsTab; label: string }[] = [
-    { id: 'language', label: 'Language' },
-    { id: 'tax', label: 'Tax Settings' },
-    { id: 'businessDay', label: 'Business Day' },
-    { id: 'businessInfo', label: 'Business Info' },
-    { id: 'backup', label: 'Backup' },
-    { id: 'email', label: 'Email' },
-    { id: 'receipt', label: 'Receipt from Payment' },
+    { id: 'language', label: t('settings.tabs.language') },
+    { id: 'tax', label: t('settings.tabs.tax') },
+    { id: 'businessDay', label: t('settings.tabs.businessDay') },
+    { id: 'businessInfo', label: t('settings.tabs.businessInfo') },
+    { id: 'backup', label: t('settings.tabs.backup') },
+    { id: 'email', label: t('settings.tabs.email') },
+    { id: 'receipt', label: t('settings.tabs.receipt') },
   ];
 
   const renderTabContent = () => {

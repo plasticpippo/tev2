@@ -9,7 +9,9 @@ interface SalesTrendChartProps {
 }
 
 export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, dateRange }) => {
-    const { t } = useTranslation();
+    const { t, i18n: { language } } = useTranslation();
+
+    const locale = language.startsWith('it') ? 'it-IT' : language.startsWith('en') ? 'en-GB' : 'en-GB';
 
     const trendData = useMemo(() => {
         const dataMap = new Map<string, number>();
@@ -29,7 +31,7 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, 
             for (let i = 11; i >= 0; i--) {
                 const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
                 const key = `${d.getFullYear()}-${String(d.getMonth()).padStart(2, '0')}`;
-                const label = d.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                const label = d.toLocaleDateString(locale, { month: 'short', year: '2-digit' });
                 result.push({ label, total: dataMap.get(key) || 0 });
             }
             return result;
@@ -49,12 +51,12 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, 
                 const d = new Date();
                 d.setDate(now.getDate() - i);
                 const key = d.toISOString().split('T')[0];
-                const label = d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                const label = d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
                 result.push({ label, total: dataMap.get(key) || 0 });
             }
             return result;
         }
-    }, [transactions, dateRange]);
+    }, [transactions, dateRange, locale]);
 
     const maxSales = Math.max(...trendData.map(d => d.total), 1);
     const dateRangeKey = dateRange === 'week' ? 'last7Days' : dateRange === 'month' ? 'last30Days' : 'last12Months';

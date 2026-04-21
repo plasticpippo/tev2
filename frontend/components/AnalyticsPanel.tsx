@@ -128,7 +128,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
         credentials: 'include'
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch hourly data');
+        throw new Error(t('analytics.errors.failedToFetchHourly'));
       }
       const data = await response.json();
       setHourlyData(data);
@@ -152,7 +152,7 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
         credentials: 'include'
       });
       if (!response.ok) {
-        throw new Error('Failed to fetch comparison data');
+        throw new Error(t('analytics.errors.failedToFetchComparison'));
       }
       const data = await response.json();
       setComparisonData(data);

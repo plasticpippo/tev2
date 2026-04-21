@@ -7,7 +7,6 @@ import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
 import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber, roundCost } from '../utils/money';
-import i18n from '../i18n';
 import { requireRole } from '../middleware/authorization';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
 import { calculateTransactionCost } from '../services/costCalculationService';
@@ -46,6 +45,7 @@ function validateIdempotencyKey(key: unknown): string | null {
 // 6. Update table status (if exists)
 // If ANY step fails, ALL changes are rolled back
 transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   const correlationId = (req as any).correlationId;
 
   try {
@@ -85,11 +85,11 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     
     // Validate required fields
     if (!items || !Array.isArray(items) || items.length === 0) {
-        return res.status(400).json({ error: i18n.t('transactions.itemsMustBeArray') });
+        return res.status(400).json({ error: t('transactions.itemsMustBeArray') });
     }
 
     if (!tillId) {
-        return res.status(400).json({ error: 'Missing tillId' });
+        return res.status(400).json({ error: t('errors:transactions.missingTillId') });
     }
 
     // SECURITY FIX: Use authenticated user from JWT token instead of request body
@@ -98,25 +98,25 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     const authenticatedUserName = req.user?.username;
 
     if (!authenticatedUserId || !authenticatedUserName) {
-        return res.status(401).json({ error: 'User not authenticated' });
+        return res.status(401).json({ error: t('errors:transactions.userNotAuthenticated') });
     }
 
     // SECURITY FIX: Validate that tillId exists and tillName matches (A4.4)
     const till = await prisma.till.findUnique({ where: { id: tillId } });
     if (!till) {
-        return res.status(400).json({ error: 'Invalid till reference: till not found' });
+        return res.status(400).json({ error: t('errors:transactions.invalidTillReference') });
     }
     if (till.name !== tillName) {
-        return res.status(400).json({ error: 'Till name mismatch' });
+        return res.status(400).json({ error: t('errors:transactions.tillNameMismatch') });
     }
     
     // Validate all items have required properties
     for (const item of items) {
       if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-        return res.status(400).json({ error: i18n.t('transactions.itemNameRequired') });
+        return res.status(400).json({ error: t('transactions.itemNameRequired') });
       }
       if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-        return res.status(400).json({ error: i18n.t('transactions.itemInvalidProperties') });
+        return res.status(400).json({ error: t('transactions.itemInvalidProperties') });
       }
     }
     
@@ -151,7 +151,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     const subtotalDifference = Math.abs(subtractMoney(subtotal || 0, calculatedSubtotal));
     if (subtotalDifference > 0.01) {
       return res.status(400).json({ 
-        error: `Subtotal mismatch. Expected: ${formatMoney(calculatedSubtotal)}, Received: ${formatMoney(subtotal || 0)}` 
+        error: t('errors:transactions.subtotalMismatch', { expected: formatMoney(calculatedSubtotal), received: formatMoney(subtotal || 0) }) 
       });
     }
     
@@ -163,7 +163,7 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
       const taxDifference = Math.abs(subtractMoney(tax || 0, calculatedTax));
       if (taxDifference > 0.01) {
         return res.status(400).json({ 
-          error: `Tax mismatch. Expected: ${formatMoney(calculatedTax)}, Received: ${formatMoney(tax || 0)}` 
+          error: t('errors:transactions.taxMismatch', { expected: formatMoney(calculatedTax), received: formatMoney(tax || 0) }) 
         });
       }
       validatedTax = tax || 0;
@@ -339,9 +339,9 @@ const transaction = await tx.transaction.create({
             // Either stock item doesn't exist or insufficient quantity
             const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
             if (!stockItem) {
-              throw new Error(`Stock item not found: ${stockItemId}`);
+              throw new Error(t('errors:transactions.stockItemNotFound', { stockItemId }));
             }
-            throw new Error(`Insufficient stock for item ${stockItem.name}. Available: ${stockItem.quantity}, Requested: ${quantity}`);
+            throw new Error(t('errors:transactions.insufficientStock', { itemName: stockItem.name, available: String(stockItem.quantity), requested: String(quantity) }));
           }
         }
       }
@@ -356,7 +356,7 @@ const transaction = await tx.transaction.create({
           data: { status: 'completed', updatedAt: new Date(), version: { increment: 1 } }
         });
         if (sessionResult.count === 0) {
-          throw new Error('CONFLICT: Order session was modified by another transaction');
+          throw new Error(t('errors:transactions.orderSessionConflict'));
         }
       }
   
@@ -448,12 +448,12 @@ const transaction = await tx.transaction.create({
 		// If it's a known error type, return appropriate status
 		if (error instanceof Error) {
 			// Conflict errors - return 409 for client retry
-			if (error.message.includes('CONFLICT') || error.message.includes('Order session was modified')) {
-				return res.status(409).json({ 
-					error: 'Payment conflict detected. Please retry.',
-					code: 'CONFLICT',
-					details: error.message
-				});
+				if (error.message.includes('CONFLICT') || error.message.includes('Order session was modified') || error.message.includes(t('errors:transactions.orderSessionConflict'))) {
+					return res.status(409).json({ 
+						error: t('errors:transactions.paymentConflict'),
+						code: 'CONFLICT',
+						details: error.message
+					});
 			}
 			// Insufficient stock - return 400 (client error)
 			if (error.message.includes('Insufficient stock')) {
@@ -465,12 +465,13 @@ const transaction = await tx.transaction.create({
 			}
 		}
 
-		res.status(500).json({ error: i18n.t('transactions.createFailed') });
+		res.status(500).json({ error: t('transactions.createFailed') });
 	}
 });
 
 // GET /api/transactions/reconcile - Reconcile transactions with stock levels (MUST be before /:id route)
 transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Get all non-voided transactions (completed and complimentary)
     const transactions = await prisma.transaction.findMany({
@@ -569,12 +570,13 @@ transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res
     logError(error instanceof Error ? error : 'Error reconciling data', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Data reconciliation failed' });
+    res.status(500).json({ error: t('errors:transactions.dataReconciliationFailed') });
   }
 });
 
 // GET /api/transactions - Get all transactions
 transactionsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const transactions = await prisma.transaction.findMany({
       orderBy: { createdAt: 'desc' },
@@ -611,15 +613,16 @@ transactionsRouter.get('/', authenticateToken, async (req: Request, res: Respons
     });
     res.json(transactionsWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('transactions.log.fetchError'), {
+    logError(error instanceof Error ? error : t('transactions.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('transactions.fetchFailed') });
+    res.status(500).json({ error: t('transactions.fetchFailed') });
   }
 });
 
 // GET /api/transactions/:id - Get a specific transaction
 transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const transaction = await prisma.transaction.findUnique({
@@ -627,7 +630,7 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     });
     
     if (!transaction) {
-      return res.status(404).json({ error: i18n.t('transactions.notFound') });
+      return res.status(404).json({ error: t('transactions.notFound') });
     }
     
     // Parse the items JSON string back to array and convert Decimal to number
@@ -644,10 +647,10 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     
     res.json(transactionWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('transactions.log.fetchOneError'), {
+    logError(error instanceof Error ? error : t('transactions.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('transactions.fetchOneFailed') });
+    res.status(500).json({ error: t('transactions.fetchOneFailed') });
   }
 });
 
@@ -657,13 +660,14 @@ transactionsRouter.post(
   authenticateToken,
   requireRole(['ADMIN']),
   async (req: Request, res: Response) => {
+    const t = req.t.bind(req);
     const { id } = req.params;
     const { reason } = req.body;
     const authenticatedUserId = req.user?.id;
     const authenticatedUserName = req.user?.username;
 
     if (!reason || typeof reason !== 'string' || reason.trim() === '') {
-      return res.status(400).json({ error: 'Void reason is required' });
+      return res.status(400).json({ error: t('errors:transactions.voidReasonRequired') });
     }
 
     try {
@@ -674,15 +678,15 @@ transactionsRouter.post(
         });
 
         if (!transaction) {
-          throw new Error('NOT_FOUND');
+          throw new Error(t('errors:transactions.notFoundCode'));
         }
 
         if (transaction.status === 'voided') {
-          throw new Error('ALREADY_VOIDED');
+          throw new Error(t('errors:transactions.alreadyVoidedCode'));
         }
 
         if (transaction.status !== 'completed' && transaction.status !== 'complimentary') {
-          throw new Error('INVALID_STATUS');
+          throw new Error(t('errors:transactions.invalidStatusCode'));
         }
 
         // 2. Parse the items JSON to determine what was sold
@@ -783,7 +787,7 @@ transactionsRouter.post(
       });
 
       res.json({
-        message: 'Transaction voided successfully',
+        message: t('errors:transactions.voidSuccess'),
         transaction: {
           ...result.transaction,
           subtotal: decimalToNumber(result.transaction.subtotal),
@@ -796,18 +800,18 @@ transactionsRouter.post(
       });
     } catch (error) {
       if (error instanceof Error) {
-        if (error.message === 'NOT_FOUND') {
-          return res.status(404).json({ error: 'Transaction not found' });
+        if (error.message === t('errors:transactions.notFoundCode')) {
+          return res.status(404).json({ error: t('errors:transactions.notFound') });
         }
-        if (error.message === 'ALREADY_VOIDED') {
-          return res.status(409).json({ error: 'Transaction is already voided' });
+        if (error.message === t('errors:transactions.alreadyVoidedCode')) {
+          return res.status(409).json({ error: t('errors:transactions.alreadyVoided') });
         }
-        if (error.message === 'INVALID_STATUS') {
-          return res.status(400).json({ error: 'Only completed or complimentary transactions can be voided' });
+        if (error.message === t('errors:transactions.invalidStatusCode')) {
+          return res.status(400).json({ error: t('errors:transactions.invalidVoidStatus') });
         }
       }
       logError('Error voiding transaction', { error, transactionId: id });
-      res.status(500).json({ error: 'Failed to void transaction' });
+      res.status(500).json({ error: t('errors:transactions.voidFailed') });
     }
   }
 );

@@ -1,37 +1,4 @@
 {
-  "auth": {
-    "invalidCredentials": "Invalid username or password",
-    "missingCredentials": "Username and password are required",
-    "tokenExpired": "Token has expired",
-    "tokenInvalid": "Invalid token",
-    "tokenMissing": "Authorization token is required",
-    "noTokenProvided": "Access denied. No token provided.",
-    "tokenRevoked": "Token has been revoked. Please login again.",
-    "invalidOrExpiredToken": "Invalid or expired token.",
-    "unauthorized": "Unauthorized access",
-    "forbidden": "Access forbidden",
-    "sessionExpired": "Session has expired",
-    "userNotFound": "User not found",
-    "userInactive": "User account is inactive",
-    "passwordMismatch": "Current password is incorrect",
-    "passwordTooWeak": "New password does not meet security requirements"
-   },
-  "authorization": {
-    "tableIdRequired": "Table ID is required",
-    "tableNotFound": "Table not found",
-    "userNotAuthenticated": "User not authenticated",
-    "tableAccessDenied": "Access denied. You do not own this table.",
-    "verifyTableOwnershipFailed": "Failed to verify table ownership",
-    "layoutIdRequired": "Layout ID is required",
-    "invalidLayoutId": "Invalid layout ID",
-    "layoutNotFound": "Layout not found",
-    "layoutAccessDenied": "Access denied. You do not own this layout.",
-    "verifyLayoutOwnershipFailed": "Failed to verify layout ownership",
-    "adminPrivilegesRequired": "Access denied. Admin privileges required.",
-    "cannotModifyOtherUser": "You cannot modify another user's profile.",
-    "cannotAccessOtherUser": "You cannot access another user's data.",
-    "verifyAdminPrivilegesFailed": "Failed to verify admin privileges"
-  },
   "validation": {
     "required": "This field is required",
     "invalidFormat": "Invalid format",
@@ -40,28 +7,6 @@
     "duplicate": "This value already exists",
     "notFound": "Resource not found",
     "conflict": "Resource conflict"
-  },
-  "database": {
-    "connectionError": "Database connection error",
-    "queryError": "Database query error",
-    "transactionError": "Database transaction error",
-    "recordNotFound": "Record not found",
-    "recordExists": "Record already exists",
-    "constraintViolation": "Database constraint violation",
-    "foreignKeyViolation": "Foreign key constraint violation",
-    "uniqueViolation": "Unique constraint violation"
-  },
-  "api": {
-    "badRequest": "Bad request",
-    "unauthorized": "Unauthorized",
-    "forbidden": "Forbidden",
-    "notFound": "Not found",
-    "methodNotAllowed": "Method not allowed",
-    "conflict": "Conflict",
-    "unprocessableEntity": "Unprocessable entity",
-    "tooManyRequests": "Too many requests",
-    "internalError": "Internal server error",
-    "serviceUnavailable": "Service unavailable"
   },
   "products": {
     "notFound": "Product not found",
@@ -128,48 +73,12 @@
     "fetchOrphanedFailed": "Failed to fetch orphaned stock consumption references. Please try again later.",
     "cleanupOrphanedFailed": "Failed to clean up orphaned stock consumption references. Please try again later.",
     "validateIntegrityFailed": "Failed to validate data integrity. Please try again later.",
-    "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}"
-  },
-  "users": {
-    "notFound": "User not found",
-    "invalidData": "Invalid user data",
-    "duplicateUsername": "Username already exists",
-    "deleteFailed": "Failed to delete user",
-    "cannotDeleteSelf": "Cannot delete your own account",
-    "invalidRole": "Invalid user role",
-    "fetchFailed": "Failed to fetch users",
-    "fetchOneFailed": "Failed to fetch user",
-    "passwordRequired": "Password is required",
-    "createFailed": "Failed to create user",
-    "updateFailed": "Failed to update user",
-    "loginFailed": "Login failed due to server error. Please try again later.",
-    "logoutFailed": "Logout failed due to server error. Please try again later.",
-    "userIdRequired": "User ID is required",
-    "tokensRevoked": "All tokens for the user have been revoked successfully.",
-    "revokeFailed": "Failed to revoke all tokens. Please try again later.",
-    "invalidId": "Invalid user ID",
-    "invalidReceiptPreference": "Invalid receipt preference value",
-    "receiptPreferenceFetchFailed": "Failed to fetch receipt preference",
-    "receiptPreferenceUpdateFailed": "Failed to update receipt preference"
+    "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}",
+    "adjustmentReasonRequired": "A reason is required for stock level adjustments",
+    "insufficientStockForItem": "Insufficient stock for item {{stockItemId}}"
   },
   "tills": {
-    "notFound": "Till not found",
-    "invalidData": "Invalid till data",
-    "alreadyAssigned": "Device already assigned to another till",
-    "assignmentFailed": "Failed to assign device",
-    "fetchFailed": "Failed to fetch tills",
-    "fetchOneFailed": "Failed to fetch till",
-    "createFailed": "Failed to create till",
-    "updateFailed": "Failed to update till",
-    "deleteFailed": "Failed to delete till",
-    "validationFailed": "Validation failed",
-    "log": {
-      "fetchError": "Error fetching tills",
-      "fetchOneError": "Error fetching till",
-      "createError": "Error creating till",
-      "updateError": "Error updating till",
-      "deleteError": "Error deleting till"
-    }
+    "notFound": "Till not found"
   },
   "tables": {
     "notFound": "Table not found",
@@ -185,74 +94,10 @@
     "updateFailed": "Failed to update table",
     "cannotDeleteWithTabs": "Cannot delete table with open tabs. Please close or reassign tabs first.",
     "coordinatesRequired": "x and y coordinates are required",
-    "positionUpdateFailed": "Failed to update table position"
-  },
-  "tabs": {
-    "notFound": "Tab not found",
-    "invalidData": "Invalid tab data",
-    "alreadyClosed": "Tab is already closed",
-    "closeFailed": "Failed to close tab",
-    "fetchFailed": "Failed to fetch tabs",
-    "fetchOneFailed": "Failed to fetch tab",
-    "nameRequired": "Tab name is required and must be a non-empty string",
-    "nameNonEmpty": "Tab name must be a non-empty string",
-    "duplicateName": "A tab with this name already exists",
-    "itemNameRequired": "All items must have a valid name",
-    "itemInvalidProperties": "All items must have valid id, variantId, productId, price, and quantity",
-    "createFailed": "Failed to create tab",
-    "updateFailed": "Failed to update tab",
-    "deleteFailed": "Failed to delete tab",
-    "tableNotFound": "Table not found",
-    "log": {
-      "fetchError": "Error fetching tabs",
-      "fetchOneError": "Error fetching tab",
-      "createCalled": "POST /api/tabs called",
-      "nameValidationFailed": "Tab name validation failed",
-      "itemWithoutName": "Invalid item without name",
-      "itemInvalidProperties": "Invalid item properties",
-      "duplicateNameDetected": "Duplicate tab name detected",
-      "creating": "Creating new tab",
-      "created": "Tab created successfully",
-      "createError": "Error creating tab",
-      "updateError": "Error updating tab",
-      "deleteError": "Error deleting tab"
-    }
-  },
-  "transactions": {
-    "notFound": "Transaction not found",
-    "invalidData": "Invalid transaction data",
-    "paymentFailed": "Payment processing failed",
-    "refundFailed": "Refund processing failed",
-    "fetchFailed": "Failed to fetch transactions. Please try again later.",
-    "fetchOneFailed": "Failed to fetch transaction. Please try again later.",
-    "createFailed": "Failed to create transaction. Please check your data and try again.",
-    "itemsMustBeArray": "Items must be an array",
-    "itemNameRequired": "All items must have a valid name",
-    "itemInvalidProperties": "All items must have valid id, variantId, productId, price, and quantity",
-    "discountNegative": "Discount cannot be negative",
-    "discountExceedsTotal": "Discount cannot exceed the total amount (subtotal + tax + tip)",
-    "discountRequiresAdmin": "Applying a discount requires admin privileges",
-    "log": {
-      "fetchError": "Error fetching transactions",
-      "fetchOneError": "Error fetching transaction",
-      "itemWithoutName": "Invalid item without name",
-      "itemInvalidProperties": "Invalid item properties",
-      "createError": "Error creating transaction"
-    }
-  },
-  "orderSessions": {
-    "notFound": "Order session not found",
-    "invalidData": "Invalid order session data",
-    "alreadyCompleted": "Order session already completed",
-    "accessDenied": "Access denied to order session",
-    "userNotAuthenticated": "User not authenticated",
-    "noActiveSessionFound": "No active order session found",
-    "fetchFailed": "Failed to fetch order session",
-    "createUpdateFailed": "Failed to create/update order session",
-    "updateFailed": "Failed to update order session",
-    "logoutMarkFailed": "Failed to mark order session for logout",
-    "completeFailed": "Failed to complete order session",
-    "assignTabFailed": "Failed to assign order session to tab"
+    "positionUpdateFailed": "Failed to update table position",
+    "statusRequired": "Status is required",
+    "invalidStatus": "Invalid status value",
+    "statusUpdateFailed": "Failed to update table status"
   },
   "layouts": {
     "notFound": "Layout not found",
@@ -279,6 +124,15 @@
     "deleteSharedFailed": "Failed to delete shared layout. Please try again later.",
     "loadSharedFailed": "Failed to load shared layout. Please try again later."
   },
+  "analytics": {
+    "invalidDateFormat": "Invalid date format. Use YYYY-MM-DD",
+    "failedToFetchProfitSummary": "Failed to fetch profit summary",
+    "failedToFetchProfitComparison": "Failed to fetch profit comparison",
+    "failedToFetchMarginByCategory": "Failed to fetch margin by category",
+    "failedToFetchMarginByProduct": "Failed to fetch margin by product",
+    "failedToFetchMarginTrend": "Failed to fetch margin trend",
+    "failedToFetchProfitDashboard": "Failed to fetch profit dashboard"
+  },
   "settings": {
     "notFound": "Settings not found",
     "invalidData": "Invalid settings data",
@@ -291,7 +145,20 @@
     "invalidSmtpPort": "Invalid SMTP port. Must be between 1 and 65535.",
     "invalidReceiptNumberLength": "Invalid receipt number length. Must be between 1 and 20.",
     "invalidReceiptStartNumber": "Invalid receipt start number. Must be at least 1.",
-    "invalidReceiptIssueMode": "Invalid receipt issue mode. Must be 'immediate' or 'draft'."
+    "invalidReceiptIssueMode": "Invalid receipt issue mode. Must be 'immediate' or 'draft'.",
+    "tooManyEmailTestRequests": "Too many email test requests. Please try again later.",
+    "noFileUploaded": "No file uploaded",
+    "failedToUploadLogo": "Failed to upload logo",
+    "noLogoFound": "No logo found",
+    "failedToDeleteLogo": "Failed to delete logo",
+    "databaseConfigNotFound": "Database configuration not found",
+    "invalidDatabaseConfig": "Invalid database configuration",
+    "invalidRecipientEmailFormat": "Invalid recipient email format",
+    "invalidRecipientEmailAddress": "Invalid recipient email address",
+    "emailServiceDisabled": "Email service is disabled in settings",
+    "emailDisabledCode": "EMAIL_DISABLED",
+    "failedToTestSmtp": "Failed to test SMTP connection",
+    "internalErrorCode": "INTERNAL_ERROR"
   },
   "dailyClosings": {
     "notFound": "Daily closing not found",
@@ -315,6 +182,22 @@
     "deleteFailed": "Failed to delete room",
     "cannotDeleteWithTables": "Cannot delete room with {{count}} assigned table(s). Please delete or reassign tables first."
   },
+  "orderSessions": {
+    "notFound": "Order session not found",
+    "invalidData": "Invalid order session data",
+    "alreadyCompleted": "Order session already completed",
+    "accessDenied": "Access denied to order session",
+    "userNotAuthenticated": "User not authenticated",
+    "noActiveSessionFound": "No active order session found",
+    "fetchFailed": "Failed to fetch order session",
+    "createUpdateFailed": "Failed to create/update order session",
+    "updateFailed": "Failed to update order session",
+    "logoutMarkFailed": "Failed to mark order session for logout",
+    "completeFailed": "Failed to complete order session",
+    "assignTabFailed": "Failed to assign order session to tab",
+    "conflict": "CONFLICT: Order session was modified by another transaction",
+    "notFoundCode": "NOT_FOUND"
+  },
   "stockAdjustments": {
     "notFound": "Stock adjustment not found",
     "fetchFailed": "Failed to fetch stock adjustments",
@@ -330,20 +213,75 @@
     "dataIntegrityIssues": "Data integrity issues found",
     "dataIntegrityPassed": "Data integrity validation passed"
   },
-  "orderActivityLogs": {
-    "notFound": "Order activity log not found",
-    "fetchFailed": "Failed to fetch order activity logs",
-    "fetchOneFailed": "Failed to fetch order activity log",
-    "createFailed": "Failed to create order activity log",
-    "log": {
-      "fetchError": "Error fetching order activity logs",
-      "fetchOneError": "Error fetching order activity log",
-      "createError": "Error creating order activity log",
-      "parseDetailsError": "Failed to parse details as JSON, returning as string"
-    }
-  },
   "consumptionReports": {
     "fetchFailed": "Failed to fetch itemised consumption report. Please try again later."
+  },
+  "costManagement": {
+    "costDecimalLimit": "Cost must not exceed 6 decimal places",
+    "stockItemNotFound": "Stock item {{id}} not found",
+    "ingredients": {
+      "fetchFailed": "Failed to fetch ingredients cost info",
+      "notFound": "Ingredient not found",
+      "invalidCost": "Invalid cost value",
+      "reasonRequired": "Reason is required",
+      "updateFailed": "Failed to update ingredient cost",
+      "historyFetchFailed": "Failed to fetch cost history"
+    },
+    "recentChanges": {
+      "invalidLimit": "Invalid limit value",
+      "fetchFailed": "Failed to fetch recent cost changes"
+    },
+    "variants": {
+      "invalidId": "Invalid variant ID",
+      "notFound": "Variant not found",
+      "costFetchFailed": "Failed to fetch variant cost",
+      "recalculateFailed": "Failed to recalculate variant cost",
+      "summaryFetchFailed": "Failed to fetch variant cost summary",
+      "bulkRecalculateFailed": "Failed to bulk recalculate variant costs"
+    },
+    "inventoryCounts": {
+      "fetchFailed": "Failed to fetch inventory counts",
+      "dateRequired": "Count date is required",
+      "invalidCountType": "Invalid count type",
+      "itemsRequired": "Items are required",
+      "invalidItemStockId": "Invalid stock item ID in items",
+      "invalidItemQuantity": "Invalid quantity in items",
+      "notFound": "Inventory count not found",
+      "invalidId": "Invalid inventory count ID",
+      "createFailed": "Failed to create inventory count",
+      "notDraft": "Inventory count is not in draft status",
+      "submitFailed": "Failed to submit inventory count",
+      "notSubmitted": "Inventory count is not in submitted status",
+      "approveFailed": "Failed to approve inventory count"
+    },
+    "varianceReports": {
+      "invalidPage": "Invalid page number",
+      "invalidLimit": "Invalid limit value",
+      "fetchFailed": "Failed to fetch variance reports",
+      "invalidId": "Invalid variance report ID",
+      "notFound": "Variance report not found",
+      "periodStartRequired": "Period start date is required",
+      "periodEndRequired": "Period end date is required",
+      "invalidPeriodStart": "Invalid period start date",
+      "invalidPeriodEnd": "Invalid period end date",
+      "invalidPeriodRange": "Period start must be before period end",
+      "generateFailed": "Failed to generate variance report",
+      "invalidStatus": "Invalid status value",
+      "statusUpdateFailed": "Failed to update variance report status"
+    }
+  },
+  "emailService": {
+    "smtpHostNotConfigured": "SMTP host is not configured",
+    "smtpUserNotConfigured": "SMTP user is not configured",
+    "smtpPasswordNotConfigured": "SMTP password is not configured",
+    "fromAddressNotConfigured": "From address is not configured",
+    "invalidSmtpHostFormat": "Invalid SMTP host format",
+    "invalidSmtpPort": "Invalid SMTP port",
+    "invalidFromAddressFormat": "Invalid from address format",
+    "emailServiceDisabled": "Email service is disabled",
+    "invalidTestRecipientEmail": "Invalid test recipient email address",
+    "smtpConnectionSuccessfulWithEmail": "SMTP connection successful and test email sent",
+    "smtpConnectionSuccessful": "SMTP connection successful"
   },
   "errorHandler": {
     "authFailed": "Authentication failed",
@@ -362,22 +300,6 @@
     "internalErrorDetailed": "An unexpected error occurred. Please try again later.",
     "errorOccurred": "An error occurred. Please try again.",
     "routeNotFound": "Route {{method}} {{path}} not found"
-  },
-  "analytics": {
-    "productPerformance": {
-      "fetchFailed": "Failed to fetch product performance data. Please try again later."
-    },
-    "topPerformers": {
-      "fetchFailed": "Failed to fetch top performers data. Please try again later."
-    },
-    "hourlySales": {
-      "dateRequired": "Date parameter is required",
-      "fetchFailed": "Failed to fetch hourly sales data. Please try again later."
-    },
-    "compare": {
-      "datesRequired": "Both date1 and date2 parameters are required",
-      "fetchFailed": "Failed to fetch comparison data. Please try again later."
-    }
   },
   "rateLimiter": {
     "writeLimitExceeded": "Too many write operations, please try again later.",
@@ -402,85 +324,26 @@
     "cannotSetInactiveAsDefault": "Cannot set an inactive tax rate as default",
     "setDefaultFailed": "Failed to set default tax rate"
   },
-  "receipts": {
-    "notFound": "Receipt not found",
-    "fetchFailed": "Failed to fetch receipts",
-    "createFailed": "Failed to create receipt",
-    "updateFailed": "Failed to update receipt",
-    "issueFailed": "Failed to issue receipt",
-    "voidFailed": "Failed to void receipt",
-    "alreadyExists": "A receipt already exists for this transaction",
-    "transactionIdRequired": "Transaction ID is required",
-    "onlyDraftCanBeIssued": "Only draft receipts can be issued",
-    "onlyIssuedCanBeVoided": "Only issued receipts can be voided",
-    "onlyDraftCanBeUpdated": "Only draft receipts can be updated",
+  "transactions": {
+    "missingTillId": "Missing tillId",
+    "userNotAuthenticated": "User not authenticated",
+    "invalidTillReference": "Invalid till reference: till not found",
+    "tillNameMismatch": "Till name mismatch",
+    "subtotalMismatch": "Subtotal mismatch. Expected: {{expected}}, Received: {{received}}",
+    "taxMismatch": "Tax mismatch. Expected: {{expected}}, Received: {{received}}",
+    "stockItemNotFound": "Stock item not found: {{stockItemId}}",
+    "insufficientStock": "Insufficient stock for item {{itemName}}. Available: {{available}}, Requested: {{requested}}",
+    "orderSessionConflict": "CONFLICT: Order session was modified by another transaction",
+    "paymentConflict": "Payment conflict detected. Please retry.",
+    "dataReconciliationFailed": "Data reconciliation failed",
     "voidReasonRequired": "Void reason is required",
-    "pdfNotGenerated": "PDF has not been generated yet",
-    "pdfFileNotFound": "PDF file not found",
-    "pdfRetrieveFailed": "Failed to retrieve PDF",
-    "pdfDownloadFailed": "Failed to download PDF",
-    "pdfRegenerateFailed": "Failed to regenerate PDF",
-    "pdfRegenerated": "PDF regenerated successfully",
-    "cannotGeneratePdfForVoided": "Cannot generate PDF for voided receipts",
-    "emailRequired": "Email address is required",
-    "invalidEmail": "Invalid email format",
-    "cannotEmailDraft": "Cannot email a draft receipt. Please issue the receipt first.",
-    "cannotEmailVoided": "Cannot email a voided receipt",
-    "emailServiceDisabled": "Email service is not configured. Please contact the administrator.",
-    "emailFailed": "Failed to send receipt email",
-    "emailQueued": "Receipt email has been queued for delivery",
-    "messageTooLong": "Message must be 1000 characters or less"
-  },
-  "costManagement": {
-    "ingredients": {
-      "fetchFailed": "Failed to fetch ingredient cost information.",
-      "notFound": "Ingredient not found.",
-      "invalidCost": "Cost must be a positive number.",
-      "reasonRequired": "Reason is required for cost updates.",
-      "updateFailed": "Failed to update ingredient cost.",
-      "historyFetchFailed": "Failed to fetch cost history."
-    },
-    "recentChanges": {
-      "invalidLimit": "Limit must be a number between 1 and 100.",
-      "fetchFailed": "Failed to fetch recent cost changes."
-    },
-    "variants": {
-      "invalidId": "Invalid variant ID.",
-      "notFound": "Variant not found.",
-      "costFetchFailed": "Failed to fetch variant cost breakdown.",
-      "recalculateFailed": "Failed to recalculate variant cost.",
-      "summaryFetchFailed": "Failed to fetch variant cost summary.",
-      "bulkRecalculateFailed": "Failed to bulk recalculate variant costs."
-    },
-    "inventoryCounts": {
-      "fetchFailed": "Failed to fetch inventory counts.",
-      "notFound": "Inventory count not found.",
-      "invalidId": "Invalid inventory count ID.",
-      "dateRequired": "Count date is required.",
-      "invalidCountType": "Count type must be one of: full, partial, spot.",
-      "itemsRequired": "At least one inventory item is required.",
-      "invalidItemStockId": "Invalid stock item ID in inventory items.",
-      "invalidItemQuantity": "Quantity must be a non-negative number.",
-      "createFailed": "Failed to create inventory count.",
-      "notDraft": "Only draft inventory counts can be submitted.",
-      "notSubmitted": "Only submitted inventory counts can be approved.",
-      "submitFailed": "Failed to submit inventory count.",
-      "approveFailed": "Failed to approve inventory count."
-    },
-    "varianceReports": {
-      "fetchFailed": "Failed to fetch variance reports.",
-      "notFound": "Variance report not found.",
-      "invalidId": "Invalid variance report ID.",
-      "invalidPage": "Page must be a positive number.",
-      "invalidLimit": "Limit must be a number between 1 and 100.",
-      "periodStartRequired": "Period start date is required.",
-      "periodEndRequired": "Period end date is required.",
-      "invalidPeriodStart": "Invalid period start date format.",
-      "invalidPeriodEnd": "Invalid period end date format.",
-      "invalidPeriodRange": "Period start must be before period end.",
-      "generateFailed": "Failed to generate variance report.",
-      "invalidStatus": "Status must be one of: draft, reviewed, final.",
-      "statusUpdateFailed": "Failed to update variance report status."
-    }
+    "notFoundCode": "NOT_FOUND",
+    "alreadyVoidedCode": "ALREADY_VOIDED",
+    "invalidStatusCode": "INVALID_STATUS",
+    "voidSuccess": "Transaction voided successfully",
+    "notFound": "Transaction not found",
+    "alreadyVoided": "Transaction is already voided",
+    "invalidVoidStatus": "Only completed or complimentary transactions can be voided",
+    "voidFailed": "Failed to void transaction"
   }
 }

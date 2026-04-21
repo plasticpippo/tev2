@@ -2,7 +2,7 @@
   "receipt": {
     "subject": "Ricevuta {{receiptNumber}} da {{businessName}}",
     "greeting": "Gentile {{name}},",
-    "body": "Grazie per il tuo acquisto. La tua ricevuta e allegata a questa email.",
+    "body": "Grazie per il tuo acquisto. La tua ricevuta è allegata a questa email.",
     "receiptNumber": "Numero Ricevuta",
     "date": "Data",
     "itemsCount": "Articoli",
@@ -12,6 +12,6 @@
     "email": "Email",
     "vatNumber": "Partita IVA",
     "footer": "{{businessName}} - Tutti i diritti riservati",
-    "disclaimer": "Questa email e stata inviata in quanto cliente di {{businessName}}. Per qualsiasi domanda, la preghiamo di contattarci."
+    "disclaimer": "Questa email è stata inviata in quanto cliente di {{businessName}}. Per qualsiasi domanda, la preghiamo di contattarci."
   }
 }

@@ -18,7 +18,9 @@
     "editModeDisabled": "Edit Mode Disabled",
     "editModeDisabledMessage": "Layout customization is not available for \"All\" filter. Please select a specific category or Favourites to customize its layout.",
     "unplacedProducts": "Unplaced Products - Drag to Grid",
-    "columnGrid": "4-Column Grid"
+    "columnGrid": "4-Column Grid",
+    "cols": "cols",
+    "colsMobile": "cols (mobile)"
   },
   "cart": {
     "title": "Current Order",
@@ -47,8 +49,9 @@
 "card": "Card",
 "payWithCash": "Pay with CASH",
 "payWithCard": "Pay with CARD",
-"processing": "Processing payment...",
-"processingWithReceipt": "Processing payment & receipt...",
+    "processing": "Processing payment...",
+    "processingShort": "Processing...",
+    "processingWithReceipt": "Processing payment & receipt...",
 "success": "Payment successful!",
 "failed": "Payment failed",
     "tipAmount": "Tip Amount",

@@ -61,7 +61,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
         		}
         	});
         	if (updateResult.count === 0) {
-        		throw new Error('CONFLICT: Order session was modified by another transaction');
+        		throw new Error(t('errors:orderSessions.conflict'));
         	}
         	// Fetch the updated session to return
         	session = await tx.orderSession.findUnique({ where: { id: session.id } });
@@ -139,7 +139,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
       		}
       	});
       	if (updateResult.count === 0) {
-      		throw new Error('CONFLICT: Order session was modified by another transaction');
+      		throw new Error(t('errors:orderSessions.conflict'));
       	}
       	orderSession = await tx.orderSession.findUnique({ where: { id: orderSession.id } });
       } else {
@@ -180,7 +180,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
           	data: updateData
           });
           if (updateResult.count === 0) {
-          	throw new Error('CONFLICT: Order session was modified by another transaction');
+          	throw new Error(t('errors:orderSessions.conflict'));
           }
           orderSession = await tx.orderSession.findUnique({ where: { id: pendingLogoutSession.id } });
           logDebug('[POST /api/order-sessions/current] Successfully restored session to active', { sessionId: orderSession!.id, correlationId: (req as any).correlationId });
@@ -245,7 +245,7 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
       });
 
       if (!orderSession) {
-        throw new Error('NOT_FOUND');
+        throw new Error(t('errors:orderSessions.notFoundCode'));
       }
 
       // Update the existing session with version-based optimistic locking
@@ -259,7 +259,7 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
       	}
       });
       if (updateResult.count === 0) {
-      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      	throw new Error(t('errors:orderSessions.conflict'));
       }
       return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
@@ -267,7 +267,7 @@ orderSessionsRouter.put('/current', authenticateToken, async (req: Request, res:
     res.json(updatedOrderSession);
   } catch (error) {
     const t = req.t.bind(req);
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
+    if (error instanceof Error && error.message === t('errors:orderSessions.notFoundCode')) {
       return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error updating order session', {
@@ -301,7 +301,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
 
       if (!orderSession) {
         logDebug('[PUT /api/order-sessions/current/logout] No active session found for user', { userId, correlationId: (req as any).correlationId });
-        throw new Error('NOT_FOUND');
+        throw new Error(t('errors:orderSessions.notFoundCode'));
       }
 
       const itemsCount = safeJsonParse(orderSession.items, []).length;
@@ -319,7 +319,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
       	}
       });
       if (updateResult.count === 0) {
-      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      	throw new Error(t('errors:orderSessions.conflict'));
       }
       const updated = await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     
@@ -332,7 +332,7 @@ orderSessionsRouter.put('/current/logout', authenticateToken, async (req: Reques
     res.json(updatedOrderSession);
   } catch (error) {
     const t = req.t.bind(req);
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
+    if (error instanceof Error && error.message === t('errors:orderSessions.notFoundCode')) {
       return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error marking order session for logout', {
@@ -363,7 +363,7 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
       });
 
       if (!orderSession) {
-        throw new Error('NOT_FOUND');
+        throw new Error(t('errors:orderSessions.notFoundCode'));
       }
 
       // Update the session to completed status with version-based optimistic locking
@@ -377,7 +377,7 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
       	}
       });
       if (updateResult.count === 0) {
-      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      	throw new Error(t('errors:orderSessions.conflict'));
       }
       return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
@@ -385,7 +385,7 @@ orderSessionsRouter.put('/current/complete', authenticateToken, async (req: Requ
     res.json(updatedOrderSession);
   } catch (error) {
     const t = req.t.bind(req);
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
+    if (error instanceof Error && error.message === t('errors:orderSessions.notFoundCode')) {
       return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error completing order session', {
@@ -416,7 +416,7 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
       });
 
       if (!orderSession) {
-        throw new Error('NOT_FOUND');
+        throw new Error(t('errors:orderSessions.notFoundCode'));
       }
 
       // Update the session to completed status (since it's now assigned to a tab) with version-based optimistic locking
@@ -430,7 +430,7 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
       	}
       });
       if (updateResult.count === 0) {
-      	throw new Error('CONFLICT: Order session was modified by another transaction');
+      	throw new Error(t('errors:orderSessions.conflict'));
       }
       return await tx.orderSession.findUnique({ where: { id: orderSession.id } });
     });
@@ -438,7 +438,7 @@ orderSessionsRouter.put('/current/assign-tab', authenticateToken, async (req: Re
     res.json(updatedOrderSession);
   } catch (error) {
     const t = req.t.bind(req);
-    if (error instanceof Error && error.message === 'NOT_FOUND') {
+    if (error instanceof Error && error.message === t('errors:orderSessions.notFoundCode')) {
       return res.status(404).json({ error: t('errors:orderSessions.noActiveSessionFound') });
     }
     logError(error instanceof Error ? error : 'Error assigning order session to tab', {

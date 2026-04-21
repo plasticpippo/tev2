@@ -6,7 +6,6 @@ import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
 import { TABLE_STATUS } from '../utils/tableStatus';
-import i18n from '../i18n';
 
 // Helper function to update table status
 async function updateTableStatus(tableId: string | null, status: string): Promise<boolean> {
@@ -40,6 +39,7 @@ export const tabsRouter = express.Router();
 
 // GET /api/tabs - Get all tabs
 tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const tabs = await prisma.tab.findMany({
       include: {
@@ -58,15 +58,16 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     });
     res.json(tabsWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.fetchError'), {
+    logError(error instanceof Error ? error : t('tabs.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.fetchFailed') });
+    res.status(500).json({ error: t('tabs.fetchFailed') });
   }
 });
 
 // GET /api/tabs/:id - Get a specific tab
 tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const tab = await prisma.tab.findUnique({
@@ -77,7 +78,7 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     });
     
     if (!tab) {
-      return res.status(404).json({ error: i18n.t('tabs.notFound') });
+      return res.status(404).json({ error: t('tabs.notFound') });
     }
     
     // Parse the items JSON string back to array
@@ -89,43 +90,44 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
     
     res.json(tabWithParsedItems);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.fetchOneError'), {
+    logError(error instanceof Error ? error : t('tabs.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.fetchOneFailed') });
+    res.status(500).json({ error: t('tabs.fetchOneFailed') });
   }
 });
 
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
-    logInfo(i18n.t('tabs.log.createCalled'), {
+    logInfo(t('tabs.log.createCalled'), {
       correlationId: (req as any).correlationId,
     });
     const { name, items, tillId, tillName, tableId } = req.body;
     
     // Validate required fields
     if (!name || typeof name !== 'string' || name.trim() === '') {
-      logInfo(i18n.t('tabs.log.nameValidationFailed'), {
+      logInfo(t('tabs.log.nameValidationFailed'), {
         correlationId: (req as any).correlationId,
       });
-      return res.status(400).json({ error: i18n.t('tabs.nameRequired') });
+      return res.status(400).json({ error: t('tabs.nameRequired') });
     }
     
     // Validate items array
     if (items && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          logError(i18n.t('tabs.log.itemWithoutName'), {
+          logError(t('tabs.log.itemWithoutName'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: i18n.t('tabs.itemNameRequired') });
+          return res.status(400).json({ error: t('tabs.itemNameRequired') });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          logError(i18n.t('tabs.log.itemInvalidProperties'), {
+          logError(t('tabs.log.itemInvalidProperties'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: i18n.t('tabs.itemInvalidProperties') });
+          return res.status(400).json({ error: t('tabs.itemInvalidProperties') });
         }
       }
     }
@@ -136,10 +138,10 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
     
     if (existingTab) {
-      logInfo(i18n.t('tabs.log.duplicateNameDetected'), {
+      logInfo(t('tabs.log.duplicateNameDetected'), {
         correlationId: (req as any).correlationId,
       });
-      return res.status(409).json({ error: i18n.t('tabs.duplicateName') });
+      return res.status(409).json({ error: t('tabs.duplicateName') });
     }
     
     // If tableId is provided, verify that the table exists
@@ -149,11 +151,11 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       });
       
       if (!table) {
-        return res.status(404).json({ error: i18n.t('tabs.tableNotFound') });
+        return res.status(404).json({ error: t('tabs.tableNotFound') });
       }
     }
     
-    logInfo(i18n.t('tabs.log.creating'), {
+    logInfo(t('tabs.log.creating'), {
       correlationId: (req as any).correlationId,
     });
     const tab = await prisma.tab.create({
@@ -172,20 +174,21 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       await updateTableStatus(tableId, TABLE_STATUS.OCCUPIED);
     }
     
-    logInfo(i18n.t('tabs.log.created'), {
+    logInfo(t('tabs.log.created'), {
       correlationId: (req as any).correlationId,
     });
     res.status(201).json(tab);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.createError'), {
+    logError(error instanceof Error ? error : t('tabs.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.createFailed') });
+    res.status(500).json({ error: t('tabs.createFailed') });
   }
 });
 
 // PUT /api/tabs/:id - Update a tab
 tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, items, tillId, tillName, tableId } = req.body;
@@ -193,7 +196,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     // Validate name if it's provided
     if (name !== undefined) {
       if (typeof name !== 'string' || name.trim() === '') {
-        return res.status(400).json({ error: i18n.t('tabs.nameNonEmpty') });
+        return res.status(400).json({ error: t('tabs.nameNonEmpty') });
       }
       
       // Check if a tab with the same name already exists (excluding the current tab)
@@ -205,7 +208,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       });
       
       if (existingTab) {
-        return res.status(409).json({ error: i18n.t('tabs.duplicateName') });
+        return res.status(409).json({ error: t('tabs.duplicateName') });
       }
     }
     
@@ -213,16 +216,16 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     if (items !== undefined && Array.isArray(items)) {
       for (const item of items) {
         if (!item.name || typeof item.name !== 'string' || item.name.trim() === '') {
-          logError(i18n.t('tabs.log.itemWithoutName'), {
+          logError(t('tabs.log.itemWithoutName'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: i18n.t('tabs.itemNameRequired') });
+          return res.status(400).json({ error: t('tabs.itemNameRequired') });
         }
         if (!item.id || !item.variantId || !item.productId || typeof item.price !== 'number' || typeof item.quantity !== 'number') {
-          logError(i18n.t('tabs.log.itemInvalidProperties'), {
+          logError(t('tabs.log.itemInvalidProperties'), {
             correlationId: (req as any).correlationId,
           });
-          return res.status(400).json({ error: i18n.t('tabs.itemInvalidProperties') });
+          return res.status(400).json({ error: t('tabs.itemInvalidProperties') });
         }
       }
     }
@@ -234,7 +237,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       });
       
       if (!table) {
-        return res.status(404).json({ error: i18n.t('tabs.tableNotFound') });
+        return res.status(404).json({ error: t('tabs.tableNotFound') });
       }
     }
     
@@ -271,15 +274,16 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
     
     res.json(tab);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.updateError'), {
+    logError(error instanceof Error ? error : t('tabs.log.updateError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.updateFailed') });
+    res.status(500).json({ error: t('tabs.updateFailed') });
   }
 });
 
 // DELETE /api/tabs/:id - Delete a tab
 tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
@@ -302,15 +306,16 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
     
     res.status(204).send();
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.deleteError'), {
+    logError(error instanceof Error ? error : t('tabs.log.deleteError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.deleteFailed') });
+    res.status(500).json({ error: t('tabs.deleteFailed') });
   }
 });
 
 // PUT /api/tabs/:id/request-bill - Request bill for a tab (sets table to bill_requested)
 tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -324,11 +329,11 @@ tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res:
     });
     
     if (!tab) {
-      return res.status(404).json({ error: i18n.t('tabs.notFound') });
+      return res.status(404).json({ error: t('tabs.notFound') });
     }
     
     if (!tab.tableId) {
-      return res.status(400).json({ error: i18n.t('tabs.noTableAssigned') });
+      return res.status(400).json({ error: t('tabs.noTableAssigned') });
     }
     
     // Authorization check: user must own the table or be admin
@@ -336,7 +341,7 @@ tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res:
     if (tab.table && tab.table.ownerId !== null && tab.table.ownerId !== undefined) {
       const isOwner = tab.table.ownerId === userId;
       if (!isOwner && !isAdmin) {
-        return res.status(403).json({ error: i18n.t('errors.authorization.tableAccessDenied') });
+        return res.status(403).json({ error: t('errors.authorization.tableAccessDenied') });
       }
     }
     
@@ -344,21 +349,21 @@ tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res:
     const success = await updateTableStatus(tab.tableId, TABLE_STATUS.BILL_REQUESTED);
     
     if (!success) {
-      return res.status(500).json({ error: i18n.t('tabs.billRequestFailed') });
+      return res.status(500).json({ error: t('tabs.billRequestFailed') });
     }
     
-    logInfo(i18n.t('tabs.log.billRequested'), {
+    logInfo(t('tabs.log.billRequested'), {
       correlationId: (req as any).correlationId,
       tabId: id,
       tableId: tab.tableId
     });
     
-    res.json({ message: i18n.t('tabs.billRequested'), tableId: tab.tableId });
+    res.json({ message: t('tabs.billRequested'), tableId: tab.tableId });
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('tabs.log.billRequestError'), {
+    logError(error instanceof Error ? error : t('tabs.log.billRequestError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('tabs.billRequestFailed') });
+    res.status(500).json({ error: t('tabs.billRequestFailed') });
   }
 });
 

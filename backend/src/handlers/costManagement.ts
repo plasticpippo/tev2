@@ -5,7 +5,7 @@ import { updateVariantTheoreticalCost, getVariantCostBreakdown, recalculateAllVa
 import { updateIngredientCost, getCostHistory, getRecentCostChanges } from '../services/costHistoryService';
 import { generateVarianceReport, getVarianceReport, getVarianceReports, updateVarianceReportStatus } from '../services/varianceService';
 import { logError } from '../utils/logger';
-import i18n from '../i18n';
+
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { decimalToNumber, multiplyCost, roundCost } from '../utils/money';
@@ -24,6 +24,7 @@ function getCostStatus(standardCost: Prisma.Decimal, lastCostUpdate: Date): stri
 
 // GET /api/cost-management/ingredients - List all ingredients with cost info
 costManagementRouter.get('/ingredients', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { search, category } = req.query;
 
@@ -57,12 +58,13 @@ costManagementRouter.get('/ingredients', authenticateToken, requireAdmin, async 
     logError(error instanceof Error ? error : 'Error fetching ingredients cost info', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.ingredients.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.ingredients.fetchFailed') });
   }
 });
 
 // GET /api/cost-management/ingredients/:id - Get single ingredient with cost details
 costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -80,7 +82,7 @@ costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, as
     });
 
     if (!item) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.ingredients.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.ingredients.notFound') });
       return;
     }
 
@@ -112,36 +114,37 @@ costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, as
     logError(error instanceof Error ? error : 'Error fetching ingredient cost details', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.ingredients.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.ingredients.fetchFailed') });
   }
 });
 
 // POST /api/cost-management/ingredients/:id/cost - Update ingredient standard cost
 costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { cost, reason, effectiveDate, notes } = req.body;
     const userId = (req as any).user?.id;
 
     if (!cost || typeof cost !== 'number' || cost <= 0) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.ingredients.invalidCost') });
+      res.status(400).json({ error: t('errors.costManagement.ingredients.invalidCost') });
       return;
     }
 
     const costStr = String(cost);
     if (costStr.includes('.') && costStr.split('.')[1]?.length > 6) {
-      res.status(400).json({ error: 'Cost must not exceed 6 decimal places' });
+      res.status(400).json({ error: t('errors:costManagement.costDecimalLimit') });
       return;
     }
 
     if (!reason || typeof reason !== 'string' || reason.trim().length === 0) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.ingredients.reasonRequired') });
+      res.status(400).json({ error: t('errors.costManagement.ingredients.reasonRequired') });
       return;
     }
 
     const stockItem = await prisma.stockItem.findUnique({ where: { id } });
     if (!stockItem) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.ingredients.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.ingredients.notFound') });
       return;
     }
 
@@ -153,18 +156,19 @@ costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdm
     logError(error instanceof Error ? error : 'Error updating ingredient cost', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.ingredients.updateFailed') });
+    res.status(500).json({ error: t('errors.costManagement.ingredients.updateFailed') });
   }
 });
 
 // GET /api/cost-management/ingredients/:id/history - Get full cost history for ingredient
 costManagementRouter.get('/ingredients/:id/history', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
     const stockItem = await prisma.stockItem.findUnique({ where: { id } });
     if (!stockItem) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.ingredients.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.ingredients.notFound') });
       return;
     }
 
@@ -174,17 +178,18 @@ costManagementRouter.get('/ingredients/:id/history', authenticateToken, requireA
     logError(error instanceof Error ? error : 'Error fetching ingredient cost history', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.ingredients.historyFetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.ingredients.historyFetchFailed') });
   }
 });
 
 // GET /api/cost-management/recent-changes - Get recent cost changes
 costManagementRouter.get('/recent-changes', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
 
     if (isNaN(limit) || limit < 1 || limit > 100) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.recentChanges.invalidLimit') });
+      res.status(400).json({ error: t('errors.costManagement.recentChanges.invalidLimit') });
       return;
     }
 
@@ -194,23 +199,24 @@ costManagementRouter.get('/recent-changes', authenticateToken, requireAdmin, asy
     logError(error instanceof Error ? error : 'Error fetching recent cost changes', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.recentChanges.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.recentChanges.fetchFailed') });
   }
 });
 
 // GET /api/cost-management/variants/:id/cost - Get variant cost breakdown
 costManagementRouter.get('/variants/:id/cost', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const variantId = parseInt(req.params.id, 10);
 
     if (isNaN(variantId)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.variants.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.variants.invalidId') });
       return;
     }
 
     const breakdown = await getVariantCostBreakdown(variantId);
     if (!breakdown) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.variants.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.variants.notFound') });
       return;
     }
 
@@ -219,23 +225,24 @@ costManagementRouter.get('/variants/:id/cost', authenticateToken, requireAdmin, 
     logError(error instanceof Error ? error : 'Error fetching variant cost breakdown', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.variants.costFetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.variants.costFetchFailed') });
   }
 });
 
 // POST /api/cost-management/variants/:id/recalculate - Recalculate variant cost
 costManagementRouter.post('/variants/:id/recalculate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const variantId = parseInt(req.params.id, 10);
 
     if (isNaN(variantId)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.variants.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.variants.invalidId') });
       return;
     }
 
     const result = await updateVariantTheoreticalCost(variantId);
     if (!result) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.variants.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.variants.notFound') });
       return;
     }
 
@@ -244,12 +251,13 @@ costManagementRouter.post('/variants/:id/recalculate', authenticateToken, requir
     logError(error instanceof Error ? error : 'Error recalculating variant cost', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.variants.recalculateFailed') });
+    res.status(500).json({ error: t('errors.costManagement.variants.recalculateFailed') });
   }
 });
 
 // GET /api/cost-management/variants/cost-summary - Get all variants with cost info
 costManagementRouter.get('/variants/cost-summary', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { status, productId } = req.query;
 
@@ -291,25 +299,27 @@ costManagementRouter.get('/variants/cost-summary', authenticateToken, requireAdm
     logError(error instanceof Error ? error : 'Error fetching variant cost summary', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.variants.summaryFetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.variants.summaryFetchFailed') });
   }
 });
 
 // POST /api/cost-management/bulk-recalculate - Recalculate all variant costs
-costManagementRouter.post('/bulk-recalculate', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
+costManagementRouter.post('/bulk-recalculate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const result = await recalculateAllVariantCosts();
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error bulk recalculating variant costs', {
-      correlationId: (_req as any).correlationId,
+      correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.variants.bulkRecalculateFailed') });
+    res.status(500).json({ error: t('errors.costManagement.variants.bulkRecalculateFailed') });
   }
 });
 
 // GET /api/cost-management/inventory-counts - List inventory counts
 costManagementRouter.get('/inventory-counts', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { status, fromDate, toDate } = req.query;
 
@@ -355,39 +365,40 @@ costManagementRouter.get('/inventory-counts', authenticateToken, requireAdmin, a
     logError(error instanceof Error ? error : 'Error fetching inventory counts', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.inventoryCounts.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.inventoryCounts.fetchFailed') });
   }
 });
 
 // POST /api/cost-management/inventory-counts - Create inventory count
 costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { countDate, countType, notes, items } = req.body;
     const userId = (req as any).user?.id;
 
     if (!countDate || typeof countDate !== 'string') {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.dateRequired') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.dateRequired') });
       return;
     }
 
     const validCountTypes = ['full', 'partial', 'spot'];
     if (!countType || !validCountTypes.includes(countType)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidCountType') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidCountType') });
       return;
     }
 
     if (!Array.isArray(items) || items.length === 0) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.itemsRequired') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.itemsRequired') });
       return;
     }
 
     for (const item of items) {
       if (!item.stockItemId || typeof item.stockItemId !== 'string') {
-        res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidItemStockId') });
+        res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidItemStockId') });
         return;
       }
       if (typeof item.quantity !== 'number' || item.quantity < 0) {
-        res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidItemQuantity') });
+        res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidItemQuantity') });
         return;
       }
     }
@@ -401,7 +412,7 @@ costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, 
 
     for (const id of stockItemIds) {
       if (!stockItemMap.has(id)) {
-        res.status(404).json({ error: `Stock item ${id} not found` });
+        res.status(404).json({ error: t('errors:costManagement.stockItemNotFound', { id }) });
         return;
       }
     }
@@ -441,17 +452,18 @@ costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, 
     logError(error instanceof Error ? error : 'Error creating inventory count', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.inventoryCounts.createFailed') });
+    res.status(500).json({ error: t('errors.costManagement.inventoryCounts.createFailed') });
   }
 });
 
 // GET /api/cost-management/inventory-counts/:id - Get single inventory count
 costManagementRouter.get('/inventory-counts/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
 
     if (isNaN(id)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidId') });
       return;
     }
 
@@ -469,7 +481,7 @@ costManagementRouter.get('/inventory-counts/:id', authenticateToken, requireAdmi
     });
 
     if (!count) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.inventoryCounts.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.inventoryCounts.notFound') });
       return;
     }
 
@@ -478,28 +490,29 @@ costManagementRouter.get('/inventory-counts/:id', authenticateToken, requireAdmi
     logError(error instanceof Error ? error : 'Error fetching inventory count', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.inventoryCounts.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.inventoryCounts.fetchFailed') });
   }
 });
 
 // POST /api/cost-management/inventory-counts/:id/submit - Submit inventory count
 costManagementRouter.post('/inventory-counts/:id/submit', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
 
     if (isNaN(id)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidId') });
       return;
     }
 
     const existing = await prisma.inventoryCount.findUnique({ where: { id } });
     if (!existing) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.inventoryCounts.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.inventoryCounts.notFound') });
       return;
     }
 
     if (existing.status !== 'draft') {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.notDraft') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.notDraft') });
       return;
     }
 
@@ -516,29 +529,30 @@ costManagementRouter.post('/inventory-counts/:id/submit', authenticateToken, req
     logError(error instanceof Error ? error : 'Error submitting inventory count', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.inventoryCounts.submitFailed') });
+    res.status(500).json({ error: t('errors.costManagement.inventoryCounts.submitFailed') });
   }
 });
 
 // POST /api/cost-management/inventory-counts/:id/approve - Approve inventory count
 costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
     const userId = (req as any).user?.id;
 
     if (isNaN(id)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidId') });
       return;
     }
 
     const existing = await prisma.inventoryCount.findUnique({ where: { id } });
     if (!existing) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.inventoryCounts.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.inventoryCounts.notFound') });
       return;
     }
 
     if (existing.status !== 'submitted') {
-      res.status(400).json({ error: i18n.t('errors.costManagement.inventoryCounts.notSubmitted') });
+      res.status(400).json({ error: t('errors.costManagement.inventoryCounts.notSubmitted') });
       return;
     }
 
@@ -556,23 +570,24 @@ costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, re
     logError(error instanceof Error ? error : 'Error approving inventory count', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.inventoryCounts.approveFailed') });
+    res.status(500).json({ error: t('errors.costManagement.inventoryCounts.approveFailed') });
   }
 });
 
 // GET /api/cost-management/variance-reports - List variance reports
 costManagementRouter.get('/variance-reports', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
 
     if (isNaN(page) || page < 1) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidPage') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidPage') });
       return;
     }
 
     if (isNaN(limit) || limit < 1 || limit > 100) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidLimit') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidLimit') });
       return;
     }
 
@@ -582,23 +597,24 @@ costManagementRouter.get('/variance-reports', authenticateToken, requireAdmin, a
     logError(error instanceof Error ? error : 'Error fetching variance reports', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.varianceReports.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.varianceReports.fetchFailed') });
   }
 });
 
 // GET /api/cost-management/variance-reports/:id - Get single variance report
 costManagementRouter.get('/variance-reports/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
 
     if (isNaN(id)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidId') });
       return;
     }
 
     const report = await getVarianceReport(id);
     if (!report) {
-      res.status(404).json({ error: i18n.t('errors.costManagement.varianceReports.notFound') });
+      res.status(404).json({ error: t('errors.costManagement.varianceReports.notFound') });
       return;
     }
 
@@ -607,23 +623,24 @@ costManagementRouter.get('/variance-reports/:id', authenticateToken, requireAdmi
     logError(error instanceof Error ? error : 'Error fetching variance report', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.varianceReports.fetchFailed') });
+    res.status(500).json({ error: t('errors.costManagement.varianceReports.fetchFailed') });
   }
 });
 
 // POST /api/cost-management/variance-reports/generate - Generate variance report
 costManagementRouter.post('/variance-reports/generate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { periodStart, periodEnd, beginningCountId, endingCountId } = req.body;
     const userId = (req as any).user?.id;
 
     if (!periodStart || typeof periodStart !== 'string') {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.periodStartRequired') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.periodStartRequired') });
       return;
     }
 
     if (!periodEnd || typeof periodEnd !== 'string') {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.periodEndRequired') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.periodEndRequired') });
       return;
     }
 
@@ -631,17 +648,17 @@ costManagementRouter.post('/variance-reports/generate', authenticateToken, requi
     const endDate = new Date(periodEnd);
 
     if (isNaN(startDate.getTime())) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidPeriodStart') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidPeriodStart') });
       return;
     }
 
     if (isNaN(endDate.getTime())) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidPeriodEnd') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidPeriodEnd') });
       return;
     }
 
     if (startDate >= endDate) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidPeriodRange') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidPeriodRange') });
       return;
     }
 
@@ -658,25 +675,26 @@ costManagementRouter.post('/variance-reports/generate', authenticateToken, requi
     logError(error instanceof Error ? error : 'Error generating variance report', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.varianceReports.generateFailed') });
+    res.status(500).json({ error: t('errors.costManagement.varianceReports.generateFailed') });
   }
 });
 
 // PATCH /api/cost-management/variance-reports/:id/status - Update variance report status
 costManagementRouter.patch('/variance-reports/:id/status', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
     const { status } = req.body;
     const userId = (req as any).user?.id;
 
     if (isNaN(id)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidId') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidId') });
       return;
     }
 
     const validStatuses = ['draft', 'reviewed', 'final'];
     if (!status || !validStatuses.includes(status)) {
-      res.status(400).json({ error: i18n.t('errors.costManagement.varianceReports.invalidStatus') });
+      res.status(400).json({ error: t('errors.costManagement.varianceReports.invalidStatus') });
       return;
     }
 
@@ -686,6 +704,6 @@ costManagementRouter.patch('/variance-reports/:id/status', authenticateToken, re
     logError(error instanceof Error ? error : 'Error updating variance report status', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors.costManagement.varianceReports.statusUpdateFailed') });
+    res.status(500).json({ error: t('errors.costManagement.varianceReports.statusUpdateFailed') });
   }
 });

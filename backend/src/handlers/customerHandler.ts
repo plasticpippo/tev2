@@ -4,7 +4,7 @@ import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import * as customerService from '../services/customerService';
 import { logError, logDataAccess } from '../utils/logger';
-import i18n from '../i18n';
+
 import {
   CreateCustomerInput,
   UpdateCustomerInput,
@@ -46,6 +46,7 @@ const validateVATNumber = (vat: string | undefined): boolean => {
 export const customersRouter = express.Router();
 
 customersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const {
       search,
@@ -90,16 +91,17 @@ customersRouter.get('/', authenticateToken, async (req: Request, res: Response) 
     logError(error instanceof Error ? error : 'Error listing customers', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.fetchFailed') });
+    res.status(500).json({ error: t('customers.fetchFailed') });
   }
 });
 
 customersRouter.get('/search', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { q, limit } = req.query;
 
     if (!q || typeof q !== 'string') {
-      return res.status(400).json({ error: i18n.t('customers.searchQueryRequired') });
+      return res.status(400).json({ error: t('customers.searchQueryRequired') });
     }
 
     const limitNum = parseInt(String(limit), 10) || 10;
@@ -109,16 +111,17 @@ customersRouter.get('/search', authenticateToken, async (req: Request, res: Resp
     logError(error instanceof Error ? error : 'Error searching customers', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.searchFailed') });
+    res.status(500).json({ error: t('customers.searchFailed') });
   }
 });
 
 customersRouter.get('/check-duplicate', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, email } = req.query;
 
     if (!name || typeof name !== 'string') {
-      return res.status(400).json({ error: i18n.t('customers.nameRequired') });
+      return res.status(400).json({ error: t('customers.nameRequired') });
     }
 
     const result = await customerService.checkDuplicateCustomer(
@@ -130,17 +133,18 @@ customersRouter.get('/check-duplicate', authenticateToken, async (req: Request, 
     logError(error instanceof Error ? error : 'Error checking duplicate', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.duplicateCheckFailed') });
+    res.status(500).json({ error: t('customers.duplicateCheckFailed') });
   }
 });
 
 customersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const customer = await customerService.getCustomerById(Number(id));
 
     if (!customer) {
-      return res.status(404).json({ error: i18n.t('customers.notFound') });
+      return res.status(404).json({ error: t('customers.notFound') });
     }
 
     res.json(customer);
@@ -148,22 +152,23 @@ customersRouter.get('/:id', authenticateToken, async (req: Request, res: Respons
     logError(error instanceof Error ? error : 'Error fetching customer', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.fetchOneFailed') });
+    res.status(500).json({ error: t('customers.fetchOneFailed') });
   }
 });
 
 customersRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+      return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
     const validation = createCustomerSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
-        error: i18n.t('customers.validationFailed'),
+        error: t('customers.validationFailed'),
         details: validation.error.errors,
       });
     }
@@ -172,14 +177,14 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
 
     if (vatNumber && !validateVATNumber(vatNumber)) {
       return res.status(400).json({
-        error: i18n.t('customers.invalidVatNumber'),
+        error: t('customers.invalidVatNumber'),
       });
     }
 
     if (email) {
       const isUnique = await customerService.checkEmailUniqueness(email);
       if (!isUnique) {
-        return res.status(409).json({ error: i18n.t('customers.duplicateEmail') });
+        return res.status(409).json({ error: t('customers.duplicateEmail') });
       }
     }
 
@@ -204,23 +209,24 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
     logError(error instanceof Error ? error : 'Error creating customer', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.createFailed') });
+    res.status(500).json({ error: t('customers.createFailed') });
   }
 });
 
 customersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+      return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
     const validation = updateCustomerSchema.safeParse(req.body);
     if (!validation.success) {
       return res.status(400).json({
-        error: i18n.t('customers.validationFailed'),
+        error: t('customers.validationFailed'),
         details: validation.error.errors,
       });
     }
@@ -230,14 +236,14 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
 
     if (vatNumber && !validateVATNumber(vatNumber)) {
       return res.status(400).json({
-        error: i18n.t('customers.invalidVatNumber'),
+        error: t('customers.invalidVatNumber'),
       });
     }
 
     if (email !== undefined && email !== null) {
       const isUnique = await customerService.checkEmailUniqueness(email, Number(id));
       if (!isUnique) {
-        return res.status(409).json({ error: i18n.t('customers.duplicateEmail') });
+        return res.status(409).json({ error: t('customers.duplicateEmail') });
       }
     }
 
@@ -257,7 +263,7 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
     const customer = await customerService.updateCustomer(Number(id), input);
 
     if (!customer) {
-      return res.status(404).json({ error: i18n.t('customers.notFound') });
+      return res.status(404).json({ error: t('customers.notFound') });
     }
 
     logDataAccess('customer', customer.id, 'UPDATE', userId, req.user?.username);
@@ -267,23 +273,24 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
     logError(error instanceof Error ? error : 'Error updating customer', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.updateFailed') });
+    res.status(500).json({ error: t('customers.updateFailed') });
   }
 });
 
 customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const userId = req.user?.id;
 
     if (!userId) {
-      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+      return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
     const customer = await customerService.softDeleteCustomer(Number(id));
 
     if (!customer) {
-      return res.status(404).json({ error: i18n.t('customers.notFound') });
+      return res.status(404).json({ error: t('customers.notFound') });
     }
 
     logDataAccess('customer', customer.id, 'DELETE', userId, req.user?.username);
@@ -293,7 +300,7 @@ customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Resp
     logError(error instanceof Error ? error : 'Error deleting customer', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('customers.deleteFailed') });
+    res.status(500).json({ error: t('customers.deleteFailed') });
   }
 });
 

@@ -475,7 +475,11 @@
     "title": "Products",
     "favourites": "FAV Favourites",
     "all": "All",
-    "outOfStock": "OUT OF STOCK"
+    "outOfStock": "OUT OF STOCK",
+    "fav": "FAV"
+  },
+  "pos": {
+    "tillAssignmentRequired": "Please assign a till to use the POS system"
   },
   "errorMessage": {
     "retry": "Retry",
@@ -664,5 +668,18 @@
     "tillNotConfigured": "Not Configured",
     "unknownTill": "Unknown Till",
     "contextError": "useGlobalDataContext must be used within a GlobalDataProvider"
+  },
+  "layoutContext": {
+    "layoutSavedFor": "Layout saved successfully for {{categoryName}}!",
+    "sessionExpired": "Session expired. Please log in again.",
+    "failedToSaveLayout": "Failed to save layout: {{errorMessage}}",
+    "layoutResetToDefault": "Layout reset to default!",
+    "failedToResetLayout": "Failed to reset layout: {{errorMessage}}",
+    "invalidLayoutName": "Invalid layout name: {{message}}",
+    "cannotSaveEmptyLayout": "Cannot save empty layout as shared layout",
+    "sharedLayoutCreated": "Shared layout \"{{sanitizedName}}\" created successfully!",
+    "failedToCreateSharedLayout": "Failed to create shared layout: {{errorMessage}}",
+    "sharedLayoutLoaded": "Shared layout loaded successfully!",
+    "failedToLoadSharedLayout": "Failed to load shared layout: {{errorMessage}}"
   }
 }

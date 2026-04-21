@@ -6,12 +6,12 @@ import { logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
 
 export const dailyClosingsRouter = express.Router();
 
 // GET /api/daily-closings - Get all daily closings (with optional filters)
 dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { userId, dateFrom, dateTo } = req.query;
 
@@ -56,7 +56,7 @@ dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Respon
         closedAt: closing.closedAt.toISOString(),
         summary: closing.summary as any,
         userId: closing.userId,
-        userName: user?.name || i18n.t('common:unknownUser')
+        userName: user?.name || t('common:unknownUser')
       };
     }));
 
@@ -65,12 +65,13 @@ dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Respon
     logError(error instanceof Error ? error : 'Error fetching daily closings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:dailyClosings.fetchFailed') });
+    res.status(500).json({ error: t('errors:dailyClosings.fetchFailed') });
   }
 });
 
 // GET /api/daily-closings/:id - Get a specific daily closing
 dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -79,7 +80,7 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
     });
 
     if (!dailyClosing) {
-      res.status(404).json({ error: i18n.t('errors:dailyClosings.notFound') });
+      res.status(404).json({ error: t('errors:dailyClosings.notFound') });
       return;
     }
 
@@ -98,7 +99,7 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: user?.name || i18n.t('common:unknownUser')
+      userName: user?.name || t('common:unknownUser')
     };
 
     res.json(result);
@@ -106,25 +107,26 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
     logError(error instanceof Error ? error : 'Error fetching daily closing', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:dailyClosings.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:dailyClosings.fetchOneFailed') });
   }
 });
 
 // POST /api/daily-closings - Create a new daily closing
 dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { closedAt, userId } = req.body;
 
     // Validate required fields
     if (!closedAt || !userId) {
-      res.status(400).json({ error: i18n.t('errors:dailyClosings.missingRequiredFields') });
+      res.status(400).json({ error: t('errors:dailyClosings.missingRequiredFields') });
       return;
     }
 
     // Get current settings to determine the business day start
     const settings = await prisma.settings.findFirst();
     if (!settings) {
-      res.status(500).json({ error: i18n.t('errors:settings.notFound') });
+      res.status(500).json({ error: t('errors:settings.notFound') });
       return;
     }
 
@@ -190,7 +192,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
       closedAt: dailyClosing.closedAt.toISOString(),
       summary: dailyClosing.summary as any,
       userId: dailyClosing.userId,
-      userName: user?.name || i18n.t('common:unknownUser')
+      userName: user?.name || t('common:unknownUser')
     };
 
     res.status(201).json(result);
@@ -198,7 +200,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
     logError(error instanceof Error ? error : 'Error creating daily closing', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:dailyClosings.createFailed') });
+    res.status(500).json({ error: t('errors:dailyClosings.createFailed') });
   }
 });
 

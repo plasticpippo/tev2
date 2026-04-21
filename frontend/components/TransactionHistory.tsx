@@ -131,7 +131,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
         console.error('Session expired. Please log in again.');
         window.location.href = '/login';
       } else {
-        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        const errorData = await response.json().catch(() => ({ error: t('transactions.errors.unknownError') }));
         console.error('Failed to view receipt:', errorData.error);
       }
     } catch (error) {
@@ -160,7 +160,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
       setVoidReason('');
       onDataUpdate?.();
     } catch (error) {
-      setVoidError(error instanceof Error ? error.message : 'Failed to void transaction');
+      setVoidError(error instanceof Error ? error.message : t('transactions.errors.voidFailed'));
     } finally {
       setIsVoiding(false);
     }
@@ -434,7 +434,7 @@ aria-pressed={dateRange === 'custom'}
     <button
       onClick={handleVoidTransaction}
       className="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-2 px-4 rounded-md transition flex items-center justify-center gap-2"
-      aria-label="Void transaction"
+      aria-label={t('transactions.ariaLabels.voidTransaction')}
     >
       <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />

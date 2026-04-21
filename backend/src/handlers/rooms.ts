@@ -4,7 +4,6 @@ import { authenticateToken } from '../middleware/auth';
 import { validateRoomName } from '../utils/validation';
 import { sanitizeName, sanitizeDescription, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
-import i18n from '../i18n';
 
 const router = Router();
 
@@ -20,6 +19,7 @@ router.use((req, res, next) => {
 
 // GET /api/rooms - Retrieve all rooms
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const rooms = await prisma.room.findMany({
       include: {
@@ -35,12 +35,13 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching rooms', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:rooms.fetchFailed') });
+    res.status(500).json({ error: t('errors:rooms.fetchFailed') });
   }
 });
 
 // GET /api/rooms/:id - Retrieve specific room
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const room = await prisma.room.findUnique({
@@ -51,7 +52,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
+      return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 
     res.json(room);
@@ -59,18 +60,19 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:rooms.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:rooms.fetchOneFailed') });
   }
 });
 
 // POST /api/rooms - Create new room
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, description } = req.body;
 
     // Validate required fields
     if (!name) {
-      return res.status(400).json({ error: i18n.t('errors:rooms.nameRequired') });
+      return res.status(400).json({ error: t('errors:rooms.nameRequired') });
     }
 
     // Sanitize name and description
@@ -106,12 +108,12 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (existingRoomWithSameName) {
-      return res.status(400).json({ error: i18n.t('errors:rooms.duplicateName') });
+      return res.status(400).json({ error: t('errors:rooms.duplicateName') });
     }
 
     // Validate description length
     if (description && description.length > 500) {
-      return res.status(400).json({ error: i18n.t('errors:rooms.descriptionTooLong') });
+      return res.status(400).json({ error: t('errors:rooms.descriptionTooLong') });
     }
 
     const newRoom = await prisma.room.create({
@@ -129,12 +131,13 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error creating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:rooms.createFailed') });
+    res.status(500).json({ error: t('errors:rooms.createFailed') });
   }
 });
 
 // PUT /api/rooms/:id - Update room
 router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -145,7 +148,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
+      return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 
     // Sanitize name and description if provided
@@ -189,13 +192,13 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       });
 
       if (existingRoomWithSameName) {
-        return res.status(400).json({ error: i18n.t('errors:rooms.duplicateName') });
+        return res.status(400).json({ error: t('errors:rooms.duplicateName') });
       }
     }
 
     // If description is provided and too long, return error
     if (description !== undefined && description.length > 500) {
-      return res.status(400).json({ error: i18n.t('errors:rooms.descriptionTooLong') });
+      return res.status(400).json({ error: t('errors:rooms.descriptionTooLong') });
     }
 
     const updatedRoom = await prisma.room.update({
@@ -214,12 +217,13 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error updating room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:rooms.updateFailed') });
+    res.status(500).json({ error: t('errors:rooms.updateFailed') });
   }
 });
 
 // DELETE /api/rooms/:id - Delete room (with validation to prevent deletion of rooms with assigned tables)
 router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -228,7 +232,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     });
 
     if (!room) {
-      return res.status(404).json({ error: i18n.t('errors:rooms.notFound') });
+      return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 
     // Check if room has any tables assigned to it
@@ -240,7 +244,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
 
     if (tables > 0) {
       return res.status(400).json({
-        error: i18n.t('errors:rooms.cannotDeleteWithTables', { count: tables }),
+        error: t('errors:rooms.cannotDeleteWithTables', { count: tables }),
         tableCount: tables
       });
     }
@@ -254,7 +258,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
     logError(error instanceof Error ? error : 'Error deleting room', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:rooms.deleteFailed') });
+    res.status(500).json({ error: t('errors:rooms.deleteFailed') });
   }
 });
 

@@ -7,7 +7,7 @@ import { logError } from '../utils/logger';
 import { multiplyMoney } from '../utils/money';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
+
 
 export const productsRouter = express.Router();
 
@@ -38,6 +38,7 @@ function formatProductVariant(variant: ProductVariant & { stockConsumption: Stoc
 
 // GET /api/products/search - Search products by name
 productsRouter.get('/search', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { q, limit } = req.query;
     const searchQuery = typeof q === 'string' ? q : '';
@@ -83,12 +84,13 @@ productsRouter.get('/search', authenticateToken, async (req: Request, res: Respo
     logError(error instanceof Error ? error : 'Error searching products', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:products.searchFailed') });
+    res.status(500).json({ error: t('errors:products.searchFailed') });
   }
 });
 
 // GET /api/products - Get all products
 productsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const products = await prisma.product.findMany({
       include: {
@@ -112,12 +114,13 @@ productsRouter.get('/', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error fetching products', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:products.fetchFailed') });
+    res.status(500).json({ error: t('errors:products.fetchFailed') });
   }
 });
 
 // GET /api/products/:id - Get a specific product
 productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const product = await prisma.product.findUnique({
@@ -133,7 +136,7 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
     });
     
     if (!product) {
-      return res.status(404).json({ error: i18n.t('errors:products.notFound') });
+      return res.status(404).json({ error: t('errors:products.notFound') });
     }
     
     // Format product with tax rate info
@@ -147,19 +150,20 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
     logError(error instanceof Error ? error : 'Error fetching product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:products.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:products.fetchOneFailed') });
   }
 });
 
 // POST /api/products - Create a new product
 productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
     
     // Validate product data
     const validation = validateProduct({ name, categoryId, variants });
     if (!validation.isValid) {
-      return res.status(400).json({ error: i18n.t('errors:products.validationFailed'), details: validation.errors });
+      return res.status(400).json({ error: t('errors:products.validationFailed'), details: validation.errors });
     }
     
     // Validate category exists
@@ -168,7 +172,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     });
     
     if (!category) {
-      return res.status(400).json({ error: i18n.t('errors:products.invalidCategoryId', { categoryId }) });
+      return res.status(400).json({ error: t('errors:products.invalidCategoryId', { categoryId }) });
     }
     
     // Validate tax rate IDs if provided
@@ -185,7 +189,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         const invalidIds = taxRateIds.filter(id => !taxRates.find(tr => tr.id === id));
         if (invalidIds.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.invalidTaxRateReferences', { ids: invalidIds.join(', ') })
+            error: t('errors:products.invalidTaxRateReferences', { ids: invalidIds.join(', ') })
           });
         }
         
@@ -193,7 +197,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         const inactiveRates = taxRates.filter(tr => !tr.isActive);
         if (inactiveRates.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.cannotUseInactiveTaxRate'),
+            error: t('errors:products.cannotUseInactiveTaxRate'),
             details: inactiveRates.map(tr => tr.name)
           });
         }
@@ -226,7 +230,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
         
         if (invalidStockItemIds.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
+            error: t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
           });
         }
       }
@@ -273,12 +277,13 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
    logError(error instanceof Error ? error : 'Error creating product', {
      correlationId: (req as any).correlationId,
    });
-   res.status(500).json({ error: i18n.t('errors:products.createFailed') });
+   res.status(500).json({ error: t('errors:products.createFailed') });
   }
 });
 
 // PUT /api/products/:id - Update a product
 productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
@@ -309,13 +314,13 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
           const variant = variants[i];
           const variantError = validateProductVariant(variant);
           if (variantError) {
-            validationErrors.push(i18n.t('errors:products.variantError', { index: i + 1, error: variantError }));
+            validationErrors.push(t('errors:products.variantError', { index: i + 1, error: variantError }));
           }
         }
       }
       
       if (validationErrors.length > 0) {
-        return res.status(400).json({ error: i18n.t('errors:products.validationFailed'), details: validationErrors });
+        return res.status(400).json({ error: t('errors:products.validationFailed'), details: validationErrors });
       }
     }
     
@@ -326,7 +331,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       });
       
       if (!category) {
-        return res.status(400).json({ error: i18n.t('errors:products.invalidCategoryId', { categoryId }) });
+        return res.status(400).json({ error: t('errors:products.invalidCategoryId', { categoryId }) });
       }
     }
     
@@ -344,7 +349,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         const invalidIds = taxRateIds.filter(id => !taxRates.find(tr => tr.id === id));
         if (invalidIds.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.invalidTaxRateReferences', { ids: invalidIds.join(', ') })
+            error: t('errors:products.invalidTaxRateReferences', { ids: invalidIds.join(', ') })
           });
         }
         
@@ -352,7 +357,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         const inactiveRates = taxRates.filter(tr => !tr.isActive);
         if (inactiveRates.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.cannotUseInactiveTaxRate'),
+            error: t('errors:products.cannotUseInactiveTaxRate'),
             details: inactiveRates.map(tr => tr.name)
           });
         }
@@ -385,7 +390,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
         
         if (invalidStockItemIds.length > 0) {
           return res.status(400).json({
-            error: i18n.t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
+            error: t('errors:products.invalidStockItemReferences', { ids: invalidStockItemIds.join(', ') })
           });
         }
       }
@@ -504,12 +509,13 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
     logError(error instanceof Error ? error : 'Error updating product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:products.updateFailed') });
+    res.status(500).json({ error: t('errors:products.updateFailed') });
   }
 });
 
 // DELETE /api/products/:id - Delete a product
 productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
@@ -540,7 +546,7 @@ productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Reque
     logError(error instanceof Error ? error : 'Error deleting product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:products.deleteFailedInUse') });
+    res.status(500).json({ error: t('errors:products.deleteFailedInUse') });
   }
 });
 

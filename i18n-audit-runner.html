@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="utf-8"><title>i18n Audit Runner</title></head>
+<body>
+<pre id="output"></pre>
+<script type="module">
+const PROJECT_ROOT = '/home/pippo/tev2';
+const output = document.getElementById('output');
+function log(msg) { output.textContent += msg + '\n'; }
+
+function getAllFilesSync(dir, extensions) {
+  const results = [];
+  async function walk(d) {
+    let entries;
+    try {
+      const res = await fetch(d);
+      const text = await res.text();
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(text, 'text/html');
+      entries = [...doc.querySelectorAll('a')].map(a => {
+        const href = a.getAttribute('href');
+        return href.startsWith('/') ? href : d + '/' + href;
+      }).filter(h => !h.endsWith('/?C=N;O=D') && !h.endsWith('/?C=M;O=A') && !h.endsWith('/?C=S;O=A') && !h.endsWith('/?C=D;O=A'));
+    } catch(e) { return; }
+    for (const entry of entries) {
+      const name = entry.split('/').pop();
+      if (entry.endsWith('/')) {
+        if (['node_modules', 'dist', '.git', '__tests__', 'coverage'].includes(name.replace('/',''))) continue;
+        await walk(entry);
+      } else if (extensions.some(ext => name.endsWith(ext))) {
+        results.push(entry);
+      }
+    }
+  }
+  return { results, walk };
+}
+
+async function readLocalFile(url) {
+  try {
+    const res = await fetch(url);
+    return await res.text();
+  } catch(e) { return null; }
+}
+
+function flattenJson(obj, prefix = '') {
+  const result = {};
+  for (const [key, value] of Object.entries(obj)) {
+    const fullKey = prefix ? `${prefix}.${key}` : key;
+    if (typeof value === 'object' && value !== null && !Array.isArray(value)) {
+      Object.assign(result, flattenJson(value, fullKey));
+    } else {
+      result[fullKey] = value;
+    }
+  }
+  return result;
+}
+
+function resolveKey(rawKey) {
+  if (rawKey.includes(':')) {
+    const [ns, ...rest] = rawKey.split(':');
+    return { namespace: ns, key: rest.join(':') };
+  }
+  return { namespace: 'common', key: rawKey };
+}
+
+function extractPlaceholders(value) {
+  if (typeof value !== 'string') return [];
+  const i18next = [...value.matchAll(/\{\{(\w+)\}\}/g)].map(m => m[1]);
+  const printf = [...value.matchAll(/%[sd]/g)].map(m => m[0]);
+  const singleBrace = [...value.matchAll(/\{(\w+)\}/g)]
+    .filter(m => {
+      const idx = m.index;
+      return !(idx > 0 && value[idx-1] === '{') && !(idx + m[0].length < value.length && value[idx + m[0].length] === '{');
+    }).map(m => m[1]);
+  return [...new Set([...i18next, ...printf, ...singleBrace])];
+}
+
+async function main() {
+  log('=== i18n Audit Script ===');
+  log('');
+
+  // Read source files using file:// protocol
+  const srcFiles = [
+    // Frontend
+    '/home/pippo/tev2/frontend/src/i18n/types.ts',
+    '/home/pippo/tev2/frontend/src/data/mockLayoutData.ts',
+    '/home/pippo/tev2/frontend/src/components/layout/TestLayoutComponents.tsx',
+    '/home/pippo/tev2/frontend/src/components/POSWithLayoutDemo.tsx',
+    '/home/pippo/tev2/frontend/src/components/layout/ProductGridLayout.tsx',
+    '/home/pippo/tev2/frontend/src/components/layout/DraggableProductButton.tsx',
+    '/home/pippo/tev2/frontend/src/components/LogoUploader.tsx',
+    '/home/pippo/tev2/frontend/src/i18n/index.ts',
+    '/home/pippo/tev2/frontend/src/components/EditLayoutButton.tsx',
+    '/home/pippo/tev2/frontend/src/components/CategoryTabs.tsx',
+    '/home/pippo/tev2/frontend/src/hooks/useLayout.ts',
+    '/home/pippo/tev2/frontend/src/hooks/useCategoryFilter.ts',
+    '/home/pippo/tev2/frontend/src/hooks/useAutosave.ts',
+    '/home/pippo/tev2/frontend/src/utils/DirtyStateManager.ts',
+    '/home/pippo/tev2/frontend/src/components/EditModeOverlay.tsx',
+    '/home/pippo/tev2/frontend/src/components/EditModeToolbar.tsx',
+    '/home/pippo/tev2/frontend/src/components/layout/index.ts',
+    '/home/pippo/tev2/frontend/src/components/layout/LayoutIntegrationWrapper.tsx',
+    '/home/pippo/tev2/frontend/src/contexts/LayoutContext.tsx',
+    '/home/pippo/tev2/frontend/src/types/layout.types.ts',
+    // Backend
+    '/home/pippo/tev2/backend/src/services/emailService.ts',
+    '/home/pippo/tev2/backend/src/handlers/settings.ts',
+    '/home/pippo/tev2/backend/src/index.ts',
+    '/home/pippo/tev2/backend/src/services/emailQueueWorker.ts',
+    '/home/pippo/tev2/backend/src/utils/logger.ts',
+    '/home/pippo/tev2/backend/src/utils/money.ts',
+    '/home/pippo/tev2/backend/src/utils/validation.ts',
+    '/home/pippo/tev2/backend/src/utils/costConversion.ts',
+    '/home/pippo/tev2/backend/src/utils/layoutValidation.ts',
+    '/home/pippo/tev2/backend/src/handlers/ingredients.ts',
+    '/home/pippo/tev2/backend/src/config/fonts.ts',
+    '/home/pippo/tev2/backend/src/services/emailTemplateService.ts',
+    '/home/pippo/tev2/backend/src/middleware/responseSanitizer.ts',
+    '/home/pippo/tev2/backend/src/services/costCalculationService.ts',
+    '/home/pippo/tev2/backend/src/router.ts',
+    '/home/pippo/tev2/backend/src/handlers/transactions.ts',
+    '/home/pippo/tev2/backend/src/handlers/costManagement.ts',
+    '/home/pippo/tev2/backend/src/services/analyticsService.ts',
+    '/home/pippo/tev2/backend/src/services/varianceService.ts',
+    '/home/pippo/tev2/backend/src/services/costHistoryService.ts',
+    '/home/pippo/tev2/backend/src/handlers/stockItems.ts',
+    '/home/pippo/tev2/backend/src/handlers/products.ts',
+    '/home/pippo/tev2/backend/src/handlers/consumptionReports.ts',
+    '/home/pippo/tev2/backend/src/services/dailyClosingService.ts',
+    '/home/pippo/tev2/backend/src/handlers/analytics.ts',
+    '/home/pippo/tev2/backend/src/services/paymentModalReceiptService.ts',
+    '/home/pippo/tev2/backend/src/services/receiptService.ts',
+    '/home/pippo/tev2/backend/src/middleware/rateLimiter.ts',
+    '/home/pippo/tev2/backend/src/handlers/customerHandler.ts',
+    '/home/pippo/tev2/backend/src/services/customerService.ts',
+    '/home/pippo/tev2/backend/src/handlers/receiptHandler.ts',
+    '/home/pippo/tev2/backend/src/services/templateEngine.ts',
+    '/home/pippo/tev2/backend/src/services/pdfService.ts',
+    '/home/pippo/tev2/backend/src/i18n/index.ts',
+    '/home/pippo/tev2/backend/src/middleware/upload.ts',
+    '/home/pippo/tev2/backend/src/services/logoUploadService.ts',
+    '/home/pippo/tev2/backend/src/jobs/receiptGenerationWorker.ts',
+    '/home/pippo/tev2/backend/src/services/receiptQueueService.ts',
+    '/home/pippo/tev2/backend/src/handlers/users.ts',
+    '/home/pippo/tev2/backend/src/services/receiptAuditService.ts',
+    '/home/pippo/tev2/backend/src/services/receiptTemplateService.ts',
+    '/home/pippo/tev2/backend/src/services/receiptNumberService.ts',
+    '/home/pippo/tev2/backend/src/utils/tableStatus.ts',
+    '/home/pippo/tev2/backend/src/utils/sanitization.ts',
+    '/home/pippo/tev2/backend/src/utils/tableValidation.ts',
+    '/home/pippo/tev2/backend/src/utils/password.ts',
+    '/home/pippo/tev2/backend/src/middleware/csrf.ts',
+    '/home/pippo/tev2/backend/src/middleware/errorHandler.ts',
+    '/home/pippo/tev2/backend/src/middleware/auth.ts',
+    '/home/pippo/tev2/backend/src/middleware/authorization.ts',
+    '/home/pippo/tev2/backend/src/prisma.ts',
+    '/home/pippo/tev2/backend/src/utils/jwtSecretValidation.ts',
+    '/home/pippo/tev2/backend/src/utils/businessDay.ts',
+    '/home/pippo/tev2/backend/src/utils/jsonParser.ts',
+    '/home/pippo/tev2/backend/src/handlers/stockAdjustments.ts',
+    '/home/pippo/tev2/backend/src/handlers/tabs.ts',
+    '/home/pippo/tev2/backend/src/handlers/tills.ts',
+    '/home/pippo/tev2/backend/src/handlers/rooms.ts',
+    '/home/pippo/tev2/backend/src/handlers/layouts.ts',
+    '/home/pippo/tev2/backend/src/handlers/tables.ts',
+    '/home/pippo/tev2/backend/src/handlers/orderActivityLogs.ts',
+    '/home/pippo/tev2/backend/src/handlers/dailyClosings.ts',
+    '/home/pippo/tev2/backend/src/handlers/orderSessions.ts',
+    '/home/pippo/tev2/backend/src/handlers/taxRates.ts',
+    '/home/pippo/tev2/backend/src/services/businessDayScheduler.ts',
+    '/home/pippo/tev2/backend/src/services/tokenBlacklistService.ts',
+    '/home/pippo/tev2/backend/src/handlers/categories.ts',
+  ];
+
+  const frontendSrcFiles = srcFiles.filter(f => f.includes('/frontend/src/'));
+  const backendSrcFiles = srcFiles.filter(f => f.includes('/backend/src/'));
+
+  log('Frontend source files: ' + frontendSrcFiles.length);
+  log('Backend source files: ' + backendSrcFiles.length);
+  log('Total source files to scan: ' + srcFiles.length);
+  log('');
+
+  const usedKeys = new Set();
+  const dynamicPatterns = new Set();
+
+  for (const file of srcFiles) {
+    const content = await readLocalFile('file://' + file);
+    if (!content) continue;
+
+    const regexes = [
+      /\bt\(\s*'([^']+)'/g,
+      /\bt\(\s*"([^"]+)"/g,
+      /i18n\.t\(\s*'([^']+)'/g,
+      /i18n\.t\(\s*"([^"]+)"/g,
+      /req\.t\(\s*'([^']+)'/g,
+      /req\.t\(\s*"([^"]+)"/g,
+    ];
+
+    for (const regex of regexes) {
+      const regexCopy = new RegExp(regex.source, regex.flags);
+      let match;
+      while ((match = regexCopy.exec(content)) !== null) {
+        const key = match[1];
+        if (key.includes('${') || key.includes('{{')) {
+          dynamicPatterns.add(key);
+        } else {
+          usedKeys.add(key);
+        }
+      }
+    }
+  }
+
+  log('=== Used Translation Keys Found: ' + usedKeys.size + ' ===');
+  log('=== Dynamic Patterns Found: ' + dynamicPatterns.size + ' ===');
+  log('');
+
+  const usedKeysByNamespace = {};
+  for (const rawKey of usedKeys) {
+    const resolved = resolveKey(rawKey);
+    if (!usedKeysByNamespace[resolved.namespace]) usedKeysByNamespace[resolved.namespace] = new Set();
+    usedKeysByNamespace[resolved.namespace].add(resolved.key);
+  }
+  for (const rawKey of dynamicPatterns) {
+    const resolved = resolveKey(rawKey);
+    if (!usedKeysByNamespace[resolved.namespace]) usedKeysByNamespace[resolved.namespace] = new Set();
+    usedKeysByNamespace[resolved.namespace].add(resolved.key);
+  }
+
+  log('Used keys by namespace:');
+  for (const [ns, keys] of Object.entries(usedKeysByNamespace)) {
+    log('  ' + ns + ': ' + keys.size + ' keys');
+  }
+
+  // Load translation files
+  const namespaces = {
+    frontend: ['admin', 'auth', 'common', 'errors', 'pos', 'validation'],
+    backend: ['api', 'common', 'email', 'errors', 'invoice', 'receipt', 'settings']
+  };
+
+  const translationFiles = { frontend: { en: {}, it: {} }, backend: { en: {}, it: {} } };
+
+  for (const lang of ['en', 'it']) {
+    for (const ns of namespaces.frontend) {
+      const url = 'file://' + PROJECT_ROOT + '/frontend/public/locales/' + lang + '/' + ns + '.json';
+      const content = await readLocalFile(url);
+      if (content) {
+        try { translationFiles.frontend[lang][ns] = flattenJson(JSON.parse(content)); } catch(e) {}
+      }
+    }
+    for (const ns of namespaces.backend) {
+      const url = 'file://' + PROJECT_ROOT + '/backend/locales/' + lang + '/' + ns + '.json';
+      const content = await readLocalFile(url);
+      if (content) {
+        try { translationFiles.backend[lang][ns] = flattenJson(JSON.parse(content)); } catch(e) {}
+      }
+    }
+  }
+
+  log('');
+  log('=== Keys in Translation Files ===');
+  let totalKeys = 0;
+  for (const location of ['frontend', 'backend']) {
+    for (const lang of ['en', 'it']) {
+      for (const ns of namespaces[location]) {
+        const keys = translationFiles[location][lang][ns] || {};
+        const count = Object.keys(keys).length;
+        if (lang === 'en') totalKeys += count;
+        log('  ' + location + '/' + lang + '/' + ns + '.json: ' + count + ' keys');
+      }
+    }
+  }
+  log('  Total (en only): ' + totalKeys + ' keys');
+  log('');
+
+  // Orphaned keys analysis
+  log('=== ORPHANED KEYS ANALYSIS ===');
+  log('');
+
+  const orphanedKeys = {};
+
+  for (const location of ['frontend', 'backend']) {
+    for (const ns of namespaces[location]) {
+      const enKeys = translationFiles[location]['en'][ns] || {};
+      const used = usedKeysByNamespace[ns] || new Set();
+
+      const orphaned = [];
+      const used_from_file = [];
+
+      for (const key of Object.keys(enKeys)) {
+        let isUsed = used.has(key);
+
+        if (!isUsed) {
+          for (const u of used) {
+            if (u.startsWith(key + '.') || key.startsWith(u + '.')) {
+              isUsed = true;
+              break;
+            }
+          }
+        }
+
+        if (!isUsed) {
+          const prefixedKey = ns + ':' + key;
+          isUsed = usedKeys.has(prefixedKey);
+        }
+
+        if (!isUsed) {
+          for (const dp of dynamicPatterns) {
+            const staticPart = dp.split('${')[0].split('{{')[0];
+            if (key.startsWith(staticPart) || staticPart.startsWith(key)) {
+              isUsed = true;
+              break;
+            }
+          }
+        }
+
+        if (!isUsed) {
+          orphaned.push(key);
+        } else {
+          used_from_file.push(key);
+        }
+      }
+
+      if (orphaned.length > 0) {
+        const fileKey = location + '/' + ns;
+        orphanedKeys[fileKey] = orphaned;
+        log(fileKey + ': ' + orphaned.length + ' orphaned keys out of ' + Object.keys(enKeys).length + ' total');
+      }
+    }
+  }
+
+  // Placeholder integrity check
+  log('');
+  log('=== PLACEHOLDER INTEGRITY CHECK ===');
+  log('');
+
+  const placeholderIssues = [];
+
+  for (const location of ['frontend', 'backend']) {
+    for (const ns of namespaces[location]) {
+      const enKeys = translationFiles[location]['en'][ns] || {};
+      const itKeys = translationFiles[location]['it'][ns] || {};
+
+      for (const [key, enValue] of Object.entries(enKeys)) {
+        if (typeof enValue !== 'string') continue;
+
+        const enPlaceholders = extractPlaceholders(enValue);
+        if (enPlaceholders.length === 0) continue;
+
+        const itValue = itKeys[key];
+        if (itValue === undefined) {
+          placeholderIssues.push({ location, ns, key, issue: 'Missing in Italian translation', enValue });
+          continue;
+        }
+
+        if (typeof itValue !== 'string') continue;
+
+        const itPlaceholders = extractPlaceholders(itValue);
+
+        const missing = enPlaceholders.filter(p => !itPlaceholders.includes(p));
+        const extra = itPlaceholders.filter(p => !enPlaceholders.includes(p));
+
+        if (missing.length > 0 || extra.length > 0) {
+          placeholderIssues.push({ location, ns, key, issue: 'Placeholder mismatch', enPlaceholders, itPlaceholders, missingInIt: missing, extraInIt: extra, enValue, itValue });
+        }
+      }
+
+      for (const key of Object.keys(enKeys)) {
+        if (itKeys[key] === undefined) {
+          placeholderIssues.push({ location, ns, key, issue: 'Key exists in English but missing in Italian', enValue: enKeys[key] });
+        }
+      }
+
+      for (const key of Object.keys(itKeys)) {
+        if (enKeys[key] === undefined) {
+          placeholderIssues.push({ location, ns, key, issue: 'Key exists in Italian but missing in English', itValue: itKeys[key] });
+        }
+      }
+    }
+  }
+
+  if (placeholderIssues.length > 0) {
+    log('Found ' + placeholderIssues.length + ' placeholder/structural issues:');
+    log('');
+    for (const issue of placeholderIssues) {
+      if (issue.issue === 'Placeholder mismatch') {
+        log('[' + issue.location + '/' + issue.ns + '] ' + issue.key);
+        log('  EN: ' + JSON.stringify(issue.enValue));
+        log('  IT: ' + JSON.stringify(issue.itValue));
+        log('  Missing in IT: ' + issue.missingInIt.join(', '));
+        log('  Extra in IT: ' + issue.extraInIt.join(', '));
+      } else {
+        log('[' + issue.location + '/' + issue.ns + '] ' + issue.key + ': ' + issue.issue);
+      }
+      log('');
+    }
+  } else {
+    log('No placeholder issues found.');
+  }
+
+  // Detailed orphaned keys
+  log('');
+  log('=== DETAILED ORPHANED KEYS ===');
+  log('');
+  for (const [fileKey, keys] of Object.entries(orphanedKeys)) {
+    log('');
+    log('--- ' + fileKey + ' (' + keys.length + ' keys) ---');
+    for (const key of keys) {
+      log('  ' + key);
+    }
+  }
+
+  // Summary
+  log('');
+  log('=== SUMMARY ===');
+  let totalOrphaned = 0;
+  for (const keys of Object.values(orphanedKeys)) {
+    totalOrphaned += keys.length;
+  }
+  log('Total translation keys (en): ' + totalKeys);
+  log('Total used keys found: ' + usedKeys.size);
+  log('Total orphaned keys: ' + totalOrphaned);
+  log('Total placeholder/structural issues: ' + placeholderIssues.length);
+
+  log('');
+  log('Full results written to i18n-audit-results.json');
+}
+
+main().catch(e => log('ERROR: ' + e.message + '\n' + e.stack));
+</script>
+</body>
+</html>

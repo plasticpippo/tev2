@@ -7,12 +7,12 @@ import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin, requireRole } from '../middleware/authorization';
 import { safeJsonParse } from '../utils/jsonParser';
-import i18n from '../i18n';
 
 export const stockItemsRouter = express.Router();
 
 // GET /api/stock-items - Get all stock items
 stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const stockItems = await prisma.stockItem.findMany();
     // Parse the purchasingUnits JSON string back to array
@@ -23,19 +23,20 @@ stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response)
     res.json(stockItemsWithParsedUnits);
   } catch (error) {
     logError('Error fetching stock items:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.fetchFailed') });
+    res.status(500).json({ error: t('errors:stockItems.fetchFailed') });
   }
 });
 
 // GET /api/stock-items/:id - Get a specific stock item
 stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
     // Validate UUID format (standard UUID format: 8-4-4-4-12 hex characters)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
+      return res.status(400).json({ error: t('errors:stockItems.invalidIdFormat') });
     }
     
     const stockItem = await prisma.stockItem.findUnique({
@@ -43,7 +44,7 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     });
     
     if (!stockItem) {
-      return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
+      return res.status(404).json({ error: t('errors:stockItems.notFound') });
     }
     
     // Parse the purchasingUnits JSON string back to array
@@ -55,19 +56,20 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     res.json(stockItemWithParsedUnits);
   } catch (error) {
     logError('Error fetching stock item:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:stockItems.fetchOneFailed') });
   }
 });
 
 // POST /api/stock-items - Create a new stock item
 stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
     
     // Validate stock item data
     const validation = validateStockItem({ name, quantity, baseUnit, purchasingUnits: purchasingUnits || [] });
     if (!validation.isValid) {
-      return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: validation.errors });
+      return res.status(400).json({ error: t('errors:stockItems.validationFailed'), details: validation.errors });
     }
     
     const stockItem = await prisma.stockItem.create({
@@ -83,21 +85,22 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     res.status(201).json(stockItem);
   } catch (error) {
     logError('Error creating stock item:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.createFailed') });
+    res.status(500).json({ error: t('errors:stockItems.createFailed') });
   }
 });
 
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
 stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { consumptions, reason } = req.body as { consumptions: { stockItemId: string, quantity: number }[]; reason: string };
 
     if (!reason || typeof reason !== 'string' || reason.trim().length === 0) {
-      return res.status(400).json({ error: 'A reason is required for stock level adjustments' });
+      return res.status(400).json({ error: t('errors:stockItems.adjustmentReasonRequired') });
     }
     
     if (!consumptions || !Array.isArray(consumptions)) {
-      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidConsumptionsData') });
+      return res.status(400).json({ error: t('errors:stockItems.invalidConsumptionsData') });
     }
 
     // Filter out invalid consumptions and get all stock item IDs to check
@@ -109,7 +112,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
     const stockItemIds = validConsumptions.map(c => c.stockItemId);
     
     if (stockItemIds.length === 0) {
-      return res.status(200).json({ message: i18n.t('errors:stockItems.noValidItemsToUpdate') });
+      return res.status(200).json({ message: t('errors:stockItems.noValidItemsToUpdate') });
     }
 
     // Get all existing stock items in a single query
@@ -155,7 +158,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
     if (validationErrors.length > 0) {
       const firstError = validationErrors[0];
       return res.status(400).json({
-        error: i18n.t('errors:stockItems.insufficientStockDetailed', { 
+        error: t('errors:stockItems.insufficientStockDetailed', { 
           name: firstError.name, 
           id: firstError.stockItemId, 
           required: firstError.required, 
@@ -174,7 +177,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
         });
         
         if (!currentItem || currentItem.quantity < quantity) {
-          throw new Error(`Insufficient stock for item ${stockItemId}`);
+          throw new Error(t('errors:stockItems.insufficientStockForItem', { stockItemId }));
         }
         
         await tx.stockItem.update({
@@ -203,34 +206,35 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
     if (invalidStockItemIds.length > 0) {
       logWarn(`Invalid stock item references found: ${invalidStockItemIds.join(', ')}`);
       return res.status(200).json({
-        message: i18n.t('api:success.stockLevelsUpdatedWithWarnings'),
+        message: t('api:success.stockLevelsUpdatedWithWarnings'),
         warnings: [`Found and skipped ${invalidStockItemIds.length} invalid stock item references: ${invalidStockItemIds.join(', ')}`],
         invalidStockItemIds
       });
     }
     
-    res.status(200).json({ message: i18n.t('api:success.stockLevelsUpdated') });
+    res.status(200).json({ message: t('api:success.stockLevelsUpdated') });
   } catch (error) {
     // If the error is about insufficient stock, it was already handled above
     if (error instanceof Error && error.message.includes('Insufficient stock')) {
       // This shouldn't happen due to validation above, but just in case
-      logWarn(`Insufficient stock during transaction: ${error.message}`);
-      return res.status(400).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
+      logWarn(`Insufficient stock during transaction: ${(error as Error).message}`);
+      return res.status(400).json({ error: t('errors:stockItems.updateLevelsFailed') });
     }
     logError('Error updating stock levels:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.updateLevelsFailed') });
+    res.status(500).json({ error: t('errors:stockItems.updateLevelsFailed') });
   }
 });
 
 // PUT /api/stock-items/:id - Update a stock item
 stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
+      return res.status(400).json({ error: t('errors:stockItems.invalidIdFormat') });
     }
     
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
@@ -267,13 +271,13 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
           const unit = purchasingUnits[i];
           const unitError = validatePurchasingUnit(unit);
           if (unitError) {
-            errors.push(i18n.t('errors:stockItems.purchasingUnitError', { index: i + 1, error: unitError }));
+            errors.push(t('errors:stockItems.purchasingUnitError', { index: i + 1, error: unitError }));
           }
         }
       }
       
       if (errors.length > 0) {
-        return res.status(400).json({ error: i18n.t('errors:stockItems.validationFailed'), details: errors });
+        return res.status(400).json({ error: t('errors:stockItems.validationFailed'), details: errors });
       }
     }
     
@@ -294,7 +298,7 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       });
       
       if (!stockItem) {
-        return res.status(404).json({ error: i18n.t('errors:stockItems.notFound') });
+        return res.status(404).json({ error: t('errors:stockItems.notFound') });
       }
       
       return res.json(stockItem);
@@ -308,19 +312,20 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     res.json(stockItem);
   } catch (error) {
     logError('Error updating stock item:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.updateFailed') });
+    res.status(500).json({ error: t('errors:stockItems.updateFailed') });
   }
 });
 
 // DELETE /api/stock-items/:id - Delete a stock item
 stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
-      return res.status(400).json({ error: i18n.t('errors:stockItems.invalidIdFormat') });
+      return res.status(400).json({ error: t('errors:stockItems.invalidIdFormat') });
     }
     
     // Check if this stock item is used in any product variants
@@ -330,7 +335,7 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     if (stockConsumptions > 0) {
       return res.status(400).json({
-        error: i18n.t('errors:stockItems.cannotDeleteInUse')
+        error: t('errors:stockItems.cannotDeleteInUse')
       });
     }
     
@@ -341,12 +346,13 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     res.status(204).send();
   } catch (error) {
     logError('Error deleting stock item:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.deleteFailedInUse') });
+    res.status(500).json({ error: t('errors:stockItems.deleteFailedInUse') });
   }
 });
 
 // GET /api/stock-items/orphaned-references - Get stock consumption records that reference non-existent stock items
 stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Find stock consumption records that reference stock items that don't exist
     // First get all stock consumption records
@@ -389,12 +395,13 @@ stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Requ
     res.json(formattedOrphanedConsumptions);
   } catch (error) {
     logError('Error fetching orphaned stock consumption references:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.fetchOrphanedFailed') });
+    res.status(500).json({ error: t('errors:stockItems.fetchOrphanedFailed') });
   }
 });
 
 // DELETE /api/stock-items/cleanup-orphaned - Remove invalid stock consumption references
 stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Find orphaned stock consumption records
     // Get all stock consumption records with related data
@@ -436,7 +443,7 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     
     if (formattedOrphanedConsumptions.length === 0) {
       return res.status(200).json({
-        message: i18n.t('api:success.noOrphanedReferences'),
+        message: t('api:success.noOrphanedReferences'),
         deletedCount: 0
       });
     }
@@ -452,18 +459,19 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
     });
     
     res.status(200).json({
-      message: i18n.t('api:success.orphanedReferencesCleaned', { count: orphanedIds.length }),
+      message: t('api:success.orphanedReferencesCleaned', { count: orphanedIds.length }),
       deletedCount: orphanedIds.length,
       removedRecords: formattedOrphanedConsumptions
     });
   } catch (error) {
       logError('Error cleaning up orphaned stock consumption references:', { error });
-      res.status(500).json({ error: i18n.t('errors:stockItems.cleanupOrphanedFailed') });
+      res.status(500).json({ error: t('errors:stockItems.cleanupOrphanedFailed') });
   }
 });
 
 // POST /api/stock-items/validate-integrity - Detect and fix data integrity issues
 stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // --- Detection phase (same as GET endpoint) ---
 
@@ -512,7 +520,7 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
 
     if (!hasFixableIssues) {
       return res.status(200).json({
-        message: i18n.t('api:success.dataIntegrityValidationPassed'),
+        message: t('api:success.dataIntegrityValidationPassed'),
         fixesApplied: {
           orphanedConsumptionsDeleted: 0,
           negativeQuantitiesReset: 0
@@ -587,7 +595,7 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
     });
 
     res.status(200).json({
-      message: i18n.t('api:success.dataIntegrityIssuesFixed'),
+      message: t('api:success.dataIntegrityIssuesFixed'),
       fixesApplied: {
         orphanedConsumptionsDeleted: fixResults.orphanedDeletedCount,
         negativeQuantitiesReset: fixResults.resetStockItems.length
@@ -604,12 +612,13 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
     });
   } catch (error) {
     logError('Error fixing data integrity issues:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.validateIntegrityFailed') });
+    res.status(500).json({ error: t('errors:stockItems.validateIntegrityFailed') });
   }
 });
 
 // GET /api/stock-items/validate-integrity - Validate data integrity between products and stock items
 stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Check for orphaned stock consumption references
     // Get all stock consumption records with related data
@@ -689,13 +698,13 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
                      integrityReport.negativeStockItems > 0;
     
     res.status(200).json({
-      message: hasIssues ? i18n.t('api:success.dataIntegrityIssuesFound') : i18n.t('api:success.dataIntegrityValidationPassed'),
+      message: hasIssues ? t('api:success.dataIntegrityIssuesFound') : t('api:success.dataIntegrityValidationPassed'),
       hasIssues,
       report: integrityReport
     });
   } catch (error) {
     logError('Error validating data integrity:', { error });
-    res.status(500).json({ error: i18n.t('errors:stockItems.validateIntegrityFailed') });
+    res.status(500).json({ error: t('errors:stockItems.validateIntegrityFailed') });
   }
 });
 

@@ -5,7 +5,6 @@ import type { Settings } from '../types';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import { logError, logInfo, logWarn, logAuditEvent } from '../utils/logger';
-import i18n from '../i18n';
 import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayScheduler';
 import { Settings as PrismaSettings, TaxRate as PrismaTaxRate } from '@prisma/client';
 import { spawn } from 'child_process';
@@ -20,7 +19,7 @@ const emailTestRateLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many email test requests. Please try again later.' },
+  message: (req: any) => ({ error: req.t('errors:settings.tooManyEmailTestRequests') }),
   keyGenerator: (req: any) => {
     return req.user?.id?.toString() || req.ip;
   },
@@ -49,6 +48,7 @@ function formatTaxRate(taxRate: PrismaTaxRate | null) {
 
 // GET /api/settings - Get current settings
 settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Get the first (and should be only) settings record with default tax rate
     const settings = await prisma.settings.findFirst({
@@ -170,15 +170,16 @@ email: {
   logError(error instanceof Error ? error : 'Error fetching settings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
+    res.status(500).json({ error: t('errors:settings.fetchFailed') });
   }
 });
 
 // POST /api/settings/logo - Upload business logo
 settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('logo') as any, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     if (!req.file) {
-      res.status(400).json({ error: 'No file uploaded' });
+      res.status(400).json({ error: t('errors:settings.noFileUploaded') });
       return;
     }
 
@@ -229,17 +230,18 @@ settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('log
     logError(error instanceof Error ? error : 'Error uploading logo', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to upload logo' });
+    res.status(500).json({ error: t('errors:settings.failedToUploadLogo') });
   }
 });
 
 // DELETE /api/settings/logo - Delete business logo
 settingsRouter.delete('/logo', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const existingSettings = await prisma.settings.findFirst();
 
     if (!existingSettings || !existingSettings.businessLogoPath) {
-      res.status(404).json({ error: 'No logo found' });
+      res.status(404).json({ error: t('errors:settings.noLogoFound') });
       return;
     }
 
@@ -259,19 +261,20 @@ settingsRouter.delete('/logo', authenticateToken, requireAdmin, async (req: Requ
     logError(error instanceof Error ? error : 'Error deleting logo', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: 'Failed to delete logo' });
+    res.status(500).json({ error: t('errors:settings.failedToDeleteLogo') });
   }
 });
 
 // PUT /api/settings - Update settings (requires admin role)
 settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { tax, businessDay, business, receipt, email, receiptFromPaymentModal } = req.body as Settings;
 
     // Validate receiptIssueMode if provided
     if (receiptFromPaymentModal?.receiptIssueMode !== undefined) {
       if (receiptFromPaymentModal.receiptIssueMode !== 'immediate' && receiptFromPaymentModal.receiptIssueMode !== 'draft') {
-        res.status(400).json({ error: req.t('errors:settings.invalidReceiptIssueMode') });
+        res.status(400).json({ error: t('errors:settings.invalidReceiptIssueMode') });
         return;
       }
     }
@@ -283,12 +286,12 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
       });
 
       if (!taxRate) {
-        res.status(400).json({ error: req.t('errors:settings.invalidDefaultTaxRate') });
+        res.status(400).json({ error: t('errors:settings.invalidDefaultTaxRate') });
         return;
       }
 
       if (!taxRate.isActive) {
-        res.status(400).json({ error: req.t('errors:settings.cannotSetInactiveAsDefault') });
+        res.status(400).json({ error: t('errors:settings.cannotSetInactiveAsDefault') });
         return;
       }
     }
@@ -296,11 +299,11 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
     // Validate email configuration if email is enabled
     if (email?.enabled) {
       if (!email.smtpHost || !email.smtpUser || !email.fromAddress) {
-        res.status(400).json({ error: req.t('errors:settings.emailConfigIncomplete') });
+        res.status(400).json({ error: t('errors:settings.emailConfigIncomplete') });
         return;
       }
       if (email.smtpPort < 1 || email.smtpPort > 65535) {
-        res.status(400).json({ error: req.t('errors:settings.invalidSmtpPort') });
+        res.status(400).json({ error: t('errors:settings.invalidSmtpPort') });
         return;
       }
     }
@@ -308,11 +311,11 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
     // Validate receipt configuration
     if (receipt) {
       if (receipt.numberLength < 1 || receipt.numberLength > 20) {
-        res.status(400).json({ error: req.t('errors:settings.invalidReceiptNumberLength') });
+        res.status(400).json({ error: t('errors:settings.invalidReceiptNumberLength') });
         return;
       }
       if (receipt.startNumber < 1) {
-        res.status(400).json({ error: req.t('errors:settings.invalidReceiptStartNumber') });
+        res.status(400).json({ error: t('errors:settings.invalidReceiptStartNumber') });
         return;
       }
     }
@@ -469,12 +472,13 @@ email: {
   logError(error instanceof Error ? error : 'Error updating settings', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:settings.updateFailed') });
+    res.status(500).json({ error: t('errors:settings.updateFailed') });
   }
 });
 
 // GET /api/settings/business-day-status - Get scheduler status
 settingsRouter.get('/business-day-status', async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const status = getSchedulerStatus();
     
@@ -494,13 +498,14 @@ settingsRouter.get('/business-day-status', async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error fetching business day status', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:settings.fetchFailed') });
+    res.status(500).json({ error: t('errors:settings.fetchFailed') });
   }
 });
 
 // POST /api/settings/backup - Create database backup (requires admin role)
 // Uses spawn with array arguments to prevent command injection
 settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   const backupTimeout = 120000; // 2 minutes timeout
   let timeoutId: NodeJS.Timeout | null = null;
 
@@ -509,7 +514,7 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
     const databaseUrl = process.env.DATABASE_URL;
     
     if (!databaseUrl) {
-      res.status(500).json({ error: 'Database configuration not found' });
+      res.status(500).json({ error: t('errors:settings.databaseConfigNotFound') });
       return;
     }
     
@@ -519,7 +524,7 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
     
     if (!urlMatch) {
       logError('Failed to parse database URL for backup', { correlationId: (req as any).correlationId });
-      res.status(500).json({ error: 'Invalid database configuration' });
+      res.status(500).json({ error: t('errors:settings.invalidDatabaseConfig') });
       return;
     }
     
@@ -542,7 +547,7 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
 
     // If sanitization failed, return error
     if (!safeUser || !safeHost || !safePort || !safeDatabase) {
-      res.status(500).json({ error: 'Invalid database configuration' });
+      res.status(500).json({ error: t('errors:settings.invalidDatabaseConfig') });
       return;
     }
     
@@ -605,7 +610,7 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
     // Check exit code
     if (exitCode !== 0) {
       logError(`pg_dump failed with exit code ${exitCode}: ${stderr}`, { correlationId: (req as any).correlationId });
-      res.status(500).json({ error: i18n.t('errors:settings.backupFailed') });
+      res.status(500).json({ error: t('errors:settings.backupFailed') });
       return;
     }
     
@@ -631,11 +636,12 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
     logError(errorMessage, {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:settings.backupFailed') });
+    res.status(500).json({ error: t('errors:settings.backupFailed') });
   }
 });
 
 settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRateLimiter, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { recipient } = req.body;
 
@@ -644,12 +650,12 @@ settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRat
     let testRecipient: string | undefined;
     if (recipient) {
       if (typeof recipient !== 'string') {
-        res.status(400).json({ error: 'Invalid recipient email format' });
+        res.status(400).json({ error: t('errors:settings.invalidRecipientEmailFormat') });
         return;
       }
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!emailRegex.test(recipient)) {
-        res.status(400).json({ error: 'Invalid recipient email address' });
+        res.status(400).json({ error: t('errors:settings.invalidRecipientEmailAddress') });
         return;
       }
       testRecipient = recipient;
@@ -660,8 +666,8 @@ settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRat
     if (!config.enabled) {
       res.status(400).json({
         success: false,
-        message: 'Email service is disabled in settings',
-        error: 'EMAIL_DISABLED',
+        message: t('errors:settings.emailServiceDisabled'),
+        error: t('errors:settings.emailDisabledCode'),
       });
       return;
     }
@@ -715,8 +721,8 @@ settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRat
     });
     res.status(500).json({
       success: false,
-      message: 'Failed to test SMTP connection',
-      error: 'INTERNAL_ERROR',
+      message: t('errors:settings.failedToTestSmtp'),
+      error: t('errors:settings.internalErrorCode'),
     });
   }
 });

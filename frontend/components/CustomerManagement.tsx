@@ -77,10 +77,10 @@ export const CustomerManagement: React.FC<CustomerManagementProps> = ({ onDataUp
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to fetch customers');
+        throw new Error(errorData.error || t('customers.errors.fetchFailed'));
       }
 
-const result = await response.json();
+ const result = await response.json();
     const customersList = result.customers || result.data || [];
     const paginationData = result.pagination || {};
     setCustomers(customersList);
@@ -93,7 +93,7 @@ const result = await response.json();
       hasPrevPage: paginationData.hasPrevPage ?? false
     });
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('customers.errors.anErrorOccurred'));
     } finally {
       setLoading(false);
     }
@@ -150,7 +150,7 @@ const result = await response.json();
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to save customer');
+        throw new Error(errorData.error || t('customers.errors.saveFailed'));
       }
 
       handleCloseForm();
@@ -158,7 +158,7 @@ const result = await response.json();
       notifyUpdates();
       onDataUpdate?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('customers.errors.anErrorOccurred'));
     } finally {
       setFormLoading(false);
     }
@@ -178,14 +178,14 @@ const result = await response.json();
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || 'Failed to update customer status');
+        throw new Error(errorData.error || t('customers.errors.updateStatusFailed'));
       }
 
       fetchCustomers();
       notifyUpdates();
       onDataUpdate?.();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
+      setError(err instanceof Error ? err.message : t('customers.errors.anErrorOccurred'));
     } finally {
       setTogglingStatus(null);
     }

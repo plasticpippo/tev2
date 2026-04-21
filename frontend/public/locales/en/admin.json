@@ -1,5 +1,10 @@
 {
   "title": "Admin Panel",
+  "selectAView": "Select a view",
+  "openMenu": "Open menu",
+  "closeMenu": "Close menu",
+  "expandSidebar": "Expand sidebar",
+  "collapseSidebar": "Collapse sidebar",
   "navigation": {
     "dashboard": "Dashboard",
     "analytics": "Analytics",
@@ -26,19 +31,6 @@
     "loggedInAs": "Logged in as {{name}}",
     "switchToPos": "Switch to POS",
     "logout": "Logout"
-  },
-  "dashboard": {
-    "title": "Dashboard",
-    "welcome": "Welcome, {{name}}!",
-    "todaySales": "Today's Sales",
-    "totalTransactions": "Total Transactions",
-    "activeTabs": "Active Tabs",
-    "openTables": "Open Tables",
-    "recentActivity": "Recent Activity",
-    "quickActions": "Quick Actions",
-    "viewAllTransactions": "View All Transactions",
-    "manageProducts": "Manage Products",
-    "manageUsers": "Manage Users"
   },
   "products": {
     "title": "Product Management",
@@ -372,19 +364,65 @@
 "settings": {
     "language": "Language",
     "languageDescription": "Select your preferred language for the admin panel.",
+    "unknownError": "Unknown error",
+    "dailyClosingCreateFailed": "Failed to create daily closing record: {{errorMessage}}",
+    "backupCreateFailed": "Failed to create backup",
+    "tabs": {
+      "language": "Language",
+      "tax": "Tax Settings",
+      "businessDay": "Business Day",
+      "businessInfo": "Business Info",
+      "backup": "Backup",
+      "email": "Email",
+      "receipt": "Receipt from Payment"
+    },
     "tax": {
       "title": "Tax Settings",
       "description": "Configure default tax rates for your business.",
+      "howToHandleTaxes": "How should taxes be handled?",
       "defaultTaxRate": "Default Tax Rate",
       "defaultTaxRateDescription": "Select the default tax rate applied to new products.",
       "taxIncludedInPrice": "Tax Included in Price",
       "taxIncludedInPriceDescription": "Enable if prices already include tax.",
       "saving": "Saving...",
-      "saved": "Settings saved successfully!"
+      "saved": "Settings saved successfully!",
+      "taxModes": {
+        "exclusive": "Exclusive",
+        "inclusive": "Inclusive",
+        "none": "No Tax"
+      },
+      "taxModeDescriptions": {
+        "exclusive": "Tax is added on top of the displayed price",
+        "inclusive": "Tax is already included in the displayed price",
+        "none": "No tax will be applied"
+      }
     },
     "businessDay": {
       "title": "Business Day",
       "description": "Configure business day start time for reporting.",
+      "businessDayManagement": "Business Day Management",
+      "autoStartTimeLabel": "Auto-Start Time",
+      "autoStartTimeDescription": "Set the time when a new business day automatically begins.",
+      "businessDayEndHourLabel": "Business Day End Hour",
+      "businessDayEndHourDescription": "Set the hour when the business day ends and auto-close triggers.",
+      "autoCloseEnabledLabel": "Enable Auto-Close",
+      "autoCloseEnabledDescription": "Automatically close the business day at the configured end hour.",
+      "currentBusinessDayStatus": "Current Business Day Status",
+      "schedulerRunning": "Scheduler is running",
+      "schedulerNotRunning": "Scheduler is not running",
+      "closingInProgress": "Closing in progress...",
+      "lastCloseTime": "Last close time",
+      "nextScheduledClose": "Next scheduled close",
+      "never": "Never",
+      "manualDayCloseLabel": "Manual Day Close",
+      "manualDayCloseDescription": "Manually close the current business day. This will create a daily closing record.",
+      "manuallyEndBusinessDay": "Manually End Business Day",
+      "loading": "Loading status...",
+      "statusUnavailable": "Status unavailable",
+      "confirmManualCloseTitle": "Confirm Manual Close",
+      "confirmManualCloseMessage": "Are you sure you want to manually close the current business day?",
+      "confirmManualCloseButton": "Close Business Day",
+      "closing": "Closing...",
       "startTime": "Business Day Start Time",
       "startTimeDescription": "Set the time when a new business day begins.",
       "currentTime": "Current start time: {{time}}",
@@ -398,7 +436,10 @@
       "createBackupDescription": "Download a complete backup of your data.",
       "lastBackup": "Last Backup",
       "never": "Never",
-      "creating": "Creating backup..."
+      "creating": "Creating backup...",
+      "creatingBackup": "Creating backup...",
+      "backupSuccess": "Backup created and downloaded successfully.",
+      "backupFailed": "Failed to create backup."
     },
     "email": {
       "title": "Email Settings",
@@ -411,6 +452,32 @@
       "fromName": "From Name",
       "saving": "Saving...",
       "saved": "Settings saved successfully!"
+    },
+    "emailSettings": {
+      "title": "Email Settings",
+      "description": "Configure email service for sending receipts and invoices.",
+      "enableEmail": "Enable Email Service",
+      "smtpHost": "SMTP Host",
+      "smtpHostPlaceholder": "e.g., smtp.example.com",
+      "smtpPort": "SMTP Port",
+      "useTls": "Use TLS",
+      "smtpUsername": "SMTP Username",
+      "smtpPassword": "SMTP Password",
+      "passwordPlaceholder": "Enter new password",
+      "passwordUnchanged": "Password unchanged. Leave blank to keep current.",
+      "fromAddress": "From Email Address",
+      "fromName": "From Name",
+      "testConnection": "Test Connection",
+      "testing": "Testing...",
+      "testSuccess": "Connection successful! Response time: {{responseTime}}ms",
+      "testFailed": "Connection failed. Please check your settings.",
+      "tooManyRequests": "Too many requests. Please wait before trying again.",
+      "validation": {
+        "smtpHostRequired": "SMTP host is required when email is enabled",
+        "smtpUserRequired": "SMTP username is required when email is enabled",
+        "smtpPortRange": "Port must be between 1 and 65535",
+        "invalidEmail": "Invalid email address format"
+      }
     },
     "receiptFromPayment": {
       "title": "Receipt from Payment",
@@ -521,7 +588,8 @@
       "filterByTill": "Filter by till",
       "filterByUser": "Filter by user",
       "startTime": "Start time",
-      "endTime": "End time"
+      "endTime": "End time",
+      "voidTransaction": "Void transaction"
     },
     "dateRange": {
       "today": "Today",
@@ -551,6 +619,10 @@
       "discountReason": "Reason",
       "tip": "Tip",
       "total": "Total"
+    },
+    "errors": {
+      "unknownError": "Unknown error",
+      "voidFailed": "Failed to void transaction"
     }
   },
   "hourlySalesChart": {
@@ -588,6 +660,11 @@
     "topProduct": "Top Product",
     "notApplicable": "N/A",
     "error": "Error",
+    "errors": {
+      "failedToFetchHourly": "Failed to fetch hourly data",
+      "failedToFetchComparison": "Failed to fetch comparison data",
+      "failedToLoadPerformance": "Failed to load performance data"
+    },
     "ascending": "ASC",
     "descending": "DESC",
     "selectDate": "Select Date",
@@ -620,7 +697,8 @@
     "tableId": "Table: {{tableId}}",
     "selectTabToLoad": "Select a tab to load it for editing or payment.",
     "close": "Close",
-    "enterTabName": "Please enter a tab name"
+    "enterTabName": "Please enter a tab name",
+    "closeTabManager": "Close tab manager"
   },
   "performanceReport": {
     "title": "Performance Report",
@@ -774,7 +852,8 @@
     "errors": {
       "failedToCreate": "Failed to create receipt draft. Please try again.",
       "failedToIssue": "Failed to issue receipt. Please try again.",
-      "failedToDownload": "Failed to download PDF. Please try again."
+      "failedToDownload": "Failed to download PDF. Please try again.",
+      "failedToLoadDraft": "Failed to load draft receipt"
     },
     "transactionSummary": "Transaction Summary",
     "paymentMethod": "Payment Method",
@@ -787,7 +866,7 @@
     "close": "Close",
     "generating": "Generating...",
     "issuing": "Issuing...",
-    "issue": "Issue Receipt",
+    "issueButton": "Issue Receipt",
     "customer": {
       "title": "Customer",
       "name": "Name",
@@ -879,13 +958,6 @@
     "voided": "Voided",
     "emailed": "Emailed"
   },
-  "buttons": {
-    "search": "Search",
-    "clearFilters": "Clear Filters",
-    "download": "Download PDF",
-    "email": "Send Email",
-    "sending": "Sending..."
-  },
     "actions": {
         "view": "View Details",
         "download": "Download PDF",
@@ -937,9 +1009,6 @@
     "noCustomer": "No Customer",
     "statusBadge": {
         "title": "{{count}} receipt(s) need attention"
-    },
-"customer": {
-      "noResults": "No customers found"
     }
   },
   "customers": {
@@ -1008,8 +1077,11 @@
     "loading": "Loading customers...",
     "noCustomers": "No customers found",
     "errors": {
-      "fetchFailed": "Failed to load customers",
-      "notFound": "Customer not found"
+      "fetchFailed": "Failed to fetch customers",
+      "notFound": "Customer not found",
+      "saveFailed": "Failed to save customer",
+      "updateStatusFailed": "Failed to update customer status",
+      "anErrorOccurred": "An error occurred"
     }
   },
   "costManagement": {
@@ -1192,5 +1264,24 @@
       "approved": "Approved"
     },
     "allStatuses": "All"
+  },
+  "logoUploader": {
+    "invalidFileType": "Invalid file type. Only PNG, JPG, and SVG files are allowed.",
+    "fileSizeExceeds": "File size exceeds 2MB limit.",
+    "invalidResponse": "Invalid response from server.",
+    "uploadFailed": "Upload failed. Please try again.",
+    "uploadFailedHttp": "Upload failed (HTTP {{status}}).",
+    "networkError": "Network error. Please check your connection.",
+    "unexpectedError": "An unexpected error occurred.",
+    "deleteFailed": "Delete failed. Please try again.",
+    "businessLogo": "Business Logo",
+    "uploadAriaLabel": "Upload logo. Click or drag and drop a PNG, JPG, or SVG file.",
+    "businessLogoAlt": "Business logo",
+    "clickOrDrop": "Click or drop image",
+    "uploading": "Uploading...",
+    "uploadLogo": "Upload Logo",
+    "deleting": "Deleting...",
+    "remove": "Remove",
+    "fileHint": "PNG, JPG, SVG. Max 2MB."
   }
 }

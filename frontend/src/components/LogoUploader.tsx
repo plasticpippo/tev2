@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 
 interface LogoUploaderProps {
   currentLogoPath?: string | null;
@@ -22,6 +23,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
   onUploadSuccess,
   onDeleteSuccess,
 }) => {
+  const { t } = useTranslation('admin');
   const [state, setState] = useState<UploadState>({
     isUploading: false,
     isDeleting: false,
@@ -44,10 +46,10 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
 
   const validateFile = (file: File): string | null => {
     if (!ALLOWED_TYPES.includes(file.type)) {
-      return 'Invalid file type. Only PNG, JPG, and SVG files are allowed.';
+      return t('logoUploader.invalidFileType');
     }
     if (file.size > MAX_FILE_SIZE) {
-      return 'File size exceeds 2MB limit.';
+      return t('logoUploader.fileSizeExceeds');
     }
     return null;
   };
@@ -96,16 +98,16 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
             setState((prev) => ({
               ...prev,
               isUploading: false,
-              error: 'Invalid response from server.',
+              error: t('logoUploader.invalidResponse'),
             }));
           }
         } else {
-          let errorMessage = 'Upload failed. Please try again.';
+          let errorMessage = t('logoUploader.uploadFailed');
           try {
             const response = JSON.parse(xhr.responseText);
             errorMessage = response.message || response.error || errorMessage;
           } catch {
-            errorMessage = `Upload failed (HTTP ${xhr.status}).`;
+            errorMessage = t('logoUploader.uploadFailedHttp', { status: xhr.status });
           }
           setState((prev) => ({
             ...prev,
@@ -120,7 +122,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
         setState((prev) => ({
           ...prev,
           isUploading: false,
-          error: 'Network error. Please check your connection.',
+          error: t('logoUploader.networkError'),
         }));
       });
 
@@ -130,7 +132,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
       setState((prev) => ({
         ...prev,
         isUploading: false,
-        error: 'An unexpected error occurred.',
+        error: t('logoUploader.unexpectedError'),
       }));
     }
   };
@@ -151,14 +153,14 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
         setState((prev) => ({
           ...prev,
           isDeleting: false,
-          error: data.message || data.error || 'Delete failed. Please try again.',
+          error: data.message || data.error || t('logoUploader.deleteFailed'),
         }));
       }
     } catch {
       setState((prev) => ({
         ...prev,
         isDeleting: false,
-        error: 'Network error. Please check your connection.',
+        error: t('logoUploader.networkError'),
       }));
     }
   };
@@ -212,14 +214,14 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
   return (
     <div className="space-y-spacing-md">
       <label className="block text-text-primary font-semibold text-sm">
-        Business Logo
+        {t('logoUploader.businessLogo')}
       </label>
 
       <div className="flex flex-col sm:flex-row gap-spacing-lg items-start">
         <div
           role="button"
           tabIndex={0}
-          aria-label="Upload logo. Click or drag and drop a PNG, JPG, or SVG file."
+          aria-label={t('logoUploader.uploadAriaLabel')}
           onClick={handleZoneClick}
           onKeyDown={handleKeyDown}
           onDragOver={handleDragOver}
@@ -240,7 +242,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
           {logoUrl ? (
             <img
               src={logoUrl}
-              alt="Business logo"
+              alt={t('logoUploader.businessLogoAlt')}
               className="w-full h-full object-contain"
             />
           ) : (
@@ -259,7 +261,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
                 />
               </svg>
               <p className="text-text-muted text-xs">
-                Click or drop image
+                {t('logoUploader.clickOrDrop')}
               </p>
             </div>
           )}
@@ -309,7 +311,7 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
               disabled={state.isUploading || state.isDeleting}
               className="btn btn-primary btn-sm"
             >
-              {state.isUploading ? 'Uploading...' : 'Upload Logo'}
+              {state.isUploading ? t('logoUploader.uploading') : t('logoUploader.uploadLogo')}
             </button>
 
             {logoUrl && (
@@ -319,13 +321,13 @@ export const LogoUploader: React.FC<LogoUploaderProps> = ({
                 disabled={state.isUploading || state.isDeleting}
                 className="btn btn-danger btn-sm ml-spacing-sm"
               >
-                {state.isDeleting ? 'Deleting...' : 'Remove'}
+                {state.isDeleting ? t('logoUploader.deleting') : t('logoUploader.remove')}
               </button>
             )}
           </div>
 
           <p className="text-text-muted text-xs mt-spacing-sm">
-            PNG, JPG, SVG. Max 2MB.
+            {t('logoUploader.fileHint')}
           </p>
 
           {state.isUploading && state.progress > 0 && (

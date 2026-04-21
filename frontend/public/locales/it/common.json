@@ -36,7 +36,7 @@
     "success": "Successo",
     "warning": "Avviso",
     "info": "Info",
-    "yes": "Si",
+    "yes": "Sì",
     "no": "No",
     "all": "Tutti",
     "none": "Nessuno",
@@ -62,11 +62,11 @@
     "cancelled": "Annullato"
   },
   "confirmation": {
-    "areYouSure": "E sicuro?",
-    "confirmDelete": "E sicuro di voler eliminare questo elemento?",
-    "confirmDeleteNamed": "E sicuro di voler eliminare \"{{name}}\"?",
-    "confirmAction": "E sicuro di voler procedere?",
-    "yes": "Si",
+    "areYouSure": "È sicuro?",
+    "confirmDelete": "È sicuro di voler eliminare questo elemento?",
+    "confirmDeleteNamed": "È sicuro di voler eliminare \"{{name}}\"?",
+    "confirmAction": "È sicuro di voler procedere?",
+    "yes": "Sì",
     "no": "No",
     "ok": "OK",
     "cancel": "Annulla"
@@ -97,8 +97,8 @@
     "changesSaved": "Modifiche salvate con successo",
     "operationFailed": "Operazione non riuscita. Riprova.",
     "networkError": "Errore di rete. Verifica la connessione.",
-    "serverError": "Errore del server. Riprova piu tardi.",
-    "sessionExpired": "La sessione e scaduta. Accedi nuovamente.",
+    "serverError": "Errore del server. Riprova più tardi.",
+    "sessionExpired": "La sessione è scaduta. Accedi nuovamente.",
     "unauthorized": "Non sei autorizzato a eseguire questa azione.",
     "taxRateCreated": "Aliquota creata con successo",
     "taxRateUpdated": "Aliquota aggiornata con successo",
@@ -124,7 +124,7 @@
     "sortedDesc": "Ordinamento decrescente"
   },
   "form": {
-    "required": "Questo campo e obbligatorio",
+    "required": "Questo campo è obbligatorio",
     "optional": "Opzionale",
     "submit": "Invia",
     "reset": "Reimposta",
@@ -190,10 +190,10 @@
   },
   "tableLayoutEditor": {
     "selectRoom": "Seleziona una Stanza",
-    "mode": "Modalita",
+    "mode": "Modalità",
     "dragToReposition": "Trascina i tavoli per riposizionarli",
-    "editMode": "Modalita Modifica",
-    "dragMode": "Modalita Trascinamento",
+    "editMode": "Modalità Modifica",
+    "dragMode": "Modalità Trascinamento",
     "tableCount_one": "{{count}} tavolo",
     "tableCount_other": "{{count}} tavoli",
     "tableStatus": "Stato Tavolo",
@@ -206,7 +206,7 @@
     "selectRoomToViewLayout": "Seleziona una stanza per visualizzare la disposizione",
     "createRoomFirst": "Crea prima una stanza se non ne esistono",
     "tip": "Suggerimento",
-    "tipViewMode": "Passa alla modalita Modifica o Trascinamento per riposizionare i tavoli",
+    "tipViewMode": "Passa alla modalità Modifica o Trascinamento per riposizionare i tavoli",
     "tipEditMode": "Trascina i tavoli nelle nuove posizioni - le modifiche vengono salvate automaticamente",
     "dragging": "Trascinamento..."
   },
@@ -229,11 +229,11 @@
       "zoomTitle": "Livello Zoom",
       "zoomDescription": "Livello di zoom attuale della griglia. Clicca per reimpostare al 100%. Usa Ctrl+Più/Meno per regolare.",
       "clearGridTitle": "Cancella Griglia",
-      "clearGridDescription": "Rimuovi tutti gli elementi dalla griglia. Questa azione non puo essere annullata.",
+      "clearGridDescription": "Rimuovi tutti gli elementi dalla griglia. Questa azione non può essere annullata.",
       "dragDropTitle": "Trascina e Rilascia",
       "dragDropDescription": "Trascina i prodotti dal pannello alla griglia o sposta gli elementi esistenti trascinandoli.",
       "keyboardNavTitle": "Navigazione Tastiera",
-      "keyboardNavDescription": "Seleziona un elemento e usa le frecce per spostarlo. Tieni premuto Shift per movimenti piu ampi."
+      "keyboardNavDescription": "Seleziona un elemento e usa le frecce per spostarlo. Tieni premuto Shift per movimenti più ampi."
     }
   },
   "inventoryManagement": {
@@ -250,9 +250,9 @@
     "newStockAdjustment": "Nuova Rettifica Magazzino",
     "stockItem": "Articolo Magazzino",
     "selectAnItem": "Seleziona un articolo...",
-    "quantity": "Quantita",
+    "quantity": "Quantità",
     "quantityPlaceholder": "es., -1 o 24",
-    "unit": "Unita",
+    "unit": "Unità",
     "reason": "Motivo",
     "reasonPlaceholder": "es., Spreco, Consegna",
     "saveAdjustment": "Salva Rettifica",
@@ -262,28 +262,28 @@
     "title": "Controlli Griglia",
     "description": "Regola le impostazioni del layout della griglia come colonne, dimensione, spaziatura e comportamento di aggancio per personalizzare la griglia dei prodotti.",
     "columns": "Colonne",
-    "columnsDescription": "Numero di colonne nella griglia. Piu colonne permettono griglie piu ampie ma elementi piu piccoli.",
+    "columnsDescription": "Numero di colonne nella griglia. Più colonne permettono griglie più ampie ma elementi più piccoli.",
     "gridUnitSize": "Dimensione Unità Griglia",
-    "gridUnitSizeDescription": "Dimensione di ogni cella della griglia in pixel. Celle piu grandi significano elementi piu grandi ma meno elementi visibili contemporaneamente.",
+    "gridUnitSizeDescription": "Dimensione di ogni cella della griglia in pixel. Celle più grandi significano elementi più grandi ma meno elementi visibili contemporaneamente.",
     "gutter": "Spaziatura",
-    "gutterDescription": "Spaziatura tra gli elementi della griglia in pixel. Aumenta per piu spazio tra gli elementi.",
+    "gutterDescription": "Spaziatura tra gli elementi della griglia in pixel. Aumenta per più spazio tra gli elementi.",
     "padding": "Padding",
     "paddingDescription": "Spazio attorno ai bordi del contenitore della griglia. Regola per controllare il margine attorno alla griglia.",
     "snapToGrid": "Aggancia alla Griglia",
-    "snapToGridDescription": "Quando attivo, gli elementi si agganceranno alla posizione della griglia piu vicina quando spostati.",
+    "snapToGridDescription": "Quando attivo, gli elementi si agganceranno alla posizione della griglia più vicina quando spostati.",
     "showGridLines": "Mostra Linee Griglia",
-    "showGridLinesDescription": "Attiva/disattiva la visibilita delle linee della griglia per aiutare con l'allineamento e il posizionamento."
+    "showGridLinesDescription": "Attiva/disattiva la visibilità delle linee della griglia per aiutare con l'allineamento e il posizionamento."
   },
   "transferItemsModal": {
     "title": "Trasferisci Articoli",
     "fromTab": "Dal tab:",
     "close": "Chiudi",
-    "selectItemQuantities": "1. Seleziona Quantita da Spostare",
+    "selectItemQuantities": "1. Seleziona Quantità da Spostare",
     "noItemsInTab": "Questo tab non ha articoli.",
     "item": "Articolo",
     "outOf": "(su {{quantity}})",
-    "decreaseQuantity": "Diminuisci quantita di {{itemName}}",
-    "increaseQuantity": "Aumenta quantita di {{itemName}}",
+    "decreaseQuantity": "Diminuisci quantità di {{itemName}}",
+    "increaseQuantity": "Aumenta quantità di {{itemName}}",
     "chooseDestination": "2. Scegli Destinazione",
     "selectDestinationTab": "Seleziona tab di destinazione: {{tabName}}",
     "createNewTab": "Crea nuovo tab",
@@ -307,7 +307,7 @@
       "restaurant": "Ristorante",
       "retail": "Vendita al Dettaglio",
       "bar": "Bar",
-      "cafe": "Caffe"
+      "cafe": "Caffè"
     },
     "templates": {
       "restaurantStandard": {
@@ -323,8 +323,8 @@
         "description": "Layout bar con bevande organizzate per tipo"
       },
       "cafeStandard": {
-        "name": "Caffe Standard",
-        "description": "Layout caffe con caffe e pasticcini"
+        "name": "Caffè Standard",
+        "description": "Layout caffè con caffè e pasticcini"
       }
     }
   },
@@ -356,7 +356,7 @@
     },
     "keyboardNav": {
       "title": "Navigazione Tastiera",
-      "description": "Seleziona un elemento e usa i tasti freccia per spostarlo con precisione. Tieni premuto Shift per movimenti piu ampi."
+      "description": "Seleziona un elemento e usa i tasti freccia per spostarlo con precisione. Tieni premuto Shift per movimenti più ampi."
     }
   },
   "helpSystem": {
@@ -430,7 +430,7 @@
     "noProductsFound": "Nessun prodotto trovato per i filtri selezionati.",
     "product": "Prodotto",
     "category": "Categoria",
-    "quantitySold": "Quantita Venduta",
+    "quantitySold": "Quantità Venduta",
     "averagePrice": "Prezzo Medio",
     "totalRevenue": "Ricavo Totale",
     "transactions": "Transazioni"
@@ -455,7 +455,7 @@
   },
   "tableErrorBoundary": {
     "title": "Errore Sistema Tavoli",
-    "description": "Si e verificato un errore nel sistema dei tavoli.",
+    "description": "Si è verificato un errore nel sistema dei tavoli.",
     "errorDetails": "Dettagli errore",
     "reloadPage": "Ricarica Pagina"
   },
@@ -466,16 +466,20 @@
     "title": "Prestazioni Vendite Orarie"
   },
   "errorPage": {
-    "title": "Si e Verificato un Errore",
-    "description": "Si e verificato un problema durante l'elaborazione della richiesta.",
-    "unexpectedError": "Si e verificato un errore imprevisto",
+    "title": "Si È Verificato un Errore",
+    "description": "Si è verificato un problema durante l'elaborazione della richiesta.",
+    "unexpectedError": "Si è verificato un errore imprevisto",
     "goBack": "Torna Indietro"
   },
   "productGrid": {
     "title": "Prodotti",
     "favourites": "FAV Preferiti",
     "all": "Tutti",
-    "outOfStock": "ESAURITO"
+    "outOfStock": "ESAURITO",
+    "fav": "FAV"
+  },
+  "pos": {
+    "tillAssignmentRequired": "Assegna una cassa per utilizzare il sistema POS"
   },
   "errorMessage": {
     "retry": "Riprova",
@@ -495,7 +499,7 @@
   },
   "tillSetupScreen": {
     "title": "Configurazione Terminale",
-    "subtitle": "Seleziona quale cassa questo dispositivo operera.",
+    "subtitle": "Seleziona quale cassa questo dispositivo opererà.",
     "noTillsConfigured": "Nessuna cassa configurata. Configurale nel Pannello Admin su un altro dispositivo."
   },
   "editLayoutButton": {
@@ -508,7 +512,7 @@
     "currentLayout": "Layout Corrente",
     "helpGuide": {
       "title": "Sezione Layout Griglia",
-      "description": "Questa e l'area principale del layout della griglia dove puoi disporre i tuoi prodotti."
+      "description": "Questa è l'area principale del layout della griglia dove puoi disporre i tuoi prodotti."
     }
   },
   "enhancedGridItem": {
@@ -528,7 +532,7 @@
     "httpError": "Errore HTTP! stato: {{status}}",
     "requestTimeout": "Richiesta scaduta. Verifica la connessione di rete e riprova.",
     "requestError": "Errore nella richiesta a {{url}}",
-    "unexpectedError": "Si e verificato un errore imprevisto",
+    "unexpectedError": "Si è verificato un errore imprevisto",
     "csrfError": "Validazione CSRF fallita. Aggiorna la pagina e riprova."
   },
   "tableService": {
@@ -664,5 +668,18 @@
     "tillNotConfigured": "Non Configurata",
     "unknownTill": "Cassa Sconosciuta",
     "contextError": "useGlobalDataContext deve essere utilizzato all'interno di un GlobalDataProvider"
+  },
+  "layoutContext": {
+    "layoutSavedFor": "Layout salvato con successo per {{categoryName}}!",
+    "sessionExpired": "Sessione scaduta. Accedi nuovamente.",
+    "failedToSaveLayout": "Salvataggio layout fallito: {{errorMessage}}",
+    "layoutResetToDefault": "Layout ripristinato ai valori predefiniti!",
+    "failedToResetLayout": "Ripristino layout fallito: {{errorMessage}}",
+    "invalidLayoutName": "Nome layout non valido: {{message}}",
+    "cannotSaveEmptyLayout": "Impossibile salvare un layout vuoto come layout condiviso",
+    "sharedLayoutCreated": "Layout condiviso \"{{sanitizedName}}\" creato con successo!",
+    "failedToCreateSharedLayout": "Creazione layout condiviso fallita: {{errorMessage}}",
+    "sharedLayoutLoaded": "Layout condiviso caricato con successo!",
+    "failedToLoadSharedLayout": "Caricamento layout condiviso fallito: {{errorMessage}}"
   }
 }

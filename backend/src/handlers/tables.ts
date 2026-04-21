@@ -6,7 +6,7 @@ import { validateTableData, validateTableStatusUpdate, TABLE_STATUS } from '../u
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { safeJsonParse } from '../utils/jsonParser';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
-import i18n from '../i18n';
+
 
 const router = Router();
 
@@ -20,6 +20,7 @@ router.use((req, res, next) => {
 
 // GET /api/tables - Retrieve all tables with room information
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const userId = req.user?.id;
     const userRole = req.user?.role;
@@ -55,12 +56,13 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching tables', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.fetchFailed') });
+    res.status(500).json({ error: t('errors:tables.fetchFailed') });
   }
 });
 
 // GET /api/tables/:id - Retrieve specific table
 router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const table = await prisma.table.findUnique({
@@ -71,7 +73,7 @@ router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     });
 
     if (!table) {
-      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+      return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
     // Parse items JSON
@@ -85,18 +87,19 @@ router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     logError(error instanceof Error ? error : 'Error fetching table', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:tables.fetchOneFailed') });
   }
 });
 
 // POST /api/tables - Create new table
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
 
     // Validate required fields
     if (!name || !roomId) {
-      return res.status(400).json({ error: i18n.t('errors:tables.nameAndRoomRequired') });
+      return res.status(400).json({ error: t('errors:tables.nameAndRoomRequired') });
     }
 
     // Sanitize name
@@ -117,14 +120,14 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
 
     if (!room) {
-      return res.status(404).json({ error: i18n.t('errors:tables.roomNotFound') });
+      return res.status(404).json({ error: t('errors:tables.roomNotFound') });
     }
 
     // Validate table data
     const validation = validateTableData({ name, roomId, x, y, width, height, status, capacity });
     if (!validation.isValid) {
       return res.status(400).json({
-        error: i18n.t('errors:tables.validationFailed'),
+        error: t('errors:tables.validationFailed'),
         details: validation.errors
       });
     }
@@ -152,12 +155,13 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error creating table', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.createFailed') });
+    res.status(500).json({ error: t('errors:tables.createFailed') });
   }
 });
 
 // PUT /api/tables/:id - Update table
 router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
@@ -167,7 +171,7 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     });
 
     if (!table) {
-      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+      return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
     // Sanitize name if provided
@@ -191,7 +195,7 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       });
 
       if (!room) {
-        return res.status(404).json({ error: i18n.t('errors:tables.roomNotFound') });
+        return res.status(404).json({ error: t('errors:tables.roomNotFound') });
       }
     }
 
@@ -199,7 +203,7 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     const validation = validateTableData({ name, roomId, x, y, width, height, status, capacity });
     if (!validation.isValid) {
       return res.status(400).json({
-        error: i18n.t('errors:tables.validationFailed'),
+        error: t('errors:tables.validationFailed'),
         details: validation.errors
       });
     }
@@ -241,12 +245,13 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     logError(error instanceof Error ? error : 'Error updating table', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.updateFailed') });
+    res.status(500).json({ error: t('errors:tables.updateFailed') });
   }
 });
 
 // DELETE /api/tables/:id - Delete table
 router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
 
@@ -255,7 +260,7 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
     });
 
     if (!table) {
-      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+      return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
     // Check if table is associated with any tabs
@@ -267,7 +272,7 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
 
     if (tabs.length > 0) {
       return res.status(400).json({
-        error: i18n.t('errors:tables.cannotDeleteWithTabs'),
+        error: t('errors:tables.cannotDeleteWithTabs'),
         tabCount: tabs.length
       });
     }
@@ -281,12 +286,13 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
     logError(error instanceof Error ? error : 'Error deleting table', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.deleteFailed') });
+    res.status(500).json({ error: t('errors:tables.deleteFailed') });
   }
 });
 
 // PUT /api/tables/:id/position - Update only table position (for drag/drop)
 router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { x, y } = req.body;
@@ -296,11 +302,11 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
     });
 
     if (!table) {
-      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+      return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
     if (x === undefined || y === undefined) {
-      return res.status(400).json({ error: i18n.t('errors:tables.coordinatesRequired') });
+      return res.status(400).json({ error: t('errors:tables.coordinatesRequired') });
     }
 
     const updatedTable = await prisma.table.update({
@@ -319,25 +325,26 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
     logError(error instanceof Error ? error : 'Error updating table position', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.positionUpdateFailed') });
+    res.status(500).json({ error: t('errors:tables.positionUpdateFailed') });
   }
 });
 
 // PUT /api/tables/:id/status - Update only table status
 router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { status } = req.body;
 
     if (!status) {
-      return res.status(400).json({ error: 'Status is required' });
+      return res.status(400).json({ error: t('errors:tables.statusRequired') });
     }
 
     // Validate status value using consolidated constants
     const validStatuses = Object.values(TABLE_STATUS);
     if (!validStatuses.includes(status)) {
       return res.status(400).json({ 
-        error: 'Invalid status value',
+        error: t('errors:tables.invalidStatus'),
         validValues: validStatuses
       });
     }
@@ -347,7 +354,7 @@ router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: R
     });
 
     if (!table) {
-      return res.status(404).json({ error: i18n.t('errors:tables.notFound') });
+      return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
     // Validate status transition
@@ -367,7 +374,7 @@ router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: R
     logError(error instanceof Error ? error : 'Error updating table status', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:tables.statusUpdateFailed') });
+    res.status(500).json({ error: t('errors:tables.statusUpdateFailed') });
   }
 });
 

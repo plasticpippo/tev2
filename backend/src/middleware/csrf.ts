@@ -1,7 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { randomBytes } from 'crypto';
 import { jwtVerify, SignJWT } from 'jose';
-import i18n from '../i18n';
 
 // CSRF token configuration
 const CSRF_TOKEN_LENGTH = 32; // 32 bytes = 64 hex characters
@@ -163,6 +162,7 @@ const extractUserFromToken = async (req: Request): Promise<{ id: number; usernam
  * - Server validates both match the same signed value
  */
 export const csrfMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
+	const t = req.t.bind(req);
 	// Skip CSRF validation for safe methods
 	const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
 	if (safeMethods.includes(req.method)) {
@@ -187,7 +187,7 @@ export const csrfMiddleware = async (req: Request, res: Response, next: NextFunc
     // Also check for the accessible cookie as fallback
     const accessibleCookie = cookies[CSRF_COOKIE_ACCESSIBLE];
     console.warn(`CSRF validation failed: No httpOnly CSRF cookie. Path: ${req.path}, Method: ${req.method}. Available cookies: ${Object.keys(cookies).join(', ')}. Fallback cookie found: ${!!accessibleCookie}`);
-    res.status(403).json({ error: i18n.t('errors.csrf.noToken') });
+    res.status(403).json({ error: t('errors.csrf.noToken') });
     return;
   }
 
@@ -195,7 +195,7 @@ export const csrfMiddleware = async (req: Request, res: Response, next: NextFunc
   const csrfTokenFromCookie = await verifyCsrfToken(signedCsrfTokenCookie);
   if (!csrfTokenFromCookie) {
     console.warn(`CSRF validation failed: Invalid signed token in cookie. Path: ${req.path}, Method: ${req.method}`);
-    res.status(403).json({ error: i18n.t('errors.csrf.invalidToken') });
+    res.status(403).json({ error: t('errors.csrf.invalidToken') });
     return;
   }
 
@@ -205,7 +205,7 @@ export const csrfMiddleware = async (req: Request, res: Response, next: NextFunc
   
   if (!clientTokenHeader) {
     console.warn(`CSRF validation failed: No CSRF token in header. Path: ${req.path}, Method: ${req.method}`);
-    res.status(403).json({ error: i18n.t('errors.csrf.noToken') });
+    res.status(403).json({ error: t('errors.csrf.noToken') });
     return;
   }
 
@@ -213,14 +213,14 @@ export const csrfMiddleware = async (req: Request, res: Response, next: NextFunc
   const csrfTokenFromHeader = await verifyCsrfToken(clientTokenHeader);
   if (!csrfTokenFromHeader) {
     console.warn(`CSRF validation failed: Invalid token in header. Path: ${req.path}, Method: ${req.method}`);
-    res.status(403).json({ error: i18n.t('errors.csrf.invalidToken') });
+    res.status(403).json({ error: t('errors.csrf.invalidToken') });
     return;
   }
 
   // 4. Verify both tokens are equal (double-submit verification)
   if (csrfTokenFromCookie !== csrfTokenFromHeader) {
     console.warn(`CSRF validation failed: Token mismatch. Path: ${req.path}, Method: ${req.method}`);
-    res.status(403).json({ error: i18n.t('errors.csrf.invalidToken') });
+    res.status(403).json({ error: t('errors.csrf.invalidToken') });
     return;
   }
 

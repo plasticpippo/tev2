@@ -369,44 +369,29 @@ function getErrorSeverity(error: Error): ErrorSeverity {
  * Uses i18n for localized messages when available
  */
 function getUserMessage(error: Error, statusCode: number, req?: Request): string {
-  // Helper to get translation from i18n or fallback
-  const t = (key: string, fallback: string): string => {
-    // First try to use request-bound translation if available
-    if (req && typeof (req as any).t === 'function') {
-      const translated = (req as any).t(`errors:errorHandler.${key}`);
-      if (translated && translated !== `errors:errorHandler.${key}`) {
-        return translated;
-      }
-    }
-    // Fall back to global i18n
-    const globalTranslated = i18n.t(`errorHandler.${key}`);
-    if (globalTranslated && globalTranslated !== `errorHandler.${key}`) {
-      return globalTranslated;
-    }
-    return fallback;
-  };
+  const t = req?.t?.bind(req);
   
   // In production, return generic messages (localized if possible)
   if (isProduction()) {
     switch (statusCode) {
       case 400:
-        return t('badRequestDetailed', 'Invalid request. Please check your input and try again.');
+        return t ? t('errors:errorHandler.badRequestDetailed') : 'Invalid request. Please check your input and try again.';
       case 401:
-        return t('unauthorizedDetailed', 'Authentication required. Please log in and try again.');
+        return t ? t('errors:errorHandler.unauthorizedDetailed') : 'Authentication required. Please log in and try again.';
       case 403:
-        return t('forbiddenDetailed', 'Access denied. You do not have permission to perform this action.');
+        return t ? t('errors:errorHandler.forbiddenDetailed') : 'Access denied. You do not have permission to perform this action.';
       case 404:
-        return t('notFoundDetailed', 'The requested resource was not found.');
+        return t ? t('errors:errorHandler.notFoundDetailed') : 'The requested resource was not found.';
       case 409:
-        return t('conflictDetailed', 'The request could not be completed due to a conflict.');
+        return t ? t('errors:errorHandler.conflictDetailed') : 'The request could not be completed due to a conflict.';
       case 429:
-        return t('tooManyRequestsDetailed', 'Too many requests. Please wait and try again later.');
+        return t ? t('errors:errorHandler.tooManyRequestsDetailed') : 'Too many requests. Please wait and try again later.';
       case 500:
       case 502:
       case 503:
-        return t('internalErrorDetailed', 'An unexpected error occurred. Please try again later.');
+        return t ? t('errors:errorHandler.internalErrorDetailed') : 'An unexpected error occurred. Please try again later.';
       default:
-        return t('errorOccurred', 'An error occurred. Please try again.');
+        return t ? t('errors:errorHandler.errorOccurred') : 'An error occurred. Please try again.';
     }
   }
   
@@ -582,6 +567,7 @@ export function errorHandler(
  * @param res - Express response object
  */
 export function notFoundHandler(req: Request, res: Response): void {
+  const t = req.t.bind(req);
   const correlationId = (req as any).correlationId || 'unknown';
   const clientIp = getClientIp(req);
   const userAgent = getUserAgent(req);
@@ -599,27 +585,10 @@ export function notFoundHandler(req: Request, res: Response): void {
     isOperational: true,
   });
   
-  // Get localized message or fallback
-  const getNotFoundMessage = (): string => {
-    // First try to use request-bound translation if available
-    if (typeof (req as any).t === 'function') {
-      const translated = (req as any).t('errors:errorHandler.notFoundDetailed');
-      if (translated && translated !== 'errors:errorHandler.notFoundDetailed') {
-        return translated;
-      }
-    }
-    // Fall back to global i18n
-    const globalTranslated = i18n.t('errorHandler.notFoundDetailed');
-    if (globalTranslated && globalTranslated !== 'errorHandler.notFoundDetailed') {
-      return globalTranslated;
-    }
-    return 'The requested resource was not found.';
-  };
-  
   // Build error response
   const isProd = isProduction();
   const response: Record<string, any> = {
-    error: isProd ? getNotFoundMessage() : i18n.t('errorHandler.routeNotFound', { method: req.method, path: req.path }),
+    error: isProd ? t('errors:errorHandler.notFoundDetailed') : t('errors:errorHandler.routeNotFound', { method: req.method, path: req.path }),
     correlationId,
     statusCode: 404,
   };

@@ -1,4 +1,5 @@
 import currency from 'currency.js';
+import { getLocale } from './formatting';
 
 /**
  * Validates if a value is a valid monetary number
@@ -59,7 +60,7 @@ export function roundCost(value: number, precision: number = 6): number {
 /**
  * Formats a number as currency string
  */
-export function formatMoney(value: number, locale: string = 'it-IT', currencyCode: string = 'EUR'): string {
+export function formatMoney(value: number, locale: string = getLocale(), currencyCode: string = 'EUR'): string {
   if (!isMoneyValid(value)) return '€0.00';
   return new Intl.NumberFormat(locale, {
     style: 'currency',

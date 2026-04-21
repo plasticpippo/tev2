@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect, useRef, ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import {
   ButtonPosition,
   CategoryLayout,
@@ -72,6 +73,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   initialCategoryId = 'favourites'
 }) => {
   const { addToast } = useToast();
+  const { t } = useTranslation();
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [currentCategoryId, setCurrentCategoryId] = useState<number | 'favourites' | 'all'>(initialCategoryId);
@@ -368,25 +370,24 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
       // Show success message
       const categoryName = currentCategoryId === 'favourites' ? 'Favourites' : 'category';
-      addToast(`Layout saved successfully for ${categoryName}!`, 'success');
+      addToast(t('layoutContext.layoutSavedFor', { categoryName }), 'success');
     } catch (error) {
       console.error('Error saving layout:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       // Check if the error is related to authentication
       if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
-        addToast('Session expired. Please log in again.', 'error');
-        // Redirect to login after a delay to allow the user to see the message
+        addToast(t('layoutContext.sessionExpired'), 'error');
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        addToast(`Failed to save layout: ${errorMessage}`, 'error');
+        addToast(t('layoutContext.failedToSaveLayout', { errorMessage }), 'error');
       }
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId, currentTillLayout, getCurrentCategoryLayout, addToast]);
+  }, [tillId, currentCategoryId, currentTillLayout, getCurrentCategoryLayout, addToast, t]);
 
   // Reset layout to default (delete from API)
   const resetLayout = useCallback(async () => {
@@ -426,25 +427,24 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         return newTillLayout;
       });
 
-      addToast('Layout reset to default!', 'success');
+      addToast(t('layoutContext.layoutResetToDefault'), 'success');
     } catch (error) {
       console.error('Error resetting layout:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       
       // Check if the error is related to authentication
       if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
-        addToast('Session expired. Please log in again.', 'error');
-        // Redirect to login after a delay to allow the user to see the message
+        addToast(t('layoutContext.sessionExpired'), 'error');
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        addToast(`Failed to reset layout: ${errorMessage}`, 'error');
+        addToast(t('layoutContext.failedToResetLayout', { errorMessage }), 'error');
       }
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId, addToast]);
+  }, [tillId, currentCategoryId, addToast, t]);
 
   // Discard changes and revert to saved
   const discardChanges = useCallback(() => {
@@ -491,7 +491,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       sanitizedName = sanitizeName(name);
     } catch (error) {
       if (error instanceof SanitizationError) {
-        addToast(`Invalid layout name: ${error.message}`, 'error');
+        addToast(t('layoutContext.invalidLayoutName', { message: error.message }), 'error');
         return;
       }
       throw error;
@@ -509,7 +509,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     const categoryLayout = getCurrentCategoryLayout();
     if (!categoryLayout || categoryLayout.positions.length === 0) {
-      addToast('Cannot save empty layout as shared layout', 'error');
+      addToast(t('layoutContext.cannotSaveEmptyLayout'), 'error');
       return;
     }
 
@@ -523,7 +523,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
       await createSharedLayout(sanitizedName, categoryIdToUse, positions);
 
-      addToast(`Shared layout "${sanitizedName}" created successfully!`, 'success');
+      addToast(t('layoutContext.sharedLayoutCreated', { sanitizedName }), 'success');
 
       // Refresh shared layouts list
       await refreshSharedLayouts(categoryIdToUse);
@@ -533,18 +533,17 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       
       // Check if the error is related to authentication
       if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
-        addToast('Session expired. Please log in again.', 'error');
-        // Redirect to login after a delay to allow the user to see the message
+        addToast(t('layoutContext.sessionExpired'), 'error');
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        addToast(`Failed to create shared layout: ${errorMessage}`, 'error');
+        addToast(t('layoutContext.failedToCreateSharedLayout', { errorMessage }), 'error');
       }
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, currentCategoryId, getCurrentCategoryLayout, refreshSharedLayouts, addToast]);
+  }, [tillId, currentCategoryId, getCurrentCategoryLayout, refreshSharedLayouts, addToast, t]);
 
   // Load shared layout into current till
   const loadSharedLayout = useCallback(async (sharedLayoutId: number) => {
@@ -572,7 +571,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
           setCurrentCategory(categoryToLoad);
         }
 
-        addToast('Shared layout loaded successfully!', 'success');
+        addToast(t('layoutContext.sharedLayoutLoaded'), 'success');
       }
     } catch (error) {
       console.error('Error loading shared layout:', error);
@@ -580,18 +579,17 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
       
       // Check if the error is related to authentication
       if (errorMessage.includes('Invalid or expired token') || errorMessage.includes('token')) {
-        addToast('Session expired. Please log in again.', 'error');
-        // Redirect to login after a delay to allow the user to see the message
+        addToast(t('layoutContext.sessionExpired'), 'error');
         setTimeout(() => {
           window.location.href = '/';
         }, 2000);
       } else {
-        addToast(`Failed to load shared layout: ${errorMessage}`, 'error');
+        addToast(t('layoutContext.failedToLoadSharedLayout', { errorMessage }), 'error');
       }
     } finally {
       setIsSaving(false);
     }
-  }, [tillId, loadLayoutForCategory, setCurrentCategory, addToast]);
+  }, [tillId, loadLayoutForCategory, setCurrentCategory, addToast, t]);
 
   const value: LayoutContextValue = {
     isEditMode,

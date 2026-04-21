@@ -3,8 +3,7 @@ import { jwtVerify } from 'jose';
 import { isTokenRevoked } from '../services/tokenBlacklistService';
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
 import { logAuthEvent, logSecurityAlert } from '../utils/logger';
-import i18n from '../i18n';
-import '../types'; // Import types to extend Express Request interface
+import '../types';
 
 // Validate JWT_SECRET at module load time - fail fast if invalid
 validateJwtSecret();
@@ -18,6 +17,7 @@ export interface TokenPayload {
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
+  const t = req.t.bind(req);
   try {
     // Extract token from Authorization header (Bearer token format)
     const authHeader = req.headers.authorization;
@@ -30,7 +30,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         path: req.path,
         method: req.method
       });
-      return res.status(401).json({ error: i18n.t('errors.auth.noTokenProvided') });
+      return res.status(401).json({ error: t('errors.auth.noTokenProvided') });
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
@@ -43,7 +43,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         path: req.path,
         method: req.method
       });
-      return res.status(401).json({ error: i18n.t('errors.auth.noTokenProvided') });
+      return res.status(401).json({ error: t('errors.auth.noTokenProvided') });
     }
 
     // Verify the token using jose library
@@ -69,7 +69,7 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
         },
         'high'
       );
-      return res.status(401).json({ error: i18n.t('errors.auth.tokenRevoked') });
+      return res.status(401).json({ error: t('errors.auth.tokenRevoked') });
     }
 
     // Attach decoded user info to req.user
@@ -90,6 +90,6 @@ export const authenticateToken = async (req: Request, res: Response, next: NextF
       error: error instanceof Error ? error.message : 'Unknown error'
     });
     // Return 401 for authentication failures
-    return res.status(401).json({ error: i18n.t('errors.auth.invalidOrExpiredToken') });
+    return res.status(401).json({ error: t('errors.auth.invalidOrExpiredToken') });
   }
 };

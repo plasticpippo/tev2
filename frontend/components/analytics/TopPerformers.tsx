@@ -57,7 +57,7 @@ export const TopPerformers: React.FC<TopPerformersProps> = ({
                 
                 setPerformanceData(result);
             } catch (err: any) {
-                setError(err.message || 'Failed to load performance data');
+                setError(err.message || t('analytics.errors.failedToLoadPerformance'));
                 console.error('Error loading performance data:', err);
             } finally {
                 setLoading(false);

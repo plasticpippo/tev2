@@ -1,6 +1,7 @@
 import nodemailer from 'nodemailer';
 import { prisma } from '../prisma';
 import { logError, logInfo, logDebug } from '../utils/logger';
+import i18n from '../i18n';
 
 export interface EmailConfig {
   host: string | null;
@@ -81,33 +82,33 @@ export async function getEmailConfig(): Promise<EmailConfig> {
 
 function validateSmtpConfig(config: EmailConfig): { valid: boolean; error?: string; errorCode?: string } {
   if (!config.host) {
-    return { valid: false, error: 'SMTP host is not configured', errorCode: 'SMTP_HOST_REQUIRED' };
+    return { valid: false, error: i18n.t('errors:emailService.smtpHostNotConfigured'), errorCode: 'SMTP_HOST_REQUIRED' };
   }
 
   if (!config.user) {
-    return { valid: false, error: 'SMTP user is not configured', errorCode: 'SMTP_USER_REQUIRED' };
+    return { valid: false, error: i18n.t('errors:emailService.smtpUserNotConfigured'), errorCode: 'SMTP_USER_REQUIRED' };
   }
 
   if (!config.password) {
-    return { valid: false, error: 'SMTP password is not configured', errorCode: 'SMTP_PASSWORD_REQUIRED' };
+    return { valid: false, error: i18n.t('errors:emailService.smtpPasswordNotConfigured'), errorCode: 'SMTP_PASSWORD_REQUIRED' };
   }
 
   if (!config.fromAddress) {
-    return { valid: false, error: 'From address is not configured', errorCode: 'FROM_ADDRESS_REQUIRED' };
+    return { valid: false, error: i18n.t('errors:emailService.fromAddressNotConfigured'), errorCode: 'FROM_ADDRESS_REQUIRED' };
   }
 
   const hostRegex = /^[a-zA-Z0-9.-]+$/;
   if (!hostRegex.test(config.host)) {
-    return { valid: false, error: 'Invalid SMTP host format', errorCode: 'INVALID_SMTP_HOST' };
+    return { valid: false, error: i18n.t('errors:emailService.invalidSmtpHostFormat'), errorCode: 'INVALID_SMTP_HOST' };
   }
 
   if (config.port < 1 || config.port > 65535) {
-    return { valid: false, error: 'Invalid SMTP port', errorCode: 'INVALID_SMTP_PORT' };
+    return { valid: false, error: i18n.t('errors:emailService.invalidSmtpPort'), errorCode: 'INVALID_SMTP_PORT' };
   }
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!emailRegex.test(config.fromAddress)) {
-    return { valid: false, error: 'Invalid from address format', errorCode: 'INVALID_FROM_ADDRESS' };
+    return { valid: false, error: i18n.t('errors:emailService.invalidFromAddressFormat'), errorCode: 'INVALID_FROM_ADDRESS' };
   }
 
   return { valid: true };
@@ -157,7 +158,7 @@ export async function sendEmail(options: SendEmailOptions): Promise<EmailResult>
     if (!config.enabled) {
       return {
         success: false,
-        error: 'Email service is disabled',
+        error: i18n.t('errors:emailService.emailServiceDisabled'),
         errorCode: 'EMAIL_SERVICE_DISABLED',
       };
     }
@@ -256,7 +257,7 @@ export async function testSmtpConnection(testRecipient?: string): Promise<SmtpTe
         transporter.close();
         return {
           success: false,
-          message: 'Invalid test recipient email address',
+          message: i18n.t('errors:emailService.invalidTestRecipientEmail'),
           error: 'INVALID_TEST_RECIPIENT',
         };
       }
@@ -291,7 +292,7 @@ text: testText,
 
       return {
         success: true,
-        message: 'SMTP connection successful and test email sent',
+        message: i18n.t('errors:emailService.smtpConnectionSuccessfulWithEmail'),
         details: {
           host: config.host!,
           port: config.port,
@@ -305,7 +306,7 @@ text: testText,
 
     return {
       success: true,
-      message: 'SMTP connection successful',
+      message: i18n.t('errors:emailService.smtpConnectionSuccessful'),
       details: {
         host: config.host!,
         port: config.port,

@@ -138,7 +138,7 @@ case 'itemisedConsumption':
       case 'inventoryCounts':
         return <InventoryCountPanel />;
     default:
-        return <p>Select a view</p>;
+        return <p>{t('selectAView')}</p>;
     }
   };
 
@@ -285,7 +285,7 @@ case 'itemisedConsumption':
           <button
             onClick={() => setSidebarOpen(true)}
             className="lg:hidden min-h-11 min-w-11 p-2 rounded-md hover:bg-slate-700 transition flex items-center justify-center"
-            aria-label="Open menu"
+            aria-label={t('openMenu')}
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
@@ -322,7 +322,7 @@ case 'itemisedConsumption':
             <button
               onClick={() => setSidebarOpen(false)}
               className="min-h-11 min-w-11 p-2 rounded-md hover:bg-slate-700 transition flex items-center justify-center"
-              aria-label="Close menu"
+              aria-label={t('closeMenu')}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -333,7 +333,7 @@ case 'itemisedConsumption':
             <button
               onClick={() => setSidebarCollapsed(!sidebarCollapsed)}
               className="min-h-11 min-w-11 p-2 rounded-md hover:bg-slate-700 transition flex items-center justify-center"
-              aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              aria-label={sidebarCollapsed ? t('expandSidebar') : t('collapseSidebar')}
             >
               <svg className={`w-5 h-5 transition-transform duration-300 ${sidebarCollapsed ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />

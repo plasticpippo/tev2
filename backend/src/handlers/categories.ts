@@ -5,7 +5,6 @@ import { validateCategory, validateCategoryName } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
 
 export const categoriesRouter = express.Router();
 
@@ -13,6 +12,7 @@ export const categoriesRouter = express.Router();
 // Query params:
 // - includeSystem: boolean - If true, includes system categories (id <= 0) for POS view
 categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const includeSystem = req.query.includeSystem === 'true';
     
@@ -30,15 +30,16 @@ categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response)
     });
     res.json(categories);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('categories.log.fetchError'), {
+    logError(error instanceof Error ? error : t('categories.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('categories.fetchFailed') });
+    res.status(500).json({ error: t('categories.fetchFailed') });
   }
 });
 
 // GET /api/categories/:id - Get a specific category
 categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const category = await prisma.category.findUnique({
@@ -51,27 +52,28 @@ categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
     });
     
     if (!category) {
-      return res.status(404).json({ error: i18n.t('categories.notFound') });
+      return res.status(404).json({ error: t('categories.notFound') });
     }
     
     res.json(category);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('categories.log.fetchOneError'), {
+    logError(error instanceof Error ? error : t('categories.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('categories.fetchOneFailed') });
+    res.status(500).json({ error: t('categories.fetchOneFailed') });
   }
 });
 
 // POST /api/categories - Create a new category
 categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
     
     // Validate category data
     const validation = validateCategory({ name });
     if (!validation.isValid) {
-      return res.status(400).json({ error: i18n.t('categories.validationFailed'), details: validation.errors });
+      return res.status(400).json({ error: t('categories.validationFailed'), details: validation.errors });
     }
     
     const category = await prisma.category.create({
@@ -88,15 +90,16 @@ categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     
     res.status(201).json(category);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('categories.log.createError'), {
+    logError(error instanceof Error ? error : t('categories.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('categories.createFailed') });
+    res.status(500).json({ error: t('categories.createFailed') });
   }
 });
 
 // PUT /api/categories/:id - Update a category
 categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
@@ -104,7 +107,7 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     // System categories (id <= 0) cannot be modified
     if (Number(id) <= 0) {
       return res.status(400).json({ 
-        error: i18n.t('errors:categories.cannotModifySystemCategory')
+        error: t('errors:categories.cannotModifySystemCategory')
       });
     }
     
@@ -112,7 +115,7 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     if (name !== undefined) {
       const nameError = validateCategoryName(name);
       if (nameError) {
-        return res.status(400).json({ error: i18n.t('categories.validationFailed'), details: [nameError] });
+        return res.status(400).json({ error: t('categories.validationFailed'), details: [nameError] });
       }
     }
     
@@ -131,22 +134,23 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
     
     res.json(category);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('categories.log.updateError'), {
+    logError(error instanceof Error ? error : t('categories.log.updateError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('categories.updateFailed') });
+    res.status(500).json({ error: t('categories.updateFailed') });
   }
 });
 
 // DELETE /api/categories/:id - Delete a category
 categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
     // System categories (id <= 0) cannot be deleted
     if (Number(id) <= 0) {
       return res.status(400).json({ 
-        error: i18n.t('errors:categories.cannotDeleteSystemCategory')
+        error: t('errors:categories.cannotDeleteSystemCategory')
       });
     }
     
@@ -157,7 +161,7 @@ categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     if (products > 0) {
       return res.status(400).json({ 
-        error: i18n.t('errors:categories.cannotDeleteWithProducts')
+        error: t('errors:categories.cannotDeleteWithProducts')
       });
     }
     
@@ -168,7 +172,7 @@ categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     if (sharedLayouts > 0) {
       return res.status(400).json({ 
-        error: i18n.t('errors:categories.cannotDeleteWithSharedLayouts')
+        error: t('errors:categories.cannotDeleteWithSharedLayouts')
       });
     }
     
@@ -178,10 +182,10 @@ categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
     
     res.status(204).send();
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('categories.log.deleteError'), {
+    logError(error instanceof Error ? error : t('categories.log.deleteError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('categories.deleteFailedInUse') });
+    res.status(500).json({ error: t('categories.deleteFailedInUse') });
   }
 });
 

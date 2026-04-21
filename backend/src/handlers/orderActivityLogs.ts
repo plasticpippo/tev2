@@ -3,12 +3,12 @@ import { prisma } from '../prisma';
 import type { OrderActivityLog } from '../types';
 import { logWarn, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
-import i18n from '../i18n';
 
 export const orderActivityLogsRouter = express.Router();
 
 // GET /api/order-activity-logs - Get all order activity logs
 orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const orderActivityLogs = await prisma.orderActivityLog.findMany({
       orderBy: { createdAt: 'desc' },
@@ -28,7 +28,7 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
             parsedDetails = JSON.parse(log.details);
           } catch (e) {
             // If it looks like JSON but parsing fails, return as string
-            logWarn(i18n.t('orderActivityLogs.log.parseDetailsError'), {
+            logWarn(t('orderActivityLogs.log.parseDetailsError'), {
               correlationId: (req as any).correlationId,
             });
             parsedDetails = log.details;
@@ -46,15 +46,16 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
     });
     res.json(logsWithParsedDetails);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.fetchError'), {
+    logError(error instanceof Error ? error : t('orderActivityLogs.log.fetchError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('orderActivityLogs.fetchFailed') });
+    res.status(500).json({ error: t('orderActivityLogs.fetchFailed') });
   }
 });
 
 // GET /api/order-activity-logs/:id - Get a specific order activity log
 orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const orderActivityLog = await prisma.orderActivityLog.findUnique({
@@ -62,7 +63,7 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     });
     
     if (!orderActivityLog) {
-      return res.status(404).json({ error: i18n.t('orderActivityLogs.notFound') });
+      return res.status(404).json({ error: t('orderActivityLogs.notFound') });
     }
     
     // Parse the details JSON string back to appropriate type
@@ -77,7 +78,7 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
             parsedDetails = JSON.parse(orderActivityLog.details);
           } catch (e) {
             // If it looks like JSON but parsing fails, return as string
-            logWarn(i18n.t('orderActivityLogs.log.parseDetailsError'), {
+            logWarn(t('orderActivityLogs.log.parseDetailsError'), {
               correlationId: (req as any).correlationId,
             });
             parsedDetails = orderActivityLog.details;
@@ -95,15 +96,16 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
     
     res.json(logWithParsedDetails);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.fetchOneError'), {
+    logError(error instanceof Error ? error : t('orderActivityLogs.log.fetchOneError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('orderActivityLogs.fetchOneFailed') });
+    res.status(500).json({ error: t('orderActivityLogs.fetchOneFailed') });
   }
 });
 
 // POST /api/order-activity-logs - Create a new order activity log
 orderActivityLogsRouter.post('/', async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { action, details, userId, userName } = req.body as Omit<OrderActivityLog, 'id' | 'createdAt'>;
     
@@ -120,10 +122,10 @@ orderActivityLogsRouter.post('/', async (req: Request, res: Response) => {
     
     res.status(201).json(orderActivityLog);
   } catch (error) {
-    logError(error instanceof Error ? error : i18n.t('orderActivityLogs.log.createError'), {
+    logError(error instanceof Error ? error : t('orderActivityLogs.log.createError'), {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('orderActivityLogs.createFailed') });
+    res.status(500).json({ error: t('orderActivityLogs.createFailed') });
   }
 });
 

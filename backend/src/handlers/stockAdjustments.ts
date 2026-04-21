@@ -5,12 +5,12 @@ import type { StockAdjustment as StockAdjustmentType } from '../types';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
-import i18n from '../i18n';
 
 export const stockAdjustmentsRouter = express.Router();
 
 // GET /api/stock-adjustments - Get all stock adjustments
 stockAdjustmentsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const stockAdjustments = await prisma.stockAdjustment.findMany({
       orderBy: { createdAt: 'desc' }
@@ -20,12 +20,13 @@ stockAdjustmentsRouter.get('/', authenticateToken, async (req: Request, res: Res
     logError(error instanceof Error ? error : 'Error fetching stock adjustments', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.fetchFailed') });
   }
 });
 
 // GET /api/stock-adjustments/:id - Get a specific stock adjustment
 stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
@@ -35,7 +36,7 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
     });
     
     if (!stockAdjustment) {
-      return res.status(404).json({ error: i18n.t('errors:stockAdjustments.notFound') });
+      return res.status(404).json({ error: t('errors:stockAdjustments.notFound') });
     }
     
     res.json(stockAdjustment);
@@ -43,19 +44,20 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
     logError(error instanceof Error ? error : 'Error fetching stock adjustment', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchOneFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.fetchOneFailed') });
   }
 });
 
 // POST /api/stock-adjustments - Create a new stock adjustment
 stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustmentType, 'id' | 'createdAt'>;
     
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (typeof stockItemId === 'string' && !uuidRegex.test(stockItemId)) {
-      return res.status(400).json({ error: i18n.t('errors:stockAdjustments.invalidStockItemIdFormat') });
+      return res.status(400).json({ error: t('errors:stockAdjustments.invalidStockItemIdFormat') });
     }
     
     // Validate that the stock item exists
@@ -64,7 +66,7 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     });
     
     if (!stockItem) {
-      return res.status(400).json({ error: i18n.t('errors:stockAdjustments.invalidStockItemId', { stockItemId }) });
+      return res.status(400).json({ error: t('errors:stockAdjustments.invalidStockItemId', { stockItemId }) });
     }
     
     // Use atomic transaction to ensure both stock update and adjustment record are created together
@@ -99,12 +101,13 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     logError(error instanceof Error ? error : 'Error creating stock adjustment', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.createFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.createFailed') });
   }
 });
 
 // GET /api/stock-adjustments/orphaned-references - Get stock adjustment records that reference non-existent stock items
 stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
@@ -140,12 +143,13 @@ stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req
     logError(error instanceof Error ? error : 'Error fetching orphaned stock adjustment references', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.fetchOrphanedFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.fetchOrphanedFailed') });
   }
 });
 
 // DELETE /api/stock-adjustments/cleanup-orphaned - Remove invalid stock adjustment references
 stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
@@ -178,7 +182,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     
     if (orphanedAdjustments.length === 0) {
       return res.status(200).json({
-        message: i18n.t('errors:stockAdjustments.noOrphanedReferences'),
+        message: t('errors:stockAdjustments.noOrphanedReferences'),
         deletedCount: 0
       });
     }
@@ -194,7 +198,7 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     });
     
     res.status(200).json({
-      message: i18n.t('errors:stockAdjustments.orphanedReferencesRemoved', { count: orphanedIds.length }),
+      message: t('errors:stockAdjustments.orphanedReferencesRemoved', { count: orphanedIds.length }),
       deletedCount: orphanedIds.length,
       removedRecords: orphanedAdjustments
     });
@@ -202,12 +206,13 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
     logError(error instanceof Error ? error : 'Error cleaning up orphaned stock adjustment references', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.cleanupOrphanedFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.cleanupOrphanedFailed') });
   }
 });
 
 // GET /api/stock-adjustments/validate-integrity - Validate data integrity for stock adjustments
 stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
@@ -248,7 +253,7 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     const hasIssues = integrityReport.orphanedAdjustments > 0;
     
     res.status(200).json({
-      message: hasIssues ? i18n.t('errors:stockAdjustments.dataIntegrityIssues') : i18n.t('errors:stockAdjustments.dataIntegrityPassed'),
+      message: hasIssues ? t('errors:stockAdjustments.dataIntegrityIssues') : t('errors:stockAdjustments.dataIntegrityPassed'),
       hasIssues,
       report: integrityReport
     });
@@ -256,7 +261,7 @@ stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req:
     logError(error instanceof Error ? error : 'Error validating data integrity', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('errors:stockAdjustments.validateIntegrityFailed') });
+    res.status(500).json({ error: t('errors:stockAdjustments.validateIntegrityFailed') });
   }
 });
 

@@ -10,7 +10,6 @@ import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistServ
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
 import { logError, logAuthEvent, logDataAccess, logAuditEvent } from '../utils/logger';
 import { toUserDTO, toUserDTOArray, UserResponseDTO } from '../types/dto';
-import i18n from '../i18n';
 
 // Validate JWT_SECRET at module load time - fail fast if invalid
 validateJwtSecret();
@@ -21,6 +20,7 @@ export const usersRouter = express.Router();
 
 // GET /api/users - Get all users
 usersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const users = await prisma.user.findMany();
     // Transform users to DTOs to exclude sensitive fields
@@ -30,12 +30,13 @@ usersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error fetching users', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.fetchFailed') });
+    res.status(500).json({ error: t('users.fetchFailed') });
   }
 });
 
 // GET /api/users/:id - Get a specific user
 usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const user = await prisma.user.findUnique({
@@ -43,7 +44,7 @@ usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     });
     
     if (!user) {
-      return res.status(404).json({ error: i18n.t('users.notFound') });
+      return res.status(404).json({ error: t('users.notFound') });
     }
     
     // Transform user to DTO to exclude sensitive fields
@@ -53,17 +54,18 @@ usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error fetching user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.fetchOneFailed') });
+    res.status(500).json({ error: t('users.fetchOneFailed') });
   }
 });
 
 // POST /api/users - Create a new user
 usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password: string };
     
     if (!password) {
-      return res.status(400).json({ error: i18n.t('users.passwordRequired') });
+      return res.status(400).json({ error: t('users.passwordRequired') });
     }
     
     // Check if username already exists
@@ -72,7 +74,7 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     });
     
     if (existingUser) {
-      return res.status(409).json({ error: i18n.t('users.duplicateUsername') });
+      return res.status(409).json({ error: t('users.duplicateUsername') });
     }
     
     // Hash the password before storing
@@ -100,12 +102,13 @@ usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     logError(error instanceof Error ? error : 'Error creating user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.createFailed') });
+    res.status(500).json({ error: t('users.createFailed') });
   }
 });
 
 // PUT /api/users/:id - Update a user
 usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password?: string };
@@ -126,12 +129,12 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
         correlationId: (req as any).correlationId,
         reason: 'Non-admin user attempted to change user role'
       });
-      return res.status(403).json({ error: i18n.t('errors.authorization.adminPrivilegesRequired') });
+      return res.status(403).json({ error: t('errors.authorization.adminPrivilegesRequired') });
     }
     
     // Non-admin users can only update their own profile
     if (!isAdmin && authenticatedUserId !== targetUserId) {
-      return res.status(403).json({ error: i18n.t('errors.authorization.cannotModifyOtherUser') });
+      return res.status(403).json({ error: t('errors.authorization.cannotModifyOtherUser') });
     }
     
     // Get current user data for audit logging before update
@@ -185,12 +188,13 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
     logError(error instanceof Error ? error : 'Error updating user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.updateFailed') });
+    res.status(500).json({ error: t('users.updateFailed') });
   }
 });
 
 // DELETE /api/users/:id - Delete a user
 usersRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     
@@ -213,17 +217,18 @@ usersRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request,
     logError(error instanceof Error ? error : 'Error deleting user', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.deleteFailed') });
+    res.status(500).json({ error: t('users.deleteFailed') });
   }
 });
 
 // POST /api/users/login - Login endpoint
 usersRouter.post('/login', async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { username, password } = req.body;
     
     if (!username || !password) {
-      return res.status(400).json({ error: i18n.t('auth.missingCredentials') });
+      return res.status(400).json({ error: t('auth.missingCredentials') });
     }
     
     // Find user by username only
@@ -239,7 +244,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
         correlationId: (req as any).correlationId,
         reason: 'User not found'
       });
-      return res.status(401).json({ error: i18n.t('auth.invalidCredentials') });
+      return res.status(401).json({ error: t('auth.invalidCredentials') });
     }
     
     // Compare password using bcrypt
@@ -251,7 +256,7 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
         correlationId: (req as any).correlationId,
         reason: 'Invalid password'
       });
-      return res.status(401).json({ error: i18n.t('auth.invalidCredentials') });
+      return res.status(401).json({ error: t('auth.invalidCredentials') });
     }
     
     // Generate JWT token
@@ -284,18 +289,19 @@ usersRouter.post('/login', async (req: Request, res: Response) => {
     logError(error instanceof Error ? error : 'Error during login', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.loginFailed') });
+    res.status(500).json({ error: t('users.loginFailed') });
   }
 });
 
 // POST /api/auth/logout - Logout endpoint
 usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     // Extract token from Authorization header
     const authHeader = req.headers.authorization;
     
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      return res.status(401).json({ error: i18n.t('auth.tokenMissing') });
+      return res.status(401).json({ error: t('auth.tokenMissing') });
     }
 
     const token = authHeader.substring(7); // Remove 'Bearer ' prefix
@@ -304,7 +310,7 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     const userId = req.user?.id;
     
     if (!userId) {
-      return res.status(401).json({ error: i18n.t('auth.userNotFound') });
+      return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
     // Decode the JWT to get the expiration time
@@ -326,17 +332,18 @@ usersRouter.post('/auth/logout', authenticateToken, async (req: Request, res: Re
     clearCsrfToken(res);
 
     // Return success response
-    res.status(200).json({ message: i18n.t('api.success.logoutSuccess') });
+    res.status(200).json({ message: t('api.success.logoutSuccess') });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error during logout', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.logoutFailed') });
+    res.status(500).json({ error: t('users.logoutFailed') });
   }
 });
 
 // GET /api/users/:id/receipt-preference - Get user's receipt preference
 usersRouter.get('/:id/receipt-preference', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const authenticatedUserId = Number(req.user?.id);
@@ -345,11 +352,11 @@ usersRouter.get('/:id/receipt-preference', authenticateToken, async (req: Reques
     const isAdmin = authenticatedUserRole === 'ADMIN' || authenticatedUserRole === 'Admin';
 
     if (!isAdmin && authenticatedUserId !== targetUserId) {
-      return res.status(403).json({ error: i18n.t('errors.authorization.cannotAccessOtherUser') });
+      return res.status(403).json({ error: t('errors.authorization.cannotAccessOtherUser') });
     }
 
     if (isNaN(targetUserId)) {
-      return res.status(400).json({ error: i18n.t('users.invalidId') });
+      return res.status(400).json({ error: t('users.invalidId') });
     }
 
     const user = await prisma.user.findUnique({
@@ -358,7 +365,7 @@ usersRouter.get('/:id/receipt-preference', authenticateToken, async (req: Reques
     });
 
     if (!user) {
-      return res.status(404).json({ error: i18n.t('users.notFound') });
+      return res.status(404).json({ error: t('users.notFound') });
     }
 
     res.json({ receiptFromPaymentDefault: user.receiptFromPaymentDefault });
@@ -366,12 +373,13 @@ usersRouter.get('/:id/receipt-preference', authenticateToken, async (req: Reques
     logError(error instanceof Error ? error : 'Error fetching receipt preference', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.receiptPreferenceFetchFailed') });
+    res.status(500).json({ error: t('users.receiptPreferenceFetchFailed') });
   }
 });
 
 // PUT /api/users/:id/receipt-preference - Update user's receipt preference
 usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { id } = req.params;
     const { receiptFromPaymentDefault } = req.body;
@@ -381,15 +389,15 @@ usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Reques
     const isAdmin = authenticatedUserRole === 'ADMIN' || authenticatedUserRole === 'Admin';
 
     if (!isAdmin && authenticatedUserId !== targetUserId) {
-      return res.status(403).json({ error: i18n.t('errors.authorization.cannotModifyOtherUser') });
+      return res.status(403).json({ error: t('errors.authorization.cannotModifyOtherUser') });
     }
 
     if (isNaN(targetUserId)) {
-      return res.status(400).json({ error: i18n.t('users.invalidId') });
+      return res.status(400).json({ error: t('users.invalidId') });
     }
 
     if (receiptFromPaymentDefault !== null && receiptFromPaymentDefault !== undefined && typeof receiptFromPaymentDefault !== 'boolean') {
-      return res.status(400).json({ error: i18n.t('users.invalidReceiptPreference') });
+      return res.status(400).json({ error: t('users.invalidReceiptPreference') });
     }
 
     const existingUser = await prisma.user.findUnique({
@@ -397,7 +405,7 @@ usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Reques
     });
 
     if (!existingUser) {
-      return res.status(404).json({ error: i18n.t('users.notFound') });
+      return res.status(404).json({ error: t('users.notFound') });
     }
 
     const user = await prisma.user.update({
@@ -416,29 +424,30 @@ usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Reques
     logError(error instanceof Error ? error : 'Error updating receipt preference', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.receiptPreferenceUpdateFailed') });
+    res.status(500).json({ error: t('users.receiptPreferenceUpdateFailed') });
   }
 });
 
 // POST /api/auth/revoke-all - Revoke all tokens for a user (admin only)
 usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
   try {
     const { userId } = req.body;
     
     if (!userId) {
-      return res.status(400).json({ error: i18n.t('users.userIdRequired') });
+      return res.status(400).json({ error: t('users.userIdRequired') });
     }
     
     // Revoke all tokens for the target user
     await revokeAllUserTokens(userId.toString());
     
     // Return success response
-    res.status(200).json({ message: i18n.t('users.tokensRevoked') });
+    res.status(200).json({ message: t('users.tokensRevoked') });
   } catch (error) {
     logError(error instanceof Error ? error : 'Error revoking all tokens', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: i18n.t('users.revokeFailed') });
+    res.status(500).json({ error: t('users.revokeFailed') });
   }
 });
 

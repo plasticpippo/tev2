@@ -68,7 +68,7 @@ useEffect(() => {
           }
         })
         .catch((err) => {
-          setError(err instanceof Error ? err.message : 'Failed to load draft receipt');
+          setError(err instanceof Error ? err.message : t('receipts.errors.failedToLoadDraft'));
         })
         .finally(() => {
           setIsLoading(false);
@@ -484,7 +484,7 @@ const handleCreateDraft = async () => {
                       : 'bg-green-600 hover:bg-green-500 text-white'
                   }`}
                 >
-                  {isLoading ? t('receipts.issuing') : t('receipts.issue')}
+                  {isLoading ? t('receipts.issuing') : t('receipts.issueButton')}
                 </button>
               </>
             )}

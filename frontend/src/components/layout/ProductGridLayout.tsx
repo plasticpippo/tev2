@@ -330,7 +330,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                           : typeof currentCategoryId === 'number'
                             ? categories.find(c => c.id === currentCategoryId)?.name
                             : currentCategoryId
-                      } • {currentGridColumns} {isMobile ? 'cols (mobile)' : 'cols'}
+                      } • {currentGridColumns} {isMobile ? t('productGrid.colsMobile') : t('productGrid.cols')}
                     </div>
                   </div>
                 )}

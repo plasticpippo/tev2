@@ -202,7 +202,7 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
       if (response.status === 429) {
         setTestResult({
           success: false,
-          message: 'Too many requests. Please wait before trying again.',
+          message: t('settings.emailSettings.tooManyRequests'),
         });
         return;
       }

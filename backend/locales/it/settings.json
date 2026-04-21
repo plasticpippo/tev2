@@ -1,12 +1,12 @@
 {
   "business": {
-    "title": "Informazioni Attivita",
-    "name": "Nome Attivita",
-    "namePlaceholder": "Inserisci nome attivita",
+    "title": "Informazioni Attività",
+    "name": "Nome Attività",
+    "namePlaceholder": "Inserisci nome attività",
     "address": "Indirizzo",
     "addressPlaceholder": "Indirizzo",
-    "city": "Citta",
-    "cityPlaceholder": "Citta",
+    "city": "Città",
+    "cityPlaceholder": "Città",
     "postalCode": "CAP",
     "postalCodePlaceholder": "Codice postale",
     "country": "Paese",
@@ -14,11 +14,11 @@
     "phone": "Numero di Telefono",
     "phonePlaceholder": "+39 0123456789",
     "email": "Indirizzo Email",
-    "emailPlaceholder": "attivita@esempio.com",
+    "emailPlaceholder": "attività@esempio.com",
     "vatNumber": "Partita IVA",
     "vatNumberPlaceholder": "IT01234567890",
-    "saved": "Informazioni attivita salvate con successo",
-    "saveFailed": "Impossibile salvare le informazioni attivita"
+    "saved": "Informazioni attività salvate con successo",
+    "saveFailed": "Impossibile salvare le informazioni attività"
   },
   "receipt": {
     "title": "Configurazione Ricevute",
@@ -54,7 +54,7 @@
     "fromAddress": "Email Mittente",
     "fromAddressPlaceholder": "noreply@esempio.com",
     "fromName": "Nome Mittente",
-    "fromNamePlaceholder": "Nome Attivita",
+    "fromNamePlaceholder": "Nome Attività",
     "saved": "Configurazione email salvata con successo",
     "saveFailed": "Impossibile salvare la configurazione email",
     "testConnection": "Test Connessione",
@@ -62,9 +62,9 @@
     "testFailed": "Connessione fallita"
   },
   "validation": {
-    "emailRequired": "L'indirizzo email e obbligatorio quando l'email e abilitata",
-    "smtpHostRequired": "L'host SMTP e obbligatorio quando l'email e abilitata",
-    "smtpUserRequired": "Il nome utente SMTP e obbligatorio quando l'email e abilitata",
+    "emailRequired": "L'indirizzo email è obbligatorio quando l'email è abilitata",
+    "smtpHostRequired": "L'host SMTP è obbligatorio quando l'email è abilitata",
+    "smtpUserRequired": "Il nome utente SMTP è obbligatorio quando l'email è abilitata",
     "invalidEmail": "Formato email non valido",
     "invalidPort": "La porta deve essere compresa tra 1 e 65535",
     "numberLengthRange": "La lunghezza del numero deve essere compresa tra 1 e 20",

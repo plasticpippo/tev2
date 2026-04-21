@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { LayoutProvider } from '../../contexts/LayoutContext';
 import { ProductGridLayout } from './ProductGridLayout';
 import type { Product, ProductVariant, Category } from '@shared/types';
@@ -24,10 +25,11 @@ export const LayoutIntegrationWrapper: React.FC<LayoutIntegrationWrapperProps> =
   assignedTillId,
   currentCategoryId
 }) => {
+  const { t } = useTranslation();
   if (!assignedTillId) {
     return (
       <div className="flex items-center justify-center h-full text-gray-500">
-        Please assign a till to use the POS system
+        {t('pos.tillAssignmentRequired')}
       </div>
     );
   }
