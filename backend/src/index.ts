@@ -10,6 +10,7 @@ import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } f
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
 import i18n, { initI18n } from './i18n';
 import { initializeScheduler, stopScheduler } from './services/businessDayScheduler';
+import { initializeEmailWorker, stopEmailWorker } from './services/emailQueueWorker';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -264,6 +265,7 @@ const startServer = async () => {
     
     // Initialize business day scheduler for automatic closing
     initializeScheduler();
+    initializeEmailWorker();
     
     const HOST = process.env.HOST || '0.0.0.0';
     
@@ -281,9 +283,10 @@ const startServer = async () => {
 
 // Graceful shutdown handling
 const gracefulShutdown = () => {
-  logInfo('Received shutdown signal, stopping scheduler...');
+  logInfo('Received shutdown signal, stopping services...');
   stopScheduler();
-  logInfo('Scheduler stopped, exiting...');
+  stopEmailWorker();
+  logInfo('Services stopped, exiting...');
   process.exit(0);
 };
 

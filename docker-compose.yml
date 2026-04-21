@@ -181,6 +181,33 @@ services:
       timeout: 5s
       retries: 5
 
+  # MailHog - Mock SMTP server for email testing (internal only)
+  # SMTP port: 1025 (internal), Web UI: 8025 (internal)
+  # Not exposed externally - use for development/testing only
+  # Configure backend settings: host=mailhog, port=1025, secure=false, user/pass=any
+  # Uses in-memory storage by default; messages lost on container restart (acceptable for testing)
+  mailhog:
+    image: mailhog/mailhog:v1.0.1
+    container_name: bar_pos_mailhog
+    labels:
+      app.name: "bar-pos-mailhog"
+      app.version: ${APP_VERSION:-dev}
+      app.build_date: ${BUILD_DATE:-unknown}
+    restart: unless-stopped
+    networks:
+      - internal-network
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+        reservations:
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:8025"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
 networks:
   internal-network:
     internal: true

@@ -123,10 +123,9 @@ function createTransporter(config: EmailConfig): nodemailer.Transporter {
       user: config.user!,
       pass: config.password!,
     },
-    tls: {
-      rejectUnauthorized: true,
-      minVersion: 'TLSv1.2',
-    },
+    tls: config.secure
+      ? { rejectUnauthorized: true, minVersion: 'TLSv1.2' }
+      : { rejectUnauthorized: false },
     connectionTimeout: 10000,
     socketTimeout: 10000,
   } as any);
@@ -149,6 +148,79 @@ async function getTransporter(config: EmailConfig): Promise<nodemailer.Transport
   lastConfigChecksum = checksum;
 
   return transporter;
+}
+
+export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {
+  try {
+    const config = await getEmailConfig();
+
+    if (!config.enabled) {
+      return {
+        success: false,
+        error: 'Email service is disabled',
+        errorCode: 'EMAIL_SERVICE_DISABLED',
+      };
+    }
+
+    const validation = validateSmtpConfig(config);
+    if (!validation.valid) {
+      return {
+        success: false,
+        error: validation.error,
+        errorCode: validation.errorCode,
+      };
+    }
+
+    const transporter = await getTransporter(config);
+
+    const fromAddress = config.fromName
+      ? `"${config.fromName}" <${config.fromAddress}>`
+      : config.fromAddress!;
+
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: fromAddress,
+      to: options.to,
+      subject: options.subject,
+      html: options.html,
+      text: options.text,
+      attachments: options.attachments,
+    };
+
+    logInfo('Sending email', {
+      to: options.to,
+      subject: options.subject,
+      hasAttachments: !!(options.attachments && options.attachments.length > 0),
+    });
+
+    const result = await transporter.sendMail(mailOptions);
+
+    logInfo('Email sent successfully', {
+      to: options.to,
+      subject: options.subject,
+      messageId: result.messageId,
+    });
+
+    return {
+      success: true,
+      messageId: result.messageId,
+    };
+  } catch (error) {
+    const errorCode = mapErrorToCode(error);
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+
+    logError('Failed to send email', {
+      to: options.to,
+      subject: options.subject,
+      error: errorMessage,
+      errorCode,
+    });
+
+    return {
+      success: false,
+      error: errorMessage,
+      errorCode,
+    };
+  }
 }
 
 export async function testSmtpConnection(testRecipient?: string): Promise<SmtpTestResult> {
@@ -248,6 +320,7 @@ text: testText,
     logError('SMTP connection test failed', {
       error: errorMessage,
       errorCode,
+      rawCode: (error as any).code || 'none',
     });
 
     logDebug('SMTP test error details', {
@@ -270,32 +343,78 @@ function mapErrorToCode(error: unknown): string {
   const message = error.message.toLowerCase();
   const code = (error as any).code;
 
-  if (code === 'EAUTH' || message.includes('auth') || message.includes('credentials')) {
+  // Check nodemailer/system error codes first (most reliable)
+  if (code === 'EAUTH') {
     return 'SMTP_AUTH_FAILED';
   }
-  if (code === 'ECONNECTION' || message.includes('connect') || message.includes('network')) {
+  if (code === 'ECONNECTION' || code === 'ECONNREFUSED' || code === 'ECONNRESET') {
     return 'SMTP_CONNECTION_FAILED';
   }
-  if (code === 'ETIMEDOUT' || message.includes('timeout')) {
+  if (code === 'ETIMEDOUT' || code === 'ESOCKETTIMEDOUT') {
     return 'SMTP_TIMEOUT';
   }
-  if (code === 'ESSL' || message.includes('ssl') || message.includes('tls')) {
+  if (code === 'ESSL') {
     return 'SMTP_SSL_ERROR';
   }
-  if (code === 'EMESSAGE' || message.includes('message') || message.includes('invalid')) {
-    return 'SMTP_INVALID_MESSAGE';
-  }
-  if (code === 'EENVELOPE' || message.includes('recipient') || message.includes('sender')) {
+  if (code === 'EENVELOPE') {
     return 'SMTP_INVALID_RECIPIENT';
   }
-  if (code === 'EDNS' || message.includes('dns') || message.includes('resolve')) {
+  if (code === 'EDNS' || code === 'ENOTFOUND') {
     return 'SMTP_DNS_ERROR';
+  }
+
+  // EMESSAGE from nodemailer covers a broad range of SMTP rejections.
+  // Parse the SMTP response code from the message for better classification.
+  if (code === 'EMESSAGE') {
+    // SMTP 4xx = transient failures, 5xx = permanent failures
+    const smtpCodeMatch = message.match(/\b([45]\d{2})\b/);
+    const smtpCode = smtpCodeMatch ? parseInt(smtpCodeMatch[1], 10) : 0;
+
+    // 452 = Insufficient system storage
+    if (smtpCode === 452) {
+      return 'SMTP_ERROR';
+    }
+    // 421 = Service not available / connection closing
+    if (smtpCode === 421) {
+      return 'SMTP_CONNECTION_FAILED';
+    }
+    // 450/451 = Mailbox unavailable / local error in processing
+    if (smtpCode === 450 || smtpCode === 451) {
+      return 'SMTP_ERROR';
+    }
+    // 550/551/552/553 = Mailbox unavailable / user not local / storage / name
+    if (smtpCode >= 550 && smtpCode <= 553) {
+      return 'SMTP_INVALID_RECIPIENT';
+    }
+    // 554 = Transaction failed (often spam/policy rejection)
+    if (smtpCode === 554) {
+      return 'SMTP_BLOCKED';
+    }
+
+    return 'SMTP_INVALID_MESSAGE';
+  }
+
+  // Fall back to message content matching (more specific patterns first)
+  if (message.includes('credentials') || message.includes('login') || message.includes('authenticate')) {
+    return 'SMTP_AUTH_FAILED';
+  }
+  if (message.includes('connect') || message.includes('network') || message.includes('econnrefused') || message.includes('enotfound')) {
+    return 'SMTP_CONNECTION_FAILED';
+  }
+  if (message.includes('timeout')) {
+    return 'SMTP_TIMEOUT';
+  }
+  if (message.includes('ssl') || message.includes('tls') || message.includes('certificate')) {
+    return 'SMTP_SSL_ERROR';
   }
   if (message.includes('rate') || message.includes('limit')) {
     return 'SMTP_RATE_LIMITED';
   }
   if (message.includes('blocked') || message.includes('blacklisted')) {
     return 'SMTP_BLOCKED';
+  }
+  if (message.includes('recipient') || message.includes('sender') || message.includes('envelope')) {
+    return 'SMTP_INVALID_RECIPIENT';
   }
 
   return 'SMTP_ERROR';
@@ -331,5 +450,6 @@ function getSafeErrorMessage(errorCode: string): string {
 
 export default {
   testSmtpConnection,
+  sendEmail,
   getEmailConfig,
 };
