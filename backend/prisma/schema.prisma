@@ -337,9 +337,9 @@ model Settings {
   emailSmtpSecure Boolean @default(false) @map("email_smtp_secure")
   emailEnabled Boolean @default(false) @map("email_enabled")
 
-  allowReceiptFromPaymentModal Boolean @default(false)
-  receiptIssueDefaultSelected Boolean @default(false)
-  receiptIssueMode String @default("immediate")
+  allowReceiptFromPaymentModal Boolean @default(false) @map("allow_receipt_from_payment_modal")
+  receiptIssueDefaultSelected Boolean @default(false) @map("receipt_issue_default_selected")
+  receiptIssueMode String @default("immediate") @map("receipt_issue_mode")
   autoEmailReceipts Boolean @default(false) @map("auto_email_receipts")
 
   businessLogoPath String?
