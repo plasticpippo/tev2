@@ -1050,86 +1050,84 @@ async function seedReceipts(
   const businessCustomer = customers.find((c) => c.name === 'Acme Events Srl');
 
   // Receipt 1: Issued receipt for transaction 1
-  await prisma.receipt.create({
-    data: {
-      receiptNumber: 'R-000001',
-      transactionId: transactions[0].id,
-      customerId: businessCustomer?.id ?? null,
-      status: 'issued',
-      businessSnapshot: JSON.stringify({
-        businessName: 'The Velvet Lounge',
-        businessAddress: '42 Via Roma',
-        businessCity: 'Milan',
-        businessPostalCode: '20121',
-        businessCountry: 'Italy',
-        vatNumber: 'IT12345678901',
-        businessPhone: '+39 02 1234567',
-      }),
-      customerSnapshot: businessCustomer
-        ? JSON.stringify({
-            name: businessCustomer.name,
-            email: businessCustomer.email,
-            vatNumber: businessCustomer.vatNumber,
-            address: businessCustomer.address,
-            city: businessCustomer.city,
-          })
-        : null,
-      subtotal: D('40.00'),
-      tax: D('7.60'),
-      discount: D('0'),
-      tip: D('3.00'),
-      total: D('50.60'),
-      paymentMethod: 'card',
-      itemsSnapshot: JSON.stringify([
-        { name: 'Negroni Regular', price: 11.00, quantity: 2, total: 22.00 },
-        { name: 'IPA Draft', price: 6.00, quantity: 1, total: 6.00 },
-        { name: 'Espresso Martini Regular', price: 12.00, quantity: 1, total: 12.00 },
-      ]),
-      issuedAt: new Date('2026-04-21T14:31:00Z'),
-      issuedBy: adminUser.id,
-      issuedFromPaymentModal: true,
-      generationStatus: 'pending',
-      generationAttempts: 0,
-      version: 0,
-      createdAt: new Date('2026-04-21T14:30:00Z'),
-      updatedAt: new Date('2026-04-21T14:31:00Z'),
-    },
-  });
+  const receipt1Data: Prisma.ReceiptUncheckedCreateInput = {
+    receiptNumber: 'R-000001',
+    transactionId: transactions[0].id,
+    customerId: businessCustomer?.id ?? null,
+    status: 'issued',
+    businessSnapshot: JSON.stringify({
+      businessName: 'The Velvet Lounge',
+      businessAddress: '42 Via Roma',
+      businessCity: 'Milan',
+      businessPostalCode: '20121',
+      businessCountry: 'Italy',
+      vatNumber: 'IT12345678901',
+      businessPhone: '+39 02 1234567',
+    }),
+    customerSnapshot: businessCustomer
+      ? JSON.stringify({
+          name: businessCustomer.name,
+          email: businessCustomer.email,
+          vatNumber: businessCustomer.vatNumber,
+          address: businessCustomer.address,
+          city: businessCustomer.city,
+        })
+      : null,
+    subtotal: D('40.00'),
+    tax: D('7.60'),
+    discount: D('0'),
+    tip: D('3.00'),
+    total: D('50.60'),
+    paymentMethod: 'card',
+    itemsSnapshot: JSON.stringify([
+      { name: 'Negroni Regular', price: 11.00, quantity: 2, total: 22.00 },
+      { name: 'IPA Draft', price: 6.00, quantity: 1, total: 6.00 },
+      { name: 'Espresso Martini Regular', price: 12.00, quantity: 1, total: 12.00 },
+    ]),
+    issuedAt: new Date('2026-04-21T14:31:00Z'),
+    issuedBy: adminUser.id,
+    issuedFromPaymentModal: true,
+    generationStatus: 'pending',
+    generationAttempts: 0,
+    version: 0,
+    createdAt: new Date('2026-04-21T14:30:00Z'),
+    updatedAt: new Date('2026-04-21T14:31:00Z'),
+  };
+  await prisma.receipt.create({ data: receipt1Data });
 
   // Receipt 2: Draft receipt for transaction 2
-  await prisma.receipt.create({
-    data: {
-      receiptNumber: 'R-000002',
-      transactionId: transactions[1].id,
-      status: 'draft',
-      businessSnapshot: JSON.stringify({
-        businessName: 'The Velvet Lounge',
-        businessAddress: '42 Via Roma',
-        businessCity: 'Milan',
-        businessPostalCode: '20121',
-        businessCountry: 'Italy',
-        vatNumber: 'IT12345678901',
-        businessPhone: '+39 02 1234567',
-      }),
-      customerSnapshot: null,
-      subtotal: D('34.00'),
-      tax: D('6.46'),
-      discount: D('0'),
-      tip: D('0'),
-      total: D('40.46'),
-      paymentMethod: 'cash',
-      itemsSnapshot: JSON.stringify([
-        { name: 'Lager Draft', price: 5.00, quantity: 3, total: 15.00 },
-        { name: 'Chianti Classico Glass', price: 7.00, quantity: 2, total: 14.00 },
-        { name: 'Sparkling Water Bottle', price: 2.50, quantity: 2, total: 5.00 },
-      ]),
-      generationStatus: 'pending',
-      generationAttempts: 0,
-      version: 0,
-      createdAt: new Date('2026-04-21T18:15:00Z'),
-      updatedAt: new Date('2026-04-21T18:15:00Z'),
-    },
-  });
+  const receipt2Data: Prisma.ReceiptUncheckedCreateInput = {
+    receiptNumber: 'R-000002',
+    transactionId: transactions[1].id,
+    status: 'draft',
+    businessSnapshot: JSON.stringify({
+      businessName: 'The Velvet Lounge',
+      businessAddress: '42 Via Roma',
+      businessCity: 'Milan',
+      businessPostalCode: '20121',
+      businessCountry: 'Italy',
+      vatNumber: 'IT12345678901',
+      businessPhone: '+39 02 1234567',
+    }),
+    customerSnapshot: null,
+    subtotal: D('34.00'),
+    tax: D('6.46'),
+    discount: D('0'),
+    tip: D('0'),
+    total: D('40.46'),
+    paymentMethod: 'cash',
+    itemsSnapshot: JSON.stringify([
+      { name: 'Lager Draft', price: 5.00, quantity: 3, total: 15.00 },
+      { name: 'Chianti Classico Glass', price: 7.00, quantity: 2, total: 14.00 },
+      { name: 'Sparkling Water Bottle', price: 2.50, quantity: 2, total: 5.00 },
+    ]),
+    generationStatus: 'pending',
+    generationAttempts: 0,
+    version: 0,
+    createdAt: new Date('2026-04-21T18:15:00Z'),
+    updatedAt: new Date('2026-04-21T18:15:00Z'),
+  };
+  await prisma.receipt.create({ data: receipt2Data });
 
   console.log('Created 2 receipts (1 issued, 1 draft)');
 }
