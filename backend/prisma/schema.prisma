@@ -310,13 +310,13 @@ model Settings {
   defaultTaxRate TaxRate? @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
 
   // Business Information Fields
-  businessName String?
-  businessAddress String?
-  businessCity String?
+  businessName String? @map("business_name")
+  businessAddress String? @map("business_address")
+  businessCity String? @map("business_city")
   businessPostalCode String? @map("business_postal_code")
-  businessCountry String?
-  businessPhone String?
-  businessEmail String?
+  businessCountry String? @map("business_country")
+  businessPhone String? @map("business_phone")
+  businessEmail String? @map("business_email")
   vatNumber String? @map("vat_number")
 
   // Receipt Configuration Fields
