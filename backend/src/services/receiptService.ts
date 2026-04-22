@@ -1,4 +1,5 @@
 import { prisma } from '../prisma';
+import { logInfo, logError } from '../utils/logger';
 import { randomUUID } from 'crypto';
 import {
   CreateReceiptInput,
@@ -21,6 +22,7 @@ import { generateNextReceiptNumber } from './receiptNumberService';
 import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
 import { savePDFToStorage, deletePDFFromStorage } from './pdfService';
 import { getLogoUrl } from './logoUploadService';
+import { renderEmailHtml, renderEmailText } from './emailTemplateService';
 
 async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
   const settings = await prisma.settings.findFirst();
@@ -376,12 +378,46 @@ export async function issueDraftReceipt(
       },
     });
     
+    // Auto-email (fire-and-forget) if customer has email and setting is enabled
+    triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt');
+
     return toReceiptDTO(finalReceipt);
   } catch (pdfError) {
-    // Log error but don't fail the issuance - PDF can be regenerated later
     console.error('Failed to generate PDF on receipt issue:', pdfError);
+
+    // Auto-email (fire-and-forget) even if PDF generation failed
+    triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt (PDF failed)');
+
     return toReceiptDTO(updatedReceipt);
   }
+}
+
+function triggerAutoEmail(
+  receiptId: number,
+  customerSnapshot: any,
+  userId: number,
+  context: string
+): void {
+  if (!customerSnapshot?.email) return;
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!emailRegex.test(customerSnapshot.email)) return;
+
+  // Fire-and-forget: do not await, errors are caught internally
+  (async () => {
+    try {
+      const emailSettings = await prisma.settings.findFirst();
+      if (!emailSettings?.autoEmailReceipts || !emailSettings.emailEnabled) return;
+
+      await sendReceiptEmail(receiptId, { email: customerSnapshot.email }, userId);
+      logInfo(`Auto-email queued for ${context}`, { receiptId });
+    } catch (error) {
+      logError(`Failed to auto-email ${context}`, {
+        receiptId,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
+    }
+  })();
 }
 
 export async function voidReceipt(
@@ -540,26 +576,68 @@ export async function sendReceiptEmail(
 
   const businessSnapshot = receipt.businessSnapshot as any;
   const customerSnapshot = receipt.customerSnapshot as any;
+  const itemsSnapshot = receipt.itemsSnapshot as any[];
+  const taxBreakdown = receipt.taxBreakdown as any[];
+
+  const formatAmount = (val: any) => {
+    const num = typeof val === 'object' && val !== null && typeof val.toNumber === 'function'
+      ? val.toNumber()
+      : Number(val);
+    return `EUR ${num.toFixed(2)}`;
+  };
+
+  const templateData = {
+    business: {
+      name: businessSnapshot?.name || 'Business',
+      address: businessSnapshot?.address || null,
+      city: businessSnapshot?.city || null,
+      postalCode: businessSnapshot?.postalCode || null,
+      country: businessSnapshot?.country || null,
+      phone: businessSnapshot?.phone || null,
+      email: businessSnapshot?.email || null,
+      vatNumber: businessSnapshot?.vatNumber || null,
+    },
+    customer: {
+      name: customerSnapshot?.name || 'Valued Customer',
+      email: input.email,
+    },
+    receipt: {
+      number: receipt.receiptNumber,
+      date: receipt.issuedAt ? new Date(receipt.issuedAt).toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' }) : new Date().toLocaleDateString('it-IT'),
+      itemsCount: Array.isArray(itemsSnapshot) ? itemsSnapshot.length : 0,
+      total: formatAmount(receipt.total),
+      transactionId: receipt.transactionId,
+      paymentMethod: receipt.paymentMethod,
+      subtotal: formatAmount(receipt.subtotal),
+      tax: formatAmount(receipt.tax),
+      taxBreakdown: Array.isArray(taxBreakdown)
+        ? taxBreakdown.map((tb: any) => ({
+            rateName: tb.rateName || tb.name || 'Standard',
+            ratePercent: tb.ratePercent || tb.percent || 0,
+            taxableAmount: formatAmount(tb.taxableAmount),
+            taxAmount: formatAmount(tb.taxAmount),
+          }))
+        : [],
+      discount: formatAmount(receipt.discount),
+      discountReason: receipt.discountReason,
+      tip: formatAmount(receipt.tip),
+      items: Array.isArray(itemsSnapshot)
+        ? itemsSnapshot.map((item: any) => ({
+            name: item.name,
+            quantity: item.quantity,
+            price: formatAmount(item.price || item.unitPrice),
+            total: formatAmount(item.total || (Number(item.price || item.unitPrice) * item.quantity)),
+          }))
+        : [],
+    },
+    customMessage: input.message,
+    locale: 'en',
+  };
+
+  const htmlContent = await renderEmailHtml(templateData);
+  const textContent = await renderEmailText(templateData);
 
   const subject = `Receipt ${receipt.receiptNumber} - ${businessSnapshot?.name || 'Business'}`;
-  
-  const htmlContent = generateReceiptEmailHtml(
-    receipt.receiptNumber,
-    receipt.total.toNumber(),
-    receipt.paymentMethod,
-    businessSnapshot,
-    customerSnapshot,
-    input.message
-  );
-
-  const textContent = generateReceiptEmailText(
-    receipt.receiptNumber,
-    receipt.total.toNumber(),
-    receipt.paymentMethod,
-    businessSnapshot,
-    customerSnapshot,
-    input.message
-  );
 
   const includePdf = input.includePdf !== false;
 
@@ -585,107 +663,6 @@ export async function sendReceiptEmail(
     receiptNumber: receipt.receiptNumber,
     createdAt: emailJob.createdAt,
   };
-}
-
-function generateReceiptEmailHtml(
-  receiptNumber: string,
-  total: number,
-  paymentMethod: string,
-  business: any,
-  customer: any,
-  customMessage?: string
-): string {
-  const businessName = business?.name || 'Business';
-  const customerName = customer?.name || 'Valued Customer';
-  
-  let customMessageHtml = '';
-  if (customMessage) {
-    customMessageHtml = `<p style="margin: 20px 0; padding: 15px; background-color: #f5f5f5; border-left: 4px solid #007bff;"><strong>Message:</strong> ${escapeHtml(customMessage)}</p>`;
-  }
-
-  return `<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Receipt ${receiptNumber}</title>
-</head>
-<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
-  <div style="background-color: #f9f9f9; border-radius: 8px; padding: 30px; margin-bottom: 20px;">
-    <h1 style="color: #007bff; margin-bottom: 5px;">${escapeHtml(businessName)}</h1>
-    <p style="color: #666; margin-top: 0;">Thank you for your purchase!</p>
-  </div>
-
-  <p>Dear ${escapeHtml(customerName)},</p>
-
-  <p>Please find attached your receipt <strong>${escapeHtml(receiptNumber)}</strong>.</p>
-
-  ${customMessageHtml}
-
-  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 8px; margin: 20px 0;">
-    <h2 style="margin-top: 0; color: #333;">Receipt Summary</h2>
-    <table style="width: 100%; border-collapse: collapse;">
-      <tr>
-        <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Receipt Number:</strong></td>
-        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">${escapeHtml(receiptNumber)}</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px 0; border-bottom: 1px solid #eee;"><strong>Total:</strong></td>
-        <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">€${total.toFixed(2)}</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px 0;"><strong>Payment Method:</strong></td>
-        <td style="padding: 8px 0; text-align: right;">${escapeHtml(paymentMethod)}</td>
-      </tr>
-    </table>
-  </div>
-
-  <p style="color: #666; font-size: 14px;">Please retain this receipt for your records.</p>
-
-  <hr style="border: none; border-top: 1px solid #eee; margin: 30px 0;">
-
-  <p style="color: #999; font-size: 12px; text-align: center;">
-    This email was sent by ${escapeHtml(businessName)}<br>
-    ${business?.address ? escapeHtml(business.address) : ''}${business?.city ? ', ' + escapeHtml(business.city) : ''}
-  </p>
-</body>
-</html>`;
-}
-
-function generateReceiptEmailText(
-  receiptNumber: string,
-  total: number,
-  paymentMethod: string,
-  business: any,
-  customer: any,
-  customMessage?: string
-): string {
-  const businessName = business?.name || 'Business';
-  const customerName = customer?.name || 'Valued Customer';
-  
-  let customMessageText = '';
-  if (customMessage) {
-    customMessageText = `\nMessage: ${customMessage}\n`;
-  }
-
-  return `${businessName}
-Thank you for your purchase!
-
-Dear ${customerName},
-
-Please find attached your receipt ${receiptNumber}.
-${customMessageText}
-Receipt Summary
----------------
-Receipt Number: ${receiptNumber}
-Total: €${total.toFixed(2)}
-Payment Method: ${paymentMethod}
-
-Please retain this receipt for your records.
-
---
-This email was sent by ${businessName}
-${business?.address || ''}${business?.city ? ', ' + business.city : ''}`;
 }
 
 function escapeHtml(text: string): string {

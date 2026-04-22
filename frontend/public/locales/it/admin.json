@@ -490,6 +490,8 @@
       "title": "Impostazioni Email",
       "description": "Configura il servizio email per l'invio di scontrini e fatture.",
       "enableEmail": "Abilita Servizio Email",
+      "autoEmailReceipts": "Invio Automatico Ricevute",
+      "autoEmailReceiptsDescription": "Invia automaticamente le ricevute ai clienti via email",
       "smtpHost": "Host SMTP",
       "smtpHostPlaceholder": "es., smtp.esempio.com",
       "smtpPort": "Porta SMTP",
@@ -925,6 +927,8 @@
       "allStatuses": "Tutti gli Stati",
       "generationStatus": "Generazione",
       "allGenerationStatuses": "Tutti gli Stati Generazione",
+      "emailStatus": "Stato Email",
+      "allEmailStatuses": "Tutti gli Stati Email",
       "dateFrom": "Da Data",
       "dateTo": "A Data",
       "customer": "Cliente",
@@ -937,6 +941,13 @@
       "completed": "Completato",
       "failed": "Fallito"
     },
+    "emailStatus": {
+      "pending": "In Attesa",
+      "processing": "Elaborazione",
+      "sent": "Inviata",
+      "failed": "Fallita",
+      "notSent": "Non Inviata"
+    },
     "generation": {
       "retry": "Riprova Generazione",
       "confirmRetry": "Riprova generazione scontrino? Verrà tentata nuovamente la generazione dello scontrino.",
@@ -948,6 +959,7 @@
       "customer": "Cliente",
       "status": "Stato",
       "generationStatus": "Generazione",
+      "emailStatus": "Email",
       "total": "Totale",
       "issuedDate": "Data Emissione",
       "actions": "Azioni"
@@ -964,6 +976,8 @@
       "download": "Scarica PDF",
       "email": "Invia Email",
       "sending": "Invio in corso...",
+      "resend": "Reinvia",
+      "resending": "Reinvio in corso...",
       "issue": "Emetti Scontrino",
       "issuing": "Emissione..."
     },

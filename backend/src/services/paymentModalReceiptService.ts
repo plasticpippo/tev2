@@ -6,11 +6,14 @@ import { toReceiptDTO } from '../types/receipt';
 import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
 import { savePDFToStorage } from './pdfService';
 import { getLogoUrl } from './logoUploadService';
+import { sendReceiptEmail } from './receiptService';
+import { logInfo, logError } from '../utils/logger';
 
 interface CreateReceiptFromPaymentOptions {
   transactionId: number;
   userId: number;
   issueMode: 'immediate' | 'draft';
+  customerEmail?: string;
 }
 
 interface ReceiptCreationResult {
@@ -200,6 +203,8 @@ export async function createReceiptFromPayment(
         },
       });
 
+      triggerAutoEmail(updatedReceipt.id, options.customerEmail, undefined).catch(() => {});
+
       return {
         receipt: {
           id: updatedReceipt.id,
@@ -212,6 +217,8 @@ export async function createReceiptFromPayment(
       console.error('Failed to generate PDF immediately, queuing for retry:', pdfError);
 
       await addToQueue(receipt.id);
+
+      triggerAutoEmail(receipt.id, options.customerEmail, undefined).catch(() => {});
 
       return {
         receipt: {
@@ -251,6 +258,37 @@ export async function createReceiptFromPayment(
         status: 'draft',
       },
     };
+  }
+}
+
+async function triggerAutoEmail(
+  receiptId: number,
+  customerEmail: string | undefined,
+  customerName: string | undefined,
+  correlationId?: string
+): Promise<void> {
+  if (!customerEmail) return;
+
+  try {
+    const settings = await prisma.settings.findFirst();
+    if (!settings?.autoEmailReceipts || !settings.emailEnabled) return;
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(customerEmail)) return;
+
+    await sendReceiptEmail(receiptId, { email: customerEmail }, 0);
+
+    logInfo('Auto-email queued for receipt', {
+      receiptId,
+      recipientEmail: customerEmail,
+      correlationId,
+    });
+  } catch (error) {
+    logError('Failed to auto-email receipt', {
+      receiptId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      correlationId,
+    });
   }
 }
 

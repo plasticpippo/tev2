@@ -140,6 +140,7 @@ export interface Settings {
     fromName: string | null;
     smtpSecure: boolean;
     enabled: boolean;
+    autoEmailReceipts: boolean;
   };
   receiptFromPaymentModal?: {
     allowReceiptFromPaymentModal: boolean;

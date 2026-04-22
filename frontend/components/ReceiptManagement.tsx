@@ -4,6 +4,7 @@ import { format } from 'date-fns';
 import type { Receipt, ReceiptStatus, PaginatedResponse, Customer } from '@shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import * as receiptService from '../services/receiptService';
+import type { EmailJob } from '../services/receiptService';
 import { DatePicker } from './analytics/DatePicker';
 
 type GenerationStatus = 'pending' | 'completed' | 'failed';
@@ -43,6 +44,8 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
     const [issuingReceipt, setIssuingReceipt] = useState<Receipt | null>(null);
     const [issueResult, setIssueResult] = useState<{ success: boolean; message?: string } | null>(null);
     const [retryingReceipt, setRetryingReceipt] = useState<number | null>(null);
+    const [emailStatusFilter, setEmailStatusFilter] = useState<string>('all');
+    const [emailJobs, setEmailJobs] = useState<EmailJob[]>([]);
 
     const [customerFilter, setCustomerFilter] = useState<Customer | null>(null);
     const [customerSearch, setCustomerSearch] = useState('');
@@ -164,9 +167,13 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
     setPagination(prev => ({ ...prev, page: newPage }));
   };
   
-  const handleViewDetail = (receipt: Receipt) => {
+  const handleViewDetail = async (receipt: Receipt) => {
     setSelectedReceipt(receipt);
     setShowDetailModal(true);
+    setEmailResult(null);
+    setIssueResult(null);
+    const jobs = await receiptService.getReceiptEmailJobs(receipt.id);
+    setEmailJobs(jobs);
   };
   
   const handleDownloadPdf = async (receipt: Receipt) => {
@@ -265,6 +272,37 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
       setRetryingReceipt(null);
     }
   };
+
+  const getEmailStatusBadgeClass = (status: string | null | undefined) => {
+    switch (status) {
+      case 'sent':
+        return 'bg-green-100 text-green-800';
+      case 'pending':
+      case 'processing':
+        return 'bg-yellow-100 text-yellow-800';
+      case 'failed':
+        return 'bg-red-100 text-red-800';
+      default:
+        return 'bg-slate-100 text-slate-800';
+    }
+  };
+
+  const handleResendEmail = async (receipt: Receipt) => {
+    const email = (receipt as any).customerSnapshot?.email || (receipt as any).emailRecipient;
+    if (!email) {
+      setError(t('receipts.errors.noEmail'));
+      return;
+    }
+
+    try {
+      await receiptService.resendReceiptEmail(receipt.id, email);
+      setEmailResult({ success: true });
+      fetchReceipts();
+      onDataUpdate?.();
+    } catch (err) {
+      setError(t('receipts.errors.resendFailed'));
+    }
+  };
   
   const filteredReceipts = useMemo(() => receipts, [receipts]);
   
@@ -322,7 +360,24 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                   ))}
                 </select>
               </div>
-          
+
+              <div className="w-40">
+                <label htmlFor="email-status" className="block text-sm font-medium text-slate-400 mb-1">
+                  {t('receipts.filters.emailStatus')}
+                </label>
+                <select
+                  id="email-status"
+                  value={emailStatusFilter}
+                  onChange={e => setEmailStatusFilter(e.target.value)}
+                  className="w-full bg-slate-900 p-2 rounded-md border border-slate-700 text-sm"
+                >
+                  <option value="all">{t('receipts.filters.allEmailStatuses')}</option>
+                  <option value="pending">{t('receipts.emailStatus.pending')}</option>
+                  <option value="sent">{t('receipts.emailStatus.sent')}</option>
+                  <option value="failed">{t('receipts.emailStatus.failed')}</option>
+                </select>
+              </div>
+           
 <div className="w-auto">
         <label className="block text-sm font-medium text-slate-400 mb-1">
           {t('receipts.filters.dateFrom')}
@@ -460,6 +515,9 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                     <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">
                       {t('receipts.table.generationStatus')}
                     </th>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-slate-400">
+                      {t('receipts.table.emailStatus')}
+                    </th>
                     <th className="px-4 py-3 text-right text-sm font-medium text-slate-400">
                       {t('receipts.table.total')}
                     </th>
@@ -474,7 +532,7 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
           <tbody className="divide-y divide-slate-700">
             {filteredReceipts.length === 0 ? (
               <tr>
-                <td colSpan={8} className="px-4 py-8 text-center text-slate-500">
+                <td colSpan={9} className="px-4 py-8 text-center text-slate-500">
                   {t('receipts.noReceipts')}
                 </td>
               </tr>
@@ -556,6 +614,30 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                         )}
                       </div>
                     </td>
+                    <td className="px-4 py-3">
+                      {(receipt as any).emailStatus ? (
+                        <div className="flex items-center gap-2">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getEmailStatusBadgeClass((receipt as any).emailStatus)}`}>
+                            {t(`receipts.emailStatus.${(receipt as any).emailStatus}`, (receipt as any).emailStatus)}
+                          </span>
+                          {(receipt as any).emailStatus === 'failed' && (
+                            <button
+                              onClick={() => handleResendEmail(receipt)}
+                              className="p-1 bg-red-600 hover:bg-red-500 rounded transition"
+                              title={t('receipts.actions.resendEmail')}
+                            >
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m0 0H9" />
+                              </svg>
+                            </button>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="px-2 py-1 rounded text-xs font-medium bg-slate-100 text-slate-800">
+                          {t('receipts.emailStatus.notSent')}
+                        </span>
+                      )}
+                    </td>
                     <td className="px-4 py-3 text-sm text-slate-300 text-right">
                       {formatCurrency(receipt.total)}
                     </td>
@@ -607,6 +689,17 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                   </svg>
                                 </button>
+                                {(receipt as any).emailStatus === 'failed' && (receipt.customerSnapshot?.email || (receipt as any).emailRecipient) && (
+                                  <button
+                                    onClick={() => handleResendEmail(receipt)}
+                                    className="p-1.5 bg-orange-600 hover:bg-orange-500 rounded transition"
+                                    title={t('receipts.actions.resendEmail')}
+                                  >
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m0 0H9" />
+                                    </svg>
+                                  </button>
+                                )}
                               </>
                             )}
                           </div>
@@ -660,6 +753,9 @@ export const ReceiptManagement: React.FC<ReceiptManagementProps> = ({ onDataUpda
             issuingReceipt={issuingReceipt?.id === selectedReceipt.id}
             issueResult={issueResult}
             onNavigateToCustomer={onNavigateToCustomer}
+            emailJobs={emailJobs}
+            onResend={handleResendEmail}
+            resending={false}
         />
     )}
     </div>
@@ -677,6 +773,9 @@ interface ReceiptDetailModalProps {
     issuingReceipt: boolean;
     issueResult: { success: boolean; message?: string } | null;
     onNavigateToCustomer?: (customerId: number) => void;
+    emailJobs: EmailJob[];
+    onResend: (receipt: Receipt) => void;
+    resending?: boolean;
 }
 
 const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
@@ -689,9 +788,26 @@ const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
     emailResult,
     issuingReceipt,
     issueResult,
-    onNavigateToCustomer
+    onNavigateToCustomer,
+    emailJobs,
+    onResend,
+    resending
 }) => {
     const { t } = useTranslation('admin');
+
+    const getEmailStatusBadgeClass = (status: string | null | undefined) => {
+        switch (status) {
+            case 'sent':
+                return 'bg-green-100 text-green-800';
+            case 'pending':
+            case 'processing':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'failed':
+                return 'bg-red-100 text-red-800';
+            default:
+                return 'bg-slate-100 text-slate-800';
+        }
+    };
   
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
@@ -878,6 +994,46 @@ const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
             </div>
           </div>
           
+          {emailJobs.length > 0 && (
+            <div>
+              <h4 className="text-sm font-medium text-slate-400 mb-2">Email Delivery Status</h4>
+              <div className="bg-slate-800 rounded-md overflow-hidden">
+                <table className="w-full">
+                  <thead className="bg-slate-700">
+                    <tr>
+                      <th className="px-4 py-2 text-left text-sm text-slate-300">Recipient</th>
+                      <th className="px-4 py-2 text-left text-sm text-slate-300">Status</th>
+                      <th className="px-4 py-2 text-center text-sm text-slate-300">Attempts</th>
+                      <th className="px-4 py-2 text-left text-sm text-slate-300">Date</th>
+                      <th className="px-4 py-2 text-left text-sm text-slate-300">Error</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-700">
+                    {emailJobs.map((job) => (
+                      <tr key={job.id}>
+                        <td className="px-4 py-2 text-sm text-slate-300">{job.recipientEmail}</td>
+                        <td className="px-4 py-2">
+                          <span className={`px-2 py-1 rounded text-xs font-medium ${getEmailStatusBadgeClass(job.status)}`}>
+                            {job.status}
+                          </span>
+                        </td>
+                        <td className="px-4 py-2 text-sm text-slate-300 text-center">{job.attempts}/{job.maxAttempts}</td>
+                        <td className="px-4 py-2 text-sm text-slate-400">
+                          {job.sentAt ? new Date(job.sentAt).toLocaleString() : 
+                           job.processedAt ? new Date(job.processedAt).toLocaleString() : 
+                           new Date(job.createdAt).toLocaleString()}
+                        </td>
+                        <td className="px-4 py-2 text-sm text-red-400 max-w-[200px] truncate">
+                          {job.lastError || '-'}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+          
 {emailResult && (
         <div className={`rounded-md p-3 ${emailResult.success ? 'bg-green-900/30 border border-green-700 text-green-400' : 'bg-red-900/30 border border-red-700 text-red-400'}`}>
           {emailResult.success ? t('receipts.email.success') : emailResult.message}
@@ -931,6 +1087,18 @@ const ReceiptDetailModal: React.FC<ReceiptDetailModalProps> = ({
                 </svg>
                 {emailSending ? t('receipts.buttons.sending') : t('receipts.buttons.email')}
               </button>
+              {emailJobs.some(j => j.status === 'failed') && (
+                <button
+                  onClick={() => onResend(receipt)}
+                  disabled={resending}
+                  className="px-4 py-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-md transition flex items-center gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m0 0H9" />
+                  </svg>
+                  {resending ? t('receipts.buttons.resending') : t('receipts.buttons.resend')}
+                </button>
+              )}
             </>
           )}
         </div>

@@ -380,3 +380,96 @@ export const retryReceiptGeneration = async (id: number): Promise<Receipt> => {
     throw error;
   }
 };
+
+// ============================================================================
+// EMAIL QUEUE API
+// ============================================================================
+
+export interface EmailJob {
+  id: string;
+  receiptId: number;
+  recipientEmail: string;
+  subject: string;
+  status: 'pending' | 'processing' | 'sent' | 'failed' | 'cancelled';
+  attempts: number;
+  maxAttempts: number;
+  lastError: string | null;
+  createdAt: string;
+  processedAt: string | null;
+  sentAt: string | null;
+  nextAttemptAt: string | null;
+  receipt?: {
+    receiptNumber: string;
+  };
+}
+
+export interface EmailQueueOverview {
+  data: EmailJob[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalCount: number;
+    totalPages: number;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
+  };
+}
+
+export const getReceiptEmailJobs = async (receiptId: number): Promise<EmailJob[]> => {
+  try {
+    const result = await makeApiRequest(apiUrl(`/api/receipts/${receiptId}/email-jobs`));
+    return result.data || [];
+  } catch (error) {
+    console.error('Error fetching email jobs:', error);
+    return [];
+  }
+};
+
+export const resendReceiptEmail = async (
+  receiptId: number,
+  email?: string,
+  message?: string
+): Promise<{ message: string; job: any }> => {
+  try {
+    const response = await fetch(apiUrl(`/api/receipts/${receiptId}/resend-email`), {
+      method: 'POST',
+      headers: getAuthHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({
+        ...(email && { email }),
+        ...(message && { message }),
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error?.message || errorData.error || i18n.t('api.httpError', { status: response.status }));
+    }
+
+    const result = await response.json();
+    notifyUpdates();
+    return result;
+  } catch (error) {
+    console.error('Error resending receipt email:', error);
+    throw error;
+  }
+};
+
+export const getEmailQueueOverview = async (
+  status?: string,
+  page: number = 1,
+  limit: number = 20
+): Promise<EmailQueueOverview> => {
+  const params = new URLSearchParams();
+  if (status) params.append('status', status);
+  params.append('page', String(page));
+  params.append('limit', String(limit));
+
+  try {
+    const result = await makeApiRequest(apiUrl(`/api/receipts/email-queue/overview?${params.toString()}`));
+    return result;
+  } catch (error) {
+    console.error('Error fetching email queue overview:', error);
+    throw error;
+  }
+};

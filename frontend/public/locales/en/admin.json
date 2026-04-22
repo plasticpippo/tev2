@@ -457,6 +457,8 @@
       "title": "Email Settings",
       "description": "Configure email service for sending receipts and invoices.",
       "enableEmail": "Enable Email Service",
+      "autoEmailReceipts": "Auto-email Receipts",
+      "autoEmailReceiptsDescription": "Automatically send receipts to customers via email",
       "smtpHost": "SMTP Host",
       "smtpHostPlaceholder": "e.g., smtp.example.com",
       "smtpPort": "SMTP Port",
@@ -925,6 +927,8 @@
         "allStatuses": "All Statuses",
         "generationStatus": "Generation",
         "allGenerationStatuses": "All Generation Statuses",
+        "emailStatus": "Email Status",
+        "allEmailStatuses": "All Email Statuses",
         "dateFrom": "From Date",
         "dateTo": "To Date",
         "customer": "Customer",
@@ -937,6 +941,13 @@
     "completed": "Completed",
     "failed": "Failed"
   },
+  "emailStatus": {
+    "pending": "Pending",
+    "processing": "Processing",
+    "sent": "Sent",
+    "failed": "Failed",
+    "notSent": "Not Sent"
+  },
   "generation": {
     "retry": "Retry Generation",
     "confirmRetry": "Retry receipt generation? This will attempt to generate the receipt again.",
@@ -948,6 +959,7 @@
     "customer": "Customer",
     "status": "Status",
     "generationStatus": "Generation",
+    "emailStatus": "Email",
     "total": "Total",
     "issuedDate": "Issued Date",
     "actions": "Actions"
@@ -975,6 +987,8 @@
       "download": "Download PDF",
       "email": "Send Email",
       "sending": "Sending...",
+      "resend": "Resend",
+      "resending": "Resending...",
       "issue": "Issue Receipt",
       "issuing": "Issuing..."
     },

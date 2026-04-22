@@ -99,7 +99,8 @@ email: {
         fromAddress: null,
         fromName: null,
         smtpSecure: false,
-        enabled: false
+        enabled: false,
+        autoEmailReceipts: false
       },
       receiptFromPaymentModal: {
         allowReceiptFromPaymentModal: false,
@@ -156,7 +157,8 @@ email: {
       fromAddress: settings.emailFromAddress,
       fromName: settings.emailFromName,
       smtpSecure: settings.emailSmtpSecure,
-      enabled: settings.emailEnabled
+      enabled: settings.emailEnabled,
+      autoEmailReceipts: settings.autoEmailReceipts
     },
     receiptFromPaymentModal: {
       allowReceiptFromPaymentModal: settings.allowReceiptFromPaymentModal ?? false,
@@ -359,6 +361,7 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
           emailFromName: email?.fromName !== undefined ? email.fromName : existingSettings.emailFromName,
 emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSettings.emailSmtpSecure,
       emailEnabled: email?.enabled !== undefined ? email.enabled : existingSettings.emailEnabled,
+      autoEmailReceipts: email?.autoEmailReceipts !== undefined ? email.autoEmailReceipts : existingSettings.autoEmailReceipts,
       allowReceiptFromPaymentModal: receiptFromPaymentModal?.allowReceiptFromPaymentModal !== undefined ? receiptFromPaymentModal.allowReceiptFromPaymentModal : existingSettings.allowReceiptFromPaymentModal,
       receiptIssueDefaultSelected: receiptFromPaymentModal?.receiptIssueDefaultSelected !== undefined ? receiptFromPaymentModal.receiptIssueDefaultSelected : existingSettings.receiptIssueDefaultSelected,
       receiptIssueMode: receiptFromPaymentModal?.receiptIssueMode !== undefined ? receiptFromPaymentModal.receiptIssueMode : existingSettings.receiptIssueMode,
@@ -400,6 +403,7 @@ emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSe
           emailFromName: email?.fromName ?? null,
 emailSmtpSecure: email?.smtpSecure ?? false,
       emailEnabled: email?.enabled ?? false,
+      autoEmailReceipts: email?.autoEmailReceipts ?? false,
       allowReceiptFromPaymentModal: receiptFromPaymentModal?.allowReceiptFromPaymentModal ?? false,
       receiptIssueDefaultSelected: receiptFromPaymentModal?.receiptIssueDefaultSelected ?? false,
       receiptIssueMode: receiptFromPaymentModal?.receiptIssueMode ?? 'immediate',
@@ -458,7 +462,8 @@ email: {
       fromAddress: settings.emailFromAddress,
       fromName: settings.emailFromName,
       smtpSecure: settings.emailSmtpSecure,
-      enabled: settings.emailEnabled
+      enabled: settings.emailEnabled,
+      autoEmailReceipts: settings.autoEmailReceipts
     },
     receiptFromPaymentModal: {
       allowReceiptFromPaymentModal: settings.allowReceiptFromPaymentModal ?? false,

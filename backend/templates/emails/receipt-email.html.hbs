@@ -15,66 +15,203 @@
     </xml>
   </noscript>
   <![endif]-->
+  <!--[if mso]>
+  <style type="text/css">
+    body, table, td { font-family: Arial, sans-serif !important; }
+    td { padding: 0; }
+  </style>
+  <![endif]-->
 </head>
 <body style="margin: 0; padding: 0; background-color: #f4f4f7; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;">
   <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt;">
     <tr>
-      <td align="center" style="padding: 40px 20px;">
-        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; background-color: #ffffff; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+      <td align="center" style="padding: 40px 16px;">
+        <!--[if mso]>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="600" align="center" style="border-collapse: collapse;"><tr><td>
+        <![endif]-->
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; max-width: 600px;">
           <tr>
-            <td style="padding: 0;">
+            <td style="padding: 0; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);">
+
               <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                 <tr>
-                  <td style="background-color: #1a1a2e; padding: 30px 40px; border-radius: 8px 8px 0 0; text-align: center;">
-                    <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; line-height: 1.3;">{{business.name}}</h1>
+                  <td style="background-color: #1a1a2e; padding: 32px 40px; text-align: center;">
+                    <h1 style="margin: 0; color: #ffffff; font-size: 24px; font-weight: 600; line-height: 1.3; letter-spacing: 0.5px;">{{business.name}}</h1>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 36px 40px 12px 40px;">
+                    <h2 style="margin: 0 0 8px 0; color: #1a1a2e; font-size: 20px; font-weight: 600;">{{t 'email.receipt.greeting' name=customer.name}}</h2>
                   </td>
                 </tr>
                 <tr>
-                  <td style="padding: 40px 40px 20px 40px;">
-                    <h2 style="margin: 0 0 10px 0; color: #1a1a2e; font-size: 20px; font-weight: 600;">{{t 'email.receipt.greeting' name=customer.name}}</h2>
+                  <td style="padding: 0 40px 32px 40px;">
+                    <p style="margin: 0; color: #555555; font-size: 15px; line-height: 1.6;">{{t 'email.receipt.body'}}</p>
                   </td>
                 </tr>
-                <tr>
-                  <td style="padding: 0 40px 30px 40px;">
-                    <p style="margin: 0 0 20px 0; color: #555555; font-size: 15px; line-height: 1.6;">{{t 'email.receipt.body'}}</p>
-                  </td>
-                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                 <tr>
                   <td style="padding: 0 40px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                      <tr>
+                        <td style="padding: 16px 0 12px 0; border-bottom: 2px solid #1a1a2e;">
+                          <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.item'}}</span>
+                        </td>
+                        <td style="padding: 16px 0 12px 0; border-bottom: 2px solid #1a1a2e; text-align: center; width: 60px;">
+                          <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.qty'}}</span>
+                        </td>
+                        <td style="padding: 16px 0 12px 0; border-bottom: 2px solid #1a1a2e; text-align: right; width: 90px;">
+                          <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.price'}}</span>
+                        </td>
+                        <td style="padding: 16px 0 12px 0; border-bottom: 2px solid #1a1a2e; text-align: right; width: 90px;">
+                          <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.total'}}</span>
+                        </td>
+                      </tr>
+                      {{#each receipt.items}}
+                      <tr>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                          <span style="color: #333333; font-size: 14px; font-weight: 500;">{{name}}</span>
+                        </td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: center;">
+                          <span style="color: #555555; font-size: 14px;">{{quantity}}</span>
+                        </td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                          <span style="color: #555555; font-size: 14px;">{{price}}</span>
+                        </td>
+                        <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                          <span style="color: #333333; font-size: 14px; font-weight: 600;">{{total}}</span>
+                        </td>
+                      </tr>
+                      {{/each}}
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 24px 40px 0 40px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; background-color: #f8f9fa; border-radius: 8px;">
                       <tr>
-                        <td style="padding: 25px;">
+                        <td style="padding: 24px;">
                           <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                             <tr>
-                              <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
-                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.receiptNumber'}}</span>
+                              <td style="padding: 0 0 12px 0;">
+                                <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'email.receipt.receiptNumber'}}</span>
                               </td>
-                              <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                              <td style="padding: 0 0 12px 0; text-align: right;">
                                 <span style="color: #1a1a2e; font-size: 15px; font-weight: 600;">{{receipt.number}}</span>
                               </td>
                             </tr>
+                            {{#if receipt.transactionId}}
                             <tr>
-                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
-                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.date'}}</span>
+                              <td style="padding: 0 0 12px 0;">
+                                <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.transactionRef'}}</span>
                               </td>
-                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
+                              <td style="padding: 0 0 12px 0; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 15px;">{{receipt.transactionId}}</span>
+                              </td>
+                            </tr>
+                            {{/if}}
+                            <tr>
+                              <td style="padding: 0 0 12px 0;">
+                                <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'email.receipt.date'}}</span>
+                              </td>
+                              <td style="padding: 0 0 12px 0; text-align: right;">
                                 <span style="color: #1a1a2e; font-size: 15px;">{{receipt.date}}</span>
                               </td>
                             </tr>
+                            {{#if receipt.paymentMethod}}
                             <tr>
-                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb;">
-                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.itemsCount'}}</span>
+                              <td style="padding-bottom: 0;">
+                                <span style="color: #1a1a2e; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{t 'receipt.paymentMethod'}}</span>
                               </td>
-                              <td style="padding: 15px 0; border-bottom: 1px solid #e5e7eb; text-align: right;">
-                                <span style="color: #1a1a2e; font-size: 15px;">{{receipt.itemsCount}}</span>
+                              <td style="padding-bottom: 0; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 15px;">{{receipt.paymentMethod}}</span>
                               </td>
                             </tr>
+                            {{/if}}
+                          </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 24px 40px 0 40px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                      {{#if receipt.subtotal}}
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #666666; font-size: 14px;">{{t 'receipt.subtotal'}}</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: right;">
+                          <span style="color: #555555; font-size: 14px;">{{receipt.subtotal}}</span>
+                        </td>
+                      </tr>
+                      {{/if}}
+
+                      {{#if receipt.taxBreakdown}}
+                        {{#each receipt.taxBreakdown}}
+                        <tr>
+                          <td style="padding: 4px 0;">
+                            <span style="color: #666666; font-size: 13px;">{{rateName}} ({{ratePercent}}%)</span>
+                          </td>
+                          <td style="padding: 4px 0; text-align: right;">
+                            <span style="color: #555555; font-size: 13px;">{{taxAmount}}</span>
+                          </td>
+                        </tr>
+                        {{/each}}
+                      {{else if receipt.tax}}
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #666666; font-size: 14px;">{{t 'receipt.tax'}}</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: right;">
+                          <span style="color: #555555; font-size: 14px;">{{receipt.tax}}</span>
+                        </td>
+                      </tr>
+                      {{/if}}
+
+                      {{#if receipt.discount}}
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #666666; font-size: 14px;">{{t 'receipt.discount'}}{{#if receipt.discountReason}} ({{receipt.discountReason}}){{/if}}</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: right;">
+                          <span style="color: #4f46e5; font-size: 14px; font-weight: 500;">-{{receipt.discount}}</span>
+                        </td>
+                      </tr>
+                      {{/if}}
+
+                      {{#if receipt.tip}}
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #666666; font-size: 14px;">{{t 'receipt.tip'}}</span>
+                        </td>
+                        <td style="padding: 8px 0; text-align: right;">
+                          <span style="color: #555555; font-size: 14px;">{{receipt.tip}}</span>
+                        </td>
+                      </tr>
+                      {{/if}}
+
+                      <tr>
+                        <td colspan="2" style="padding: 12px 0 0 0;">
+                          <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                             <tr>
-                              <td style="padding-top: 15px;">
-                                <span style="color: #666666; font-size: 13px;">{{t 'email.receipt.total'}}</span>
+                              <td style="border-top: 2px solid #1a1a2e; padding-top: 12px;">
+                                <span style="color: #1a1a2e; font-size: 18px; font-weight: 700;">{{t 'receipt.grandTotal'}}</span>
                               </td>
-                              <td style="padding-top: 15px; text-align: right;">
-                                <span style="color: #1a1a2e; font-size: 18px; font-weight: 700;">{{receipt.total}}</span>
+                              <td style="border-top: 2px solid #1a1a2e; padding-top: 12px; text-align: right;">
+                                <span style="color: #1a1a2e; font-size: 22px; font-weight: 700;">{{receipt.total}}</span>
                               </td>
                             </tr>
                           </table>
@@ -83,32 +220,51 @@
                     </table>
                   </td>
                 </tr>
+              </table>
+
+              {{#if customMessage}}
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                 <tr>
-                  <td style="padding: 30px 40px 40px 40px;">
+                  <td style="padding: 24px 40px 0 40px;">
+                    <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; background-color: #eef2ff; border-left: 4px solid #4f46e5; border-radius: 0 6px 6px 0;">
+                      <tr>
+                        <td style="padding: 16px 20px;">
+                          <p style="margin: 0; color: #333333; font-size: 14px; line-height: 1.6;">{{customMessage}}</p>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+              {{/if}}
+
+              <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
+                <tr>
+                  <td style="padding: 32px 40px 16px 40px;">
                     <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse;">
                       <tr>
-                        <td style="padding-bottom: 15px; border-bottom: 1px solid #e5e7eb;">
-                          <p style="margin: 0; color: #1a1a2e; font-size: 14px; font-weight: 600;">{{t 'email.receipt.thankYou'}}</p>
+                        <td style="padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+                          <span style="color: #1a1a2e; font-size: 14px; font-weight: 600;">{{t 'email.receipt.thankYou'}}</span>
                         </td>
                       </tr>
                       <tr>
-                        <td style="padding-top: 20px;">
-                          <p style="margin: 0 0 5px 0; color: #555555; font-size: 13px; line-height: 1.5;">
-                            <strong style="color: #1a1a2e;">{{business.name}}</strong>
-                          </p>
+                        <td style="padding-top: 16px;">
+                          <p style="margin: 0 0 4px 0; color: #1a1a2e; font-size: 14px; font-weight: 600;">{{business.name}}</p>
                           {{#if business.address}}
-                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.address}}</p>
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.address}}</p>
                           {{/if}}
                           {{#if business.city}}
-                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.city}}{{#if business.country}}, {{business.country}}{{/if}}</p>
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.city}}{{#if business.postalCode}} {{business.postalCode}}{{/if}}{{#if business.country}}, {{business.country}}{{/if}}</p>
+                          {{else if business.postalCode}}
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.postalCode}}{{#if business.country}}, {{business.country}}{{/if}}</p>
                           {{else if business.country}}
-                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.country}}</p>
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{business.country}}</p>
                           {{/if}}
                           {{#if business.phone}}
-                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.phone'}}: {{business.phone}}</p>
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.phone'}}: {{business.phone}}</p>
                           {{/if}}
                           {{#if business.email}}
-                          <p style="margin: 0 0 3px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.email'}}: <a href="mailto:{{business.email}}" style="color: #4f46e5; text-decoration: none;">{{business.email}}</a></p>
+                          <p style="margin: 0 0 2px 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.email'}}: <a href="mailto:{{business.email}}" style="color: #4f46e5; text-decoration: none;">{{business.email}}</a></p>
                           {{/if}}
                           {{#if business.vatNumber}}
                           <p style="margin: 0; color: #666666; font-size: 13px; line-height: 1.5;">{{t 'email.receipt.vatNumber'}}: {{business.vatNumber}}</p>
@@ -119,17 +275,23 @@
                   </td>
                 </tr>
               </table>
+
             </td>
           </tr>
         </table>
-        <table role="presentation" cellpadding="0" cellspacing="0" width="600" style="border-collapse: collapse;">
+
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%" style="border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; max-width: 600px;">
           <tr>
-            <td style="padding: 30px 40px; text-align: center;">
-              <p style="margin: 0 0 10px 0; color: #888888; font-size: 12px; line-height: 1.5;">{{t 'email.receipt.footer' businessName=business.name}}</p>
+            <td style="padding: 24px 40px; text-align: center;">
+              <p style="margin: 0 0 8px 0; color: #888888; font-size: 12px; line-height: 1.5;">{{t 'email.receipt.footer' businessName=business.name}}</p>
               <p style="margin: 0; color: #aaaaaa; font-size: 11px; line-height: 1.5;">{{t 'email.receipt.disclaimer'}}</p>
             </td>
           </tr>
         </table>
+
+        <!--[if mso]>
+        </td></tr></table>
+        <![endif]-->
       </td>
     </tr>
   </table>

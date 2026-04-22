@@ -66,6 +66,7 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
   // Track enabled and secure separately since they're toggles
   const [enabled, setEnabled] = useState(settings?.enabled ?? false);
   const [smtpSecure, setSmtpSecure] = useState(settings?.smtpSecure ?? true);
+  const [autoEmailReceipts, setAutoEmailReceipts] = useState(settings?.autoEmailReceipts ?? false);
 
   // Memoized email settings for validation and test connection
   const emailSettings: Settings['email'] = useMemo(() => ({
@@ -77,7 +78,8 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
     fromAddress: localValues.fromAddress || null,
     fromName: localValues.fromName || null,
     smtpSecure,
-  }), [enabled, localValues, smtpSecure, passwordModified, settings?.smtpPassword]);
+    autoEmailReceipts,
+  }), [enabled, localValues, smtpSecure, autoEmailReceipts, passwordModified, settings?.smtpPassword]);
 
   // Debounced parent update (300ms)
   const debouncedUpdate = useDebouncedCallback((newSettings: Settings['email']) => {
@@ -96,6 +98,7 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
     }));
     setEnabled(settings?.enabled ?? false);
     setSmtpSecure(settings?.smtpSecure ?? true);
+    setAutoEmailReceipts(settings?.autoEmailReceipts ?? false);
   }, [settings]); // Only run when settings object reference changes
 
   const validateEmail = useCallback((email: string): boolean => {
@@ -152,9 +155,11 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
     });
   }, [emailSettings, debouncedUpdate]);
 
-  const handleToggleChange = useCallback((field: 'enabled' | 'smtpSecure', value: boolean) => {
+  const handleToggleChange = useCallback((field: 'enabled' | 'smtpSecure' | 'autoEmailReceipts', value: boolean) => {
     if (field === 'enabled') {
       setEnabled(value);
+    } else if (field === 'autoEmailReceipts') {
+      setAutoEmailReceipts(value);
     } else {
       setSmtpSecure(value);
     }
@@ -248,6 +253,23 @@ export const EmailSettings: React.FC<EmailSettingsProps> = ({ settings, onUpdate
           <label htmlFor="emailEnabled" className="text-slate-300 font-medium">
             {t('settings.emailSettings.enableEmail')}
           </label>
+        </div>
+
+        {/* Auto-email Receipts Toggle */}
+        <div className="flex items-center gap-3">
+          <input
+            type="checkbox"
+            id="autoEmailReceipts"
+            checked={autoEmailReceipts}
+            onChange={(e) => handleToggleChange('autoEmailReceipts', e.target.checked)}
+            className="h-5 w-5 rounded text-amber-500 bg-slate-700 border-slate-600 focus:ring-amber-500"
+          />
+          <div>
+            <label htmlFor="autoEmailReceipts" className="text-slate-300 font-medium">
+              {t('settings.emailSettings.autoEmailReceipts')}
+            </label>
+            <p className="text-slate-500 text-sm">{t('settings.emailSettings.autoEmailReceiptsDescription')}</p>
+          </div>
         </div>
 
         {/* SMTP Host */}

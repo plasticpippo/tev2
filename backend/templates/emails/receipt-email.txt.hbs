@@ -1,33 +1,73 @@
 {{t 'email.receipt.subject'}}
-==========================================
+========================================================================
 
 {{business.name}}
-------------------------------------------
+------------------------------------------------------------------------
 
 {{t 'email.receipt.greeting' name=customer.name}}
 
 {{t 'email.receipt.body'}}
 
-RECEIPT SUMMARY
-------------------------------------------
-{{t 'email.receipt.receiptNumber'}}: {{receipt.number}}
-{{t 'email.receipt.date'}}:          {{receipt.date}}
-{{t 'email.receipt.itemsCount'}}:    {{receipt.itemsCount}}
-{{t 'email.receipt.total'}}:         {{receipt.total}}
+------------------------------------------------------------------------
+ITEMS
+------------------------------------------------------------------------
+{{#each receipt.items}}
+  {{name}}
+  {{t 'email.receipt.quantity'}}: {{quantity}}  {{t 'email.receipt.price'}}: {{price}}  {{t 'email.receipt.total'}}: {{total}}
+{{/each}}
 
-------------------------------------------
+------------------------------------------------------------------------
+TRANSACTION DETAILS
+------------------------------------------------------------------------
+{{t 'email.receipt.receiptNumber'}}:    {{receipt.number}}
+{{t 'email.receipt.transactionId'}}:    {{receipt.transactionId}}
+{{t 'email.receipt.date'}}:             {{receipt.date}}
+{{t 'email.receipt.paymentMethod'}}:    {{receipt.paymentMethod}}
+
+------------------------------------------------------------------------
+FINANCIAL SUMMARY
+------------------------------------------------------------------------
+{{t 'email.receipt.subtotal'}}:         {{receipt.subtotal}}
+{{#if receipt.taxBreakdown}}
+{{#each receipt.taxBreakdown}}
+  {{rateName}} ({{ratePercent}}%):
+    {{t 'email.receipt.taxableAmount'}}: {{taxableAmount}}
+    {{t 'email.receipt.taxAmount'}}:     {{taxAmount}}
+{{/each}}
+{{else}}
+{{t 'email.receipt.tax'}}:              {{receipt.tax}}
+{{/if}}
+{{#if receipt.discount}}
+{{t 'email.receipt.discount'}}:         -{{receipt.discount}}
+{{#if receipt.discountReason}}
+  {{receipt.discountReason}}
+{{/if}}
+{{/if}}
+{{#if receipt.tip}}
+{{t 'email.receipt.tip'}}:              {{receipt.tip}}
+{{/if}}
+                                        ----------------
+{{t 'email.receipt.total'}}:            {{receipt.total}}
+
+{{#if customMessage}}
+
+------------------------------------------------------------------------
+{{customMessage}}
+------------------------------------------------------------------------
+{{/if}}
+
 {{t 'email.receipt.thankYou'}}
 
 {{business.name}}
 {{#if business.address}}{{business.address}}
-{{/if}}{{#if business.city}}{{business.city}}{{#if business.country}}, {{business.country}}{{/if}}
-{{else if business.country}}{{business.country}}
-{{/if}}{{#if business.phone}}{{t 'email.receipt.phone'}}: {{business.phone}}
+{{/if}}{{#if business.city}}{{business.city}}{{#if business.postalCode}} {{business.postalCode}}{{/if}}{{/if}}{{#if business.country}}
+{{business.country}}{{/if}}
+{{#if business.phone}}{{t 'email.receipt.phone'}}: {{business.phone}}
 {{/if}}{{#if business.email}}{{t 'email.receipt.email'}}: {{business.email}}
 {{/if}}{{#if business.vatNumber}}{{t 'email.receipt.vatNumber'}}: {{business.vatNumber}}
 {{/if}}
 
-------------------------------------------
+------------------------------------------------------------------------
 {{t 'email.receipt.footer' businessName=business.name}}
 
 {{t 'email.receipt.disclaimer'}}

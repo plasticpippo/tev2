@@ -340,6 +340,7 @@ model Settings {
   allowReceiptFromPaymentModal Boolean @default(false)
   receiptIssueDefaultSelected Boolean @default(false)
   receiptIssueMode String @default("immediate")
+  autoEmailReceipts Boolean @default(false) @map("auto_email_receipts")
 
   businessLogoPath String?
   businessLegalText String?

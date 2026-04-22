@@ -142,6 +142,7 @@ export interface EmailConfig {
   fromName: string | null;
   smtpSecure: boolean;
   enabled: boolean;
+  autoEmailReceipts: boolean;
 }
 
 export interface Settings {

@@ -1,0 +1,93 @@
+- generic [ref=e2]:
+  - generic [ref=e134]:
+    - banner [ref=e135]:
+      - generic [ref=e137]:
+        - heading "Admin Panel" [level=1] [ref=e138]
+        - paragraph [ref=e139]: Logged in as Admin User
+      - generic [ref=e140]:
+        - button "Switch to POS" [ref=e141] [cursor=pointer]
+        - button "Logout" [ref=e142] [cursor=pointer]
+    - generic [ref=e143]:
+      - navigation [ref=e144]:
+        - button "Collapse sidebar" [ref=e146] [cursor=pointer]:
+          - img [ref=e147]
+        - button "Dashboard" [ref=e350] [cursor=pointer]:
+          - img [ref=e352]
+          - generic [ref=e354]: Dashboard
+        - button "Analytics" [ref=e355] [cursor=pointer]:
+          - img [ref=e357]
+          - generic [ref=e359]: Analytics
+        - button "Profit Analytics" [ref=e360] [cursor=pointer]:
+          - img [ref=e362]
+          - generic [ref=e364]: Profit Analytics
+        - button "Transactions" [ref=e365] [cursor=pointer]:
+          - img [ref=e367]
+          - generic [ref=e369]: Transactions
+        - button "Receipts 13" [ref=e370] [cursor=pointer]:
+          - img [ref=e372]
+          - generic [ref=e374]: Receipts
+          - button "13" [ref=e375]
+        - button "Activity Log" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Activity Log
+        - button "Daily Closing Summary" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Daily Closing Summary
+        - button "Customers" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Customers
+        - button "Products" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Products
+        - button "Categories" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Categories
+        - button "Stock Items" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Stock Items
+        - button "Inventory" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Inventory
+        - button "Cost Management" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Cost Management
+        - button "Inventory Counts" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Inventory Counts
+        - button "Variance Reports" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Variance Reports
+        - button "Users" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e430]: Users
+        - button "Tills" [ref=e431] [cursor=pointer]:
+          - img [ref=e433]
+          - generic [ref=e435]: Tills
+        - button "Tables & Layout" [ref=e436] [cursor=pointer]:
+          - img [ref=e438]
+          - generic [ref=e440]: Tables & Layout
+        - button "Itemised Consumption" [ref=e441] [cursor=pointer]:
+          - img [ref=e443]
+          - generic [ref=e445]: Itemised Consumption
+        - button "Settings" [ref=e446] [cursor=pointer]:
+          - img [ref=e448]
+          - generic [ref=e451]: Settings
+      - main [ref=e255]:
+        - generic [ref=e452]:
+          - generic [ref=e453]:
+            - button "Language" [ref=e454] [cursor=pointer]
+            - button "Tax Settings" [ref=e455] [cursor=pointer]
+            - button "Business Day" [ref=e456] [cursor=pointer]
+            - button "Business Info" [ref=e457] [cursor=pointer]
+            - button "Backup" [ref=e458] [cursor=pointer]
+            - button "Email" [ref=e459] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e460] [cursor=pointer]
+          - generic [ref=e462]:
+            - heading "Language" [level=3] [ref=e463]
+            - generic [ref=e464]:
+              - paragraph [ref=e465]: Select your preferred language for the admin panel.
+              - button "Change Language" [ref=e468] [cursor=pointer]:
+                - generic [ref=e469]: EN
+                - img [ref=e470]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

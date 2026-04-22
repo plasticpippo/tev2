@@ -1,0 +1,121 @@
+- generic [ref=e2]:
+  - generic [ref=e115]:
+    - banner [ref=e116]:
+      - generic [ref=e118]:
+        - heading "Admin Panel" [level=1] [ref=e119]
+        - paragraph [ref=e120]: Logged in as Admin User
+      - generic [ref=e121]:
+        - button "Switch to POS" [ref=e122] [cursor=pointer]
+        - button "Logout" [ref=e123] [cursor=pointer]
+    - generic [ref=e124]:
+      - navigation [ref=e125]:
+        - button "Collapse sidebar" [ref=e127] [cursor=pointer]:
+          - img [ref=e128]
+        - button "Dashboard" [ref=e331] [cursor=pointer]:
+          - img [ref=e333]
+          - generic [ref=e335]: Dashboard
+        - button "Analytics" [ref=e336] [cursor=pointer]:
+          - img [ref=e338]
+          - generic [ref=e340]: Analytics
+        - button "Profit Analytics" [ref=e341] [cursor=pointer]:
+          - img [ref=e343]
+          - generic [ref=e345]: Profit Analytics
+        - button "Transactions" [ref=e346] [cursor=pointer]:
+          - img [ref=e348]
+          - generic [ref=e350]: Transactions
+        - button "Receipts 13" [ref=e351] [cursor=pointer]:
+          - img [ref=e353]
+          - generic [ref=e355]: Receipts
+          - button "13" [ref=e356]
+        - button "Activity Log" [ref=e357] [cursor=pointer]:
+          - img [ref=e359]
+          - generic [ref=e361]: Activity Log
+        - button "Daily Closing Summary" [ref=e362] [cursor=pointer]:
+          - img [ref=e364]
+          - generic [ref=e366]: Daily Closing Summary
+        - button "Customers" [ref=e367] [cursor=pointer]:
+          - img [ref=e369]
+          - generic [ref=e371]: Customers
+        - button "Products" [ref=e372] [cursor=pointer]:
+          - img [ref=e374]
+          - generic [ref=e376]: Products
+        - button "Categories" [ref=e377] [cursor=pointer]:
+          - img [ref=e379]
+          - generic [ref=e381]: Categories
+        - button "Stock Items" [ref=e382] [cursor=pointer]:
+          - img [ref=e384]
+          - generic [ref=e386]: Stock Items
+        - button "Inventory" [ref=e387] [cursor=pointer]:
+          - img [ref=e389]
+          - generic [ref=e391]: Inventory
+        - button "Cost Management" [ref=e392] [cursor=pointer]:
+          - img [ref=e394]
+          - generic [ref=e396]: Cost Management
+        - button "Inventory Counts" [ref=e397] [cursor=pointer]:
+          - img [ref=e399]
+          - generic [ref=e401]: Inventory Counts
+        - button "Variance Reports" [ref=e402] [cursor=pointer]:
+          - img [ref=e404]
+          - generic [ref=e406]: Variance Reports
+        - button "Users" [ref=e407] [cursor=pointer]:
+          - img [ref=e409]
+          - generic [ref=e411]: Users
+        - button "Tills" [ref=e412] [cursor=pointer]:
+          - img [ref=e414]
+          - generic [ref=e416]: Tills
+        - button "Tables & Layout" [ref=e417] [cursor=pointer]:
+          - img [ref=e419]
+          - generic [ref=e421]: Tables & Layout
+        - button "Itemised Consumption" [ref=e422] [cursor=pointer]:
+          - img [ref=e424]
+          - generic [ref=e426]: Itemised Consumption
+        - button "Settings" [ref=e427] [cursor=pointer]:
+          - img [ref=e429]
+          - generic [ref=e432]: Settings
+      - main [ref=e236]:
+        - generic [ref=e433]:
+          - generic [ref=e434]:
+            - button "Language" [ref=e435] [cursor=pointer]
+            - button "Tax Settings" [ref=e436] [cursor=pointer]
+            - button "Business Day" [ref=e437] [cursor=pointer]
+            - button "Business Info" [ref=e438] [cursor=pointer]
+            - button "Backup" [ref=e439] [cursor=pointer]
+            - button "Email" [active] [ref=e440] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e441] [cursor=pointer]
+          - generic [ref=e453]:
+            - heading "Email Settings" [level=3] [ref=e454]
+            - paragraph [ref=e455]: Configure email service for sending receipts and invoices.
+            - generic [ref=e456]:
+              - generic [ref=e457]:
+                - checkbox "Enable Email Service" [checked] [ref=e458]
+                - generic [ref=e459]: Enable Email Service
+              - generic [ref=e460]:
+                - checkbox "Auto-email Receipts" [ref=e461]
+                - generic [ref=e462]:
+                  - text: Auto-email Receipts
+                  - paragraph [ref=e463]: Automatically send receipts to customers via email
+              - generic [ref=e464]:
+                - generic [ref=e465]: SMTP Host
+                - textbox "e.g., smtp.example.com" [ref=e466]: mailhog
+              - generic [ref=e467]:
+                - generic [ref=e468]: SMTP Port
+                - spinbutton [ref=e469]: "1025"
+              - generic [ref=e470]:
+                - checkbox "Use TLS" [ref=e471]
+                - generic [ref=e472]: Use TLS
+              - generic [ref=e473]:
+                - generic [ref=e474]: SMTP Username
+                - textbox [ref=e475]: test@barpos.local
+              - generic [ref=e476]:
+                - generic [ref=e477]: SMTP Password
+                - textbox "Enter new password" [ref=e478]
+                - paragraph [ref=e479]: Password unchanged. Leave blank to keep current.
+              - generic [ref=e480]:
+                - generic [ref=e481]: From Email Address
+                - textbox [ref=e482]: noreply@barpos.local
+              - generic [ref=e483]:
+                - generic [ref=e484]: From Name
+                - textbox [ref=e485]: Bar POS Test
+              - button "Test Connection" [ref=e486] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

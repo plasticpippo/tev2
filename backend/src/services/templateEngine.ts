@@ -162,6 +162,9 @@ Handlebars.registerHelper('t', (key: string, options?: Handlebars.HelperOptions)
   } else if (key.startsWith('invoice.')) {
     translationKey = key.substring(8);
     namespace = 'invoice';
+  } else if (key.startsWith('email.')) {
+    translationKey = key.substring(6);
+    namespace = 'email';
   }
   
   return i18next.t(translationKey, { lng: locale, ns: namespace });

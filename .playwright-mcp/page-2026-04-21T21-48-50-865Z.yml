@@ -1,0 +1,511 @@
+- generic [ref=e2]:
+  - generic [ref=e134]:
+    - banner [ref=e135]:
+      - generic [ref=e137]:
+        - heading "Admin Panel" [level=1] [ref=e138]
+        - paragraph [ref=e139]: Logged in as Admin User
+      - generic [ref=e140]:
+        - button "Switch to POS" [ref=e141] [cursor=pointer]
+        - button "Logout" [ref=e142] [cursor=pointer]
+    - generic [ref=e143]:
+      - navigation [ref=e144]:
+        - button "Collapse sidebar" [ref=e146] [cursor=pointer]:
+          - img [ref=e147]
+        - button "Dashboard" [ref=e506] [cursor=pointer]:
+          - img [ref=e508]
+          - generic [ref=e510]: Dashboard
+        - button "Analytics" [ref=e511] [cursor=pointer]:
+          - img [ref=e513]
+          - generic [ref=e515]: Analytics
+        - button "Profit Analytics" [ref=e516] [cursor=pointer]:
+          - img [ref=e518]
+          - generic [ref=e520]: Profit Analytics
+        - button "Transactions" [ref=e521] [cursor=pointer]:
+          - img [ref=e523]
+          - generic [ref=e525]: Transactions
+        - button "Receipts 13" [ref=e526] [cursor=pointer]:
+          - img [ref=e528]
+          - generic [ref=e530]: Receipts
+          - button "13" [ref=e531]
+        - button "Activity Log" [ref=e532] [cursor=pointer]:
+          - img [ref=e534]
+          - generic [ref=e536]: Activity Log
+        - button "Daily Closing Summary" [ref=e537] [cursor=pointer]:
+          - img [ref=e539]
+          - generic [ref=e541]: Daily Closing Summary
+        - button "Customers" [ref=e542] [cursor=pointer]:
+          - img [ref=e544]
+          - generic [ref=e546]: Customers
+        - button "Products" [ref=e547] [cursor=pointer]:
+          - img [ref=e549]
+          - generic [ref=e551]: Products
+        - button "Categories" [ref=e552] [cursor=pointer]:
+          - img [ref=e554]
+          - generic [ref=e556]: Categories
+        - button "Stock Items" [ref=e557] [cursor=pointer]:
+          - img [ref=e559]
+          - generic [ref=e561]: Stock Items
+        - button "Inventory" [ref=e562] [cursor=pointer]:
+          - img [ref=e564]
+          - generic [ref=e566]: Inventory
+        - button "Cost Management" [ref=e567] [cursor=pointer]:
+          - img [ref=e569]
+          - generic [ref=e571]: Cost Management
+        - button "Inventory Counts" [ref=e572] [cursor=pointer]:
+          - img [ref=e574]
+          - generic [ref=e576]: Inventory Counts
+        - button "Variance Reports" [ref=e577] [cursor=pointer]:
+          - img [ref=e579]
+          - generic [ref=e581]: Variance Reports
+        - button "Users" [ref=e582] [cursor=pointer]:
+          - img [ref=e584]
+          - generic [ref=e586]: Users
+        - button "Tills" [ref=e587] [cursor=pointer]:
+          - img [ref=e589]
+          - generic [ref=e591]: Tills
+        - button "Tables & Layout" [ref=e592] [cursor=pointer]:
+          - img [ref=e594]
+          - generic [ref=e596]: Tables & Layout
+        - button "Itemised Consumption" [ref=e597] [cursor=pointer]:
+          - img [ref=e599]
+          - generic [ref=e601]: Itemised Consumption
+        - button "Settings" [ref=e602] [cursor=pointer]:
+          - img [ref=e604]
+          - generic [ref=e607]: Settings
+      - main [ref=e255]:
+        - generic [ref=e608]:
+          - heading "Receipt Management" [level=2] [ref=e609]
+          - generic [ref=e610]:
+            - generic [ref=e611]:
+              - generic [ref=e612]:
+                - generic [ref=e613]: Search
+                - textbox "Search" [ref=e614]:
+                  - /placeholder: Receipt number or customer...
+              - generic [ref=e615]:
+                - generic [ref=e616]: Status
+                - combobox "Status" [ref=e617]:
+                  - option "All Statuses" [selected]
+                  - option "Draft"
+                  - option "Issued"
+                  - option "Voided"
+              - generic [ref=e618]:
+                - generic [ref=e619]: Generation
+                - combobox "Generation" [ref=e620]:
+                  - option "All Generation Statuses" [selected]
+                  - option "Pending"
+                  - option "Completed"
+                  - option "Failed"
+              - generic [ref=e621]:
+                - generic [ref=e622]: receipts.filters.emailStatus
+                - combobox "receipts.filters.emailStatus" [ref=e623]:
+                  - option "receipts.filters.allEmailStatuses" [selected]
+                  - option "receipts.emailStatus.pending"
+                  - option "receipts.emailStatus.sent"
+                  - option "receipts.emailStatus.failed"
+              - generic [ref=e624]:
+                - generic [ref=e625]: From Date
+                - button "From Date" [ref=e627] [cursor=pointer]:
+                  - img [ref=e628]
+                  - generic [ref=e630]: From Date
+              - generic [ref=e631]:
+                - generic [ref=e632]: To Date
+                - button "To Date" [ref=e634] [cursor=pointer]:
+                  - img [ref=e635]
+                  - generic [ref=e637]: To Date
+              - generic [ref=e638]:
+                - generic [ref=e639]: Customer
+                - textbox "Search customer..." [ref=e641]
+            - generic [ref=e642]:
+              - button "Search" [ref=e643] [cursor=pointer]
+              - button "Clear Filters" [ref=e644] [cursor=pointer]
+          - generic [ref=e645]: Showing 20 of 26 receipts
+          - generic [ref=e647]:
+            - table [ref=e649]:
+              - rowgroup [ref=e650]:
+                - 'row "Receipt # Transaction Customer Status Generation receipts.table.emailStatus Total Issued Date Actions" [ref=e651]':
+                  - 'columnheader "Receipt #" [ref=e652]'
+                  - columnheader "Transaction" [ref=e653]
+                  - columnheader "Customer" [ref=e654]
+                  - columnheader "Status" [ref=e655]
+                  - columnheader "Generation" [ref=e656]
+                  - columnheader "receipts.table.emailStatus" [ref=e657]
+                  - columnheader "Total" [ref=e658]
+                  - columnheader "Issued Date" [ref=e659]
+                  - columnheader "Actions" [ref=e660]
+              - rowgroup [ref=e661]:
+                - 'row "R000022 #545 No Customer Issued Completed receipts.emailStatus.notSent €2,00 21/04/2026, 22:59" [ref=e662]':
+                  - cell "R000022" [ref=e663]
+                  - cell "#545" [ref=e664]
+                  - cell "No Customer" [ref=e665]
+                  - cell "Issued" [ref=e666]
+                  - cell "Completed" [ref=e667]:
+                    - generic [ref=e669]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e670]
+                  - cell "€2,00" [ref=e671]
+                  - cell "21/04/2026, 22:59" [ref=e672]
+                  - cell [ref=e673]:
+                    - generic [ref=e674]:
+                      - button "View Details" [ref=e675] [cursor=pointer]:
+                        - img [ref=e676]
+                      - button "Download PDF" [ref=e679] [cursor=pointer]:
+                        - img [ref=e680]
+                      - button "Send Email" [disabled] [ref=e682]:
+                        - img [ref=e683]
+                - 'row "R000020 #544 No Customer Issued Completed sent €4,00 19/04/2026, 21:33" [ref=e685]':
+                  - cell "R000020" [ref=e686]
+                  - cell "#544" [ref=e687]
+                  - cell "No Customer" [ref=e688]
+                  - cell "Issued" [ref=e689]
+                  - cell "Completed" [ref=e690]:
+                    - generic [ref=e692]: Completed
+                  - cell "sent" [ref=e693]:
+                    - generic [ref=e695]: sent
+                  - cell "€4,00" [ref=e696]
+                  - cell "19/04/2026, 21:33" [ref=e697]
+                  - cell [ref=e698]:
+                    - generic [ref=e699]:
+                      - button "View Details" [ref=e700] [cursor=pointer]:
+                        - img [ref=e701]
+                      - button "Download PDF" [ref=e704] [cursor=pointer]:
+                        - img [ref=e705]
+                      - button "Send Email" [disabled] [ref=e707]:
+                        - img [ref=e708]
+                - 'row "R000019 #543 No Customer Issued Completed sent €11,00 19/04/2026, 21:32" [ref=e710]':
+                  - cell "R000019" [ref=e711]
+                  - cell "#543" [ref=e712]
+                  - cell "No Customer" [ref=e713]
+                  - cell "Issued" [ref=e714]
+                  - cell "Completed" [ref=e715]:
+                    - generic [ref=e717]: Completed
+                  - cell "sent" [ref=e718]:
+                    - generic [ref=e720]: sent
+                  - cell "€11,00" [ref=e721]
+                  - cell "19/04/2026, 21:32" [ref=e722]
+                  - cell [ref=e723]:
+                    - generic [ref=e724]:
+                      - button "View Details" [ref=e725] [cursor=pointer]:
+                        - img [ref=e726]
+                      - button "Download PDF" [ref=e729] [cursor=pointer]:
+                        - img [ref=e730]
+                      - button "Send Email" [disabled] [ref=e732]:
+                        - img [ref=e733]
+                - 'row "R000018 #541 No Customer Issued Completed receipts.emailStatus.notSent €4,00 09/04/2026, 02:28" [ref=e735]':
+                  - cell "R000018" [ref=e736]
+                  - cell "#541" [ref=e737]
+                  - cell "No Customer" [ref=e738]
+                  - cell "Issued" [ref=e739]
+                  - cell "Completed" [ref=e740]:
+                    - generic [ref=e742]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e743]
+                  - cell "€4,00" [ref=e744]
+                  - cell "09/04/2026, 02:28" [ref=e745]
+                  - cell [ref=e746]:
+                    - generic [ref=e747]:
+                      - button "View Details" [ref=e748] [cursor=pointer]:
+                        - img [ref=e749]
+                      - button "Download PDF" [ref=e752] [cursor=pointer]:
+                        - img [ref=e753]
+                      - button "Send Email" [disabled] [ref=e755]:
+                        - img [ref=e756]
+                - 'row "R000017 #540 No Customer Issued Completed receipts.emailStatus.notSent €8,00 09/04/2026, 02:20" [ref=e758]':
+                  - cell "R000017" [ref=e759]
+                  - cell "#540" [ref=e760]
+                  - cell "No Customer" [ref=e761]
+                  - cell "Issued" [ref=e762]
+                  - cell "Completed" [ref=e763]:
+                    - generic [ref=e765]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e766]
+                  - cell "€8,00" [ref=e767]
+                  - cell "09/04/2026, 02:20" [ref=e768]
+                  - cell [ref=e769]:
+                    - generic [ref=e770]:
+                      - button "View Details" [ref=e771] [cursor=pointer]:
+                        - img [ref=e772]
+                      - button "Download PDF" [ref=e775] [cursor=pointer]:
+                        - img [ref=e776]
+                      - button "Send Email" [disabled] [ref=e778]:
+                        - img [ref=e779]
+                - 'row "R000016 #539 No Customer Issued Completed receipts.emailStatus.notSent €37,00 08/04/2026, 07:47" [ref=e781]':
+                  - cell "R000016" [ref=e782]
+                  - cell "#539" [ref=e783]
+                  - cell "No Customer" [ref=e784]
+                  - cell "Issued" [ref=e785]
+                  - cell "Completed" [ref=e786]:
+                    - generic [ref=e788]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e789]
+                  - cell "€37,00" [ref=e790]
+                  - cell "08/04/2026, 07:47" [ref=e791]
+                  - cell [ref=e792]:
+                    - generic [ref=e793]:
+                      - button "View Details" [ref=e794] [cursor=pointer]:
+                        - img [ref=e795]
+                      - button "Download PDF" [ref=e798] [cursor=pointer]:
+                        - img [ref=e799]
+                      - button "Send Email" [disabled] [ref=e801]:
+                        - img [ref=e802]
+                - 'row "R000015 #538 No Customer Issued Completed receipts.emailStatus.notSent €12,00 07/04/2026, 00:07" [ref=e804]':
+                  - cell "R000015" [ref=e805]
+                  - cell "#538" [ref=e806]
+                  - cell "No Customer" [ref=e807]
+                  - cell "Issued" [ref=e808]
+                  - cell "Completed" [ref=e809]:
+                    - generic [ref=e811]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e812]
+                  - cell "€12,00" [ref=e813]
+                  - cell "07/04/2026, 00:07" [ref=e814]
+                  - cell [ref=e815]:
+                    - generic [ref=e816]:
+                      - button "View Details" [ref=e817] [cursor=pointer]:
+                        - img [ref=e818]
+                      - button "Download PDF" [ref=e821] [cursor=pointer]:
+                        - img [ref=e822]
+                      - button "Send Email" [disabled] [ref=e824]:
+                        - img [ref=e825]
+                - 'row "R000014 #537 No Customer Issued Completed receipts.emailStatus.notSent €4,00 05/04/2026, 20:25" [ref=e827]':
+                  - cell "R000014" [ref=e828]
+                  - cell "#537" [ref=e829]
+                  - cell "No Customer" [ref=e830]
+                  - cell "Issued" [ref=e831]
+                  - cell "Completed" [ref=e832]:
+                    - generic [ref=e834]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e835]
+                  - cell "€4,00" [ref=e836]
+                  - cell "05/04/2026, 20:25" [ref=e837]
+                  - cell [ref=e838]:
+                    - generic [ref=e839]:
+                      - button "View Details" [ref=e840] [cursor=pointer]:
+                        - img [ref=e841]
+                      - button "Download PDF" [ref=e844] [cursor=pointer]:
+                        - img [ref=e845]
+                      - button "Send Email" [disabled] [ref=e847]:
+                        - img [ref=e848]
+                - 'row "DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438 #536 No Customer Draft Pending receipts.emailStatus.notSent €8,00 -" [ref=e850]':
+                  - cell "DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438" [ref=e851]
+                  - cell "#536" [ref=e852]
+                  - cell "No Customer" [ref=e853]
+                  - cell "Draft" [ref=e854]
+                  - cell "Pending" [ref=e855]:
+                    - generic [ref=e856]:
+                      - img [ref=e857]
+                      - generic [ref=e860]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e861]
+                  - cell "€8,00" [ref=e862]
+                  - cell "-" [ref=e863]
+                  - cell [ref=e864]:
+                    - generic [ref=e865]:
+                      - button "View Details" [ref=e866] [cursor=pointer]:
+                        - img [ref=e867]
+                      - button "Issue Receipt" [ref=e870] [cursor=pointer]:
+                        - img [ref=e871]
+                - 'row "R000013 #535 No Customer Issued Completed receipts.emailStatus.notSent €11,00 05/04/2026, 20:13" [ref=e873]':
+                  - cell "R000013" [ref=e874]
+                  - cell "#535" [ref=e875]
+                  - cell "No Customer" [ref=e876]
+                  - cell "Issued" [ref=e877]
+                  - cell "Completed" [ref=e878]:
+                    - generic [ref=e880]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e881]
+                  - cell "€11,00" [ref=e882]
+                  - cell "05/04/2026, 20:13" [ref=e883]
+                  - cell [ref=e884]:
+                    - generic [ref=e885]:
+                      - button "View Details" [ref=e886] [cursor=pointer]:
+                        - img [ref=e887]
+                      - button "Download PDF" [ref=e890] [cursor=pointer]:
+                        - img [ref=e891]
+                      - button "Send Email" [disabled] [ref=e893]:
+                        - img [ref=e894]
+                - 'row "R000012 #534 No Customer Issued Completed receipts.emailStatus.notSent €8,00 05/04/2026, 18:36" [ref=e896]':
+                  - cell "R000012" [ref=e897]
+                  - cell "#534" [ref=e898]
+                  - cell "No Customer" [ref=e899]
+                  - cell "Issued" [ref=e900]
+                  - cell "Completed" [ref=e901]:
+                    - generic [ref=e903]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e904]
+                  - cell "€8,00" [ref=e905]
+                  - cell "05/04/2026, 18:36" [ref=e906]
+                  - cell [ref=e907]:
+                    - generic [ref=e908]:
+                      - button "View Details" [ref=e909] [cursor=pointer]:
+                        - img [ref=e910]
+                      - button "Download PDF" [ref=e913] [cursor=pointer]:
+                        - img [ref=e914]
+                      - button "Send Email" [disabled] [ref=e916]:
+                        - img [ref=e917]
+                - 'row "DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939 #533 No Customer Draft Pending receipts.emailStatus.notSent €8,00 -" [ref=e919]':
+                  - cell "DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939" [ref=e920]
+                  - cell "#533" [ref=e921]
+                  - cell "No Customer" [ref=e922]
+                  - cell "Draft" [ref=e923]
+                  - cell "Pending" [ref=e924]:
+                    - generic [ref=e925]:
+                      - img [ref=e926]
+                      - generic [ref=e929]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e930]
+                  - cell "€8,00" [ref=e931]
+                  - cell "-" [ref=e932]
+                  - cell [ref=e933]:
+                    - generic [ref=e934]:
+                      - button "View Details" [ref=e935] [cursor=pointer]:
+                        - img [ref=e936]
+                      - button "Issue Receipt" [ref=e939] [cursor=pointer]:
+                        - img [ref=e940]
+                - 'row "R000010 #530 No Customer Issued Completed receipts.emailStatus.notSent €8,00 05/04/2026, 13:34" [ref=e942]':
+                  - cell "R000010" [ref=e943]
+                  - cell "#530" [ref=e944]
+                  - cell "No Customer" [ref=e945]
+                  - cell "Issued" [ref=e946]
+                  - cell "Completed" [ref=e947]:
+                    - generic [ref=e949]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e950]
+                  - cell "€8,00" [ref=e951]
+                  - cell "05/04/2026, 13:34" [ref=e952]
+                  - cell [ref=e953]:
+                    - generic [ref=e954]:
+                      - button "View Details" [ref=e955] [cursor=pointer]:
+                        - img [ref=e956]
+                      - button "Download PDF" [ref=e959] [cursor=pointer]:
+                        - img [ref=e960]
+                      - button "Send Email" [disabled] [ref=e962]:
+                        - img [ref=e963]
+                - 'row "R000011 #529 No Customer Issued Pending receipts.emailStatus.notSent €3,00 05/04/2026, 16:07" [ref=e965]':
+                  - cell "R000011" [ref=e966]
+                  - cell "#529" [ref=e967]
+                  - cell "No Customer" [ref=e968]
+                  - cell "Issued" [ref=e969]
+                  - cell "Pending" [ref=e970]:
+                    - generic [ref=e971]:
+                      - img [ref=e972]
+                      - generic [ref=e975]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e976]
+                  - cell "€3,00" [ref=e977]
+                  - cell "05/04/2026, 16:07" [ref=e978]
+                  - cell [ref=e979]:
+                    - generic [ref=e980]:
+                      - button "View Details" [ref=e981] [cursor=pointer]:
+                        - img [ref=e982]
+                      - button "Download PDF" [ref=e985] [cursor=pointer]:
+                        - img [ref=e986]
+                      - button "Send Email" [disabled] [ref=e988]:
+                        - img [ref=e989]
+                - 'row "R000009 #527 No Customer Issued Completed receipts.emailStatus.notSent €3,00 05/04/2026, 13:24" [ref=e991]':
+                  - cell "R000009" [ref=e992]
+                  - cell "#527" [ref=e993]
+                  - cell "No Customer" [ref=e994]
+                  - cell "Issued" [ref=e995]
+                  - cell "Completed" [ref=e996]:
+                    - generic [ref=e998]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e999]
+                  - cell "€3,00" [ref=e1000]
+                  - cell "05/04/2026, 13:24" [ref=e1001]
+                  - cell [ref=e1002]:
+                    - generic [ref=e1003]:
+                      - button "View Details" [ref=e1004] [cursor=pointer]:
+                        - img [ref=e1005]
+                      - button "Download PDF" [ref=e1008] [cursor=pointer]:
+                        - img [ref=e1009]
+                      - button "Send Email" [disabled] [ref=e1011]:
+                        - img [ref=e1012]
+                - 'row "R000021 #526 No Customer Issued Pending receipts.emailStatus.notSent €8,00 21/04/2026, 22:59" [ref=e1014]':
+                  - cell "R000021" [ref=e1015]
+                  - cell "#526" [ref=e1016]
+                  - cell "No Customer" [ref=e1017]
+                  - cell "Issued" [ref=e1018]
+                  - cell "Pending" [ref=e1019]:
+                    - generic [ref=e1020]:
+                      - img [ref=e1021]
+                      - generic [ref=e1024]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e1025]
+                  - cell "€8,00" [ref=e1026]
+                  - cell "21/04/2026, 22:59" [ref=e1027]
+                  - cell [ref=e1028]:
+                    - generic [ref=e1029]:
+                      - button "View Details" [ref=e1030] [cursor=pointer]:
+                        - img [ref=e1031]
+                      - button "Download PDF" [ref=e1034] [cursor=pointer]:
+                        - img [ref=e1035]
+                      - button "Send Email" [disabled] [ref=e1037]:
+                        - img [ref=e1038]
+                - 'row "R000008 #525 No Customer Issued Completed receipts.emailStatus.notSent €8,00 05/04/2026, 13:06" [ref=e1040]':
+                  - cell "R000008" [ref=e1041]
+                  - cell "#525" [ref=e1042]
+                  - cell "No Customer" [ref=e1043]
+                  - cell "Issued" [ref=e1044]
+                  - cell "Completed" [ref=e1045]:
+                    - generic [ref=e1047]: Completed
+                  - cell "receipts.emailStatus.notSent" [ref=e1048]
+                  - cell "€8,00" [ref=e1049]
+                  - cell "05/04/2026, 13:06" [ref=e1050]
+                  - cell [ref=e1051]:
+                    - generic [ref=e1052]:
+                      - button "View Details" [ref=e1053] [cursor=pointer]:
+                        - img [ref=e1054]
+                      - button "Download PDF" [ref=e1057] [cursor=pointer]:
+                        - img [ref=e1058]
+                      - button "Send Email" [disabled] [ref=e1060]:
+                        - img [ref=e1061]
+                - 'row "DRAFT-cd074215-f737-4ab7-b336-ed13126d5937 #524 No Customer Draft Pending receipts.emailStatus.notSent €8,00 -" [ref=e1063]':
+                  - cell "DRAFT-cd074215-f737-4ab7-b336-ed13126d5937" [ref=e1064]
+                  - cell "#524" [ref=e1065]
+                  - cell "No Customer" [ref=e1066]
+                  - cell "Draft" [ref=e1067]
+                  - cell "Pending" [ref=e1068]:
+                    - generic [ref=e1069]:
+                      - img [ref=e1070]
+                      - generic [ref=e1073]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e1074]
+                  - cell "€8,00" [ref=e1075]
+                  - cell "-" [ref=e1076]
+                  - cell [ref=e1077]:
+                    - generic [ref=e1078]:
+                      - button "View Details" [ref=e1079] [cursor=pointer]:
+                        - img [ref=e1080]
+                      - button "Issue Receipt" [ref=e1083] [cursor=pointer]:
+                        - img [ref=e1084]
+                - 'row "R000007 #509 No Customer Issued Pending receipts.emailStatus.notSent €4,00 03/04/2026, 04:12" [ref=e1086]':
+                  - cell "R000007" [ref=e1087]
+                  - cell "#509" [ref=e1088]
+                  - cell "No Customer" [ref=e1089]
+                  - cell "Issued" [ref=e1090]
+                  - cell "Pending" [ref=e1091]:
+                    - generic [ref=e1092]:
+                      - img [ref=e1093]
+                      - generic [ref=e1096]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e1097]
+                  - cell "€4,00" [ref=e1098]
+                  - cell "03/04/2026, 04:12" [ref=e1099]
+                  - cell [ref=e1100]:
+                    - generic [ref=e1101]:
+                      - button "View Details" [ref=e1102] [cursor=pointer]:
+                        - img [ref=e1103]
+                      - button "Download PDF" [ref=e1106] [cursor=pointer]:
+                        - img [ref=e1107]
+                      - button "Send Email" [disabled] [ref=e1109]:
+                        - img [ref=e1110]
+                - 'row "R000005 #518 No Customer Issued Pending receipts.emailStatus.notSent €13,00 03/04/2026, 03:16" [ref=e1112]':
+                  - cell "R000005" [ref=e1113]
+                  - cell "#518" [ref=e1114]
+                  - cell "No Customer" [ref=e1115]
+                  - cell "Issued" [ref=e1116]
+                  - cell "Pending" [ref=e1117]:
+                    - generic [ref=e1118]:
+                      - img [ref=e1119]
+                      - generic [ref=e1122]: Pending
+                  - cell "receipts.emailStatus.notSent" [ref=e1123]
+                  - cell "€13,00" [ref=e1124]
+                  - cell "03/04/2026, 03:16" [ref=e1125]
+                  - cell [ref=e1126]:
+                    - generic [ref=e1127]:
+                      - button "View Details" [ref=e1128] [cursor=pointer]:
+                        - img [ref=e1129]
+                      - button "Download PDF" [ref=e1132] [cursor=pointer]:
+                        - img [ref=e1133]
+                      - button "Send Email" [disabled] [ref=e1135]:
+                        - img [ref=e1136]
+            - generic [ref=e1138]:
+              - button "Previous" [disabled] [ref=e1139]
+              - generic [ref=e1140]: Page 1 of 2
+              - button "Next" [ref=e1141] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

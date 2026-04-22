@@ -81,6 +81,74 @@ receiptsRouter.get('/pending', authenticateToken, async (req: Request, res: Resp
   }
 });
 
+// GET /api/receipts/email-queue/overview - Email queue overview (admin only)
+receiptsRouter.get('/email-queue/overview', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  try {
+    const {
+      status,
+      page = '1',
+      limit = '20',
+    } = req.query;
+
+    const where: any = {};
+    if (status) {
+      where.status = String(status);
+    }
+
+    const pageNum = parseInt(String(page), 10) || 1;
+    const limitNum = Math.min(parseInt(String(limit), 10) || 20, 100);
+
+    const [jobs, totalCount] = await Promise.all([
+      prisma.emailQueue.findMany({
+        where,
+        orderBy: { createdAt: 'desc' },
+        skip: (pageNum - 1) * limitNum,
+        take: limitNum,
+        select: {
+          id: true,
+          receiptId: true,
+          recipientEmail: true,
+          subject: true,
+          status: true,
+          attempts: true,
+          maxAttempts: true,
+          lastError: true,
+          createdAt: true,
+          processedAt: true,
+          sentAt: true,
+          nextAttemptAt: true,
+          receipt: {
+            select: {
+              receiptNumber: true,
+            },
+          },
+        },
+      }),
+      prisma.emailQueue.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(totalCount / limitNum);
+
+    res.json({
+      data: jobs,
+      pagination: {
+        page: pageNum,
+        limit: limitNum,
+        totalCount,
+        totalPages,
+        hasNextPage: pageNum < totalPages,
+        hasPrevPage: pageNum > 1,
+      },
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching email queue', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: t('receipts.emailQueueFetchFailed') });
+  }
+});
+
 // POST /api/receipts/:id/retry - Retry failed receipt generation
 receiptsRouter.post('/:id/retry', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
@@ -708,6 +776,118 @@ receiptsRouter.post('/:id/email', authenticateToken, async (req: Request, res: R
     }
 
     res.status(500).json({ error: t('receipts.emailFailed') });
+  }
+});
+
+// GET /api/receipts/:id/email-jobs - Get email delivery status for a receipt
+receiptsRouter.get('/:id/email-jobs', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  try {
+    const { id } = req.params;
+
+    const receipt = await receiptService.getReceiptById(Number(id));
+    if (!receipt) {
+      return res.status(404).json({ error: t('receipts.notFound') });
+    }
+
+    const emailJobs = await prisma.emailQueue.findMany({
+      where: { receiptId: Number(id) },
+      orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        recipientEmail: true,
+        subject: true,
+        status: true,
+        attempts: true,
+        maxAttempts: true,
+        lastError: true,
+        createdAt: true,
+        processedAt: true,
+        sentAt: true,
+        nextAttemptAt: true,
+      },
+    });
+
+    res.json({ data: emailJobs });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching email jobs', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: t('receipts.emailJobsFetchFailed') });
+  }
+});
+
+// POST /api/receipts/:id/resend-email - Resend receipt email (creates new email job)
+receiptsRouter.post('/:id/resend-email', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: t('auth.userNotFound') });
+    }
+
+    const { email, message } = req.body;
+
+    const receipt = await receiptService.getReceiptById(Number(id));
+    if (!receipt) {
+      return res.status(404).json({ error: t('receipts.notFound') });
+    }
+
+    const recipientEmail = email?.trim() || (receipt.customerSnapshot as any)?.email;
+
+    if (!recipientEmail || typeof recipientEmail !== 'string') {
+      return res.status(400).json({ error: t('receipts.emailRequired') });
+    }
+
+    const input = {
+      email: recipientEmail,
+      includePdf: true,
+      message: message?.trim() || undefined,
+    };
+
+    const result = await receiptService.sendReceiptEmail(Number(id), input, userId);
+
+    const auditContext = extractAuditContext(req);
+    await logReceiptAudit(Number(id), 'email_retry', auditContext, {
+      newValues: {
+        recipientEmail,
+        jobId: result.jobId,
+        action: 'resend',
+      },
+    });
+
+    logDataAccess('receipt', Number(id), 'EXPORT', userId, req.user?.username);
+
+    res.status(202).json({
+      message: t('receipts.emailResent'),
+      job: result,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error resending receipt email', {
+      correlationId: (req as any).correlationId,
+    });
+
+    const errorMessage = error instanceof Error ? error.message : '';
+
+    if (errorMessage === 'Receipt not found') {
+      return res.status(404).json({ error: t('receipts.notFound') });
+    }
+    if (errorMessage === 'RECEIPT_NOT_ISSUED') {
+      return res.status(400).json({ error: t('receipts.cannotEmailDraft') });
+    }
+    if (errorMessage === 'RECEIPT_VOIDED') {
+      return res.status(400).json({ error: t('receipts.cannotEmailVoided') });
+    }
+    if (errorMessage === 'EMAIL_SERVICE_DISABLED') {
+      return res.status(400).json({ error: t('receipts.emailServiceDisabled') });
+    }
+    if (errorMessage === 'INVALID_EMAIL') {
+      return res.status(400).json({ error: t('receipts.invalidEmail') });
+    }
+
+    res.status(500).json({ error: t('receipts.emailResendFailed') });
   }
 });
 
