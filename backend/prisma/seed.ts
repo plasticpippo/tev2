@@ -1121,6 +1121,8 @@ async function seedReceipts(
       { name: 'Chianti Classico Glass', price: 7.00, quantity: 2, total: 14.00 },
       { name: 'Sparkling Water Bottle', price: 2.50, quantity: 2, total: 5.00 },
     ]),
+    issuedBy: null,
+    issuedAt: null,
     generationStatus: 'pending',
     generationAttempts: 0,
     version: 0,
