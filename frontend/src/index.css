@@ -861,9 +861,20 @@ code {
  *    - Responsive width classes added to PaymentModal and TableAssignmentModal
  *    - Using pattern: max-w-xs sm:max-w-md/lg/xl for mobile-first approach
  *
+ * 5. MOBILE KEYBOARD SUPPORT:
+ *    - Added touch-manipulation class to ensure native keyboard triggers on mobile/tablet
+ *    - Prevents zoom interference with focus on touch devices
+ *    - Helps Firefox on older Android tablets trigger native keyboard reliably
+ *
  * These improvements maintain backward compatibility while providing:
  * - Better maintainability through CSS variables
  * - Consistent styling through button classes
  * - Improved cross-browser support
  * - Better responsive behavior
+ * - Reliable native keyboard triggering on mobile devices
  */
+
+/* Touch manipulation class for mobile keyboard support */
+.touch-manipulation {
+  touch-action: manipulation;
+}

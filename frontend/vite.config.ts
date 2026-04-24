@@ -1,5 +1,6 @@
 import { defineConfig, type UserConfig } from 'vite'
 import react from '@vitejs/plugin-react'
+import legacy from '@vitejs/plugin-legacy'
 import { loadEnv } from 'vite'
 import { resolve } from 'path'
 
@@ -14,7 +15,28 @@ console.log('VITE_API_URL:', env.VITE_API_URL);
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    legacy({
+      targets: ['chrome >= 77', 'firefox >= 68', 'android >= 10'],
+      additionalLegacyPolyfills: ['regenerator-runtime/runtime'],
+      modernPolyfills: true,
+      renderLegacyChunks: true,
+      polyfills: [
+        'es.symbol',
+        'es.array.iterator',
+        'es.object.assign',
+        'es.promise',
+        'es.promise.finally',
+        'es.string.replace-all',
+        'web.dom-collections.iterator',
+        'es.object.from-entries',
+        'es.object.values',
+        'es.object.entries',
+        'es.string.match-all'
+      ]
+    })
+  ],
   resolve: {
     alias: {
       '@shared': resolve(__dirname, './shared'),

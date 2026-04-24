@@ -38,6 +38,7 @@
     "@types/node": "^22.14.0",
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
+    "@vitejs/plugin-legacy": "^6.0.0",
     "@vitejs/plugin-react": "^5.0.0",
     "@vitest/coverage-v8": "^4.0.18",
     "@vitest/ui": "^4.0.18",
@@ -47,6 +48,7 @@
     "msw-storybook-addon": "^2.0.0",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.3",
+    "terser": "^5.36.0",
     "typescript": "~5.8.2",
     "vite": "^6.2.0",
     "vitest": "^4.0.18"

@@ -1,0 +1,14 @@
+- generic [ref=e2]:
+  - button "Change Language" [ref=e5] [cursor=pointer]:
+    - generic [ref=e6]: EN
+    - img [ref=e7]
+  - heading "Bar POS Pro" [level=2] [ref=e9]
+  - paragraph [ref=e10]: "Till: Not Configured"
+  - generic [ref=e11]:
+    - generic [ref=e12]:
+      - generic [ref=e13]: Username
+      - textbox [active] [ref=e14]
+    - generic [ref=e15]:
+      - generic [ref=e16]: Password
+      - textbox [ref=e17]
+    - button "Login" [ref=e18] [cursor=pointer]

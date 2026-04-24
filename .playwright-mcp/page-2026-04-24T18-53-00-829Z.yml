@@ -1,0 +1,6 @@
+- generic [ref=e20]:
+  - heading "Terminal Setup" [level=1] [ref=e21]
+  - paragraph [ref=e22]: Select which Till this device will operate as.
+  - generic [ref=e23]:
+    - button "Main Bar" [ref=e24] [cursor=pointer]
+    - button "Entrata" [ref=e25] [cursor=pointer]

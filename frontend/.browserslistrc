@@ -1,0 +1,17 @@
+# Support for old Android tablets (2019-2020)
+# Chrome 77-85 on Android 10
+# Firefox 68-80 on Android 10
+
+chrome >= 77
+firefox >= 68
+android >= 10
+
+# Also cover slightly newer versions for safety
+chrome >= 70
+firefox >= 60
+android >= 9
+
+# Exclude very old browsers to keep bundle size reasonable
+not dead
+not ie 11
+not ios_saf < 13
