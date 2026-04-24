@@ -419,9 +419,13 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
       setIsDeleting(true);
       setDeleteError(null);
       try {
-        await productApi.deleteProduct(deletingProduct.id);
-        setDeletingProduct(null);
-        onDataUpdate();
+        const result = await productApi.deleteProduct(deletingProduct.id);
+        if (result.success) {
+          setDeletingProduct(null);
+          onDataUpdate();
+        } else {
+          setDeleteError(result.message || t('products.errors.failedToDelete'));
+        }
       } catch (error) {
         console.error('Error deleting product:', error);
         setDeleteError(error instanceof Error ? error.message : t('products.errors.failedToDelete'));
@@ -553,22 +557,14 @@ export const ProductManagement: React.FC<ProductManagementProps> = ({ products, 
       )}
        <ConfirmationModal
          show={!!deletingProduct}
-         title={t('confirmation.confirmDelete', { ns: 'common' })}
-         message={t('products.confirmDelete', { name: deletingProduct?.name })}
-         onConfirm={confirmDelete}
-         onCancel={() => setDeletingProduct(null)}
-         confirmText={isDeleting ? t('buttons.deleting', { ns: 'common' }) : t('buttons.delete', { ns: 'common' })}
+         title={deleteError ? t('confirmation.error', { ns: 'common' }) : t('confirmation.confirmDelete', { ns: 'common' })}
+         message={deleteError || t('products.confirmDelete', { name: deletingProduct?.name })}
+         onConfirm={deleteError ? handleRetryDelete : confirmDelete}
+         onCancel={() => { setDeletingProduct(null); setDeleteError(null); }}
+         confirmText={isDeleting ? t('buttons.deleting', { ns: 'common' }) : (deleteError ? t('buttons.retry', { ns: 'common' }) : t('buttons.delete', { ns: 'common' }))}
          confirmButtonType="danger"
          disabled={isDeleting}
        />
-      {deleteError && (
-        <ErrorMessage
-          message={deleteError}
-          type="error"
-          onRetry={handleRetryDelete}
-      showRetry={true}
-      />
-    )}
   </div>
   );
 };

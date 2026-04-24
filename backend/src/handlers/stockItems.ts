@@ -321,32 +321,64 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    
-    // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
+
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (!uuidRegex.test(id)) {
       return res.status(400).json({ error: t('errors:stockItems.invalidIdFormat') });
     }
-    
-    // Check if this stock item is used in any product variants
-    const stockConsumptions = await prisma.stockConsumption.count({
-      where: { stockItemId: id }
+
+    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Check ALL referencing models in parallel
+      const [stockConsumptions, stockAdjustments, costHistory, inventoryCountItems, varianceReportItems] = await Promise.all([
+        tx.stockConsumption.count({ where: { stockItemId: id } }),
+        tx.stockAdjustment.count({ where: { stockItemId: id } }),
+        tx.costHistory.count({ where: { stockItemId: id } }),
+        tx.inventoryCountItem.count({ where: { stockItemId: id } }),
+        tx.varianceReportItem.count({ where: { stockItemId: id } }),
+      ]);
+
+      // Check each constraint and throw specific error
+      if (stockConsumptions > 0) {
+        throw new Error('STOCK_IN_USE_CONSUMPTION');
+      }
+      if (stockAdjustments > 0) {
+        throw new Error('STOCK_IN_USE_ADJUSTMENTS');
+      }
+      if (costHistory > 0) {
+        throw new Error('STOCK_IN_USE_COST_HISTORY');
+      }
+      if (inventoryCountItems > 0) {
+        throw new Error('STOCK_IN_USE_INVENTORY');
+      }
+      if (varianceReportItems > 0) {
+        throw new Error('STOCK_IN_USE_VARIANCE');
+      }
+
+      // All checks passed, delete the stock item
+      await tx.stockItem.delete({ where: { id } });
     });
-    
-    if (stockConsumptions > 0) {
-      return res.status(400).json({
-        error: t('errors:stockItems.cannotDeleteInUse')
-      });
-    }
-    
-    await prisma.stockItem.delete({
-      where: { id }
-    });
-    
+
     res.status(204).send();
   } catch (error) {
     logError('Error deleting stock item:', { error });
-    res.status(500).json({ error: t('errors:stockItems.deleteFailedInUse') });
+
+    // Map specific errors to user-friendly messages
+    if (error instanceof Error) {
+      switch (error.message) {
+        case 'STOCK_IN_USE_CONSUMPTION':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteInUse') });
+        case 'STOCK_IN_USE_ADJUSTMENTS':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasAdjustments') });
+        case 'STOCK_IN_USE_COST_HISTORY':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasCostHistory') });
+        case 'STOCK_IN_USE_INVENTORY':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasInventoryCounts') });
+        case 'STOCK_IN_USE_VARIANCE':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasVarianceReports') });
+      }
+    }
+
+    res.status(500).json({ error: t('errors:stockItems.deleteFailed') });
   }
 });
 

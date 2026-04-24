@@ -75,7 +75,11 @@
     "validateIntegrityFailed": "Failed to validate data integrity. Please try again later.",
     "purchasingUnitError": "Purchasing Unit {{index}}: {{error}}",
     "adjustmentReasonRequired": "A reason is required for stock level adjustments",
-    "insufficientStockForItem": "Insufficient stock for item {{stockItemId}}"
+    "insufficientStockForItem": "Insufficient stock for item {{stockItemId}}",
+    "cannotDeleteHasAdjustments": "This stock item cannot be deleted because it has stock adjustment records.",
+    "cannotDeleteHasCostHistory": "This stock item cannot be deleted because it has cost history records.",
+    "cannotDeleteHasInventoryCounts": "This stock item cannot be deleted because it is used in inventory counts.",
+    "cannotDeleteHasVarianceReports": "This stock item cannot be deleted because it is referenced in variance reports."
   },
   "tills": {
     "notFound": "Till not found"

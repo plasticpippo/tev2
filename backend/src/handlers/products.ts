@@ -518,35 +518,72 @@ productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Reque
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    
-    // Start a transaction to ensure data consistency
+    const productId = Number(id);
+
+    // Check existence first - return 404 if not found
+    const product = await prisma.product.findUnique({
+      where: { id: productId },
+      include: {
+        variants: {
+          include: {
+            stockConsumption: {
+              include: {
+                stockItem: true,
+                variant: { include: { product: true } }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (!product) {
+      return res.status(404).json({ error: t('errors:products.notFound') });
+    }
+
     await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
-      // First, delete stock consumption records for this product's variants
+      // Snapshot stock consumptions to version history (audit trail)
+      const allConsumptions = product.variants.flatMap(v =>
+        v.stockConsumption.map(sc => ({
+          variantId: sc.variantId,
+          variantName: v.name,
+          productId: productId,
+          productName: product.name,
+          stockItemId: sc.stockItemId,
+          stockItemName: sc.stockItem?.name || 'Unknown',
+          quantity: sc.quantity,
+          changeReason: 'product_deletion',
+          changedBy: req.user?.id ?? null,
+        }))
+      );
+
+      if (allConsumptions.length > 0) {
+        await tx.stockConsumptionVersion.createMany({ data: allConsumptions });
+      }
+
+      // Delete in correct order: StockConsumption → ProductVariant → Product
+      // VariantLayout and SharedLayoutPosition cascade-delete automatically via DB constraints
       await tx.stockConsumption.deleteMany({
         where: {
           variant: {
-            productId: Number(id)
+            productId
           }
         }
       });
-      
-      // Then delete the variants
       await tx.productVariant.deleteMany({
-        where: { productId: Number(id) }
+        where: { productId }
       });
-      
-      // Finally delete the product
       await tx.product.delete({
-        where: { id: Number(id) }
+        where: { id: productId }
       });
     });
-    
+
     res.status(204).send();
   } catch (error) {
     logError(error instanceof Error ? error : 'Error deleting product', {
       correlationId: (req as any).correlationId,
     });
-    res.status(500).json({ error: t('errors:products.deleteFailedInUse') });
+    res.status(500).json({ error: t('errors:products.deleteFailed') });
   }
 });
 

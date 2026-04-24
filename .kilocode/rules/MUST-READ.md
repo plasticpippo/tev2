@@ -27,7 +27,7 @@ Before starting any container, verify it is not already running.
 - No emojis anywhere in the frontend
 - No workarounds or shortcuts — only proper solutions
 - Do not rush; prioritise quality over speed
-- Assign work nto micro subagents to minimise token usage and make things more manageable
+- Assign work to micro subagents to minimise token usage and make things more manageable
 - All documentation goes in `./docs`
 - Never kill all npm processes — only stop what the current task requires
 
