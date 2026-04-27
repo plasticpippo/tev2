@@ -14,7 +14,7 @@ export const getTaxRates = async (): Promise<TaxRate[]> => {
     }));
   } catch (error) {
     console.error(i18n.t('taxRateService.errorFetchingTaxRates'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -29,7 +29,7 @@ export const getTaxRate = async (id: number): Promise<TaxRate | null> => {
     } : null;
   } catch (error) {
     console.error(i18n.t('taxRateService.errorFetchingTaxRate'), error);
-    return null;
+    throw error;
   }
 };
 

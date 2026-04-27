@@ -10,7 +10,7 @@ export const getTransactions = async (): Promise<Transaction[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('transactionService.errorFetchingTransactions'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -61,7 +61,7 @@ export const getTabs = async (): Promise<Tab[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('transactionService.errorFetchingTabs'), error);
-    return [];
+    throw error;
   }
 };
 

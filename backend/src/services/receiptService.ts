@@ -23,6 +23,7 @@ import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateS
 import { savePDFToStorage, deletePDFFromStorage } from './pdfService';
 import { getLogoUrl } from './logoUploadService';
 import { renderEmailHtml, renderEmailText } from './emailTemplateService';
+import { addMoney, subtractMoney, multiplyMoney, divideMoney, roundMoney } from '../utils/money';
 
 async function getBusinessSnapshot(): Promise<BusinessSnapshot> {
   const settings = await prisma.settings.findFirst();
@@ -97,28 +98,28 @@ function calculateTaxBreakdown(items: any, taxMode: 'inclusive' | 'exclusive' | 
     const effectiveTaxRate = taxRatePercent / 100;
     const key = `${taxRateName}-${taxRatePercent}`;
 
-    const itemTotal = Number(item.price) * item.quantity;
+    const itemTotal = multiplyMoney(Number(item.price), item.quantity);
     let taxableAmount: number;
     let taxAmount: number;
 
     if (taxMode === 'inclusive' && effectiveTaxRate > 0) {
-      taxableAmount = itemTotal / (1 + effectiveTaxRate);
-      taxAmount = itemTotal - taxableAmount;
+      taxableAmount = divideMoney(itemTotal, 1 + effectiveTaxRate);
+      taxAmount = subtractMoney(itemTotal, taxableAmount);
     } else if (taxMode === 'exclusive' && effectiveTaxRate > 0) {
       taxableAmount = itemTotal;
-      taxAmount = taxableAmount * effectiveTaxRate;
+      taxAmount = multiplyMoney(taxableAmount, effectiveTaxRate);
     } else {
       taxableAmount = itemTotal;
       taxAmount = 0;
     }
 
-    taxableAmount = Math.round(taxableAmount * 100) / 100;
-    taxAmount = Math.round(taxAmount * 100) / 100;
+    taxableAmount = roundMoney(taxableAmount);
+    taxAmount = roundMoney(taxAmount);
 
     if (breakdown.has(key)) {
       const existing = breakdown.get(key)!;
-      existing.taxableAmount = Math.round((existing.taxableAmount + taxableAmount) * 100) / 100;
-      existing.taxAmount = Math.round((existing.taxAmount + taxAmount) * 100) / 100;
+      existing.taxableAmount = roundMoney(addMoney(existing.taxableAmount, taxableAmount));
+      existing.taxAmount = roundMoney(addMoney(existing.taxAmount, taxAmount));
     } else {
       breakdown.set(key, {
         rateName: taxRateName,

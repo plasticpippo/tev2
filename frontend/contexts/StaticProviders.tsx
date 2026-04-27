@@ -1,5 +1,6 @@
 import React from 'react';
 import { SessionProvider } from './SessionContext';
+import { ToastProvider } from './ToastContext';
 import { GlobalDataProvider } from './GlobalDataContext';
 
 interface StaticProvidersProps {
@@ -9,9 +10,11 @@ interface StaticProvidersProps {
 export const StaticProviders: React.FC<StaticProvidersProps> = ({ children }) => {
   return (
     <SessionProvider>
-      <GlobalDataProvider>
-        {children}
-      </GlobalDataProvider>
+      <ToastProvider>
+        <GlobalDataProvider>
+          {children}
+        </GlobalDataProvider>
+      </ToastProvider>
     </SessionProvider>
   );
 };

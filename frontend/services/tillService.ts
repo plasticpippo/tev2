@@ -10,7 +10,7 @@ export const getTills = async (): Promise<Till[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('tillService.errorFetchingTills'), error);
-    return [];
+    throw error;
   }
 };
 

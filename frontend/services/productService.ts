@@ -4,14 +4,14 @@ import i18n from '../src/i18n';
 
 // Products
 export const getProducts = async (): Promise<Product[]> => {
-const cacheKey = 'getProducts';
-try {
-const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
-return result;
-} catch (error) {
-console.error(i18n.t('productService.errorFetchingProducts'), error);
-return [];
-}
+  const cacheKey = 'getProducts';
+  try {
+    const result = await makeApiRequest(apiUrl('/api/products'), undefined, cacheKey);
+    return result;
+  } catch (error) {
+    console.error(i18n.t('productService.errorFetchingProducts'), error);
+    throw error;
+  }
 };
 
 export const searchProducts = async (query: string, limit: number = 50): Promise<Product[]> => {
@@ -21,7 +21,7 @@ export const searchProducts = async (query: string, limit: number = 50): Promise
     return result;
   } catch (error) {
     console.error(i18n.t('productService.errorSearchingProducts'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -81,7 +81,7 @@ export const getCategories = async (): Promise<Category[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('productService.errorFetchingCategories'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -93,7 +93,7 @@ export const getCategoriesWithSystem = async (): Promise<Category[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('productService.errorFetchingCategories'), error);
-    return [];
+    throw error;
   }
 };
 

@@ -72,12 +72,9 @@ export const calculateDailyClosingSummary = async (
     // Update basic totals
     summary.transactions++;
 
-    // For complimentary orders (total is 0 but discount > 0), use pre-discount amount for gross sales
-    // This ensures analytics shows actual money in till (0) while tracking the full value of items given
-    const isComplimentary = transaction.status === 'complimentary' || (txTotal === 0 && txDiscount > 0);
-    const grossAmount = isComplimentary
-      ? addMoney(addMoney(txSubtotal, txTax), txTip) // Pre-discount total for complimentary
-      : txTotal; // Regular orders use actual total
+    // Calculate gross amount as pre-discount total (subtotal + tax + tip)
+    // This ensures we track the full value before any discounts
+    const grossAmount = addMoney(addMoney(txSubtotal, txTax), txTip);
 
     // Track gross sales (total before discount)
     summary.grossSales = addMoney(summary.grossSales, grossAmount);
@@ -115,7 +112,6 @@ export const calculateDailyClosingSummary = async (
   }
 
   // Calculate net sales (gross - discounts)
-  // For complimentary orders, this will correctly show 0 since grossAmount = discount
   summary.netSales = subtractMoney(summary.grossSales, summary.totalDiscounts);
 
   return summary;

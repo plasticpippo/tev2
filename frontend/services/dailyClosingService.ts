@@ -16,9 +16,9 @@ export const getDailyClosings = async (dateFrom?: string, dateTo?: string): Prom
     
     const result = await makeApiRequest(url, undefined, cacheKey);
     return result;
- } catch (error) {
+  } catch (error) {
     console.error('Error fetching daily closings:', error);
-    return [];
+    throw error;
   }
 };
 

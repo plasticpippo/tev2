@@ -667,7 +667,10 @@
     "variantInvalidStockRefs": "Variant {{variantId}} ({{productName}} - {{variantName}}) has invalid stock references",
     "tillNotConfigured": "Not Configured",
     "unknownTill": "Unknown Till",
-    "contextError": "useGlobalDataContext must be used within a GlobalDataProvider"
+    "contextError": "useGlobalDataContext must be used within a GlobalDataProvider",
+    "dataLoadFailed": "Failed to load {{service}}. Other features may still work.",
+    "multipleDataLoadFailed": "Failed to load {{count}} data sources. Some features may not work.",
+    "criticalDataLoadError": "Critical error loading data. Please refresh the page."
   },
   "layoutContext": {
     "layoutSavedFor": "Layout saved successfully for {{categoryName}}!",

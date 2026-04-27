@@ -10,7 +10,7 @@ export const getRooms = async (): Promise<Room[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('tableService.errorFetchingRooms'), error);
-    return [];
+    throw error;
   }
 };
 

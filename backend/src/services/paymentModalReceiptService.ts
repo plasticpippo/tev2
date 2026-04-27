@@ -8,6 +8,7 @@ import { savePDFToStorage } from './pdfService';
 import { getLogoUrl } from './logoUploadService';
 import { sendReceiptEmail } from './receiptService';
 import { logInfo, logError } from '../utils/logger';
+import { addMoney, subtractMoney, multiplyMoney, divideMoney, roundMoney } from '../utils/money';
 
 interface CreateReceiptFromPaymentOptions {
   transactionId: number;
@@ -109,7 +110,7 @@ export async function createReceiptFromPayment(
     name: item.name,
     quantity: item.quantity,
     unitPrice: item.price,
-    total: Number(item.price) * item.quantity,
+    total: multiplyMoney(Number(item.price), item.quantity),
     taxRateName: item.taxRateName || 'Standard',
     taxRatePercent: item.taxRatePercent ?? Math.round((item.effectiveTaxRate || 0.22) * 100),
   }));
@@ -123,28 +124,28 @@ export async function createReceiptFromPayment(
     const effectiveTaxRate = taxRatePercent / 100;
     const key = `${taxRateName}-${taxRatePercent}`;
 
-    const itemTotal = Number(item.price) * item.quantity;
+    const itemTotal = multiplyMoney(Number(item.price), item.quantity);
     let taxableAmount: number;
     let taxAmount: number;
 
     if (taxMode === 'inclusive' && effectiveTaxRate > 0) {
-      taxableAmount = itemTotal / (1 + effectiveTaxRate);
-      taxAmount = itemTotal - taxableAmount;
+      taxableAmount = divideMoney(itemTotal, 1 + effectiveTaxRate);
+      taxAmount = subtractMoney(itemTotal, taxableAmount);
     } else if (taxMode === 'exclusive' && effectiveTaxRate > 0) {
       taxableAmount = itemTotal;
-      taxAmount = taxableAmount * effectiveTaxRate;
+      taxAmount = multiplyMoney(taxableAmount, effectiveTaxRate);
     } else {
       taxableAmount = itemTotal;
       taxAmount = 0;
     }
 
-    taxableAmount = Math.round(taxableAmount * 100) / 100;
-    taxAmount = Math.round(taxAmount * 100) / 100;
+    taxableAmount = roundMoney(taxableAmount);
+    taxAmount = roundMoney(taxAmount);
 
     const existing = taxMap.get(key);
     if (existing) {
-      existing.taxableAmount += taxableAmount;
-      existing.taxAmount += taxAmount;
+      existing.taxableAmount = addMoney(existing.taxableAmount, taxableAmount);
+      existing.taxAmount = addMoney(existing.taxAmount, taxAmount);
     } else {
       taxMap.set(key, { taxableAmount, taxAmount });
     }
@@ -155,8 +156,8 @@ export async function createReceiptFromPayment(
     taxBreakdown.push({
       name,
       percent: parseInt(percentStr, 10),
-      taxableAmount: Math.round(value.taxableAmount * 100) / 100,
-      taxAmount: Math.round(value.taxAmount * 100) / 100,
+      taxableAmount: roundMoney(value.taxableAmount),
+      taxAmount: roundMoney(value.taxAmount),
     });
   });
 

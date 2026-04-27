@@ -8,6 +8,7 @@ import type {
 import * as api from '../services/apiService';
 import { subscribeToUpdates, isAuthTokenReady } from '../services/apiBase';
 import { useSessionContext } from './SessionContext';
+import { useToast } from './ToastContext';
 
 interface GlobalDataContextType {
   appData: {
@@ -41,6 +42,7 @@ interface GlobalDataProviderProps {
 
 export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children }) => {
   const { t } = useTranslation();
+  const { addToast } = useToast();
   const [appData, setAppData] = useState<{
     products: Product[];
     categories: Category[];
@@ -59,9 +61,9 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     products: [], categories: [], users: [], tills: [], settings: null,
     transactions: [], tabs: [], stockItems: [], stockAdjustments: [], orderActivityLogs: [],
     rooms: [], tables: [], taxRates: []
- });
+  });
   const [isLoading, setIsLoading] = useState(true);
-  
+
   const { assignedTillId, currentUser, handleLogout } = useSessionContext();
 
   // Ref to store timeout ID for cleanup on unmount
@@ -96,10 +98,9 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
     }
 
     try {
-      const [
-        products, categories, users, tills, settings, transactions, tabs,
-        stockItems, stockAdjustments, orderActivityLogs, rooms, tables, taxRates
-      ] = await Promise.all([
+      // Use Promise.allSettled to handle partial failures gracefully
+      // This allows the app to continue functioning even if some services fail
+      const results = await Promise.allSettled([
         api.getProducts(),
         api.getCategories(),
         api.getUsers(),
@@ -114,16 +115,50 @@ export const GlobalDataProvider: React.FC<GlobalDataProviderProps> = ({ children
         api.getTables(),
         api.getTaxRates()
       ]);
+
+      const serviceNames = [
+        'products', 'categories', 'users', 'tills', 'settings', 'transactions', 'tabs',
+        'stockItems', 'stockAdjustments', 'orderActivityLogs', 'rooms', 'tables', 'taxRates'
+      ];
+
+      const failures: string[] = [];
+
+      // Extract successful results, using empty arrays as fallback for failed services
+      const [
+        products, categories, users, tills, settings, transactions, tabs,
+        stockItems, stockAdjustments, orderActivityLogs, rooms, tables, taxRates
+      ] = results.map((result, index) => {
+        if (result.status === 'fulfilled') {
+          return result.value;
+        } else {
+          // Log the failure and track which service failed
+          const serviceName = serviceNames[index];
+          console.error(`Failed to load ${serviceName}:`, result.reason);
+          failures.push(serviceName);
+          // Return appropriate default based on data type
+          return index === 4 ? null : []; // settings is null, others are empty arrays
+        }
+      });
+
       setAppData({
         products, categories, users, tills, settings, transactions, tabs,
         stockItems, stockAdjustments, orderActivityLogs, rooms, tables, taxRates
       });
+
+      // Show user-facing notification if some services failed
+      if (failures.length > 0) {
+        const errorMessage = failures.length === 1
+          ? t('globalDataContext.dataLoadFailed', { service: failures[0] })
+          : t('globalDataContext.multipleDataLoadFailed', { count: failures.length });
+        addToast(errorMessage, 'warning', 10000);
+      }
     } catch (error) {
       console.error(t('globalDataContext.failedToFetchInitialData'), error);
+      addToast(t('globalDataContext.criticalDataLoadError'), 'error', 10000);
     } finally {
       setIsLoading(false);
     }
-  }, [currentUser, t]);
+  }, [currentUser, t, addToast]);
 
   // Debounced version of fetchData to prevent multiple rapid calls
   const debouncedFetchData = useCallback(debounce(fetchData, 300), [fetchData]);

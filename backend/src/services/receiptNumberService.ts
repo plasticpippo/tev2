@@ -6,6 +6,7 @@ const RECEIPT_NUMBER_LOCK_ID = 12345;
 interface ReceiptNumberConfig {
   prefix: string;
   numberLength: number;
+  startNumber: number;
   sequenceYear: boolean;
   currentYear: number | null;
   currentNumber: number;
@@ -18,6 +19,7 @@ async function getReceiptConfig(): Promise<ReceiptNumberConfig> {
     return {
       prefix: 'R',
       numberLength: 6,
+      startNumber: 1,
       sequenceYear: false,
       currentYear: null,
       currentNumber: 0,
@@ -27,6 +29,7 @@ async function getReceiptConfig(): Promise<ReceiptNumberConfig> {
   return {
     prefix: settings.receiptPrefix,
     numberLength: settings.receiptNumberLength,
+    startNumber: settings.receiptStartNumber,
     sequenceYear: settings.receiptSequenceYear,
     currentYear: settings.receiptCurrentYear,
     currentNumber: settings.receiptCurrentNumber,
@@ -99,7 +102,7 @@ export async function peekNextReceiptNumber(): Promise<string> {
   
   if (config.sequenceYear) {
     if (config.currentYear !== currentYear) {
-      nextNumber = 1;
+      nextNumber = config.startNumber;
     } else {
       nextNumber = config.currentNumber + 1;
     }

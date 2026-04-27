@@ -667,7 +667,10 @@
     "variantInvalidStockRefs": "La variante {{variantId}} ({{productName}} - {{variantName}}) ha riferimenti di stock non validi",
     "tillNotConfigured": "Non Configurata",
     "unknownTill": "Cassa Sconosciuta",
-    "contextError": "useGlobalDataContext deve essere utilizzato all'interno di un GlobalDataProvider"
+    "contextError": "useGlobalDataContext deve essere utilizzato all'interno di un GlobalDataProvider",
+    "dataLoadFailed": "Impossibile caricare {{service}}. Altre funzionalità potrebbero comunque funzionare.",
+    "multipleDataLoadFailed": "Impossibile caricare {{count}} fonti di dati. Alcune funzionalità potrebbero non funzionare.",
+    "criticalDataLoadError": "Errore critico nel caricamento dei dati. Aggiorna la pagina."
   },
   "layoutContext": {
     "layoutSavedFor": "Layout salvato con successo per {{categoryName}}!",

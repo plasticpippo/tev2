@@ -3,11 +3,12 @@ import { prisma } from '../prisma';
 import type { OrderActivityLog } from '../types';
 import { logWarn, logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
+import { authenticateToken } from '../middleware/auth';
 
 export const orderActivityLogsRouter = express.Router();
 
 // GET /api/order-activity-logs - Get all order activity logs
-orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
+orderActivityLogsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const orderActivityLogs = await prisma.orderActivityLog.findMany({
@@ -54,7 +55,7 @@ orderActivityLogsRouter.get('/', async (req: Request, res: Response) => {
 });
 
 // GET /api/order-activity-logs/:id - Get a specific order activity log
-orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
+orderActivityLogsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -104,7 +105,7 @@ orderActivityLogsRouter.get('/:id', async (req: Request, res: Response) => {
 });
 
 // POST /api/order-activity-logs - Create a new order activity log
-orderActivityLogsRouter.post('/', async (req: Request, res: Response) => {
+orderActivityLogsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { action, details, userId, userName } = req.body as Omit<OrderActivityLog, 'id' | 'createdAt'>;

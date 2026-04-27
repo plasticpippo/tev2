@@ -65,7 +65,6 @@ export interface User {
   id: number;
   name: string;
   username: string;
-  password_HACK: string;
   role: 'Admin' | 'Cashier';
 }
 

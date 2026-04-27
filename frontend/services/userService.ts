@@ -10,7 +10,7 @@ export const getUsers = async (): Promise<User[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('userService.errorFetchingUsers'), error);
-    return [];
+    throw error;
   }
 };
 
