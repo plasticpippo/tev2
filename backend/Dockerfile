@@ -63,11 +63,11 @@ COPY assets/ ./assets/
 # Build the application with explicit config
 RUN npx tsc --project tsconfig.json
 
-# Install all dependencies including dev dependencies for seeding
-RUN npm install && npm cache clean --force
-
 # Compile seed file to dist directory
 RUN npx tsc prisma/seed.ts --outDir dist --target ES2020 --module commonjs --esModuleInterop
+
+# Remove dev dependencies and clean npm cache
+RUN npm prune --omit=dev && npm cache clean --force
 
 # Expose port
 EXPOSE 3001

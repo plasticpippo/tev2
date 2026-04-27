@@ -10,7 +10,7 @@ export const getStockItems = async (): Promise<StockItem[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('inventoryService.errorFetchingStockItems'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -108,7 +108,7 @@ export const getStockAdjustments = async (): Promise<StockAdjustment[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('inventoryService.errorFetchingStockAdjustments'), error);
-    return [];
+    throw error;
   }
 };
 

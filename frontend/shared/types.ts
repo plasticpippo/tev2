@@ -11,7 +11,7 @@ export interface OrderItem {
   taxRatePercent: number;
 }
 
-export type ThemeColor = 'slate' | 'amber' | 'red' | 'green' | 'blue' | 'purple';
+export type ThemeColor = 'slate' | 'gray' | 'zinc' | 'neutral' | 'stone' | 'red' | 'orange' | 'amber' | 'yellow' | 'lime' | 'green' | 'emerald' | 'teal' | 'cyan' | 'sky' | 'blue' | 'indigo' | 'violet' | 'purple' | 'fuchsia' | 'pink' | 'rose' | 'warmGray' | 'coolGray';
 
 export interface ProductVariant {
   id: number;

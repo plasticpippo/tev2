@@ -69,7 +69,7 @@ export const getTables = async (): Promise<Table[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('tableService.errorFetchingTables'), error);
-    return [];
+    throw error;
   }
 };
 

@@ -70,7 +70,7 @@ export const getTillLayout = async (
       throw error;
     }
     console.error(i18n.t('layoutService.errorFetchingTillLayout'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -146,7 +146,7 @@ export const getSharedLayouts = async (
     return result;
   } catch (error) {
     console.error(i18n.t('layoutService.errorFetchingSharedLayouts'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -164,7 +164,7 @@ export const getSharedLayout = async (id: number): Promise<SharedLayout | null> 
     return result;
   } catch (error) {
     console.error(i18n.t('layoutService.errorFetchingSharedLayout'), error);
-    return null;
+    throw error;
   }
 };
 

@@ -10,11 +10,7 @@ export const getSettings = async (): Promise<Settings> => {
     return result;
   } catch (error) {
     console.error(i18n.t('settingService.errorFetchingSettings'), error);
-    // Return default settings on error
-    return {
-      tax: { mode: 'none' },
-      businessDay: { autoStartTime: '06:00', lastManualClose: null }
-    };
+    throw error;
   }
 };
 

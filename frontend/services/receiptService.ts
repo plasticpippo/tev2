@@ -106,7 +106,7 @@ export const searchCustomers = async (searchTerm: string, limit: number = 10): P
     return result.customers || result.data || [];
   } catch (error) {
     console.error(i18n.t('receiptService.errorSearchingCustomers'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -333,8 +333,11 @@ export const checkTransactionHasReceipt = async (transactionId: number): Promise
     const result = await makeApiRequest(apiUrl(`/api/transactions/${transactionId}/receipt`));
     return result.data || { hasReceipt: false };
   } catch (error) {
-    // If 404, no receipt exists
-    return { hasReceipt: false };
+    if (error instanceof Error && (error.message.includes('404') || error.message.toLowerCase().includes('not found'))) {
+      return { hasReceipt: false };
+    }
+    console.error(i18n.t('receiptService.errorCheckingTransactionReceipt'), error);
+    throw error;
   }
 };
 
@@ -355,7 +358,7 @@ export const getPendingReceipts = async (): Promise<PendingReceipt[]> => {
     return result.data || [];
   } catch (error) {
     console.error(i18n.t('receiptService.errorFetchingPendingReceipts'), error);
-    return [];
+    throw error;
   }
 };
 
@@ -421,7 +424,7 @@ export const getReceiptEmailJobs = async (receiptId: number): Promise<EmailJob[]
     return result.data || [];
   } catch (error) {
     console.error('Error fetching email jobs:', error);
-    return [];
+    throw error;
   }
 };
 

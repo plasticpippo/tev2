@@ -25,8 +25,7 @@ export const getOrderSession = async (): Promise<OrderSession | null> => {
     return await response.json();
   } catch (error) {
     console.error(i18n.t('orderService.errorFetchingSession'), error);
-    // Return null instead of throwing to prevent errors during initialization
-    return null;
+    throw error;
   }
 };
 
@@ -52,8 +51,7 @@ export const saveOrderSession = async (orderItems: OrderItem[]): Promise<OrderSe
     return savedSession;
   } catch (error) {
     console.error(i18n.t('orderService.errorSavingSession'), error);
-    // Return null instead of throwing to prevent errors during initialization
-    return null;
+    throw error;
   }
 };
 
@@ -94,8 +92,7 @@ export const updateOrderSessionStatus = async (status: 'logout' | 'complete' | '
     return updatedSession;
   } catch (error) {
     console.error(i18n.t('orderService.errorUpdatingSessionStatus'), error);
-    // Return null instead of throwing to prevent errors during initialization
-    return null;
+    throw error;
   }
 };
 
@@ -113,7 +110,7 @@ export const getOrderActivityLogs = async (): Promise<OrderActivityLog[]> => {
     return result;
   } catch (error) {
     console.error(i18n.t('orderService.errorFetchingActivityLogs'), error);
-    return [];
+    throw error;
   }
 };
 

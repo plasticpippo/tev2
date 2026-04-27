@@ -1,0 +1,544 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e992] [cursor=pointer]:
+          - img [ref=e994]
+          - generic [ref=e996]: Dashboard
+        - button "Analytics" [ref=e997] [cursor=pointer]:
+          - img [ref=e999]
+          - generic [ref=e1001]: Analytics
+        - button "Profit Analytics" [ref=e1002] [cursor=pointer]:
+          - img [ref=e1004]
+          - generic [ref=e1006]: Profit Analytics
+        - button "Transactions" [ref=e1007] [cursor=pointer]:
+          - img [ref=e1009]
+          - generic [ref=e1011]: Transactions
+        - button "Receipts 14" [ref=e1012] [cursor=pointer]:
+          - img [ref=e1014]
+          - generic [ref=e1016]: Receipts
+          - button "14" [ref=e1017]
+        - button "Activity Log" [ref=e1018] [cursor=pointer]:
+          - img [ref=e1020]
+          - generic [ref=e1022]: Activity Log
+        - button "Daily Closing Summary" [ref=e1023] [cursor=pointer]:
+          - img [ref=e1025]
+          - generic [ref=e1027]: Daily Closing Summary
+        - button "Customers" [ref=e1028] [cursor=pointer]:
+          - img [ref=e1030]
+          - generic [ref=e1032]: Customers
+        - button "Products" [ref=e1033] [cursor=pointer]:
+          - img [ref=e1035]
+          - generic [ref=e1037]: Products
+        - button "Categories" [ref=e1038] [cursor=pointer]:
+          - img [ref=e1040]
+          - generic [ref=e1042]: Categories
+        - button "Stock Items" [ref=e1043] [cursor=pointer]:
+          - img [ref=e1045]
+          - generic [ref=e1047]: Stock Items
+        - button "Inventory" [ref=e1048] [cursor=pointer]:
+          - img [ref=e1050]
+          - generic [ref=e1052]: Inventory
+        - button "Cost Management" [ref=e1053] [cursor=pointer]:
+          - img [ref=e1055]
+          - generic [ref=e1057]: Cost Management
+        - button "Inventory Counts" [ref=e1058] [cursor=pointer]:
+          - img [ref=e1060]
+          - generic [ref=e1062]: Inventory Counts
+        - button "Variance Reports" [ref=e1063] [cursor=pointer]:
+          - img [ref=e1065]
+          - generic [ref=e1067]: Variance Reports
+        - button "Users" [ref=e1068] [cursor=pointer]:
+          - img [ref=e1070]
+          - generic [ref=e1072]: Users
+        - button "Tills" [ref=e1073] [cursor=pointer]:
+          - img [ref=e1075]
+          - generic [ref=e1077]: Tills
+        - button "Tables & Layout" [ref=e1078] [cursor=pointer]:
+          - img [ref=e1080]
+          - generic [ref=e1082]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1083] [cursor=pointer]:
+          - img [ref=e1085]
+          - generic [ref=e1087]: Itemised Consumption
+        - button "Settings" [ref=e1088] [cursor=pointer]:
+          - img [ref=e1090]
+          - generic [ref=e1093]: Settings
+      - main [ref=e240]:
+        - generic [ref=e1094]:
+          - generic [ref=e1095]:
+            - generic [ref=e1096]:
+              - button "Ingredients" [ref=e1097] [cursor=pointer]
+              - button "Sellable Goods" [ref=e1098] [cursor=pointer]
+            - generic [ref=e1099]:
+              - textbox "Search by name..." [ref=e1100]
+              - combobox [ref=e1101]:
+                - option "All Categories" [selected]
+                - option "Shots"
+                - option "Beer"
+                - option "Cocktails"
+                - option "Soft Drinks"
+                - option "Entrata"
+                - option "Vino"
+              - button "All" [ref=e1102] [cursor=pointer]
+              - button "Low" [ref=e1103] [cursor=pointer]
+              - button "Out" [ref=e1104] [cursor=pointer]
+          - generic [ref=e1105]:
+            - generic [ref=e1106]:
+              - generic [ref=e1107]:
+                - generic [ref=e1108]:
+                  - paragraph [ref=e1109]: Sipsmith
+                  - paragraph [ref=e1110]: "Tracked in: ml"
+                - generic [ref=e1111]:
+                  - generic [ref=e1112]: 240 in stock
+                  - button "Adjust" [ref=e1113] [cursor=pointer]
+              - generic [ref=e1114]:
+                - generic [ref=e1115]:
+                  - paragraph [ref=e1116]: Vermouth Carpano Rosso
+                  - paragraph [ref=e1117]: "Tracked in: ml"
+                - generic [ref=e1118]:
+                  - generic [ref=e1119]: 1000 in stock
+                  - button "Adjust" [ref=e1120] [cursor=pointer]
+              - generic [ref=e1121]:
+                - generic [ref=e1122]:
+                  - paragraph [ref=e1123]: Rum Pampero Bianco
+                  - paragraph [ref=e1124]: "Tracked in: ml"
+                - generic [ref=e1125]:
+                  - generic [ref=e1126]: 1040 in stock
+                  - button "Adjust" [ref=e1127] [cursor=pointer]
+              - generic [ref=e1128]:
+                - generic [ref=e1129]:
+                  - paragraph [ref=e1130]: Ginger Beer Fever Tree
+                  - paragraph [ref=e1131]: "Tracked in: ml"
+                - generic [ref=e1132]:
+                  - generic [ref=e1133]: 2800 in stock
+                  - button "Adjust" [ref=e1134] [cursor=pointer]
+              - generic [ref=e1135]:
+                - generic [ref=e1136]:
+                  - paragraph [ref=e1137]: Tequila Sierra Silver
+                  - paragraph [ref=e1138]: "Tracked in: ml"
+                - generic [ref=e1139]:
+                  - generic [ref=e1140]: 280 in stock
+                  - button "Adjust" [ref=e1141] [cursor=pointer]
+              - generic [ref=e1142]:
+                - generic [ref=e1143]:
+                  - paragraph [ref=e1144]: Hierbas
+                  - paragraph [ref=e1145]: "Tracked in: ml"
+                - generic [ref=e1146]:
+                  - generic [ref=e1147]: 230 in stock
+                  - button "Adjust" [ref=e1148] [cursor=pointer]
+              - generic [ref=e1149]:
+                - generic [ref=e1150]:
+                  - paragraph [ref=e1151]: Vino Bianco
+                  - paragraph [ref=e1152]: "Tracked in: ml"
+                - generic [ref=e1153]:
+                  - generic [ref=e1154]: 6650 in stock
+                  - button "Adjust" [ref=e1155] [cursor=pointer]
+              - generic [ref=e1156]:
+                - generic [ref=e1157]:
+                  - paragraph [ref=e1158]: Gin Gordon's
+                  - paragraph [ref=e1159]: "Tracked in: ml"
+                - generic [ref=e1160]:
+                  - generic [ref=e1161]: 3350 in stock
+                  - button "Adjust" [ref=e1162] [cursor=pointer]
+              - generic [ref=e1163]:
+                - generic [ref=e1164]:
+                  - paragraph [ref=e1165]: Tonica Fever Tree
+                  - paragraph [ref=e1166]: "Tracked in: ml"
+                - generic [ref=e1167]:
+                  - generic [ref=e1168]: 80 in stock
+                  - button "Adjust" [ref=e1169] [cursor=pointer]
+              - generic [ref=e1170]:
+                - generic [ref=e1171]:
+                  - paragraph [ref=e1172]: Vodka Moskovskaya
+                  - paragraph [ref=e1173]: "Tracked in: ml"
+                - generic [ref=e1174]:
+                  - generic [ref=e1175]: 4570 in stock
+                  - button "Adjust" [ref=e1176] [cursor=pointer]
+              - generic [ref=e1177]:
+                - generic [ref=e1178]:
+                  - paragraph [ref=e1179]: Bibita Pompelma
+                  - paragraph [ref=e1180]: "Tracked in: ml"
+                - generic [ref=e1181]:
+                  - generic [ref=e1182]: 1160 in stock
+                  - button "Adjust" [ref=e1183] [cursor=pointer]
+              - generic [ref=e1184]:
+                - generic [ref=e1185]:
+                  - paragraph [ref=e1186]: Coca Cola
+                  - paragraph [ref=e1187]: "Tracked in: ml"
+                - generic [ref=e1188]:
+                  - generic [ref=e1189]: 10080 in stock
+                  - button "Adjust" [ref=e1190] [cursor=pointer]
+              - generic [ref=e1191]:
+                - generic [ref=e1192]:
+                  - paragraph [ref=e1193]: Campari
+                  - paragraph [ref=e1194]: "Tracked in: ml"
+                - generic [ref=e1195]:
+                  - generic [ref=e1196]: 2470 in stock
+                  - button "Adjust" [ref=e1197] [cursor=pointer]
+              - generic [ref=e1198]:
+                - generic [ref=e1199]:
+                  - paragraph [ref=e1200]: Lemonsoda
+                  - paragraph [ref=e1201]: "Tracked in: ml"
+                - generic [ref=e1202]:
+                  - generic [ref=e1203]: 1890 in stock
+                  - button "Adjust" [ref=e1204] [cursor=pointer]
+            - generic [ref=e1206]:
+              - heading "Stock Adjustment History" [level=3] [ref=e1208]
+              - generic [ref=e1210]:
+                - textbox "Search adjustments..." [ref=e1211]
+                - generic:
+                  - img
+              - generic [ref=e1212]:
+                - generic [ref=e1213]:
+                  - generic [ref=e1214]:
+                    - paragraph [ref=e1215]: Tonica Fever Tree
+                    - paragraph [ref=e1216]: 12/04/2026, 15:29 by admin
+                    - paragraph [ref=e1217]: "Reason: Transaction #542 voided: Test void - API verification"
+                  - paragraph [ref=e1219]: "+120"
+                - generic [ref=e1220]:
+                  - generic [ref=e1221]:
+                    - paragraph [ref=e1222]: Vodka Moskovskaya
+                    - paragraph [ref=e1223]: 12/04/2026, 15:29 by admin
+                    - paragraph [ref=e1224]: "Reason: Transaction #542 voided: Test void - API verification"
+                  - paragraph [ref=e1226]: "+60"
+                - generic [ref=e1227]:
+                  - generic [ref=e1228]:
+                    - paragraph [ref=e1229]: Tequila Sierra Silver
+                    - paragraph [ref=e1230]: 30/03/2026, 18:13 by Admin User
+                    - paragraph [ref=e1231]: "Reason: Test F1.5 - Restoring stock after insufficient stock test"
+                  - paragraph [ref=e1233]: "+300"
+                - generic [ref=e1234]:
+                  - generic [ref=e1235]:
+                    - paragraph [ref=e1236]: Tequila Sierra Silver
+                    - paragraph [ref=e1237]: 30/03/2026, 18:09 by Admin User
+                    - paragraph [ref=e1238]: "Reason: Test F1.5 - Setting low stock for insufficient stock test"
+                  - paragraph [ref=e1240]: "-300"
+                - generic [ref=e1241]:
+                  - generic [ref=e1242]:
+                    - paragraph [ref=e1243]: Tequila Sierra Silver
+                    - paragraph [ref=e1244]: 30/03/2026, 15:24 by Admin User
+                    - paragraph [ref=e1245]: "Reason: Test C2.2 - Restoring stock after partial failure test"
+                  - paragraph [ref=e1247]: "+260"
+                - generic [ref=e1248]:
+                  - generic [ref=e1249]:
+                    - paragraph [ref=e1250]: Tequila Sierra Silver
+                    - paragraph [ref=e1251]: 30/03/2026, 15:12 by Admin User
+                    - paragraph [ref=e1252]: "Reason: Test C2.2 - Setting low stock for partial failure test"
+                  - paragraph [ref=e1254]: "-260"
+                - generic [ref=e1255]:
+                  - generic [ref=e1256]:
+                    - paragraph [ref=e1257]: Gin Gordon's
+                    - paragraph [ref=e1258]: 30/03/2026, 08:20 by Admin User
+                    - paragraph [ref=e1259]: "Reason: Test C1.4 - Restoring stock after test"
+                  - paragraph [ref=e1261]: "+5650"
+                - generic [ref=e1262]:
+                  - generic [ref=e1263]:
+                    - paragraph [ref=e1264]: Gin Gordon's
+                    - paragraph [ref=e1265]: 30/03/2026, 08:15 by Admin User
+                    - paragraph [ref=e1266]: "Reason: Test C1.4 - Setting low stock for timing test"
+                  - paragraph [ref=e1268]: "-5650"
+                - generic [ref=e1269]:
+                  - generic [ref=e1270]:
+                    - paragraph [ref=e1271]: Gin Gordon's
+                    - paragraph [ref=e1272]: 30/03/2026, 07:50 by Admin User
+                    - paragraph [ref=e1273]: "Reason: Test C1.2 - concurrent adjustment"
+                  - paragraph [ref=e1275]: "+100"
+                - generic [ref=e1276]:
+                  - generic [ref=e1277]:
+                    - paragraph [ref=e1278]: Birra Wuhrer
+                    - paragraph [ref=e1279]: 19/03/2026, 15:03 by Admin User
+                    - paragraph [ref=e1280]: "Reason: test"
+                  - paragraph [ref=e1282]: "+1"
+                - generic [ref=e1283]:
+                  - generic [ref=e1284]:
+                    - paragraph [ref=e1285]: Birra Beck's
+                    - paragraph [ref=e1286]: 19/03/2026, 15:03 by Admin User
+                    - paragraph [ref=e1287]: "Reason: test"
+                  - paragraph [ref=e1289]: "+1"
+                - generic [ref=e1290]:
+                  - generic [ref=e1291]:
+                    - paragraph [ref=e1292]: Tequila Sierra Silver
+                    - paragraph [ref=e1293]: 19/03/2026, 15:03 by Admin User
+                    - paragraph [ref=e1294]: "Reason: test"
+                  - paragraph [ref=e1296]: "+60"
+                - generic [ref=e1297]:
+                  - generic [ref=e1298]:
+                    - paragraph [ref=e1299]: Sipsmith
+                    - paragraph [ref=e1300]: 18/03/2026, 19:59 by Admin User
+                    - paragraph [ref=e1301]: "Reason: adjustment"
+                  - paragraph [ref=e1303]: "-310"
+                - generic [ref=e1304]:
+                  - generic [ref=e1305]:
+                    - paragraph [ref=e1306]: Rum Pampero Bianco
+                    - paragraph [ref=e1307]: 18/03/2026, 19:08 by Admin User
+                    - paragraph [ref=e1308]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1310]: "+1000"
+                - generic [ref=e1311]:
+                  - generic [ref=e1312]:
+                    - paragraph [ref=e1313]: Gin Gordon's
+                    - paragraph [ref=e1314]: 18/03/2026, 19:08 by Admin User
+                    - paragraph [ref=e1315]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1317]: "+6000"
+                - generic [ref=e1318]:
+                  - generic [ref=e1319]:
+                    - paragraph [ref=e1320]: Vodka Moskovskaya
+                    - paragraph [ref=e1321]: 18/03/2026, 19:07 by Admin User
+                    - paragraph [ref=e1322]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1324]: "+7000"
+                - generic [ref=e1325]:
+                  - generic [ref=e1326]:
+                    - paragraph [ref=e1327]: Birra Wuhrer
+                    - paragraph [ref=e1328]: 18/03/2026, 19:06 by Admin User
+                    - paragraph [ref=e1329]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1331]: "+30"
+                - generic [ref=e1332]:
+                  - generic [ref=e1333]:
+                    - paragraph [ref=e1334]: Birra Beck's
+                    - paragraph [ref=e1335]: 18/03/2026, 19:06 by Admin User
+                    - paragraph [ref=e1336]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1338]: "+72"
+                - generic [ref=e1339]:
+                  - generic [ref=e1340]:
+                    - paragraph [ref=e1341]: H2O
+                    - paragraph [ref=e1342]: 18/03/2026, 19:06 by Admin User
+                    - paragraph [ref=e1343]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1345]: "+48"
+                - generic [ref=e1346]:
+                  - generic [ref=e1347]:
+                    - paragraph [ref=e1348]: Coca Cola
+                    - paragraph [ref=e1349]: 18/03/2026, 19:06 by Admin User
+                    - paragraph [ref=e1350]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1352]: "+7920"
+                - generic [ref=e1353]:
+                  - generic [ref=e1354]:
+                    - paragraph [ref=e1355]: Lemonsoda
+                    - paragraph [ref=e1356]: 18/03/2026, 19:05 by Admin User
+                    - paragraph [ref=e1357]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1359]: "+7920"
+                - generic [ref=e1360]:
+                  - generic [ref=e1361]:
+                    - paragraph [ref=e1362]: Tonica Fever Tree
+                    - paragraph [ref=e1363]: 18/03/2026, 19:05 by Admin User
+                    - paragraph [ref=e1364]: "Reason: delivery 18/03/2026"
+                  - paragraph [ref=e1366]: "+960"
+                - generic [ref=e1367]:
+                  - generic [ref=e1368]:
+                    - paragraph [ref=e1369]: Tonica Fever Tree
+                    - paragraph [ref=e1370]: 18/03/2026, 19:04 by Admin User
+                    - paragraph [ref=e1371]: "Reason: adjustment"
+                  - paragraph [ref=e1373]: "-245"
+                - generic [ref=e1374]:
+                  - generic [ref=e1375]:
+                    - paragraph [ref=e1376]: Ginger Beer Fever Tree
+                    - paragraph [ref=e1377]: 18/03/2026, 19:01 by Admin User
+                    - paragraph [ref=e1378]: "Reason: adjustment"
+                  - paragraph [ref=e1380]: "-200"
+                - generic [ref=e1381]:
+                  - generic [ref=e1382]:
+                    - paragraph [ref=e1383]: Lemonsoda
+                    - paragraph [ref=e1384]: 18/03/2026, 19:00 by Admin User
+                    - paragraph [ref=e1385]: "Reason: adjustment"
+                  - paragraph [ref=e1387]: "-3240"
+                - generic [ref=e1388]:
+                  - generic [ref=e1389]:
+                    - paragraph [ref=e1390]: Coca Cola
+                    - paragraph [ref=e1391]: 18/03/2026, 18:59 by Admin User
+                    - paragraph [ref=e1392]: "Reason: adjustment"
+                  - paragraph [ref=e1394]: "-5850"
+                - generic [ref=e1395]:
+                  - generic [ref=e1396]:
+                    - paragraph [ref=e1397]: Tonica Fever Tree
+                    - paragraph [ref=e1398]: 18/03/2026, 18:58 by Admin User
+                    - paragraph [ref=e1399]: "Reason: adjustment"
+                  - paragraph [ref=e1401]: "-6761"
+                - generic [ref=e1402]:
+                  - generic [ref=e1403]:
+                    - paragraph [ref=e1404]: Birra Wuhrer
+                    - paragraph [ref=e1405]: 18/03/2026, 18:55 by Admin User
+                    - paragraph [ref=e1406]: "Reason: adjustment"
+                  - paragraph [ref=e1408]: "-1"
+                - generic [ref=e1409]:
+                  - generic [ref=e1410]:
+                    - paragraph [ref=e1411]: H2O
+                    - paragraph [ref=e1412]: 18/03/2026, 18:55 by Admin User
+                    - paragraph [ref=e1413]: "Reason: adjustment"
+                  - paragraph [ref=e1415]: "-27"
+                - generic [ref=e1416]:
+                  - generic [ref=e1417]:
+                    - paragraph [ref=e1418]: Birra Beck's
+                    - paragraph [ref=e1419]: 18/03/2026, 18:54 by Admin User
+                    - paragraph [ref=e1420]: "Reason: adjustment"
+                  - paragraph [ref=e1422]: "-1"
+                - generic [ref=e1423]:
+                  - generic [ref=e1424]:
+                    - paragraph [ref=e1425]: Rum Pampero Bianco
+                    - paragraph [ref=e1426]: 18/03/2026, 18:51 by Admin User
+                    - paragraph [ref=e1427]: "Reason: adjustment"
+                  - paragraph [ref=e1429]: "-180"
+                - generic [ref=e1430]:
+                  - generic [ref=e1431]:
+                    - paragraph [ref=e1432]: Gin Gordon's
+                    - paragraph [ref=e1433]: 18/03/2026, 18:48 by Admin User
+                    - paragraph [ref=e1434]: "Reason: adjustment"
+                  - paragraph [ref=e1436]: "-200"
+                - generic [ref=e1437]:
+                  - generic [ref=e1438]:
+                    - paragraph [ref=e1439]: Vodka Moskovskaya
+                    - paragraph [ref=e1440]: 18/03/2026, 18:46 by Admin User
+                    - paragraph [ref=e1441]: "Reason: adjustment"
+                  - paragraph [ref=e1443]: "+72"
+                - generic [ref=e1444]:
+                  - generic [ref=e1445]:
+                    - paragraph [ref=e1446]: Campari
+                    - paragraph [ref=e1447]: 14/03/2026, 17:18 by Admin User
+                    - paragraph [ref=e1448]: "Reason: eh non si sa"
+                  - paragraph [ref=e1450]: "-800"
+                - generic [ref=e1451]:
+                  - generic [ref=e1452]:
+                    - paragraph [ref=e1453]: Hierbas
+                    - paragraph [ref=e1454]: 14/03/2026, 17:17 by Admin User
+                    - paragraph [ref=e1455]: "Reason: eh non si sa"
+                  - paragraph [ref=e1457]: "-1000"
+                - generic [ref=e1458]:
+                  - generic [ref=e1459]:
+                    - paragraph [ref=e1460]: Gin Gordon's
+                    - paragraph [ref=e1461]: 14/03/2026, 17:17 by Admin User
+                    - paragraph [ref=e1462]: "Reason: nn si sa"
+                  - paragraph [ref=e1464]: "-380"
+                - generic [ref=e1465]:
+                  - generic [ref=e1466]:
+                    - paragraph [ref=e1467]: Vodka Moskovskaya
+                    - paragraph [ref=e1468]: 14/03/2026, 17:16 by Admin User
+                    - paragraph [ref=e1469]: "Reason: non si sa"
+                  - paragraph [ref=e1471]: "-1500"
+                - generic [ref=e1472]:
+                  - generic [ref=e1473]:
+                    - paragraph [ref=e1474]: Birra Wuhrer
+                    - paragraph [ref=e1475]: 14/03/2026, 17:15 by Admin User
+                    - paragraph [ref=e1476]: "Reason: bevute pippo"
+                  - paragraph [ref=e1478]: "-7"
+                - generic [ref=e1479]:
+                  - generic [ref=e1480]:
+                    - paragraph [ref=e1481]: Birra Beck's
+                    - paragraph [ref=e1482]: 14/03/2026, 17:14 by Admin User
+                    - paragraph [ref=e1483]: "Reason: aggiustamento"
+                  - paragraph [ref=e1485]: "+4"
+                - generic [ref=e1486]:
+                  - generic [ref=e1487]:
+                    - paragraph [ref=e1488]: Birra Beck's
+                    - paragraph [ref=e1489]: 14/03/2026, 17:14 by Admin User
+                    - paragraph [ref=e1490]: "Reason: eh boh"
+                  - paragraph [ref=e1492]: "-10"
+                - generic [ref=e1493]:
+                  - generic [ref=e1494]:
+                    - paragraph [ref=e1495]: Birra Wuhrer
+                    - paragraph [ref=e1496]: 13/03/2026, 14:00 by Admin User
+                    - paragraph [ref=e1497]: "Reason: aggiustamento"
+                  - paragraph [ref=e1499]: "-1"
+                - generic [ref=e1500]:
+                  - generic [ref=e1501]:
+                    - paragraph [ref=e1502]: Birra Beck's
+                    - paragraph [ref=e1503]: 13/03/2026, 13:59 by Admin User
+                    - paragraph [ref=e1504]: "Reason: aggiustamento"
+                  - paragraph [ref=e1506]: "-16"
+                - generic [ref=e1507]:
+                  - generic [ref=e1508]:
+                    - paragraph [ref=e1509]: Hierbas
+                    - paragraph [ref=e1510]: 13/03/2026, 13:51 by Admin User
+                    - paragraph [ref=e1511]: "Reason: aggiustamento"
+                  - paragraph [ref=e1513]: "-300"
+                - generic [ref=e1514]:
+                  - generic [ref=e1515]:
+                    - paragraph [ref=e1516]: Hierbas
+                    - paragraph [ref=e1517]: 13/03/2026, 13:50 by Admin User
+                    - paragraph [ref=e1518]: "Reason: fornitura"
+                  - paragraph [ref=e1520]: "+3000"
+                - generic [ref=e1521]:
+                  - generic [ref=e1522]:
+                    - paragraph [ref=e1523]: Gin Gordon's
+                    - paragraph [ref=e1524]: 13/03/2026, 13:50 by Admin User
+                    - paragraph [ref=e1525]: "Reason: fornitura - aggiustamento"
+                  - paragraph [ref=e1527]: "+2800"
+                - generic [ref=e1528]:
+                  - generic [ref=e1529]:
+                    - paragraph [ref=e1530]: Birra Beck's
+                    - paragraph [ref=e1531]: 05/03/2026, 20:11 by Admin User
+                    - paragraph [ref=e1532]: "Reason: test for tabs"
+                  - paragraph [ref=e1534]: "+1"
+                - generic [ref=e1535]:
+                  - generic [ref=e1536]:
+                    - paragraph [ref=e1537]: Birra Wuhrer
+                    - paragraph [ref=e1538]: 05/03/2026, 19:02 by Admin User
+                    - paragraph [ref=e1539]: "Reason: to test cassa"
+                  - paragraph [ref=e1541]: "+1"
+                - generic [ref=e1542]:
+                  - generic [ref=e1543]:
+                    - paragraph [ref=e1544]: H2O
+                    - paragraph [ref=e1545]: 05/03/2026, 18:58 by Admin User
+                    - paragraph [ref=e1546]: "Reason: aggiustamento"
+                  - paragraph [ref=e1548]: "-11"
+                - generic [ref=e1549]:
+                  - generic [ref=e1550]:
+                    - paragraph [ref=e1551]: Birra Beck's
+                    - paragraph [ref=e1552]: 05/03/2026, 18:58 by Admin User
+                    - paragraph [ref=e1553]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1555]: "+102"
+                - generic [ref=e1556]:
+                  - generic [ref=e1557]:
+                    - paragraph [ref=e1558]: Birra Wuhrer
+                    - paragraph [ref=e1559]: 05/03/2026, 18:56 by Admin User
+                    - paragraph [ref=e1560]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1562]: "+35"
+                - generic [ref=e1563]:
+                  - generic [ref=e1564]:
+                    - paragraph [ref=e1565]: Hierbas
+                    - paragraph [ref=e1566]: 05/03/2026, 18:56 by Admin User
+                    - paragraph [ref=e1567]: "Reason: aggiustamento"
+                  - paragraph [ref=e1569]: "-150"
+                - generic [ref=e1570]:
+                  - generic [ref=e1571]:
+                    - paragraph [ref=e1572]: Campari
+                    - paragraph [ref=e1573]: 05/03/2026, 18:55 by Admin User
+                    - paragraph [ref=e1574]: "Reason: aggiornamento"
+                  - paragraph [ref=e1576]: "+250"
+                - generic [ref=e1577]:
+                  - generic [ref=e1578]:
+                    - paragraph [ref=e1579]: Sipsmith
+                    - paragraph [ref=e1580]: 05/03/2026, 18:53 by Admin User
+                    - paragraph [ref=e1581]: "Reason: offerti"
+                  - paragraph [ref=e1583]: "-120"
+                - generic [ref=e1584]:
+                  - generic [ref=e1585]:
+                    - paragraph [ref=e1586]: Gin Gordon's
+                    - paragraph [ref=e1587]: 05/03/2026, 18:15 by Admin User
+                    - paragraph [ref=e1588]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1590]: "+3320"
+                - generic [ref=e1591]:
+                  - generic [ref=e1592]:
+                    - paragraph [ref=e1593]: Vodka Moskovskaya
+                    - paragraph [ref=e1594]: 05/03/2026, 18:14 by Admin User
+                    - paragraph [ref=e1595]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1597]: "+2768"
+                - generic [ref=e1598]:
+                  - generic [ref=e1599]:
+                    - paragraph [ref=e1600]: Lemonsoda
+                    - paragraph [ref=e1601]: 05/03/2026, 18:10 by Admin User
+                    - paragraph [ref=e1602]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1604]: "+5940"
+                - generic [ref=e1605]:
+                  - generic [ref=e1606]:
+                    - paragraph [ref=e1607]: Tonica Fever Tree
+                    - paragraph [ref=e1608]: 05/03/2026, 18:09 by Admin User
+                    - paragraph [ref=e1609]: "Reason: fornitura 05/03"
+                  - paragraph [ref=e1611]: "+12050"
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
