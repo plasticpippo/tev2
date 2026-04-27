@@ -38,7 +38,6 @@ export const ItemisedConsumptionTable: React.FC<TableProps> = ({
       <table className="min-w-full divide-y divide-slate-700">
         <thead className="bg-slate-750">
           <tr>
-            <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.date')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.product')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.variant')}</th>
             <th className="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">{t('itemisedConsumption.category')}</th>
@@ -49,10 +48,7 @@ export const ItemisedConsumptionTable: React.FC<TableProps> = ({
         </thead>
         <tbody className="divide-y divide-slate-700">
           {consumptionData.map((item) => (
-            <tr key={`${item.transactionDate}-${item.id}`} className="hover:bg-slate-750">
-              <td className="px-4 py-3 whitespace-nowrap text-sm text-slate-300">
-                {new Date(item.transactionDate).toLocaleDateString()}
-              </td>
+            <tr key={item.id} className="hover:bg-slate-750">
               <td className="px-4 py-3 text-sm text-slate-300">{item.productName}</td>
               <td className="px-4 py-3 text-sm text-slate-300">{item.variantName}</td>
               <td className="px-4 py-3 text-sm text-slate-300">{item.categoryName}</td>

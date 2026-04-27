@@ -18,7 +18,7 @@ import {
   toReceiptDTOArray,
 } from '../types/receipt';
 import { Prisma } from '@prisma/client';
-import { generateNextReceiptNumber } from './receiptNumberService';
+import { generateNextReceiptNumber, generateNextReceiptNumberWithTx } from './receiptNumberService';
 import { renderReceiptPDF, prepareReceiptTemplateData } from './receiptTemplateService';
 import { savePDFToStorage, deletePDFFromStorage } from './pdfService';
 import { getLogoUrl } from './logoUploadService';
@@ -328,48 +328,49 @@ export async function issueDraftReceipt(
   const receipt = await prisma.receipt.findUnique({
     where: { id },
   });
-  
+
   if (!receipt) {
     throw new Error('Receipt not found');
   }
-  
+
   if (receipt.status !== 'draft') {
     throw new Error('Only draft receipts can be issued');
   }
-  
-  const receiptNumber = await generateNextReceiptNumber();
-  
+
   let customerSnapshot = receipt.customerSnapshot as any;
   let customerId = receipt.customerId;
-  
+
   if (input?.customerId && input.customerId !== receipt.customerId) {
     customerId = input.customerId;
     customerSnapshot = await getCustomerSnapshot(input.customerId);
   }
-  
-  // First update to issued status with receipt number
-  const updatedReceipt = await prisma.receipt.update({
-    where: { id },
-    data: {
-      receiptNumber,
-      status: 'issued',
-      issuedAt: new Date(),
-      issuedBy: userId,
-      customerId,
-      customerSnapshot: customerSnapshot as any,
-      notes: input?.notes ?? receipt.notes,
-      version: { increment: 1 },
-    },
+
+  const updatedReceipt = await prisma.$transaction(async (tx) => {
+    const receiptNumber = await generateNextReceiptNumberWithTx(tx);
+
+    const updatedReceipt = await tx.receipt.update({
+      where: { id },
+      data: {
+        receiptNumber,
+        status: 'issued',
+        issuedAt: new Date(),
+        issuedBy: userId,
+        customerId,
+        customerSnapshot: customerSnapshot as any,
+        notes: input?.notes ?? receipt.notes,
+        version: { increment: 1 },
+      },
+    });
+
+    return updatedReceipt;
   });
-  
-  // Generate PDF automatically on issue
+
   try {
     const receiptDTO = toReceiptDTO(updatedReceipt);
     const templateData = prepareReceiptTemplateData(receiptDTO);
     const pdfResult = await renderReceiptPDF(templateData);
     const savedPath = await savePDFToStorage(pdfResult.buffer, pdfResult.filename);
-    
-    // Update receipt with PDF path
+
     const finalReceipt = await prisma.receipt.update({
       where: { id },
       data: {
@@ -378,15 +379,13 @@ export async function issueDraftReceipt(
         version: { increment: 1 },
       },
     });
-    
-    // Auto-email (fire-and-forget) if customer has email and setting is enabled
+
     triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt');
 
     return toReceiptDTO(finalReceipt);
   } catch (pdfError) {
     console.error('Failed to generate PDF on receipt issue:', pdfError);
 
-    // Auto-email (fire-and-forget) even if PDF generation failed
     triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt (PDF failed)');
 
     return toReceiptDTO(updatedReceipt);

@@ -213,7 +213,6 @@ export interface ConsumptionReportItem {
     stockItemName: string;
     stockItemType: string;
     quantityConsumed: number;
-    transactionDate: string;
 }
 
 export interface ConsumptionReportTotal {

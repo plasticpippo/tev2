@@ -1,6 +1,8 @@
 import { prisma } from '../prisma';
 import { Settings } from '@prisma/client';
 
+type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
 const RECEIPT_NUMBER_LOCK_ID = 12345;
 
 interface ReceiptNumberConfig {
@@ -45,53 +47,59 @@ function getCurrentYear(): number {
   return new Date().getFullYear();
 }
 
-export async function generateNextReceiptNumber(): Promise<string> {
-  const result = await prisma.$transaction(async (tx) => {
-    await tx.$executeRaw`SELECT pg_advisory_xact_lock(${RECEIPT_NUMBER_LOCK_ID})`;
-    
-    const settings = await tx.settings.findFirst();
-    
-    if (!settings) {
-      throw new Error('Settings not found');
-    }
-    
-    const currentYear = getCurrentYear();
-    let nextNumber: number;
-    let updateData: Partial<Settings> = {};
-    
-    if (settings.receiptSequenceYear) {
-      if (settings.receiptCurrentYear !== currentYear) {
-        nextNumber = settings.receiptStartNumber;
-        updateData = {
-          receiptCurrentYear: currentYear,
-          receiptCurrentNumber: nextNumber,
-        };
-      } else {
-        nextNumber = settings.receiptCurrentNumber + 1;
-        updateData = {
-          receiptCurrentNumber: nextNumber,
-        };
-      }
+async function generateNextReceiptNumberInternal(tx: TransactionClient): Promise<string> {
+  await tx.$executeRaw`SELECT pg_advisory_xact_lock(${RECEIPT_NUMBER_LOCK_ID})`;
+
+  const settings = await tx.settings.findFirst();
+
+  if (!settings) {
+    throw new Error('Settings not found');
+  }
+
+  const currentYear = getCurrentYear();
+  let nextNumber: number;
+  let updateData: Partial<Settings> = {};
+
+  if (settings.receiptSequenceYear) {
+    if (settings.receiptCurrentYear !== currentYear) {
+      nextNumber = settings.receiptStartNumber;
+      updateData = {
+        receiptCurrentYear: currentYear,
+        receiptCurrentNumber: nextNumber,
+      };
     } else {
       nextNumber = settings.receiptCurrentNumber + 1;
       updateData = {
         receiptCurrentNumber: nextNumber,
       };
-      
-      if (settings.receiptCurrentYear !== currentYear) {
-        updateData.receiptCurrentYear = currentYear;
-      }
     }
-    
-    await tx.settings.update({
-      where: { id: settings.id },
-      data: updateData,
-    });
-    
-    return formatReceiptNumber(settings.receiptPrefix, nextNumber, settings.receiptNumberLength);
+  } else {
+    nextNumber = settings.receiptCurrentNumber + 1;
+    updateData = {
+      receiptCurrentNumber: nextNumber,
+    };
+
+    if (settings.receiptCurrentYear !== currentYear) {
+      updateData.receiptCurrentYear = currentYear;
+    }
+  }
+
+  await tx.settings.update({
+    where: { id: settings.id },
+    data: updateData,
   });
-  
-  return result;
+
+  return formatReceiptNumber(settings.receiptPrefix, nextNumber, settings.receiptNumberLength);
+}
+
+export async function generateNextReceiptNumber(): Promise<string> {
+  return await prisma.$transaction(async (tx) => {
+    return generateNextReceiptNumberInternal(tx);
+  });
+}
+
+export async function generateNextReceiptNumberWithTx(tx: TransactionClient): Promise<string> {
+  return await generateNextReceiptNumberInternal(tx);
 }
 
 export async function peekNextReceiptNumber(): Promise<string> {

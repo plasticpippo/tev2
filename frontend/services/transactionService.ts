@@ -147,11 +147,11 @@ export interface ProcessPaymentData {
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export const processPayment = async (
-	paymentData: ProcessPaymentData, 
+	paymentData: ProcessPaymentData,
 	maxRetries: number = 3
 ): Promise<Transaction> => {
 	let lastError: Error | null = null;
-	
+
 	for (let attempt = 0; attempt <= maxRetries; attempt++) {
 		try {
 			const response = await fetch(apiUrl('/api/transactions/process-payment'), {
@@ -164,37 +164,35 @@ export const processPayment = async (
 			if (!response.ok) {
 				const errorData = await response.json().catch(() => ({}));
 				const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
-				
-				// If conflict (409), retry with exponential backoff
+
 				if (response.status === 409 && attempt < maxRetries) {
-					const backoffMs = 100 * Math.pow(2, attempt); // 100ms, 200ms, 400ms
+					const backoffMs = 100 * Math.pow(2, attempt);
 					console.log(`Payment conflict detected, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
 					await delay(backoffMs);
 					continue;
 				}
-				
+
 				throw new Error(errorMessage);
 			}
-			
+
 			const result = await response.json();
 			notifyUpdates();
 			return result;
 		} catch (error) {
 			lastError = error instanceof Error ? error : new Error(String(error));
-			
-			// Only retry on network errors or conflicts, not on validation errors
-			if (attempt < maxRetries && lastError.message.includes('CONFLICT')) {
-				const backoffMs = 100 * Math.pow(2, attempt);
-				console.log(`Payment error, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
-				await delay(backoffMs);
-				continue;
+
+			const isNetworkError = error instanceof TypeError;
+
+			if (attempt === maxRetries || !isNetworkError) {
+				console.error(i18n.t('transactionService.errorProcessingPayment'), error);
+				throw lastError;
 			}
-			
-			console.error(i18n.t('transactionService.errorProcessingPayment'), error);
-			throw error;
+
+			console.log(`Payment network error on attempt ${attempt + 1}, retrying...`);
+			const backoffMs = 100 * Math.pow(2, attempt);
+			await delay(backoffMs);
 		}
 	}
-	
-	// All retries exhausted
+
 	throw lastError || new Error('Payment processing failed after multiple attempts');
 };

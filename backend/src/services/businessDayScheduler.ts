@@ -254,23 +254,28 @@ async function performAutomaticClosing(autoStartTime: string, businessDayEndHour
       systemUser = adminUser;
     }
     
-    // Create the daily closing
-    const closingId = await createDailyClosing(
-      businessDayEnd,
-      systemUser.id,
-      businessDayStart
-    );
-    
-    lastCloseTime = new Date();
-    
-    logInfo(`Automatic business day closing completed. Closing ID: ${closingId}`);
-    
-    // Update lastManualClose to track this closing
-    await prisma.settings.updateMany({
-      data: {
-        lastManualClose: lastCloseTime
-      }
+    // Wrap the closing operations in a transaction to ensure atomicity
+    const closingId = await prisma.$transaction(async (tx) => {
+      const id = await createDailyClosing(
+        businessDayEnd,
+        systemUser.id,
+        businessDayStart,
+        tx
+      );
+
+      const now = new Date();
+      await tx.settings.updateMany({
+        data: {
+          lastManualClose: now
+        }
+      });
+
+      return id;
     });
+
+    lastCloseTime = new Date();
+
+    logInfo(`Automatic business day closing completed. Closing ID: ${closingId}`);
     
   } catch (error) {
     logError(error instanceof Error ? error : 'Error during automatic closing');

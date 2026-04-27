@@ -94,40 +94,44 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
       variantConsumptionMap.get(consumption.variantId)?.push(consumption);
     });
 
-    // Calculate total consumption per variant based on transaction quantities
-    const consumptionTotals: any[] = [];
-
-    // Process each transaction to calculate actual consumption
+    // Aggregate total quantity sold for each variant across all transactions
+    const variantQuantityMap = new Map<number, number>();
     transactions.forEach(transaction => {
       const items = typeof transaction.items === 'string' ? JSON.parse(transaction.items) : transaction.items;
-      
       items.forEach((item: any) => {
-        if (item.variantId && variantConsumptionMap.has(item.variantId)) {
-          const consumptions = variantConsumptionMap.get(item.variantId)!;
-          
-          // For each consumption record of this variant, multiply by item quantity in transaction
-          consumptions.forEach(consumption => {
-            // Apply stock item type filter if specified
-            if (stockItemType && consumption.stockItem.type !== stockItemType) {
-              return; // Skip this consumption if it doesn't match the filter
-            }
-            
-            consumptionTotals.push({
-              id: `${transaction.createdAt.getTime()}-${consumption.id}`, // Unique ID combining transaction time and consumption ID
-              productId: consumption.variant.productId,
-              productName: consumption.variant.product.name,
-              variantId: consumption.variant.id,
-              variantName: consumption.variant.name,
-              categoryId: consumption.variant.product.categoryId,
-              categoryName: '', // Will populate this later
-              stockItemId: consumption.stockItem.id,
-              stockItemName: consumption.stockItem.name,
-              stockItemType: consumption.stockItem.type,
-              quantityConsumed: consumption.quantity * item.quantity, // Multiply by quantity sold
-              transactionDate: transaction.createdAt
-            });
-          });
+        if (item.variantId) {
+          const currentQuantity = variantQuantityMap.get(item.variantId) || 0;
+          variantQuantityMap.set(item.variantId, currentQuantity + item.quantity);
         }
+      });
+    });
+
+    // Calculate total consumption by applying aggregate quantities to consumption records
+    const consumptionTotals: any[] = [];
+
+    variantConsumptionMap.forEach((consumptions, variantId) => {
+      const totalQuantitySold = variantQuantityMap.get(variantId) || 0;
+
+      if (totalQuantitySold === 0) return;
+
+      consumptions.forEach(consumption => {
+        if (stockItemType && consumption.stockItem.type !== stockItemType) {
+          return;
+        }
+
+        consumptionTotals.push({
+          id: consumption.id.toString(),
+          productId: consumption.variant.productId,
+          productName: consumption.variant.product.name,
+          variantId: consumption.variant.id,
+          variantName: consumption.variant.name,
+          categoryId: consumption.variant.product.categoryId,
+          categoryName: '',
+          stockItemId: consumption.stockItem.id,
+          stockItemName: consumption.stockItem.name,
+          stockItemType: consumption.stockItem.type,
+          quantityConsumed: consumption.quantity * totalQuantitySold,
+        });
       });
     });
 
@@ -153,8 +157,12 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
       categoryName: categoryMap.get(item.categoryId) || ''
     }));
 
-    // Sort by transaction date (most recent first)
-    finalResult.sort((a, b) => new Date(b.transactionDate).getTime() - new Date(a.transactionDate).getTime());
+    // Sort by product name, then variant name for consistent ordering
+    finalResult.sort((a, b) => {
+      const nameCompare = a.productName.localeCompare(b.productName);
+      if (nameCompare !== 0) return nameCompare;
+      return a.variantName.localeCompare(b.variantName);
+    });
     
     // Calculate aggregated totals
     const aggregatedTotals: Record<string, { stockItemId: string; stockItemName: string; stockItemType: string; totalQuantity: number }> = finalResult.reduce((acc, item) => {

@@ -2,6 +2,8 @@ import type { Transaction, User, Till } from '../types';
 import { prisma } from '../prisma';
 import { addMoney, subtractMoney, roundMoney, decimalToNumber } from '../utils/money';
 
+type TransactionClient = Parameters<Parameters<typeof prisma.$transaction>[0]>[0];
+
 const VALID_PAYMENT_METHODS = ['cash', 'card', 'bank_transfer', 'other', 'split'] as const;
 
 interface ClosingSummary {
@@ -33,10 +35,12 @@ function generateTillKey(tillId: string | number | null, tillName: string | null
  */
 export const calculateDailyClosingSummary = async (
   startDate: Date,
-  endDate: Date
+  endDate: Date,
+  tx?: TransactionClient
 ): Promise<ClosingSummary> => {
   // Get all transactions within the specified date range (excluding voided)
-  const transactions = await prisma.transaction.findMany({
+  const prismaClient = tx || prisma;
+  const transactions = await prismaClient.transaction.findMany({
     where: {
       createdAt: {
         gte: startDate,
@@ -123,8 +127,11 @@ export const calculateDailyClosingSummary = async (
 export const createDailyClosing = async (
   closedAt: Date,
   userId: number,
-  startDate?: Date
+  startDate?: Date,
+  tx?: TransactionClient
 ): Promise<number> => {
+  const prismaClient = tx || prisma;
+
   // If startDate is not provided, use the beginning of the day
   const summaryStartDate = startDate || new Date(closedAt);
   if (!startDate) {
@@ -132,13 +139,13 @@ export const createDailyClosing = async (
   }
 
   // Calculate the summary for transactions since the start date
-  const summary = await calculateDailyClosingSummary(summaryStartDate, closedAt);
+  const summary = await calculateDailyClosingSummary(summaryStartDate, closedAt, tx);
 
   // Create the daily closing record
-  const dailyClosing = await prisma.dailyClosing.create({
+  const dailyClosing = await prismaClient.dailyClosing.create({
     data: {
       closedAt,
-      summary: summary as any, // Type assertion to handle JSON serialization
+      summary: summary as any,
       userId
     }
   });

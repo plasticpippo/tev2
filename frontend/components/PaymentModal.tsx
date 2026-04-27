@@ -95,8 +95,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({ isOpen, onClose, ord
   const handlePayment = async (paymentMethod: string) => {
     if (isProcessingRef.current) return;
     isProcessingRef.current = true;
-
-    if (isProcessing) return;
     setIsProcessing(true);
     try {
       const idempotencyKey = generateIdempotencyKey(orderItems);

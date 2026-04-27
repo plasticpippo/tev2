@@ -1,0 +1,7 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: Loading POS...
+  - generic [ref=e5]:
+    - generic [ref=e6]: errors.auth.noTokenProvided
+    - button "toast.close" [ref=e7] [cursor=pointer]: ×
+  - button "Enable virtual keyboard" [ref=e8] [cursor=pointer]:
+    - img [ref=e9]
