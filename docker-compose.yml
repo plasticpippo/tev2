@@ -44,8 +44,8 @@ services:
   # - NODE_OPTIONS: --max-old-space-size=640 limits heap to ~640MB (leaves buffer for native code)
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
       args:
         - APP_VERSION=${APP_VERSION:-dev}
         - BUILD_DATE=${BUILD_DATE:-unknown}

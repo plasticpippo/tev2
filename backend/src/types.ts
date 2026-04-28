@@ -17,6 +17,44 @@ declare global {
   }
 }
 
+// ============================================================================
+// SHARED TYPES - Re-exported for backward compatibility
+// Canonical source: shared/types.ts (copied into src/ at build time)
+// ============================================================================
+import type {
+  ThemeColor as SharedThemeColor,
+  Product,
+  Category,
+  Till,
+  PurchasingUnit,
+  StockItem,
+  StockAdjustment,
+  OrderActivityLog,
+  Room,
+  DailyClosing,
+} from './shared-types';
+
+export type {
+  Product,
+  Category,
+  Till,
+  PurchasingUnit,
+  StockItem,
+  StockAdjustment,
+  OrderActivityLog,
+  Room,
+  DailyClosing,
+  SharedThemeColor as ThemeColor,
+};
+
+// ============================================================================
+// BACKEND-SPECIFIC TYPES
+// ============================================================================
+
+/**
+ * Backend OrderItem extends shared OrderItem with additional tax rate information
+ * and includes productId and variantId which are used internally
+ */
 export interface OrderItem {
   id: string;
   variantId: number;
@@ -30,8 +68,11 @@ export interface OrderItem {
   taxRatePercent: number;
 }
 
-export type ThemeColor = 'slate' | 'amber' | 'red' | 'green' | 'blue' | 'purple';
-
+/**
+ * Backend ProductVariant
+ * Backend version does not include taxRateId and taxRate fields from shared
+ * ThemeColor matches the full shared ThemeColor type (24 colors) to match Prisma schema
+ */
 export interface ProductVariant {
   id: number;
   productId: number;
@@ -42,22 +83,13 @@ export interface ProductVariant {
     stockItemId: string;
     quantity: number;
   }[];
-  themeColor: ThemeColor;
+  themeColor: SharedThemeColor;
 }
 
-export interface Product {
-  id: number;
-  name: string;
-  categoryId: number;
-  variants: ProductVariant[];
-}
-
-export interface Category {
-  id: number;
- name: string;
- visibleTillIds: number[] | null;  // Made nullable to match frontend types
-}
-
+/**
+ * Backend User extends shared User with password field
+ * Password should only be used internally, never exposed in API responses
+ */
 export interface User {
   id: number;
   name: string;
@@ -66,15 +98,23 @@ export interface User {
   role: 'Admin' | 'Cashier';
 }
 
+/**
+ * Backend Tab
+ * Backend version does not include tableId field
+ */
 export interface Tab {
   id: number;
-  name:string;
+  name: string;
   items: OrderItem[];
   createdAt: string;
- tillId: number;
+  tillId: number;
   tillName: string;
 }
 
+/**
+ * Backend Transaction
+ * Backend version does not include tableId, tableName, or receipt fields
+ */
 export interface Transaction {
   id: number;
   items: OrderItem[];
@@ -93,6 +133,10 @@ export interface Transaction {
   createdAt: string;
 }
 
+/**
+ * Backend TaxRate
+ * Backend-specific representation with ratePercent (string) and isActive (boolean)
+ */
 export interface TaxRate {
   id: number;
   name: string;
@@ -105,12 +149,19 @@ export interface TaxRate {
   updatedAt: string;
 }
 
+/**
+ * Backend TaxSettings
+ * Backend makes defaultTaxRateId and defaultTaxRate required
+ */
 export interface TaxSettings {
   mode: 'inclusive' | 'exclusive' | 'none';
   defaultTaxRateId: number | null;
   defaultTaxRate: TaxRate | null;
 }
 
+/**
+ * BusinessSettings - extracted from Settings for backend use
+ */
 export interface BusinessSettings {
   name: string | null;
   address: string | null;
@@ -124,6 +175,9 @@ export interface BusinessSettings {
   legalText?: string | null;
 }
 
+/**
+ * ReceiptConfig - extracted from Settings for backend use
+ */
 export interface ReceiptConfig {
   prefix: string;
   numberLength: number;
@@ -133,6 +187,9 @@ export interface ReceiptConfig {
   currentNumber: number;
 }
 
+/**
+ * EmailConfig - extracted from Settings for backend use
+ */
 export interface EmailConfig {
   smtpHost: string | null;
   smtpPort: number;
@@ -145,6 +202,10 @@ export interface EmailConfig {
   autoEmailReceipts: boolean;
 }
 
+/**
+ * Backend Settings
+ * Backend extracts sub-objects into their own interfaces and makes them required
+ */
 export interface Settings {
   tax: TaxSettings;
   businessDay: {
@@ -163,70 +224,35 @@ export interface Settings {
   };
 }
 
-export interface Till {
-  id: number;
+/**
+ * Backend Table - matches shared Table status including 'bill_requested'
+ */
+export interface Table {
+  id: string;
   name: string;
-}
-
-export interface PurchasingUnit {
-    id: string;
-    name: string;
-    multiplier: number;
-}
-
-export interface StockItem {
-    id: string;
-    name: string;
-    quantity: number;
-    type: 'Ingredient' | 'Sellable Good';
-    baseUnit: string;
-    purchasingUnits: PurchasingUnit[];
-}
-
-export interface StockAdjustment {
-    id: number;
-    stockItemId: string;
-    itemName: string;
-    quantity: number;
-    reason: string;
-    userId: number;
-    userName: string;
-    createdAt: string;
-}
-
-export interface DailyClosing {
-  id: number;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  status: 'available' | 'occupied' | 'bill_requested' | 'reserved' | 'unavailable';
+  roomId: string;
+  items?: any[];
   createdAt: string;
-  closedAt: string;
-  summary: {
-    transactions: number;
-    totalSales: number;
-    totalTax: number;
-    totalTips: number;
-    paymentMethods: Record<string, { count: number; total: number }>;
-    tills: Record<string, { transactions: number; total: number }>;
-  };
- userId: number;
-  userName: string;
+  updatedAt: string;
+  room: Room;
+  tabs: any[];
 }
 
-export interface OrderActivityLog {
-    id: number;
-    action: 'Item Removed' | 'Order Cleared';
-    details: string | OrderItem[];
-    userId: number;
-    userName: string;
-    createdAt: string;
-}
+// Backend-only types
 
 export interface OrderSession {
-    id: string;
-    userId: number;
-    items: OrderItem[];
-    status: 'active' | 'pending_logout' | 'completed';
-    createdAt: string;
-    updatedAt: string;
-    logoutTime: string | null;
+  id: string;
+  userId: number;
+  items: OrderItem[];
+  status: 'active' | 'pending_logout' | 'completed';
+  createdAt: string;
+  updatedAt: string;
+  logoutTime: string | null;
 }
 
 export interface VariantLayoutPosition {
@@ -240,32 +266,6 @@ export interface SharedLayoutData {
   name: string;
   categoryId: number;
   positions: VariantLayoutPosition[];
-}
-
-// Table and Room interfaces for table management
-export interface Room {
-  id: string;
-  name: string;
-  description?: string;
-  createdAt: string;
-  updatedAt: string;
-  tables: Table[];
-}
-
-export interface Table {
-  id: string;
-  name: string;
-  x: number;
-  y: number;
-  width: number;
-  height: number;
-  status: 'available' | 'occupied' | 'reserved' | 'unavailable';
-  roomId: string;
-  items?: any[];
-  createdAt: string;
-  updatedAt: string;
-  room: Room;
-  tabs: any[];
 }
 
 export interface ProcessPaymentRequest {

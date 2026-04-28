@@ -1,0 +1,56 @@
+# Version control
+.git
+.gitignore
+
+# Documentation
+docs/
+manual/
+plans/
+README.md
+VERSION
+
+# Test files and screenshots
+test-files/
+screenshots/
+css-bugs/
+tables/
+*.png
+*.html
+
+# Scripts not needed in Docker
+scripts/
+security/
+install.sh
+run-audit.sh
+test-version-tracking.sh
+compare-locales.js
+i18n-audit.mjs
+i18n-cleanup.mjs
+run-audit.html
+
+# Docker and config files
+docker-compose.yml
+docker-compose.override.yml
+docker-compose.override.yml.example
+nginx/
+.env
+.env.example
+
+# IDE and tool config
+.kilo/
+.kilocode/
+.kilocodemodes
+.playwright-mcp/
+
+# Root node_modules (backend and frontend have their own)
+node_modules/
+package.json
+package-lock.json
+
+# Frontend node_modules (has its own inside frontend/)
+frontend/node_modules/
+
+# Misc
+backups/
+headers.txt
+cookies.txt

@@ -21,7 +21,7 @@ WORKDIR /app
 # Default: development (if not set in docker-compose.yml)
 
 # Copy package files
-COPY package*.json ./
+COPY backend/package*.json ./
 
 # Install system dependencies for Prisma, PostgreSQL client, and Puppeteer/Chromium
 RUN apk add --no-cache openssl libssl3 libc6-compat wget postgresql-client \
@@ -40,25 +40,29 @@ ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium-browser
 RUN npm install
 
 # Copy prisma files BEFORE generating Prisma client
-COPY prisma/ ./prisma/
+COPY backend/prisma/ ./prisma/
 
 # Generate Prisma client
 RUN npx prisma generate
 
 # Copy tsconfig.json
-COPY tsconfig.json ./
+COPY backend/tsconfig.json ./
 
 # Copy source code
-COPY src/ ./src/
+COPY backend/src/ ./src/
+
+# Copy shared types into src so TypeScript can import them within rootDir
+# Must come AFTER backend/src/ to overwrite any symlink from the host
+COPY shared/types.ts ./src/shared-types.ts
 
 # Copy locales for i18n translations
-COPY locales/ ./locales/
+COPY backend/locales/ ./locales/
 
 # Copy templates for PDF generation
-COPY templates/ ./templates/
+COPY backend/templates/ ./templates/
 
 # Copy assets for PDF generation
-COPY assets/ ./assets/
+COPY backend/assets/ ./assets/
 
 # Build the application with explicit config
 RUN npx tsc --project tsconfig.json
@@ -73,7 +77,7 @@ RUN npm prune --omit=dev && npm cache clean --force
 EXPOSE 3001
 
 # Copy entrypoint script
-COPY docker-entrypoint.sh /usr/local/bin/
+COPY backend/docker-entrypoint.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
 # Use entrypoint script to run migrations and seeding before starting app

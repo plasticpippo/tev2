@@ -111,7 +111,12 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    const { name, username, password, role } = req.body as Omit<User, 'id'> & { password?: string };
+    const { name, username, password, role } = req.body as {
+      name?: string;
+      username?: string;
+      password?: string;
+      role?: 'Admin' | 'Cashier';
+    };
     
     // Get authenticated user info
     const authenticatedUserId = Number(req.user?.id);

@@ -1,3 +1,7 @@
+/**
+ * Backend Customer
+ * Backend adds deletedAt field, uses different createdBy type, and Date for dates
+ */
 export interface Customer {
   id: number;
   name: string;
@@ -16,6 +20,9 @@ export interface Customer {
   createdBy: number;
 }
 
+/**
+ * CreateCustomerInput - matches shared CreateCustomerInput
+ */
 export interface CreateCustomerInput {
   name: string;
   email?: string | null;
@@ -28,6 +35,9 @@ export interface CreateCustomerInput {
   notes?: string | null;
 }
 
+/**
+ * UpdateCustomerInput - matches shared UpdateCustomerInput
+ */
 export interface UpdateCustomerInput {
   name?: string;
   email?: string | null;
@@ -41,6 +51,9 @@ export interface UpdateCustomerInput {
   isActive?: boolean;
 }
 
+/**
+ * CustomerFilters - backend-specific
+ */
 export interface CustomerFilters {
   search?: string;
   name?: string;
@@ -53,6 +66,9 @@ export interface CustomerFilters {
   includeDeleted?: boolean;
 }
 
+/**
+ * CustomerPagination
+ */
 export interface CustomerPagination {
   page: number;
   limit: number;
@@ -60,6 +76,9 @@ export interface CustomerPagination {
   sortOrder?: 'asc' | 'desc';
 }
 
+/**
+ * CustomerListResult
+ */
 export interface CustomerListResult {
   customers: CustomerResponseDTO[];
   pagination: {
@@ -72,11 +91,18 @@ export interface CustomerListResult {
   };
 }
 
+/**
+ * CustomerDuplicateCheck
+ */
 export interface CustomerDuplicateCheck {
   isDuplicate: boolean;
   duplicates: CustomerResponseDTO[];
 }
 
+/**
+ * CustomerResponseDTO - safe representation for API responses
+ * Uses Date for dates and has createdBy as nested object
+ */
 export interface CustomerResponseDTO {
   id: number;
   name: string;

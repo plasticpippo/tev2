@@ -1,6 +1,20 @@
-export type ReceiptStatus = 'draft' | 'issued' | 'voided' | 'emailed';
-export type EmailStatus = 'pending' | 'sent' | 'failed' | 'bounced';
+import {
+  ReceiptStatus,
+  EmailStatus,
+  TaxBreakdownItem,
+} from '../shared-types';
 
+// Re-export shared types for use by other backend modules
+export type {
+  ReceiptStatus,
+  EmailStatus,
+  TaxBreakdownItem,
+};
+
+/**
+ * Backend BusinessSnapshot
+ * Backend makes name required (string instead of string | null)
+ */
 export interface BusinessSnapshot {
   name: string;
   address: string | null;
@@ -14,6 +28,10 @@ export interface BusinessSnapshot {
   legalText?: string | null;
 }
 
+/**
+ * Backend CustomerSnapshot
+ * Backend includes id, phone, postalCode, country fields
+ */
 export interface CustomerSnapshot {
   id: number;
   name: string;
@@ -26,13 +44,11 @@ export interface CustomerSnapshot {
   country: string | null;
 }
 
-export interface TaxBreakdownItem {
-  rateName: string;
-  ratePercent: number;
-  taxableAmount: number;
-  taxAmount: number;
-}
-
+/**
+ * Backend ReceiptItemSnapshot
+ * Backend uses id as number, includes taxRateId, taxRateName, taxRatePercent
+ * instead of effectiveTaxRate
+ */
 export interface ReceiptItemSnapshot {
   id: number;
   variantId: number;
@@ -45,6 +61,9 @@ export interface ReceiptItemSnapshot {
   taxRatePercent?: number;
 }
 
+/**
+ * Backend Receipt - extended with generation tracking fields
+ */
 export interface Receipt {
   id: number;
   receiptNumber: string;
@@ -81,6 +100,9 @@ export interface Receipt {
   version: number;
 }
 
+/**
+ * CreateReceiptInput - matches shared CreateReceiptInput
+ */
 export interface CreateReceiptInput {
   transactionId: number;
   customerId?: number | null;
@@ -88,21 +110,33 @@ export interface CreateReceiptInput {
   internalNotes?: string | null;
 }
 
+/**
+ * UpdateReceiptInput - matches shared UpdateReceiptInput
+ */
 export interface UpdateReceiptInput {
   customerId?: number | null;
   notes?: string | null;
   internalNotes?: string | null;
 }
 
+/**
+ * IssueReceiptInput - matches shared IssueReceiptInput (simplified for backend)
+ */
 export interface IssueReceiptInput {
   customerId?: number | null;
   notes?: string | null;
 }
 
+/**
+ * VoidReceiptInput - matches shared VoidReceiptInput
+ */
 export interface VoidReceiptInput {
   reason: string;
 }
 
+/**
+ * ReceiptFilters - backend-specific
+ */
 export interface ReceiptFilters {
   search?: string;
   receiptNumber?: string;
@@ -117,6 +151,9 @@ export interface ReceiptFilters {
   generationStatus?: string | string[];
 }
 
+/**
+ * ReceiptPagination
+ */
 export interface ReceiptPagination {
   page: number;
   limit: number;
@@ -124,6 +161,9 @@ export interface ReceiptPagination {
   sortOrder?: 'asc' | 'desc';
 }
 
+/**
+ * ReceiptListResult
+ */
 export interface ReceiptListResult {
   receipts: ReceiptResponseDTO[];
   pagination: {
@@ -136,6 +176,9 @@ export interface ReceiptListResult {
   };
 }
 
+/**
+ * ReceiptResponseDTO - includes additional backend-only fields
+ */
 export interface ReceiptResponseDTO {
   id: number;
   receiptNumber: string;
