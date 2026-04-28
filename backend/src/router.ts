@@ -1,4 +1,9 @@
 import express from 'express';
+import { STORAGE_PATH } from './config/storage';
+import fs from 'fs/promises';
+import path from 'path';
+import { prisma } from './prisma';
+import { logError, logInfo } from './utils/logger';
 import { productsRouter } from './handlers/products';
 import { usersRouter } from './handlers/users';
 import { categoriesRouter } from './handlers/categories';
@@ -48,6 +53,76 @@ router.use('/cost-management', costManagementRouter);
 
 router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });
+});
+
+router.get('/health/pdfs', async (req, res) => {
+  try {
+    const HEALTH_CHECK_MISSING_PDF_THRESHOLD = parseInt(
+      process.env.HEALTH_CHECK_MISSING_PDF_THRESHOLD || '10',
+      10
+    );
+
+    const receiptsWithPDF = await prisma.receipt.count({
+      where: {
+        status: 'issued',
+        pdfPath: { not: null },
+      },
+    });
+
+    const pdfFiles = await fs.readdir(STORAGE_PATH);
+    const pdfFileCount = pdfFiles.filter(f => f.endsWith('.pdf')).length;
+
+    const recentReceipts = await prisma.receipt.findMany({
+      where: {
+        status: 'issued',
+        pdfPath: { not: null },
+        issuedAt: { gte: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) },
+      },
+      select: {
+        id: true,
+        receiptNumber: true,
+        pdfPath: true,
+        issuedAt: true,
+      },
+      take: 100,
+      orderBy: { issuedAt: 'desc' },
+    });
+
+    // Check file existence in parallel for better performance
+    const fileChecks = recentReceipts.map(async (receipt) => {
+      if (!receipt.pdfPath) return true;
+      const fullPath = path.join(STORAGE_PATH, receipt.pdfPath);
+      try {
+        await fs.access(fullPath, fs.constants.R_OK);
+        return true;
+      } catch {
+        return false;
+      }
+    });
+
+    const checkResults = await Promise.all(fileChecks);
+    const missingPDFCount = checkResults.filter(result => !result).length;
+
+    const health = {
+      status: 'OK' as const,
+      receiptsWithPDF,
+      pdfFileCount,
+      missingPDFCount,
+      missingPDFPercentage: receiptsWithPDF > 0 ? (missingPDFCount / receiptsWithPDF * 100).toFixed(2) : 0,
+      timestamp: new Date().toISOString(),
+    };
+
+    if (missingPDFCount > HEALTH_CHECK_MISSING_PDF_THRESHOLD) {
+      logError('PDF health check: Too many missing PDF files', health as any);
+    } else if (missingPDFCount > 0) {
+      logInfo('PDF health check: Some PDF files missing', health);
+    }
+
+    res.json(health);
+  } catch (error) {
+    logError('PDF health check failed', error instanceof Error ? error : new Error(String(error)));
+    res.status(500).json({ error: 'Health check failed' });
+  }
 });
 
 // Version endpoint - returns application version information

@@ -3,7 +3,7 @@ import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import * as receiptService from '../services/receiptService';
 import { getPDFPath, generateReceiptPDF, deletePDFFromStorage } from '../services/pdfService';
-import { logError, logDataAccess } from '../utils/logger';
+import { logError, logInfo, logDataAccess } from '../utils/logger';
 import path from 'path';
 import fs from 'fs/promises';
 import { z } from 'zod';
@@ -661,8 +661,18 @@ receiptsRouter.post('/:id/regenerate-pdf', authenticateToken, async (req: Reques
     if (receipt.pdfPath) {
       try {
         await deletePDFFromStorage(receipt.pdfPath);
-      } catch {
-        // Ignore if old file doesn't exist
+        logInfo(`PDF deleted for regenerating receipt ${receipt.id}`, {
+          receiptId: receipt.id,
+          receiptNumber: receipt.receiptNumber,
+          pdfPath: receipt.pdfPath,
+        });
+      } catch (error) {
+        logError(`Failed to delete PDF on regenerate: ${receipt.pdfPath}`, {
+          receiptId: receipt.id,
+          receiptNumber: receipt.receiptNumber,
+          pdfPath: receipt.pdfPath,
+          error: error instanceof Error ? error.message : 'Unknown error',
+        });
       }
     }
 
@@ -967,6 +977,22 @@ receiptsRouter.get('/audit', authenticateToken, requireAdmin, async (req: Reques
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: t('receipts.auditFetchFailed') });
+  }
+});
+
+// POST /api/receipts/admin/recover-pdfs - Recover missing PDF files (Admin only)
+receiptsRouter.post('/admin/recover-pdfs', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+  try {
+    const { recoverMissingPDFs } = await import('../services/pdfRecoveryService');
+    const limit = req.body.limit ? parseInt(String(req.body.limit), 10) : 100;
+    const result = await recoverMissingPDFs(limit);
+    res.json({
+      message: 'PDF recovery completed',
+      ...result,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'PDF recovery failed');
+    res.status(500).json({ error: 'PDF recovery failed' });
   }
 });
 

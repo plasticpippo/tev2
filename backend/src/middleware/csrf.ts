@@ -162,7 +162,7 @@ const extractUserFromToken = async (req: Request): Promise<{ id: number; usernam
  * - Server validates both match the same signed value
  */
 export const csrfMiddleware = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-	const t = req.t.bind(req);
+	const t = req.t?.bind(req) || ((key: string) => key);
 	// Skip CSRF validation for safe methods
 	const safeMethods = ['GET', 'HEAD', 'OPTIONS'];
 	if (safeMethods.includes(req.method)) {

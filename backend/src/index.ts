@@ -194,7 +194,17 @@ app.use((req, res, next) => {
 });
 
 // i18n middleware - adds req.t function for translations
-app.use(i18nextMiddleware.handle(i18n));
+app.use((req, res, next) => {
+  req.t = (key: string, options?: any) => {
+    try {
+      return i18n.t(key, options) as string;
+    } catch (error) {
+      console.warn('Translation error:', error);
+      return key;
+    }
+  };
+  next();
+});
 
 // API routes
 app.use('/api', router);

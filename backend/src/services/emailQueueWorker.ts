@@ -1,7 +1,11 @@
+import { STORAGE_PATH } from '../config/storage';
 import cron, { ScheduledTask } from 'node-cron';
 import { prisma } from '../prisma';
 import { sendEmail } from './emailService';
 import { logInfo, logError } from '../utils/logger';
+import fs from 'fs/promises';
+import path from 'path';
+
 
 const BACKOFF_DELAYS = [
   1 * 60 * 1000,
@@ -85,10 +89,43 @@ async function processJob(
     };
 
     if (job.attachmentPath && job.attachmentFilename) {
+      const fullAttachmentPath = path.join(STORAGE_PATH, job.attachmentPath);
+
+      try {
+        await fs.access(fullAttachmentPath, fs.constants.R_OK);
+      } catch {
+        logError(`PDF attachment not found: ${fullAttachmentPath}`, {
+          jobId: job.id,
+          receiptId: job.receiptId,
+        });
+
+        await prisma.$transaction(async (tx) => {
+          await tx.emailQueue.update({
+            where: { id: job.id },
+            data: {
+              status: 'failed',
+              lastError: `PDF file not found: ${fullAttachmentPath}`,
+              processedAt: new Date(),
+            },
+          });
+
+          await tx.receipt.update({
+            where: { id: job.receiptId },
+            data: {
+              emailStatus: 'failed',
+              emailErrorMessage: `PDF file not found`,
+              emailAttempts: { increment: 1 },
+            },
+          });
+        });
+
+        return;
+      }
+
       options.attachments = [
         {
           filename: job.attachmentFilename,
-          path: job.attachmentPath,
+          path: fullAttachmentPath,
         },
       ];
     }

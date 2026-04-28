@@ -567,7 +567,7 @@ export function errorHandler(
  * @param res - Express response object
  */
 export function notFoundHandler(req: Request, res: Response): void {
-  const t = req.t.bind(req);
+  const t = req.t?.bind(req);
   const correlationId = (req as any).correlationId || 'unknown';
   const clientIp = getClientIp(req);
   const userAgent = getUserAgent(req);
@@ -587,8 +587,11 @@ export function notFoundHandler(req: Request, res: Response): void {
   
   // Build error response
   const isProd = isProduction();
+  const notFoundMessage = t
+    ? (isProd ? t('errors:errorHandler.notFoundDetailed') : t('errors:errorHandler.routeNotFound', { method: req.method, path: req.path }))
+    : (isProd ? 'The requested resource was not found.' : `Route not found: ${req.method} ${req.path}`);
   const response: Record<string, any> = {
-    error: isProd ? t('errors:errorHandler.notFoundDetailed') : t('errors:errorHandler.routeNotFound', { method: req.method, path: req.path }),
+    error: notFoundMessage,
     correlationId,
     statusCode: 404,
   };

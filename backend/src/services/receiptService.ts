@@ -352,7 +352,7 @@ export async function issueDraftReceipt(
       where: { id },
       data: {
         receiptNumber,
-        status: 'issued',
+        status: 'issuing',
         issuedAt: new Date(),
         issuedBy: userId,
         customerId,
@@ -376,6 +376,7 @@ export async function issueDraftReceipt(
       data: {
         pdfPath: pdfResult.filename,
         pdfGeneratedAt: pdfResult.generatedAt,
+        status: 'issued',
         version: { increment: 1 },
       },
     });
@@ -384,11 +385,22 @@ export async function issueDraftReceipt(
 
     return toReceiptDTO(finalReceipt);
   } catch (pdfError) {
-    console.error('Failed to generate PDF on receipt issue:', pdfError);
+    logError('Failed to generate PDF on receipt issue', { receiptId: id, error: pdfError instanceof Error ? pdfError.message : 'Unknown error' });
 
-    triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt (PDF failed)');
+    try {
+      await prisma.receipt.update({
+        where: { id },
+        data: {
+          status: 'draft',
+          issuedAt: null,
+          receiptNumber: `DRAFT-${randomUUID()}`,
+        },
+      });
+    } catch (rollbackError) {
+      logError('Failed to roll back receipt after PDF generation failure', { receiptId: id, error: rollbackError instanceof Error ? rollbackError.message : 'Unknown error' });
+    }
 
-    return toReceiptDTO(updatedReceipt);
+    throw new Error(`Receipt issuance failed: PDF generation error - ${pdfError instanceof Error ? pdfError.message : 'Unknown error'}`);
   }
 }
 
@@ -456,9 +468,18 @@ export async function voidReceipt(
   if (receipt.pdfPath) {
     try {
       await deletePDFFromStorage(receipt.pdfPath);
+      logInfo(`PDF deleted for voided receipt ${receipt.id}`, {
+        receiptId: receipt.id,
+        receiptNumber: receipt.receiptNumber,
+        pdfPath: receipt.pdfPath,
+      });
     } catch (error) {
-      // Log error but don't fail the void operation
-      console.error('Failed to delete PDF on void:', error);
+      logError(`Failed to delete PDF on void: ${receipt.pdfPath}`, {
+        receiptId: receipt.id,
+        receiptNumber: receipt.receiptNumber,
+        pdfPath: receipt.pdfPath,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      });
     }
   }
   
@@ -574,6 +595,46 @@ export async function sendReceiptEmail(
     throw new Error('INVALID_EMAIL');
   }
 
+  // Use transaction to prevent race condition when multiple requests try to send email simultaneously
+  const emailJobResult = await prisma.$transaction(async (tx) => {
+    // Lock the receipt to prevent concurrent email job creation
+    await tx.receipt.findUniqueOrThrow({
+      where: { id: receiptId },
+      select: { id: true },
+    });
+
+    // Check for existing pending/processing jobs within transaction
+    const existingPendingJob = await tx.emailQueue.findFirst({
+      where: {
+        receiptId,
+        status: { in: ['pending', 'processing'] },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    if (existingPendingJob) {
+      return {
+        job: existingPendingJob,
+        isNew: false,
+      };
+    }
+
+    return { job: null, isNew: true };
+  });
+
+  // Return existing job if found
+  if (!emailJobResult.isNew && emailJobResult.job) {
+    const job = emailJobResult.job;
+    return {
+      jobId: job.id,
+      status: job.status,
+      recipientEmail: job.recipientEmail,
+      receiptId,
+      receiptNumber: receipt.receiptNumber,
+      createdAt: job.createdAt,
+    };
+  }
+
   const businessSnapshot = receipt.businessSnapshot as any;
   const customerSnapshot = receipt.customerSnapshot as any;
   const itemsSnapshot = receipt.itemsSnapshot as any[];
@@ -641,18 +702,33 @@ export async function sendReceiptEmail(
 
   const includePdf = input.includePdf !== false;
 
-  const emailJob = await prisma.emailQueue.create({
-    data: {
-      receiptId,
-      recipientEmail: input.email,
-      subject,
-      htmlContent,
-      textContent,
-      attachmentPath: includePdf && receipt.pdfPath ? receipt.pdfPath : null,
-      attachmentFilename: includePdf && receipt.pdfPath ? `${receipt.receiptNumber}.pdf` : null,
-      status: 'pending',
-      priority: 0,
-    },
+  // Create email job with final check to prevent race condition
+  const emailJob = await prisma.$transaction(async (tx) => {
+    // Double-check for concurrent job creation (another transaction may have created one)
+    const concurrentJob = await tx.emailQueue.findFirst({
+      where: {
+        receiptId,
+        status: { in: ['pending', 'processing'] },
+      },
+    });
+
+    if (concurrentJob) {
+      return concurrentJob;
+    }
+
+    return await tx.emailQueue.create({
+      data: {
+        receiptId,
+        recipientEmail: input.email,
+        subject,
+        htmlContent,
+        textContent,
+        attachmentPath: includePdf && receipt.pdfPath ? receipt.pdfPath : null,
+        attachmentFilename: includePdf && receipt.pdfPath ? `${receipt.receiptNumber}.pdf` : null,
+        status: 'pending',
+        priority: 0,
+      },
+    });
   });
 
   return {

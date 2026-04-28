@@ -11,7 +11,7 @@ type LayoutWithOwner = (VariantLayout | SharedLayout) & { ownerId: number | null
  * Attaches the table to req.table if found and authorized
  */
 export const verifyTableOwnership = async (req: Request, res: Response, next: NextFunction) => {
-  const t = req.t.bind(req);
+  const t = req.t?.bind(req) || ((key: string) => key);
   try {
     const tableId = req.params.id;
     
@@ -58,7 +58,7 @@ export const verifyTableOwnership = async (req: Request, res: Response, next: Ne
  * Attaches the layout to req.layout if found and authorized
  */
 export const verifyLayoutOwnership = async (req: Request, res: Response, next: NextFunction) => {
-  const t = req.t.bind(req);
+  const t = req.t?.bind(req) || ((key: string) => key);
   try {
     const layoutId = req.params.id;
     
@@ -132,7 +132,7 @@ export const verifyLayoutOwnership = async (req: Request, res: Response, next: N
  * Returns 403 if user is not an admin
  */
 export const requireAdmin = (req: Request, res: Response, next: NextFunction) => {
-  const t = req.t.bind(req);
+  const t = req.t?.bind(req) || ((key: string) => key);
   try {
     const userRole = req.user?.role;
 
@@ -168,7 +168,7 @@ export const requireAdmin = (req: Request, res: Response, next: NextFunction) =>
  */
 export const requireRole = (allowedRoles: string[]) => {
   return (req: Request, res: Response, next: NextFunction) => {
-    const t = req.t.bind(req);
+    const t = req.t?.bind(req) || ((key: string) => key);
     try {
       const userRole = req.user?.role;
 

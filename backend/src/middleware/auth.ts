@@ -17,7 +17,7 @@ export interface TokenPayload {
 }
 
 export const authenticateToken = async (req: Request, res: Response, next: NextFunction) => {
-  const t = req.t.bind(req);
+  const t = req.t?.bind(req) || ((key: string) => key);
   try {
     // Extract token from Authorization header (Bearer token format)
     const authHeader = req.headers.authorization;

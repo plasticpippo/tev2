@@ -475,6 +475,7 @@ model Customer {
 
 enum ReceiptStatus {
   draft
+  issuing
   issued
   voided
   emailed

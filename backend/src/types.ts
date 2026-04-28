@@ -6,6 +6,7 @@ import { SharedLayout, VariantLayout } from '@prisma/client';
 declare global {
   namespace Express {
     interface Request {
+      t: (key: string, options?: any) => string;
       user?: {
         id: number;
         username: string;

@@ -134,7 +134,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
   try {
     const { name, rate, description, isDefault } = req.body;
 
-    const errors = validateTaxRateData(req.body, t, false);
+    const errors = validateTaxRateData(req.body, t as any, false);
     if (errors.length > 0) {
       return res.status(400).json({
         error: t('errors:taxRates.validationFailed'),
@@ -199,7 +199,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
     const { id } = req.params;
     const { name, rate, description, isDefault, isActive } = req.body;
 
-    const errors = validateTaxRateData(req.body, t, true);
+    const errors = validateTaxRateData(req.body, t as any, true);
     if (errors.length > 0) {
       return res.status(400).json({
         error: t('errors:taxRates.validationFailed'),

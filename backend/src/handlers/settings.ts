@@ -19,7 +19,7 @@ const emailTestRateLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  message: (req: any) => ({ error: req.t('errors:settings.tooManyEmailTestRequests') }),
+  message: (req: any) => ({ error: typeof req.t === 'function' ? req.t('errors:settings.tooManyEmailTestRequests') : 'Too many requests' }),
   keyGenerator: (req: any) => {
     return req.user?.id?.toString() || req.ip;
   },

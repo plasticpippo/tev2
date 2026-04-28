@@ -7,7 +7,7 @@ export const writeLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req: Request, res: Response) => {
-    const t = req.t.bind(req);
+    const t = req.t?.bind(req) || ((key: string) => key);
     res.status(429).json({ error: t('errors:rateLimiter.writeLimitExceeded') });
   },
 });
@@ -23,7 +23,7 @@ export const createStrictLimiter = (
     standardHeaders: true,
     legacyHeaders: false,
     handler: (req: Request, res: Response) => {
-      const t = req.t.bind(req);
+      const t = req.t?.bind(req) || ((key: string) => key);
       res.status(429).json({ error: t('errors:rateLimiter.rateLimitExceeded') });
     },
   });
@@ -35,7 +35,7 @@ export const customerRateLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
   handler: (req: Request, res: Response) => {
-    const t = req.t.bind(req);
+    const t = req.t?.bind(req) || ((key: string) => key);
     res.status(429).json({ error: t('errors:rateLimiter.rateLimitExceeded') });
   },
 });
