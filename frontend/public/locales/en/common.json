@@ -600,7 +600,8 @@
     "errorSavingTransaction": "Error saving transaction",
     "errorFetchingTabs": "Error fetching tabs",
     "errorSavingTab": "Error saving tab",
-    "errorDeletingTab": "Error deleting tab"
+    "errorDeletingTab": "Error deleting tab",
+    "errorTransferringItems": "Error transferring items"
   },
   "settingService": {
     "errorFetchingSettings": "Error fetching settings",
@@ -618,7 +619,7 @@
     "errorLoadingSharedLayoutToTill": "Error loading shared layout to till",
     "invalidLayoutName": "Invalid layout name: {{message}}"
   },
-"paymentContext": {
+  "paymentContext": {
     "invalidItemNames": "Some items have invalid names, correcting them before saving transaction",
     "itemFallbackName": "Item {{variantId}}",
     "invalidStockItemReference": "Invalid stock item reference in variant {{variantId}}: {{stockItemId}}",
@@ -684,5 +685,14 @@
     "failedToCreateSharedLayout": "Failed to create shared layout: {{errorMessage}}",
     "sharedLayoutLoaded": "Shared layout loaded successfully!",
     "failedToLoadSharedLayout": "Failed to load shared layout: {{errorMessage}}"
+  },
+  "tabs": {
+    "createFailed": "Failed to create tab.",
+    "addFailed": "Failed to add items to tab.",
+    "loadFailed": "Failed to load tab.",
+    "saveFailed": "Failed to save tab.",
+    "tabClosed": "Tab closed successfully.",
+    "deleteFailed": "Failed to delete tab.",
+    "emptyTab": "Cannot close a tab that has items."
   }
 }

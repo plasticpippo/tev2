@@ -20,14 +20,27 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
   const { t } = useTranslation('admin');
   const [newTabName, setNewTabName] = useState('');
   const [error, setError] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [isAdding, setIsAdding] = useState(false);
+  const [isLoadingTab, setIsLoadingTab] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
 
-  const handleCreateTab = () => {
-    if (newTabName.trim()) {
-      onCreateTab(newTabName.trim());
-      setNewTabName('');
-      setError(''); // Clear error when tab is created successfully
-    } else {
-      setError(t('tabs.enterTabName'));
+  const handleCreateTab = async () => {
+    if (isAdding || isLoading) return;
+
+    setIsAdding(true);
+    setError('');
+
+    try {
+      if (newTabName.trim()) {
+        await onCreateTab(newTabName.trim());
+        setNewTabName('');
+        onClose();
+      }
+    } catch (error) {
+      setError(error instanceof Error ? error.message : t('tabs.createFailed'));
+    } finally {
+      setIsAdding(false);
     }
   };
 
@@ -61,9 +74,9 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
           <button
             onClick={handleCreateTab}
             className="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-md transition duration-300 disabled:bg-slate-600"
-            disabled={!newTabName.trim()}
+            disabled={!newTabName.trim() || isAdding || isLoading}
           >
-            {t('tabs.create')}
+            {isAdding ? t('tabs.creating') : t('tabs.create')}
           </button>
         </div>
         
@@ -87,38 +100,42 @@ export const TabManager: React.FC<TabManagerProps> = ({ isOpen, onClose, tabs, o
                       <p className="font-bold text-white">{tab.name}</p>
                       <p className="text-sm text-slate-300">{formatCurrency(tabTotal)}</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      {canAddToTabs ? (
-                        <button
-                          onClick={() => onAddToTab(tab.id)}
-                          className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
-                        >
-                          {t('tabs.addToTab')}
-                        </button>
-                      ) : tab.items.length === 0 ? (
-                        <button
-                          onClick={() => onCloseTab(tab.id)}
-                          className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
-                        >
-                          {t('tabs.closeTab')}
-                        </button>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => onOpenTransfer(tab.id)}
-                            className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
-                          >
-                            {t('tabs.transfer')}
-                          </button>
-                          <button
-                            onClick={() => onLoadTab(tab.id)}
-                            className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition"
-                          >
-                            {t('tabs.loadTab')}
-                          </button>
-                        </>
-                      )}
-                    </div>
+                     <div className="flex items-center gap-2">
+                     {canAddToTabs ? (
+                       <button
+                         onClick={() => onAddToTab(tab.id)}
+                         className="bg-green-600 hover:bg-green-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition disabled:bg-green-700"
+                         disabled={isLoadingTab || isLoading || isClosing}
+                       >
+                         {isLoadingTab ? t('tabs.loading') : t('tabs.addToTab')}
+                       </button>
+                     ) : tab.items.length === 0 ? (
+                       <button
+                         onClick={() => onCloseTab(tab.id)}
+                         className="bg-red-700 hover:bg-red-600 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition disabled:bg-red-900"
+                         disabled={isLoadingTab || isLoading || isClosing || isAdding}
+                       >
+                         {isClosing ? t('tabs.closing') : t('tabs.closeTab')}
+                       </button>
+                     ) : (
+                       <>
+                         <button
+                           onClick={() => onOpenTransfer(tab.id)}
+                           className="bg-purple-600 hover:bg-purple-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition disabled:bg-purple-900"
+                           disabled={isLoadingTab || isLoading || isClosing || isAdding}
+                         >
+                           {t('tabs.transfer')}
+                         </button>
+                         <button
+                           onClick={() => onLoadTab(tab.id)}
+                           className="bg-sky-600 hover:bg-sky-500 text-white font-bold py-2 px-4 min-h-11 rounded-md text-sm transition disabled:bg-sky-900"
+                           disabled={isLoadingTab || isLoading || isAdding || isClosing}
+                         >
+                           {isLoadingTab ? t('tabs.loading') : t('tabs.loadTab')}
+                         </button>
+                       </>
+                     )}
+                     </div>
                   </div>
                   {tab.tableId && (
                     <div className="flex justify-between items-center text-xs mt-1">

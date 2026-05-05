@@ -29,7 +29,7 @@ export const OrderProvider: React.FC<OrderProviderProps> = ({ children }) => {
   const { t } = useTranslation();
   const [orderItems, setOrderItems] = useState<OrderItem[]>([]);
   const [isLoadingOrderSession, setIsLoadingOrderSession] = useState(false);
-  const [activeTab, setActiveTab] = useState<any>(null); // Using any temporarily
+  const [activeTab, setActiveTab] = useState<Tab | null>(null);
   
   // Use ref to track if we're in the initial load phase
   // This prevents saves during the initial load without relying on timeouts

@@ -362,13 +362,34 @@ const transaction = await tx.transaction.create({
   
       // 6. Delete tab if exists
       if (activeTabId) {
-        await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
-          logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
-        });
+        const tab = await tx.tab.findUnique({ where: { id: activeTabId } });
+        if (tab) {
+          await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
+            logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
+          });
+
+          // Only set table to available if this was the last tab for the table
+          if (tab.tableId) {
+            const hasOtherTabs = await tx.tab.count({
+              where: { tableId: tab.tableId }
+            }) > 0;
+
+            if (!hasOtherTabs) {
+              await tx.table.update({
+                where: { id: tab.tableId },
+                data: { status: 'available' }
+              });
+            }
+          }
+        } else {
+          await tx.tab.delete({ where: { id: activeTabId } }).catch((err: Error) => {
+            logDebug('Tab deletion skipped (may not exist)', { activeTabId, error: err.message, correlationId });
+          });
+        }
       }
-  
-      // 7. Update table status if assigned
-      if (tableId) {
+
+      // 7. Update table status if assigned (and no active tab)
+      if (tableId && !activeTabId) {
         await tx.table.update({
           where: { id: tableId },
           data: { status: 'available' }

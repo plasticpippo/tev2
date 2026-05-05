@@ -66,28 +66,23 @@ export const getTabs = async (): Promise<Tab[]> => {
 };
 
 export const saveTab = async (tabData: Omit<Tab, 'id'> & {id?: number}): Promise<Tab> => {
-  console.log('apiService: saveTab called with data:', tabData);
   try {
     const method = tabData.id ? 'PUT' : 'POST';
     const url = tabData.id ? apiUrl(`/api/tabs/${tabData.id}`) : apiUrl('/api/tabs');
-    
+
     const response = await fetch(url, {
       method,
       headers: getAuthHeaders(),
       credentials: 'include',
       body: JSON.stringify(tabData)
     });
-    
-    console.log('apiService: saveTab response status:', response.status);
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
-      console.log('apiService: saveTab error response:', errorData);
       throw new Error(errorMessage);
     }
     const savedTab = await response.json();
-    console.log('apiService: saveTab successful, savedTab:', savedTab);
     notifyUpdates();
     return savedTab;
   } catch (error) {
@@ -121,6 +116,47 @@ export const updateMultipleTabs = async (tabsToUpdate: Tab[]): Promise<void> => 
   const promises = tabsToUpdate.map(tab => saveTab(tab));
   await Promise.all(promises);
   notifyUpdates();
+};
+
+export interface TransferDestination {
+  type: 'existing' | 'new';
+  id?: number;
+  name?: string;
+  tillId?: number;
+  tillName?: string;
+  tableId?: string;
+}
+
+export const transferTabItems = async (
+  sourceTabId: number,
+  destination: TransferDestination,
+  itemsToMove: OrderItem[]
+): Promise<{ destinationTab: Tab; sourceTabDeleted: boolean }> => {
+  try {
+    const response = await fetch(apiUrl('/api/tabs/transfer'), {
+      method: 'PUT',
+      headers: getAuthHeaders(),
+      credentials: 'include',
+      body: JSON.stringify({
+        sourceTabId,
+        destination,
+        itemsToMove
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+      throw new Error(errorMessage);
+    }
+
+    const result = await response.json();
+    notifyUpdates();
+    return result;
+  } catch (error) {
+    console.error(i18n.t('transactionService.errorTransferringItems'), error);
+    throw error;
+  }
 };
 
 // Atomic payment processing - handles transaction + stock + order session + tab in one call
@@ -167,7 +203,6 @@ export const processPayment = async (
 
 				if (response.status === 409 && attempt < maxRetries) {
 					const backoffMs = 100 * Math.pow(2, attempt);
-					console.log(`Payment conflict detected, retrying in ${backoffMs}ms (attempt ${attempt + 1}/${maxRetries + 1})`);
 					await delay(backoffMs);
 					continue;
 				}
@@ -188,7 +223,6 @@ export const processPayment = async (
 				throw lastError;
 			}
 
-			console.log(`Payment network error on attempt ${attempt + 1}, retrying...`);
 			const backoffMs = 100 * Math.pow(2, attempt);
 			await delay(backoffMs);
 		}

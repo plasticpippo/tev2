@@ -77,7 +77,17 @@
       "notFound": "Tab not found.",
       "alreadyClosed": "This tab has already been closed.",
       "emptyTab": "Cannot close an empty tab with items.",
-      "loadFailed": "Failed to load tab."
+      "loadFailed": "Failed to load tab.",
+      "sourceTabNotFound": "Source tab not found.",
+      "destinationTabNotFound": "Destination tab not found.",
+      "sourceTabIdRequired": "Source tab ID is required.",
+      "destinationRequired": "Destination is required.",
+      "itemsToMoveRequired": "Items to move are required.",
+      "destinationIdRequired": "Destination ID is required.",
+      "tillIdRequired": "Till ID is required.",
+      "tillNameRequired": "Till name is required.",
+      "invalidDestinationType": "Invalid destination type.",
+      "transferFailed": "Failed to transfer items."
     },
     "transactions": {
       "notFound": "Transaction not found.",

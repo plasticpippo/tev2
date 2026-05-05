@@ -48,7 +48,9 @@ export {
   getTabs,
   saveTab,
   deleteTab,
-  updateMultipleTabs
+  updateMultipleTabs,
+  transferTabItems,
+  type TransferDestination
 } from './transactionService';
 
 // Export inventory service functions

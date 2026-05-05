@@ -60,14 +60,9 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
   };
 
   const handleConfirm = () => {
-    console.log('TransferItemsModal: handleConfirm called');
-    console.log('TransferItemsModal: destination', destination);
-    console.log('TransferItemsModal: newTabName', newTabName);
-    console.log('TransferItemsModal: transferQuantities', transferQuantities);
-    
     // Create items to move based on selected quantities
     const itemsToMove: OrderItem[] = [];
-    
+
     Object.entries(transferQuantities).forEach(([orderItemId, quantity]) => {
       if (quantity > 0) {
         const sourceItem = sourceTab.items.find(item => item.id === orderItemId);
@@ -78,22 +73,16 @@ export const TransferItemsModal: React.FC<TransferItemsModalProps> = ({ isOpen, 
       }
     });
 
-    console.log('TransferItemsModal: itemsToMove', itemsToMove);
-
     if (!destination) {
-      console.log('TransferItemsModal: Early return - no destination');
       return;
     }
 
     if (destination.type === 'new') {
-      console.log('TransferItemsModal: Creating new tab with name:', newTabName.trim());
       if (!newTabName.trim()) {
-        console.log('TransferItemsModal: New tab name is empty, returning');
         return;
       }
       onConfirmMove({ type: 'new', name: newTabName.trim() }, itemsToMove);
     } else {
-      console.log('TransferItemsModal: Using existing tab with id:', destination.id);
       onConfirmMove({ type: 'existing', id: destination.id }, itemsToMove);
     }
   };

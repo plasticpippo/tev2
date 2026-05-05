@@ -35,17 +35,25 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
   const { appData } = useGlobalDataContext();
   const { setIsTabsModalOpen, transferSourceTab, setTransferSourceTab, setIsTransferModalOpen } = useUIStateContext();
   const { assignedTable } = useTableAssignmentContext();
+  const { addToast } = useToast();
 
   const handleCreateTab = async (name: string) => {
     if (!assignedTillId) return;
-    await api.saveTab({
-      name,
-      items: [],
-      tillId: assignedTillId,
-      tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
-      createdAt: new Date().toISOString(),
-      tableId: assignedTable?.id
-    });
+    try {
+      await api.saveTab({
+        name,
+        items: [],
+        tillId: assignedTillId,
+        tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
+        createdAt: new Date().toISOString(),
+        tableId: assignedTable?.id
+      });
+      setIsTabsModalOpen(false);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('tabs.createFailed');
+      addToast(errorMessage, 'error', 5000);
+      console.error('Failed to create tab:', error);
+    }
   };
   
   const handleAddToTab = async (tabId: number) => {
@@ -65,20 +73,24 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
         updatedItems.push(orderItem);
       }
     });
-    await api.saveTab({ ...tab, items: updatedItems, tableId: assignedTable?.id });
-    
-    // Update order session status to assign-tab when adding to a tab
+
     try {
+      await api.saveTab({ ...tab, items: updatedItems, tableId: assignedTable?.id });
+
+      // Update order session status to assign-tab when adding to a tab
       const result = await api.updateOrderSessionStatus('assign-tab');
       if (!result) {
         console.warn(t('tabManagementContext.orderSessionAssignTabFailed'));
+        addToast(t('tabManagementContext.orderSessionAssignTabFailed'), 'error', 5000);
       }
+
+      clearOrder(false);
+      setIsTabsModalOpen(false);
     } catch (error) {
-      console.error(t('tabManagementContext.failedToUpdateOrderSessionStatus'), error);
+      const errorMessage = error instanceof Error ? error.message : t('tabs.addFailed');
+      addToast(errorMessage, 'error', 5000);
+      console.error('Failed to add to tab:', error);
     }
-    
-    clearOrder(false);
-    setIsTabsModalOpen(false);
   };
   
   const handleLoadTab = (tabId: number) => {
@@ -102,14 +114,30 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
       ...item,
       name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
     }));
-    await api.saveTab({ ...activeTab, items: correctedItems, tableId: assignedTable?.id });
-    clearOrder(false);
+
+    try {
+      await api.saveTab({ ...activeTab, items: correctedItems, tableId: assignedTable?.id });
+      clearOrder(false);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('tabs.saveFailed');
+      addToast(errorMessage, 'error', 5000);
+      console.error('Failed to save tab:', error);
+    }
   };
   
   const handleCloseTab = async (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
     if (tab && tab.items.length === 0) {
-      await api.deleteTab(tabId);
+      try {
+        await api.deleteTab(tabId);
+        addToast(t('tabs.tabClosed'), 'success', 3000);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : t('tabs.deleteFailed');
+        addToast(errorMessage, 'error', 5000);
+        console.error('Failed to close tab:', error);
+      }
+    } else if (tab && tab.items.length > 0) {
+      addToast(t('tabs.emptyTab'), 'error', 3000);
     }
   };
   
@@ -136,48 +164,33 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
       name: item.name && item.name.trim() !== '' ? item.name : t('tabManagementContext.itemFallbackName', { variantId: item.variantId })
     }));
 
-    let destTab: Tab;
+    // Prepare destination data
+    let destinationData;
     if (destination.type === 'new') {
-        destTab = await api.saveTab({
+        destinationData = {
+          type: 'new' as const,
           name: destination.name,
-          items: [],
           tillId: assignedTillId,
-          tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
-          createdAt: new Date().toISOString()
-        });
+          tillName: t('tabManagementContext.placeholderTillName'),
+          tableId: assignedTable?.id
+        };
     } else {
-        const foundTab = appData.tabs.find(t => t.id === destination.id);
-        if (!foundTab) return;
-        destTab = foundTab;
+        destinationData = {
+          type: 'existing' as const,
+          id: destination.id
+        };
     }
 
-    // Add items to destination
-    const destItems = [...destTab.items];
-    correctedItemsToMove.forEach(movingItem => {
-        const existing = destItems.find(i => i.variantId === movingItem.variantId);
-        if (existing) {
-            existing.quantity += movingItem.quantity;
-        } else {
-            destItems.push({ ...movingItem, id: uuidv4() }); // new unique ID for the new tab
-        }
-    });
-
-    // Remove items from source
-    const sourceItems = [...transferSourceTab.items];
-    correctedItemsToMove.forEach(movingItem => {
-        const existingIndex = sourceItems.findIndex(i => i.id === movingItem.id);
-        if (existingIndex > -1) {
-            sourceItems[existingIndex].quantity -= movingItem.quantity;
-        }
-    });
-    const finalSourceItems = sourceItems.filter(i => i.quantity > 0);
-
-    await api.updateMultipleTabs([
-        { ...transferSourceTab, items: finalSourceItems },
-        { ...destTab, items: destItems }
-    ]);
-    setIsTransferModalOpen(false);
-    setTransferSourceTab(null);
+    try {
+      // Use atomic transfer endpoint
+      await api.transferTabItems(transferSourceTab.id, destinationData, correctedItemsToMove);
+      setIsTransferModalOpen(false);
+      setTransferSourceTab(null);
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : t('transfer.transferFailed');
+      addToast(errorMessage, 'error', 5000);
+      console.error('Failed to transfer items:', error);
+    }
   };
 
   const value: TabManagementContextType = {

@@ -235,9 +235,11 @@ model Tab {
   tillId Int
   tillName String
   tableId String? @db.Uuid
+  version Int @default(0)
   table Table? @relation(fields: [tableId], references: [id])
 
   @@index([tableId])
+  @@unique([name])
   @@map("tabs")
 }
 

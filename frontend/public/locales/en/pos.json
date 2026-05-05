@@ -137,7 +137,10 @@
     "itemsAdded": "Items added to tab",
     "enterTabName": "Please enter a tab name",
     "confirmCloseTab": "Are you sure you want to close this tab?",
-    "viewOpenTabs": "View Open Tabs"
+    "viewOpenTabs": "View Open Tabs",
+    "loading": "Loading...",
+    "creating": "Creating...",
+    "closing": "Closing..."
   },
   "transfer": {
     "title": "Transfer Items",
