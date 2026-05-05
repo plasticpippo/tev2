@@ -134,9 +134,18 @@ function calculateTaxBreakdown(items: any, taxMode: 'inclusive' | 'exclusive' | 
   return result.length > 0 ? result : null;
 }
 
-function transformItemsSnapshot(items: any): ReceiptItemSnapshot[] {
+function isReceiptItem(item: unknown): item is ReceiptItemSnapshot {
+  return typeof item === 'object' && item !== null &&
+    'id' in item && 'variantId' in item && 'productId' in item &&
+    'name' in item && 'price' in item && 'quantity' in item;
+}
+
+function transformItemsSnapshot(items: unknown): ReceiptItemSnapshot[] {
   const parsedItems = typeof items === 'string' ? JSON.parse(items) : items;
-  return parsedItems.map((item: any) => ({
+  if (!Array.isArray(parsedItems)) {
+    return [];
+  }
+  return parsedItems.filter(isReceiptItem).map((item) => ({
     id: item.id,
     variantId: item.variantId,
     productId: item.productId,
@@ -147,6 +156,24 @@ function transformItemsSnapshot(items: any): ReceiptItemSnapshot[] {
     taxRateName: item.taxRateName,
     taxRatePercent: item.taxRatePercent,
   }));
+}
+
+function isBusinessSnapshot(value: unknown): value is BusinessSnapshot {
+  return typeof value === 'object' && value !== null &&
+    'name' in value && typeof (value as BusinessSnapshot).name === 'string';
+}
+
+function isCustomerSnapshot(value: unknown): value is CustomerSnapshot {
+  return typeof value === 'object' && value !== null &&
+    'id' in value && 'name' in value &&
+    typeof (value as CustomerSnapshot).id === 'number' &&
+    typeof (value as CustomerSnapshot).name === 'string';
+}
+
+function isTaxBreakdownItem(value: unknown): value is TaxBreakdownItem {
+  return typeof value === 'object' && value !== null &&
+    'rateName' in value && 'ratePercent' in value &&
+    'taxableAmount' in value && 'taxAmount' in value;
 }
 
 export async function createReceiptFromTransaction(
@@ -175,26 +202,26 @@ export async function createReceiptFromTransaction(
 
   const businessSnapshot = await getBusinessSnapshot();
   const customerSnapshot = input.customerId ? await getCustomerSnapshot(input.customerId) : null;
-  const itemsSnapshot = transformItemsSnapshot(transaction.items as any[]);
-  const taxBreakdown = calculateTaxBreakdown(transaction.items as any[], taxMode);
-  
+  const itemsSnapshot = transformItemsSnapshot(transaction.items);
+  const taxBreakdown = calculateTaxBreakdown(transaction.items, taxMode);
+
   const receipt = await prisma.receipt.create({
     data: {
       receiptNumber: `DRAFT-${randomUUID()}`,
       transactionId,
       customerId: input.customerId ?? null,
       status: 'draft',
-      businessSnapshot: businessSnapshot as any,
-      customerSnapshot: customerSnapshot as any,
+      businessSnapshot: businessSnapshot as unknown as Prisma.InputJsonValue,
+      customerSnapshot: customerSnapshot === null ? Prisma.DbNull : customerSnapshot as unknown as Prisma.InputJsonValue,
       subtotal: transaction.subtotal,
       tax: transaction.tax,
-      taxBreakdown: taxBreakdown as any,
+      taxBreakdown: taxBreakdown === null ? Prisma.DbNull : taxBreakdown as unknown as Prisma.InputJsonValue,
       discount: transaction.discount,
       discountReason: transaction.discountReason,
       tip: transaction.tip,
       total: transaction.total,
       paymentMethod: transaction.paymentMethod,
-      itemsSnapshot: itemsSnapshot as any,
+      itemsSnapshot: itemsSnapshot as unknown as Prisma.InputJsonValue,
       notes: input.notes ?? null,
       internalNotes: input.internalNotes ?? null,
       issuedBy: userId,
@@ -337,12 +364,14 @@ export async function issueDraftReceipt(
     throw new Error('Only draft receipts can be issued');
   }
 
-  let customerSnapshot = receipt.customerSnapshot as any;
+  let customerSnapshot: CustomerSnapshot | null = null;
   let customerId = receipt.customerId;
 
   if (input?.customerId && input.customerId !== receipt.customerId) {
     customerId = input.customerId;
     customerSnapshot = await getCustomerSnapshot(input.customerId);
+  } else if (receipt.customerSnapshot && isCustomerSnapshot(receipt.customerSnapshot)) {
+    customerSnapshot = receipt.customerSnapshot;
   }
 
   const updatedReceipt = await prisma.$transaction(async (tx) => {
@@ -356,7 +385,7 @@ export async function issueDraftReceipt(
         issuedAt: new Date(),
         issuedBy: userId,
         customerId,
-        customerSnapshot: customerSnapshot as any,
+        customerSnapshot: customerSnapshot === null ? Prisma.DbNull : customerSnapshot as unknown as Prisma.InputJsonValue,
         notes: input?.notes ?? receipt.notes,
         version: { increment: 1 },
       },
@@ -381,7 +410,7 @@ export async function issueDraftReceipt(
       },
     });
 
-    triggerAutoEmail(id, customerSnapshot as any, userId, 'issued receipt');
+    triggerAutoEmail(id, customerSnapshot, userId, 'issued receipt');
 
     return toReceiptDTO(finalReceipt);
   } catch (pdfError) {
@@ -406,7 +435,7 @@ export async function issueDraftReceipt(
 
 function triggerAutoEmail(
   receiptId: number,
-  customerSnapshot: any,
+  customerSnapshot: CustomerSnapshot | null,
   userId: number,
   context: string
 ): void {
@@ -421,13 +450,30 @@ function triggerAutoEmail(
       const emailSettings = await prisma.settings.findFirst();
       if (!emailSettings?.autoEmailReceipts || !emailSettings.emailEnabled) return;
 
-      await sendReceiptEmail(receiptId, { email: customerSnapshot.email }, userId);
+      await sendReceiptEmail(receiptId, { email: customerSnapshot.email! }, userId);
       logInfo(`Auto-email queued for ${context}`, { receiptId });
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
       logError(`Failed to auto-email ${context}`, {
         receiptId,
-        error: error instanceof Error ? error.message : 'Unknown error',
+        error: errorMessage,
       });
+
+      // Update receipt to surface the failure to users
+      try {
+        await prisma.receipt.update({
+          where: { id: receiptId },
+          data: {
+            emailStatus: 'failed',
+            emailErrorMessage: `Auto-email failed: ${errorMessage}`,
+          },
+        });
+      } catch (updateError) {
+        logError(`Failed to update receipt email status after auto-email failure`, {
+          receiptId,
+          error: updateError instanceof Error ? updateError.message : String(updateError),
+        });
+      }
     }
   })();
 }
@@ -502,17 +548,19 @@ export async function updateDraftReceipt(
     throw new Error('Only draft receipts can be updated');
   }
   
-  let customerSnapshot = receipt.customerSnapshot as any;
-  
+  let customerSnapshot: CustomerSnapshot | null = null;
+
   if (data.customerId !== undefined && data.customerId !== receipt.customerId) {
     customerSnapshot = data.customerId ? await getCustomerSnapshot(data.customerId) : null;
+  } else if (receipt.customerSnapshot && isCustomerSnapshot(receipt.customerSnapshot)) {
+    customerSnapshot = receipt.customerSnapshot;
   }
-  
+
   const updatedReceipt = await prisma.receipt.update({
     where: { id },
     data: {
       ...(data.customerId !== undefined && { customerId: data.customerId }),
-      customerSnapshot: customerSnapshot as any,
+      customerSnapshot: customerSnapshot === null ? Prisma.DbNull : customerSnapshot as unknown as Prisma.InputJsonValue,
       ...(data.notes !== undefined && { notes: data.notes }),
       ...(data.internalNotes !== undefined && { internalNotes: data.internalNotes }),
     },
@@ -595,101 +643,83 @@ export async function sendReceiptEmail(
     throw new Error('INVALID_EMAIL');
   }
 
-  // Use transaction to prevent race condition when multiple requests try to send email simultaneously
-  const emailJobResult = await prisma.$transaction(async (tx) => {
-    // Lock the receipt to prevent concurrent email job creation
-    await tx.receipt.findUniqueOrThrow({
-      where: { id: receiptId },
-      select: { id: true },
-    });
-
-    // Check for existing pending/processing jobs within transaction
-    const existingPendingJob = await tx.emailQueue.findFirst({
-      where: {
-        receiptId,
-        status: { in: ['pending', 'processing'] },
-      },
-      orderBy: { createdAt: 'desc' },
-    });
-
-    if (existingPendingJob) {
-      return {
-        job: existingPendingJob,
-        isNew: false,
-      };
-    }
-
-    return { job: null, isNew: true };
+  // Check for existing pending/processing jobs to prevent duplicates
+  const existingJob = await prisma.emailQueue.findFirst({
+    where: {
+      receiptId,
+      status: { in: ['pending', 'processing'] },
+    },
+    orderBy: { createdAt: 'desc' },
   });
 
   // Return existing job if found
-  if (!emailJobResult.isNew && emailJobResult.job) {
-    const job = emailJobResult.job;
+  if (existingJob) {
     return {
-      jobId: job.id,
-      status: job.status,
-      recipientEmail: job.recipientEmail,
+      jobId: existingJob.id,
+      status: existingJob.status,
+      recipientEmail: existingJob.recipientEmail,
       receiptId,
       receiptNumber: receipt.receiptNumber,
-      createdAt: job.createdAt,
+      createdAt: existingJob.createdAt,
     };
   }
 
-  const businessSnapshot = receipt.businessSnapshot as any;
-  const customerSnapshot = receipt.customerSnapshot as any;
-  const itemsSnapshot = receipt.itemsSnapshot as any[];
-  const taxBreakdown = receipt.taxBreakdown as any[];
 
-  const formatAmount = (val: any) => {
-    const num = typeof val === 'object' && val !== null && typeof val.toNumber === 'function'
-      ? val.toNumber()
+  const businessSnapshot = isBusinessSnapshot(receipt.businessSnapshot)
+    ? receipt.businessSnapshot
+    : { name: 'Business', address: null, city: null, postalCode: null, country: null, phone: null, email: null, vatNumber: null };
+  const customerSnapshot = isCustomerSnapshot(receipt.customerSnapshot)
+    ? receipt.customerSnapshot
+    : { name: 'Valued Customer', id: 0, email: null, phone: null, vatNumber: null, address: null, city: null, postalCode: null, country: null };
+  const itemsSnapshot: ReceiptItemSnapshot[] = Array.isArray(receipt.itemsSnapshot) ? (receipt.itemsSnapshot as unknown[]).filter(isReceiptItem) : [];
+  const taxBreakdown: TaxBreakdownItem[] = Array.isArray(receipt.taxBreakdown) ? (receipt.taxBreakdown as unknown[]).filter(isTaxBreakdownItem) : [];
+
+  const formatAmount = (val: unknown) => {
+    const num = typeof val === 'object' && val !== null && typeof (val as any).toNumber === 'function'
+      ? (val as any).toNumber()
       : Number(val);
     return `EUR ${num.toFixed(2)}`;
   };
 
   const templateData = {
     business: {
-      name: businessSnapshot?.name || 'Business',
-      address: businessSnapshot?.address || null,
-      city: businessSnapshot?.city || null,
-      postalCode: businessSnapshot?.postalCode || null,
-      country: businessSnapshot?.country || null,
-      phone: businessSnapshot?.phone || null,
-      email: businessSnapshot?.email || null,
-      vatNumber: businessSnapshot?.vatNumber || null,
+      name: businessSnapshot.name || 'Business',
+      address: businessSnapshot.address || null,
+      city: businessSnapshot.city || null,
+      postalCode: businessSnapshot.postalCode || null,
+      country: businessSnapshot.country || null,
+      phone: businessSnapshot.phone || null,
+      email: businessSnapshot.email || null,
+      vatNumber: businessSnapshot.vatNumber || null,
     },
     customer: {
-      name: customerSnapshot?.name || 'Valued Customer',
+      name: customerSnapshot.name || 'Valued Customer',
       email: input.email,
     },
     receipt: {
       number: receipt.receiptNumber,
       date: receipt.issuedAt ? new Date(receipt.issuedAt).toLocaleDateString('it-IT', { year: 'numeric', month: 'long', day: 'numeric' }) : new Date().toLocaleDateString('it-IT'),
-      itemsCount: Array.isArray(itemsSnapshot) ? itemsSnapshot.length : 0,
+      itemsCount: itemsSnapshot.length,
       total: formatAmount(receipt.total),
       transactionId: receipt.transactionId,
       paymentMethod: receipt.paymentMethod,
       subtotal: formatAmount(receipt.subtotal),
       tax: formatAmount(receipt.tax),
-      taxBreakdown: Array.isArray(taxBreakdown)
-        ? taxBreakdown.map((tb: any) => ({
-            rateName: tb.rateName || tb.name || 'Standard',
-            ratePercent: tb.ratePercent || tb.percent || 0,
-            taxableAmount: formatAmount(tb.taxableAmount),
-            taxAmount: formatAmount(tb.taxAmount),
-          }))
-        : [],
+      taxBreakdown: taxBreakdown.map((tb) => ({
+        rateName: tb.rateName || 'Standard',
+        ratePercent: tb.ratePercent || 0,
+        taxableAmount: formatAmount(tb.taxableAmount),
+        taxAmount: formatAmount(tb.taxAmount),
+      })),
       discount: formatAmount(receipt.discount),
       discountReason: receipt.discountReason,
       tip: formatAmount(receipt.tip),
-      items: Array.isArray(itemsSnapshot)
-        ? itemsSnapshot.map((item: any) => ({
-            name: item.name,
-            quantity: item.quantity,
-            price: formatAmount(item.price || item.unitPrice),
-            total: formatAmount(item.total || (Number(item.price || item.unitPrice) * item.quantity)),
-          }))
-        : [],
+      items: itemsSnapshot.map((item) => ({
+        name: item.name,
+        quantity: item.quantity,
+        price: formatAmount(item.price || (item as any).unitPrice),
+        total: formatAmount((item as any).total || (Number(item.price || (item as any).unitPrice) * item.quantity)),
+      })),
     },
     customMessage: input.message,
     locale: 'en',
@@ -704,7 +734,7 @@ export async function sendReceiptEmail(
 
   // Create email job with final check to prevent race condition
   const emailJob = await prisma.$transaction(async (tx) => {
-    // Double-check for concurrent job creation (another transaction may have created one)
+    // Check for concurrent job creation that might have occurred while rendering templates
     const concurrentJob = await tx.emailQueue.findFirst({
       where: {
         receiptId,
@@ -716,6 +746,7 @@ export async function sendReceiptEmail(
       return concurrentJob;
     }
 
+    // No concurrent job, create new one
     return await tx.emailQueue.create({
       data: {
         receiptId,

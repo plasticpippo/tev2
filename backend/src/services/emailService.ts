@@ -3,6 +3,7 @@ import { prisma } from '../prisma';
 import { logError, logInfo, logDebug } from '../utils/logger';
 import i18n from '../i18n';
 
+
 export interface EmailConfig {
   host: string | null;
   port: number;
@@ -11,6 +12,7 @@ export interface EmailConfig {
   fromAddress: string | null;
   fromName: string | null;
   secure: boolean;
+  rejectUnauthorized: boolean;
   enabled: boolean;
 }
 
@@ -49,7 +51,7 @@ let cachedTransporter: nodemailer.Transporter | null = null;
 let lastConfigChecksum: string | null = null;
 
 function getConfigChecksum(config: EmailConfig): string {
-  return `${config.host}:${config.port}:${config.user}:${config.secure}`;
+  return `${config.host}:${config.port}:${config.user}:${config.secure}:${config.rejectUnauthorized}`;
 }
 
 export async function getEmailConfig(): Promise<EmailConfig> {
@@ -64,6 +66,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
       fromAddress: null,
       fromName: null,
       secure: false,
+      rejectUnauthorized: true,
       enabled: false,
     };
   }
@@ -76,6 +79,7 @@ export async function getEmailConfig(): Promise<EmailConfig> {
     fromAddress: settings.emailFromAddress,
     fromName: settings.emailFromName,
     secure: settings.emailSmtpSecure ?? false,
+    rejectUnauthorized: (settings as any).emailSmtpRejectUnauthorized ?? true,
     enabled: settings.emailEnabled ?? false,
   };
 }
@@ -115,6 +119,10 @@ function validateSmtpConfig(config: EmailConfig): { valid: boolean; error?: stri
 }
 
 function createTransporter(config: EmailConfig): nodemailer.Transporter {
+  if (!config.rejectUnauthorized) {
+    logError('SMTP certificate verification is disabled - this is a security risk and should only be used for development with self-signed certificates');
+  }
+
   return nodemailer.createTransport({
     pool: true,
     host: config.host!,
@@ -124,9 +132,10 @@ function createTransporter(config: EmailConfig): nodemailer.Transporter {
       user: config.user!,
       pass: config.password!,
     },
-    tls: config.secure
-      ? { rejectUnauthorized: true, minVersion: 'TLSv1.2' }
-      : { rejectUnauthorized: false },
+    tls: {
+      rejectUnauthorized: config.rejectUnauthorized,
+      ...(config.secure && { minVersion: 'TLSv1.2' }),
+    },
     connectionTimeout: 10000,
     socketTimeout: 10000,
   } as any);
@@ -149,6 +158,22 @@ async function getTransporter(config: EmailConfig): Promise<nodemailer.Transport
   lastConfigChecksum = checksum;
 
   return transporter;
+}
+
+export function closeTransporter(): void {
+  if (cachedTransporter) {
+    try {
+      cachedTransporter.close();
+      logInfo('Email transporter closed');
+    } catch (error) {
+      logError('Error closing email transporter', {
+        error: error instanceof Error ? error.message : String(error),
+      });
+    } finally {
+      cachedTransporter = null;
+      lastConfigChecksum = null;
+    }
+  }
 }
 
 export async function sendEmail(options: SendEmailOptions): Promise<EmailResult> {

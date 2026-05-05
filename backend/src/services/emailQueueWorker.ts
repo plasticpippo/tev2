@@ -1,7 +1,7 @@
 import { STORAGE_PATH } from '../config/storage';
 import cron, { ScheduledTask } from 'node-cron';
 import { prisma } from '../prisma';
-import { sendEmail } from './emailService';
+import { sendEmail, closeTransporter } from './emailService';
 import { logInfo, logError } from '../utils/logger';
 import fs from 'fs/promises';
 import path from 'path';
@@ -37,6 +37,9 @@ export function stopEmailWorker(): void {
     scheduledJob = null;
     logInfo('Email queue worker stopped');
   }
+
+  // Close the cached email transporter to prevent resource leaks
+  closeTransporter();
 }
 
 async function processQueue(): Promise<void> {
@@ -214,16 +217,27 @@ async function processJob(
     logError(`Unexpected error processing email job ${job.id}: ${errorMessage}`);
 
     try {
-      await prisma.emailQueue.update({
-        where: { id: job.id },
-        data: {
-          status: 'failed',
-          lastError: errorMessage,
-          processedAt: new Date(),
-        },
+      await prisma.$transaction(async (tx) => {
+        await tx.emailQueue.update({
+          where: { id: job.id },
+          data: {
+            status: 'failed',
+            lastError: errorMessage,
+            processedAt: new Date(),
+          },
+        });
+
+        await tx.receipt.update({
+          where: { id: job.receiptId },
+          data: {
+            emailStatus: 'failed',
+            emailErrorMessage: errorMessage,
+            emailAttempts: { increment: 1 },
+          },
+        });
       });
     } catch (updateError) {
-      logError(`Failed to update email job ${job.id} after unexpected error`);
+      logError(`Failed to update email job ${job.id} and receipt after unexpected error: ${updateError instanceof Error ? updateError.message : String(updateError)}`);
     }
   }
 }

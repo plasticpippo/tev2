@@ -338,6 +338,7 @@ model Settings {
   emailFromAddress String? @map("email_from_address")
   emailFromName String? @map("email_from_name")
   emailSmtpSecure Boolean @default(false) @map("email_smtp_secure")
+  emailSmtpRejectUnauthorized Boolean @default(true) @map("email_smtp_reject_unauthorized")
   emailEnabled Boolean @default(false) @map("email_enabled")
 
   allowReceiptFromPaymentModal Boolean @default(false) @map("allow_receipt_from_payment_modal")
