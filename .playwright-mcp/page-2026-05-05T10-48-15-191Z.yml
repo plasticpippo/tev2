@@ -1,0 +1,255 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e340] [cursor=pointer]:
+          - img [ref=e342]
+          - generic [ref=e344]: Dashboard
+        - button "Analytics" [ref=e345] [cursor=pointer]:
+          - img [ref=e347]
+          - generic [ref=e349]: Analytics
+        - button "Profit Analytics" [ref=e350] [cursor=pointer]:
+          - img [ref=e352]
+          - generic [ref=e354]: Profit Analytics
+        - button "Transactions" [ref=e355] [cursor=pointer]:
+          - img [ref=e357]
+          - generic [ref=e359]: Transactions
+        - button "Receipts 14" [ref=e360] [cursor=pointer]:
+          - img [ref=e362]
+          - generic [ref=e364]: Receipts
+          - button "14" [ref=e365]
+        - button "Activity Log" [ref=e366] [cursor=pointer]:
+          - img [ref=e368]
+          - generic [ref=e370]: Activity Log
+        - button "Daily Closing Summary" [ref=e371] [cursor=pointer]:
+          - img [ref=e373]
+          - generic [ref=e375]: Daily Closing Summary
+        - button "Customers" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Customers
+        - button "Products" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Products
+        - button "Categories" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Categories
+        - button "Stock Items" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Stock Items
+        - button "Inventory" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Inventory
+        - button "Cost Management" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Cost Management
+        - button "Inventory Counts" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Inventory Counts
+        - button "Variance Reports" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Variance Reports
+        - button "Users" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Users
+        - button "Tills" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Tills
+        - button "Tables & Layout" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e430]: Tables & Layout
+        - button "Itemised Consumption" [ref=e431] [cursor=pointer]:
+          - img [ref=e433]
+          - generic [ref=e435]: Itemised Consumption
+        - button "Settings" [ref=e436] [cursor=pointer]:
+          - img [ref=e438]
+          - generic [ref=e441]: Settings
+      - main [ref=e240]:
+        - generic [ref=e442]:
+          - generic [ref=e443]:
+            - heading "Stock Items" [level=3] [ref=e444]
+            - button "Add Stock Item" [ref=e445] [cursor=pointer]
+          - generic [ref=e447]:
+            - textbox "Search stock items..." [ref=e448]
+            - generic:
+              - img
+          - generic [ref=e449]:
+            - generic [ref=e450]:
+              - generic [ref=e451]:
+                - paragraph [ref=e452]: Sipsmith
+                - paragraph [ref=e453]: Ingredient (Tracked in ml)
+              - generic [ref=e454]:
+                - generic [ref=e455]: 240 ml in stock
+                - button "Edit" [ref=e456] [cursor=pointer]
+                - button "Delete" [ref=e457] [cursor=pointer]
+            - generic [ref=e458]:
+              - generic [ref=e459]:
+                - paragraph [ref=e460]: Tessera ARCI
+                - paragraph [ref=e461]: Sellable Good (Tracked in pcs)
+              - generic [ref=e462]:
+                - generic [ref=e463]: 27 pcs in stock
+                - button "Edit" [ref=e464] [cursor=pointer]
+                - button "Delete" [ref=e465] [cursor=pointer]
+            - generic [ref=e466]:
+              - generic [ref=e467]:
+                - paragraph [ref=e468]: Vermouth Carpano Rosso
+                - paragraph [ref=e469]: Ingredient (Tracked in ml)
+              - generic [ref=e470]:
+                - generic [ref=e471]: 1000 ml in stock
+                - button "Edit" [ref=e472] [cursor=pointer]
+                - button "Delete" [ref=e473] [cursor=pointer]
+            - generic [ref=e474]:
+              - generic [ref=e475]:
+                - paragraph [ref=e476]: Rum Pampero Bianco
+                - paragraph [ref=e477]: Ingredient (Tracked in ml)
+              - generic [ref=e478]:
+                - generic [ref=e479]: 1040 ml in stock
+                - button "Edit" [ref=e480] [cursor=pointer]
+                - button "Delete" [ref=e481] [cursor=pointer]
+            - generic [ref=e482]:
+              - generic [ref=e483]:
+                - paragraph [ref=e484]: Ginger Beer Fever Tree
+                - paragraph [ref=e485]: Ingredient (Tracked in ml)
+              - generic [ref=e486]:
+                - generic [ref=e487]: 2800 ml in stock
+                - button "Edit" [ref=e488] [cursor=pointer]
+                - button "Delete" [ref=e489] [cursor=pointer]
+            - generic [ref=e490]:
+              - generic [ref=e491]:
+                - paragraph [ref=e492]: Tequila Sierra Silver
+                - paragraph [ref=e493]: Ingredient (Tracked in ml)
+              - generic [ref=e494]:
+                - generic [ref=e495]: 280 ml in stock
+                - button "Edit" [ref=e496] [cursor=pointer]
+                - button "Delete" [ref=e497] [cursor=pointer]
+            - generic [ref=e498]:
+              - generic [ref=e499]:
+                - paragraph [ref=e500]: Hierbas
+                - paragraph [ref=e501]: Ingredient (Tracked in ml)
+              - generic [ref=e502]:
+                - generic [ref=e503]: 230 ml in stock
+                - button "Edit" [ref=e504] [cursor=pointer]
+                - button "Delete" [ref=e505] [cursor=pointer]
+            - generic [ref=e506]:
+              - generic [ref=e507]:
+                - paragraph [ref=e508]: Birra Wuhrer
+                - paragraph [ref=e509]: Sellable Good (Tracked in pcs)
+              - generic [ref=e510]:
+                - generic [ref=e511]: 15 pcs in stock
+                - button "Edit" [ref=e512] [cursor=pointer]
+                - button "Delete" [ref=e513] [cursor=pointer]
+            - generic [ref=e514]:
+              - generic [ref=e515]:
+                - paragraph [ref=e516]: Vino Bianco
+                - paragraph [ref=e517]: Ingredient (Tracked in ml)
+              - generic [ref=e518]:
+                - generic [ref=e519]: 6650 ml in stock
+                - button "Edit" [ref=e520] [cursor=pointer]
+                - button "Delete" [ref=e521] [cursor=pointer]
+            - generic [ref=e522]:
+              - generic [ref=e523]:
+                - paragraph [ref=e524]: Gin Gordon's
+                - paragraph [ref=e525]: Ingredient (Tracked in ml)
+              - generic [ref=e526]:
+                - generic [ref=e527]: 3350 ml in stock
+                - button "Edit" [ref=e528] [cursor=pointer]
+                - button "Delete" [ref=e529] [cursor=pointer]
+            - generic [ref=e530]:
+              - generic [ref=e531]:
+                - paragraph [ref=e532]: Tonica Fever Tree
+                - paragraph [ref=e533]: Ingredient (Tracked in ml)
+              - generic [ref=e534]:
+                - generic [ref=e535]: 80 ml in stock
+                - button "Edit" [ref=e536] [cursor=pointer]
+                - button "Delete" [ref=e537] [cursor=pointer]
+            - generic [ref=e538]:
+              - generic [ref=e539]:
+                - paragraph [ref=e540]: Birra Beck's
+                - paragraph [ref=e541]: Sellable Good (Tracked in pcs)
+              - generic [ref=e542]:
+                - generic [ref=e543]: 115 pcs in stock
+                - button "Edit" [ref=e544] [cursor=pointer]
+                - button "Delete" [ref=e545] [cursor=pointer]
+            - generic [ref=e546]:
+              - generic [ref=e547]:
+                - paragraph [ref=e548]: Vodka Moskovskaya
+                - paragraph [ref=e549]: Ingredient (Tracked in ml)
+              - generic [ref=e550]:
+                - generic [ref=e551]: 4510 ml in stock
+                - button "Edit" [ref=e552] [cursor=pointer]
+                - button "Delete" [ref=e553] [cursor=pointer]
+            - generic [ref=e554]:
+              - generic [ref=e555]:
+                - paragraph [ref=e556]: H2O
+                - paragraph [ref=e557]: Sellable Good (Tracked in pcs)
+              - generic [ref=e558]:
+                - generic [ref=e559]: 28 pcs in stock
+                - button "Edit" [ref=e560] [cursor=pointer]
+                - button "Delete" [ref=e561] [cursor=pointer]
+            - generic [ref=e562]:
+              - generic [ref=e563]:
+                - paragraph [ref=e564]: Bibita Pompelma
+                - paragraph [ref=e565]: Ingredient (Tracked in ml)
+              - generic [ref=e566]:
+                - generic [ref=e567]: 1160 ml in stock
+                - button "Edit" [ref=e568] [cursor=pointer]
+                - button "Delete" [ref=e569] [cursor=pointer]
+            - generic [ref=e570]:
+              - generic [ref=e571]:
+                - paragraph [ref=e572]: Coca Cola
+                - paragraph [ref=e573]: Ingredient (Tracked in ml)
+              - generic [ref=e574]:
+                - generic [ref=e575]: 10080 ml in stock
+                - button "Edit" [ref=e576] [cursor=pointer]
+                - button "Delete" [ref=e577] [cursor=pointer]
+            - generic [ref=e578]:
+              - generic [ref=e579]:
+                - paragraph [ref=e580]: Campari
+                - paragraph [ref=e581]: Ingredient (Tracked in ml)
+              - generic [ref=e582]:
+                - generic [ref=e583]: 2470 ml in stock
+                - button "Edit" [ref=e584] [cursor=pointer]
+                - button "Delete" [ref=e585] [cursor=pointer]
+            - generic [ref=e586]:
+              - generic [ref=e587]:
+                - paragraph [ref=e588]: Lemonsoda
+                - paragraph [ref=e589]: Ingredient (Tracked in ml)
+              - generic [ref=e590]:
+                - generic [ref=e591]: 1890 ml in stock
+                - button "Edit" [ref=e592] [cursor=pointer]
+                - button "Delete" [ref=e593] [cursor=pointer]
+          - generic [ref=e595]:
+            - heading "Add Stock Item" [level=3] [ref=e596]
+            - generic [ref=e597]:
+              - generic [ref=e598]:
+                - generic [ref=e599]: Item Name
+                - textbox [active] [ref=e600]
+              - generic [ref=e601]:
+                - generic [ref=e602]:
+                  - generic [ref=e603]: Type
+                  - combobox [ref=e604]:
+                    - option "Sellable Good" [selected]
+                    - option "Ingredient"
+                - generic [ref=e605]:
+                  - generic [ref=e606]: Base Tracking Unit
+                  - textbox "e.g., ml, g, pcs" [ref=e607]: pcs
+              - generic [ref=e608]:
+                - generic [ref=e609]: Initial Quantity (in Base Unit)
+                - textbox [ref=e610]
+              - generic [ref=e611]:
+                - heading "Purchasing Units" [level=4] [ref=e612]
+                - paragraph [ref=e613]: Define how you buy this item for easy stock intake (e.g., a "Bottle" is 750 base units of "ml").
+                - button "+ Add Purchasing Unit" [ref=e614] [cursor=pointer]
+            - generic [ref=e615]:
+              - button "Cancel" [ref=e616] [cursor=pointer]
+              - button "Save" [ref=e617] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,0 +1,624 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e966] [cursor=pointer]:
+          - img [ref=e968]
+          - generic [ref=e970]: Dashboard
+        - button "Analytics" [ref=e971] [cursor=pointer]:
+          - img [ref=e973]
+          - generic [ref=e975]: Analytics
+        - button "Profit Analytics" [ref=e976] [cursor=pointer]:
+          - img [ref=e978]
+          - generic [ref=e980]: Profit Analytics
+        - button "Transactions" [ref=e981] [cursor=pointer]:
+          - img [ref=e983]
+          - generic [ref=e985]: Transactions
+        - button "Receipts 14" [ref=e986] [cursor=pointer]:
+          - img [ref=e988]
+          - generic [ref=e990]: Receipts
+          - button "14" [ref=e991]
+        - button "Activity Log" [ref=e992] [cursor=pointer]:
+          - img [ref=e994]
+          - generic [ref=e996]: Activity Log
+        - button "Daily Closing Summary" [ref=e997] [cursor=pointer]:
+          - img [ref=e999]
+          - generic [ref=e1001]: Daily Closing Summary
+        - button "Customers" [ref=e1002] [cursor=pointer]:
+          - img [ref=e1004]
+          - generic [ref=e1006]: Customers
+        - button "Products" [ref=e1007] [cursor=pointer]:
+          - img [ref=e1009]
+          - generic [ref=e1011]: Products
+        - button "Categories" [ref=e1012] [cursor=pointer]:
+          - img [ref=e1014]
+          - generic [ref=e1016]: Categories
+        - button "Stock Items" [ref=e1017] [cursor=pointer]:
+          - img [ref=e1019]
+          - generic [ref=e1021]: Stock Items
+        - button "Inventory" [ref=e1022] [cursor=pointer]:
+          - img [ref=e1024]
+          - generic [ref=e1026]: Inventory
+        - button "Cost Management" [ref=e1027] [cursor=pointer]:
+          - img [ref=e1029]
+          - generic [ref=e1031]: Cost Management
+        - button "Inventory Counts" [ref=e1032] [cursor=pointer]:
+          - img [ref=e1034]
+          - generic [ref=e1036]: Inventory Counts
+        - button "Variance Reports" [ref=e1037] [cursor=pointer]:
+          - img [ref=e1039]
+          - generic [ref=e1041]: Variance Reports
+        - button "Users" [ref=e1042] [cursor=pointer]:
+          - img [ref=e1044]
+          - generic [ref=e1046]: Users
+        - button "Tills" [ref=e1047] [cursor=pointer]:
+          - img [ref=e1049]
+          - generic [ref=e1051]: Tills
+        - button "Tables & Layout" [ref=e1052] [cursor=pointer]:
+          - img [ref=e1054]
+          - generic [ref=e1056]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1057] [cursor=pointer]:
+          - img [ref=e1059]
+          - generic [ref=e1061]: Itemised Consumption
+        - button "Settings" [ref=e1062] [cursor=pointer]:
+          - img [ref=e1064]
+          - generic [ref=e1067]: Settings
+      - main [ref=e240]:
+        - generic [ref=e442]:
+          - generic [ref=e443]:
+            - heading "Product Management" [level=3] [ref=e444]
+            - button "Add Product" [ref=e445] [cursor=pointer]
+          - generic [ref=e447]:
+            - textbox "Search products..." [ref=e448]
+            - generic:
+              - img
+          - generic [ref=e449]:
+            - generic [ref=e450]:
+              - generic [ref=e451]:
+                - generic [ref=e452]:
+                  - paragraph [ref=e453]: Sipsmith Tonic
+                  - paragraph [ref=e454]: Cocktails
+                - generic [ref=e455]:
+                  - button "Edit" [ref=e456] [cursor=pointer]
+                  - button "Delete" [ref=e457] [cursor=pointer]
+              - generic [ref=e458]:
+                - paragraph [ref=e459]: "Variants:"
+                - generic [ref=e460]:
+                  - generic [ref=e461]: Standard
+                  - generic [ref=e462]: €12,00
+            - generic [ref=e463]:
+              - generic [ref=e464]:
+                - generic [ref=e465]:
+                  - paragraph [ref=e466]: Lemonsoda
+                  - paragraph [ref=e467]: Soft Drinks
+                - generic [ref=e468]:
+                  - button "Edit" [ref=e469] [cursor=pointer]
+                  - button "Delete" [ref=e470] [cursor=pointer]
+              - generic [ref=e471]:
+                - paragraph [ref=e472]: "Variants:"
+                - generic [ref=e473]:
+                  - generic [ref=e474]: Standard
+                  - generic [ref=e475]: €3,00
+            - generic [ref=e476]:
+              - generic [ref=e477]:
+                - generic [ref=e478]:
+                  - paragraph [ref=e479]: Ginger Beer
+                  - paragraph [ref=e480]: Soft Drinks
+                - generic [ref=e481]:
+                  - button "Edit" [ref=e482] [cursor=pointer]
+                  - button "Delete" [ref=e483] [cursor=pointer]
+              - generic [ref=e484]:
+                - paragraph [ref=e485]: "Variants:"
+                - generic [ref=e486]:
+                  - generic [ref=e487]: Bottiglia 200ml
+                  - generic [ref=e488]: €4,00
+            - generic [ref=e489]:
+              - generic [ref=e490]:
+                - generic [ref=e491]:
+                  - paragraph [ref=e492]: Vodka Ginger Beer
+                  - paragraph [ref=e493]: Cocktails
+                - generic [ref=e494]:
+                  - button "Edit" [ref=e495] [cursor=pointer]
+                  - button "Delete" [ref=e496] [cursor=pointer]
+              - generic [ref=e497]:
+                - paragraph [ref=e498]: "Variants:"
+                - generic [ref=e499]:
+                  - generic [ref=e500]: Standard
+                  - generic [ref=e501]: €8,00
+            - generic [ref=e502]:
+              - generic [ref=e503]:
+                - generic [ref=e504]:
+                  - paragraph [ref=e505]: Gin Ginger Beer
+                  - paragraph [ref=e506]: Cocktails
+                - generic [ref=e507]:
+                  - button "Edit" [ref=e508] [cursor=pointer]
+                  - button "Delete" [ref=e509] [cursor=pointer]
+              - generic [ref=e510]:
+                - paragraph [ref=e511]: "Variants:"
+                - generic [ref=e512]:
+                  - generic [ref=e513]: Standard
+                  - generic [ref=e514]: €8,00
+            - generic [ref=e515]:
+              - generic [ref=e516]:
+                - generic [ref=e517]:
+                  - paragraph [ref=e518]: Shot Vodka
+                  - paragraph [ref=e519]: Shots
+                - generic [ref=e520]:
+                  - button "Edit" [ref=e521] [cursor=pointer]
+                  - button "Delete" [ref=e522] [cursor=pointer]
+              - generic [ref=e523]:
+                - paragraph [ref=e524]: "Variants:"
+                - generic [ref=e525]:
+                  - generic [ref=e526]: Standard Favourite
+                  - generic [ref=e527]: €3,00
+            - generic [ref=e528]:
+              - generic [ref=e529]:
+                - generic [ref=e530]:
+                  - paragraph [ref=e531]: Shot Gin Gordon's
+                  - paragraph [ref=e532]: Shots
+                - generic [ref=e533]:
+                  - button "Edit" [ref=e534] [cursor=pointer]
+                  - button "Delete" [ref=e535] [cursor=pointer]
+              - generic [ref=e536]:
+                - paragraph [ref=e537]: "Variants:"
+                - generic [ref=e538]:
+                  - generic [ref=e539]: Standard
+                  - generic [ref=e540]: €3,00
+            - generic [ref=e541]:
+              - generic [ref=e542]:
+                - generic [ref=e543]:
+                  - paragraph [ref=e544]: Shot Campari
+                  - paragraph [ref=e545]: Shots
+                - generic [ref=e546]:
+                  - button "Edit" [ref=e547] [cursor=pointer]
+                  - button "Delete" [ref=e548] [cursor=pointer]
+              - generic [ref=e549]:
+                - paragraph [ref=e550]: "Variants:"
+                - generic [ref=e551]:
+                  - generic [ref=e552]: Standard
+                  - generic [ref=e553]: €3,00
+            - generic [ref=e554]:
+              - generic [ref=e555]:
+                - generic [ref=e556]:
+                  - paragraph [ref=e557]: Shot Sipsmith
+                  - paragraph [ref=e558]: Shots
+                - generic [ref=e559]:
+                  - button "Edit" [ref=e560] [cursor=pointer]
+                  - button "Delete" [ref=e561] [cursor=pointer]
+              - generic [ref=e562]:
+                - paragraph [ref=e563]: "Variants:"
+                - generic [ref=e564]:
+                  - generic [ref=e565]: Standard
+                  - generic [ref=e566]: €5,00
+            - generic [ref=e567]:
+              - generic [ref=e568]:
+                - generic [ref=e569]:
+                  - paragraph [ref=e570]: Coca Cola
+                  - paragraph [ref=e571]: Soft Drinks
+                - generic [ref=e572]:
+                  - button "Edit" [ref=e573] [cursor=pointer]
+                  - button "Delete" [ref=e574] [cursor=pointer]
+              - generic [ref=e575]:
+                - paragraph [ref=e576]: "Variants:"
+                - generic [ref=e577]:
+                  - generic [ref=e578]: Can
+                  - generic [ref=e579]: €3,00
+            - generic [ref=e580]:
+              - generic [ref=e581]:
+                - generic [ref=e582]:
+                  - paragraph [ref=e583]: Gratis
+                  - paragraph [ref=e584]: Entrata
+                - generic [ref=e585]:
+                  - button "Edit" [ref=e586] [cursor=pointer]
+                  - button "Delete" [ref=e587] [cursor=pointer]
+              - generic [ref=e588]:
+                - paragraph [ref=e589]: "Variants:"
+                - generic [ref=e590]:
+                  - generic [ref=e591]: Standard Favourite
+                  - generic [ref=e592]: €0,00
+            - generic [ref=e593]:
+              - generic [ref=e594]:
+                - generic [ref=e595]:
+                  - paragraph [ref=e596]: Entrata
+                  - paragraph [ref=e597]: Entrata
+                - generic [ref=e598]:
+                  - button "Edit" [ref=e599] [cursor=pointer]
+                  - button "Delete" [ref=e600] [cursor=pointer]
+              - generic [ref=e601]:
+                - paragraph [ref=e602]: "Variants:"
+                - generic [ref=e603]:
+                  - generic [ref=e604]: Standard Favourite
+                  - generic [ref=e605]: €10,00
+            - generic [ref=e606]:
+              - generic [ref=e607]:
+                - generic [ref=e608]:
+                  - paragraph [ref=e609]: Vino Bianco
+                  - paragraph [ref=e610]: Vino
+                - generic [ref=e611]:
+                  - button "Edit" [ref=e612] [cursor=pointer]
+                  - button "Delete" [ref=e613] [cursor=pointer]
+              - generic [ref=e614]:
+                - paragraph [ref=e615]: "Variants:"
+                - generic [ref=e616]:
+                  - generic [ref=e617]: Bicchiere
+                  - generic [ref=e618]: €5,00
+                - generic [ref=e619]:
+                  - generic [ref=e620]: Bottiglia
+                  - generic [ref=e621]: €25,00
+            - generic [ref=e622]:
+              - generic [ref=e623]:
+                - generic [ref=e624]:
+                  - paragraph [ref=e625]: Tonica
+                  - paragraph [ref=e626]: Soft Drinks
+                - generic [ref=e627]:
+                  - button "Edit" [ref=e628] [cursor=pointer]
+                  - button "Delete" [ref=e629] [cursor=pointer]
+              - generic [ref=e630]:
+                - paragraph [ref=e631]: "Variants:"
+                - generic [ref=e632]:
+                  - generic [ref=e633]: Standard
+                  - generic [ref=e634]: €4,00
+            - generic [ref=e635]:
+              - generic [ref=e636]:
+                - generic [ref=e637]:
+                  - paragraph [ref=e638]: Pirlo Campari
+                  - paragraph [ref=e639]: Cocktails
+                - generic [ref=e640]:
+                  - button "Edit" [ref=e641] [cursor=pointer]
+                  - button "Delete" [ref=e642] [cursor=pointer]
+              - generic [ref=e643]:
+                - paragraph [ref=e644]: "Variants:"
+                - generic [ref=e645]:
+                  - generic [ref=e646]: Standard Favourite
+                  - generic [ref=e647]: €5,00
+            - generic [ref=e648]:
+              - generic [ref=e649]:
+                - generic [ref=e650]:
+                  - paragraph [ref=e651]: Tessera
+                  - paragraph [ref=e652]: Entrata
+                - generic [ref=e653]:
+                  - button "Edit" [ref=e654] [cursor=pointer]
+                  - button "Delete" [ref=e655] [cursor=pointer]
+              - generic [ref=e656]:
+                - paragraph [ref=e657]: "Variants:"
+                - generic [ref=e658]:
+                  - generic [ref=e659]: Standard Favourite
+                  - generic [ref=e660]: €10,00
+            - generic [ref=e661]:
+              - generic [ref=e662]:
+                - generic [ref=e663]:
+                  - paragraph [ref=e664]: Industry Pass
+                  - paragraph [ref=e665]: Entrata
+                - generic [ref=e666]:
+                  - button "Edit" [ref=e667] [cursor=pointer]
+                  - button "Delete" [ref=e668] [cursor=pointer]
+              - generic [ref=e669]:
+                - paragraph [ref=e670]: "Variants:"
+                - generic [ref=e671]:
+                  - generic [ref=e672]: Standard Favourite
+                  - generic [ref=e673]: €0,00
+            - generic [ref=e674]:
+              - generic [ref=e675]:
+                - generic [ref=e676]:
+                  - paragraph [ref=e677]: Shot Tequila
+                  - paragraph [ref=e678]: Shots
+                - generic [ref=e679]:
+                  - button "Edit" [ref=e680] [cursor=pointer]
+                  - button "Delete" [ref=e681] [cursor=pointer]
+              - generic [ref=e682]:
+                - paragraph [ref=e683]: "Variants:"
+                - generic [ref=e684]:
+                  - generic [ref=e685]: Standard Favourite
+                  - generic [ref=e686]: €3,00
+            - generic [ref=e687]:
+              - generic [ref=e688]:
+                - generic [ref=e689]:
+                  - paragraph [ref=e690]: 5 Euro (1am)
+                  - paragraph [ref=e691]: Entrata
+                - generic [ref=e692]:
+                  - button "Edit" [ref=e693] [cursor=pointer]
+                  - button "Delete" [ref=e694] [cursor=pointer]
+              - generic [ref=e695]:
+                - paragraph [ref=e696]: "Variants:"
+                - generic [ref=e697]:
+                  - generic [ref=e698]: Standard Favourite
+                  - generic [ref=e699]: €5,00
+            - generic [ref=e700]:
+              - generic [ref=e701]:
+                - generic [ref=e702]:
+                  - paragraph [ref=e703]: Americano
+                  - paragraph [ref=e704]: Cocktails
+                - generic [ref=e705]:
+                  - button "Edit" [ref=e706] [cursor=pointer]
+                  - button "Delete" [ref=e707] [cursor=pointer]
+              - generic [ref=e708]:
+                - paragraph [ref=e709]: "Variants:"
+                - generic [ref=e710]:
+                  - generic [ref=e711]: Standard
+                  - generic [ref=e712]: €8,00
+            - generic [ref=e713]:
+              - generic [ref=e714]:
+                - generic [ref=e715]:
+                  - paragraph [ref=e716]: Negroni
+                  - paragraph [ref=e717]: Cocktails
+                - generic [ref=e718]:
+                  - button "Edit" [ref=e719] [cursor=pointer]
+                  - button "Delete" [ref=e720] [cursor=pointer]
+              - generic [ref=e721]:
+                - paragraph [ref=e722]: "Variants:"
+                - generic [ref=e723]:
+                  - generic [ref=e724]: Standard
+                  - generic [ref=e725]: €8,00
+            - generic [ref=e726]:
+              - generic [ref=e727]:
+                - generic [ref=e728]:
+                  - paragraph [ref=e729]: Vodka Lemon
+                  - paragraph [ref=e730]: Cocktails
+                - generic [ref=e731]:
+                  - button "Edit" [ref=e732] [cursor=pointer]
+                  - button "Delete" [ref=e733] [cursor=pointer]
+              - generic [ref=e734]:
+                - paragraph [ref=e735]: "Variants:"
+                - generic [ref=e736]:
+                  - generic [ref=e737]: Standard Favourite
+                  - generic [ref=e738]: €8,00
+                - generic [ref=e739]:
+                  - generic [ref=e740]: Carico
+                  - generic [ref=e741]: €10,00
+            - generic [ref=e742]:
+              - generic [ref=e743]:
+                - generic [ref=e744]:
+                  - paragraph [ref=e745]: Beck's
+                  - paragraph [ref=e746]: Beer
+                - generic [ref=e747]:
+                  - button "Edit" [ref=e748] [cursor=pointer]
+                  - button "Delete" [ref=e749] [cursor=pointer]
+              - generic [ref=e750]:
+                - paragraph [ref=e751]: "Variants:"
+                - generic [ref=e752]:
+                  - generic [ref=e753]: 33cl Favourite
+                  - generic [ref=e754]: €4,00
+            - generic [ref=e755]:
+              - generic [ref=e756]:
+                - generic [ref=e757]:
+                  - paragraph [ref=e758]: Paloma
+                  - paragraph [ref=e759]: Cocktails
+                - generic [ref=e760]:
+                  - button "Edit" [ref=e761] [cursor=pointer]
+                  - button "Delete" [ref=e762] [cursor=pointer]
+              - generic [ref=e763]:
+                - paragraph [ref=e764]: "Variants:"
+                - generic [ref=e765]:
+                  - generic [ref=e766]: Standard
+                  - generic [ref=e767]: €8,00
+            - generic [ref=e768]:
+              - generic [ref=e769]:
+                - generic [ref=e770]:
+                  - paragraph [ref=e771]: Gin Tonic
+                  - paragraph [ref=e772]: Cocktails
+                - generic [ref=e773]:
+                  - button "Edit" [ref=e774] [cursor=pointer]
+                  - button "Delete" [ref=e775] [cursor=pointer]
+              - generic [ref=e776]:
+                - paragraph [ref=e777]: "Variants:"
+                - generic [ref=e778]:
+                  - generic [ref=e779]: Standard Favourite
+                  - generic [ref=e780]: €8,00
+                - generic [ref=e781]:
+                  - generic [ref=e782]: Carico
+                  - generic [ref=e783]: €10,00
+            - generic [ref=e784]:
+              - generic [ref=e785]:
+                - generic [ref=e786]:
+                  - paragraph [ref=e787]: Gin Lemon
+                  - paragraph [ref=e788]: Cocktails
+                - generic [ref=e789]:
+                  - button "Edit" [ref=e790] [cursor=pointer]
+                  - button "Delete" [ref=e791] [cursor=pointer]
+              - generic [ref=e792]:
+                - paragraph [ref=e793]: "Variants:"
+                - generic [ref=e794]:
+                  - generic [ref=e795]: Standard Favourite
+                  - generic [ref=e796]: €8,00
+                - generic [ref=e797]:
+                  - generic [ref=e798]: Carico
+                  - generic [ref=e799]: €10,00
+            - generic [ref=e800]:
+              - generic [ref=e801]:
+                - generic [ref=e802]:
+                  - paragraph [ref=e803]: Sipsmith Lemon
+                  - paragraph [ref=e804]: Cocktails
+                - generic [ref=e805]:
+                  - button "Edit" [ref=e806] [cursor=pointer]
+                  - button "Delete" [ref=e807] [cursor=pointer]
+              - generic [ref=e808]:
+                - paragraph [ref=e809]: "Variants:"
+                - generic [ref=e810]:
+                  - generic [ref=e811]: Standard
+                  - generic [ref=e812]: €12,00
+            - generic [ref=e813]:
+              - generic [ref=e814]:
+                - generic [ref=e815]:
+                  - paragraph [ref=e816]: Acqua
+                  - paragraph [ref=e817]: Soft Drinks
+                - generic [ref=e818]:
+                  - button "Edit" [ref=e819] [cursor=pointer]
+                  - button "Delete" [ref=e820] [cursor=pointer]
+              - generic [ref=e821]:
+                - paragraph [ref=e822]: "Variants:"
+                - generic [ref=e823]:
+                  - generic [ref=e824]: 50cl Favourite
+                  - generic [ref=e825]: €2,00
+            - generic [ref=e826]:
+              - generic [ref=e827]:
+                - generic [ref=e828]:
+                  - paragraph [ref=e829]: Wuhrer
+                  - paragraph [ref=e830]: Beer
+                - generic [ref=e831]:
+                  - button "Edit" [ref=e832] [cursor=pointer]
+                  - button "Delete" [ref=e833] [cursor=pointer]
+              - generic [ref=e834]:
+                - paragraph [ref=e835]: "Variants:"
+                - generic [ref=e836]:
+                  - generic [ref=e837]: 66cl Favourite
+                  - generic [ref=e838]: €6,00
+            - generic [ref=e839]:
+              - generic [ref=e840]:
+                - generic [ref=e841]:
+                  - paragraph [ref=e842]: Coca Rum
+                  - paragraph [ref=e843]: Cocktails
+                - generic [ref=e844]:
+                  - button "Edit" [ref=e845] [cursor=pointer]
+                  - button "Delete" [ref=e846] [cursor=pointer]
+              - generic [ref=e847]:
+                - paragraph [ref=e848]: "Variants:"
+                - generic [ref=e849]:
+                  - generic [ref=e850]: Standard
+                  - generic [ref=e851]: €8,00
+            - generic [ref=e852]:
+              - generic [ref=e853]:
+                - generic [ref=e854]:
+                  - paragraph [ref=e855]: Shot Rum
+                  - paragraph [ref=e856]: Shots
+                - generic [ref=e857]:
+                  - button "Edit" [ref=e858] [cursor=pointer]
+                  - button "Delete" [ref=e859] [cursor=pointer]
+              - generic [ref=e860]:
+                - paragraph [ref=e861]: "Variants:"
+                - generic [ref=e862]:
+                  - generic [ref=e863]: Standard
+                  - generic [ref=e864]: €3,00
+            - generic [ref=e865]:
+              - generic [ref=e866]:
+                - generic [ref=e867]:
+                  - paragraph [ref=e868]: Shot Hierbas
+                  - paragraph [ref=e869]: Shots
+                - generic [ref=e870]:
+                  - button "Edit" [ref=e871] [cursor=pointer]
+                  - button "Delete" [ref=e872] [cursor=pointer]
+              - generic [ref=e873]:
+                - paragraph [ref=e874]: "Variants:"
+                - generic [ref=e875]:
+                  - generic [ref=e876]: Standard Favourite
+                  - generic [ref=e877]: €3,00
+            - generic [ref=e878]:
+              - generic [ref=e879]:
+                - generic [ref=e880]:
+                  - paragraph [ref=e881]: Vodka Tonic
+                  - paragraph [ref=e882]: Cocktails
+                - generic [ref=e883]:
+                  - button "Edit" [ref=e884] [cursor=pointer]
+                  - button "Delete" [ref=e885] [cursor=pointer]
+              - generic [ref=e886]:
+                - paragraph [ref=e887]: "Variants:"
+                - generic [ref=e888]:
+                  - generic [ref=e889]: Carico
+                  - generic [ref=e890]: €10,00
+                - generic [ref=e891]:
+                  - generic [ref=e892]: Standard Favourite
+                  - generic [ref=e893]: €8,00
+            - generic [ref=e1068]:
+              - generic [ref=e1069]:
+                - generic [ref=e1070]:
+                  - paragraph [ref=e1071]: QA Test
+                  - paragraph [ref=e1072]: Shots
+                - generic [ref=e1073]:
+                  - button "Edit" [ref=e1074] [cursor=pointer]
+                  - button "Delete" [ref=e1075] [cursor=pointer]
+              - generic [ref=e1076]:
+                - paragraph [ref=e1077]: "Variants:"
+                - generic [ref=e1078]:
+                  - generic [ref=e1079]: Standard
+                  - generic [ref=e1080]: €5,00
+          - generic [ref=e1082]:
+            - generic [ref=e1083]:
+              - heading "Edit Product" [level=3] [ref=e1084]
+              - paragraph [ref=e1085]: Define the product's base details and its selling variants.
+            - generic [ref=e1086]:
+              - generic [ref=e1087]:
+                - generic [ref=e1088]:
+                  - generic [ref=e1089]: Product Name
+                  - textbox "e.g., Merlot" [active] [ref=e1090]: QA Test
+                  - paragraph [ref=e1091]: This is the base name for all variants (e.g., "Vodka & Tonic").
+                - generic [ref=e1092]:
+                  - generic [ref=e1093]: Category
+                  - combobox [ref=e1094]:
+                    - option "Select a category..."
+                    - option "Shots" [selected]
+                    - option "Beer"
+                    - option "Cocktails"
+                    - option "Soft Drinks"
+                    - option "Entrata"
+                    - option "Vino"
+              - generic [ref=e1096]:
+                - generic [ref=e1097]:
+                  - heading "Variants" [level=4] [ref=e1098]
+                  - button "Remove Variant" [ref=e1099] [cursor=pointer]
+                - generic [ref=e1100]:
+                  - generic [ref=e1101]:
+                    - generic [ref=e1102]: Variant Name
+                    - textbox "e.g., Bottle" [ref=e1103]: Standard
+                  - generic [ref=e1104]:
+                    - generic [ref=e1105]: Price
+                    - textbox "e.g., 25.00" [ref=e1106]: "5"
+                - generic [ref=e1107]:
+                  - generic [ref=e1108]: Tax Rate
+                  - combobox [ref=e1109]:
+                    - option "None (use default)" [selected]
+                    - option "Zero Rate (0%)"
+                    - option "Reduced Rate (10%)"
+                    - option "Standard Rate (19%)"
+                    - option "Luxury Rate (22%)"
+                - generic [ref=e1111] [cursor=pointer]:
+                  - checkbox "Mark as Favourite" [ref=e1112]
+                  - generic [ref=e1113]: Mark as Favourite
+                - generic [ref=e1114]:
+                  - generic [ref=e1115]: Button Color
+                  - generic [ref=e1116]:
+                    - generic [ref=e1117]:
+                      - button "Slate" [ref=e1118] [cursor=pointer]
+                      - button "Gray" [ref=e1119] [cursor=pointer]
+                      - button "Zinc" [ref=e1120] [cursor=pointer]
+                      - button "Neutral" [ref=e1121] [cursor=pointer]
+                      - button "Stone" [ref=e1122] [cursor=pointer]
+                      - button "Red" [ref=e1123] [cursor=pointer]
+                      - button "Orange" [ref=e1124] [cursor=pointer]
+                      - button "Amber" [ref=e1125] [cursor=pointer]
+                      - button "Yellow" [ref=e1126] [cursor=pointer]
+                      - button "Lime" [ref=e1127] [cursor=pointer]
+                      - button "Green" [ref=e1128] [cursor=pointer]
+                      - button "Emerald" [ref=e1129] [cursor=pointer]
+                      - button "Teal" [ref=e1130] [cursor=pointer]
+                      - button "Cyan" [ref=e1131] [cursor=pointer]
+                      - button "Sky" [ref=e1132] [cursor=pointer]
+                      - button "Blue" [ref=e1133] [cursor=pointer]
+                      - button "Indigo" [ref=e1134] [cursor=pointer]
+                      - button "Violet" [ref=e1135] [cursor=pointer]
+                      - button "Purple" [ref=e1136] [cursor=pointer]
+                      - button "Fuchsia" [ref=e1137] [cursor=pointer]
+                      - button "Pink" [ref=e1138] [cursor=pointer]
+                      - button "Rose" [ref=e1139] [cursor=pointer]
+                      - button "Warm Gray" [ref=e1140] [cursor=pointer]
+                      - button "Cool Gray" [ref=e1141] [cursor=pointer]
+                    - generic [ref=e1142]:
+                      - paragraph [ref=e1143]: Preview
+                      - paragraph [ref=e1144]: Standard
+                - generic [ref=e1145]:
+                  - heading "Stock Consumption (Recipe)" [level=5] [ref=e1146]
+                  - paragraph [ref=e1147]: Define which stock items are used when this variant is sold.
+                  - button "+ Add Stock Item to Recipe" [ref=e1148] [cursor=pointer]
+              - button "+ Add Selling Variant" [ref=e1149] [cursor=pointer]
+            - generic [ref=e1150]:
+              - button "Cancel" [ref=e1151] [cursor=pointer]
+              - button "Save Product" [ref=e1152] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

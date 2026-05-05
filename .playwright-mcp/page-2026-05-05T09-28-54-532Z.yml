@@ -1,0 +1,244 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - button "Enter Fullscreen" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "Admin Panel" [ref=e11] [cursor=pointer]
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Products" [level=2] [ref=e18]
+            - generic [ref=e19]:
+              - button "Favourites" [ref=e20] [cursor=pointer]
+              - button "Shots" [ref=e21] [cursor=pointer]
+              - button "Beer" [ref=e22] [cursor=pointer]
+              - button "Cocktails" [ref=e23] [cursor=pointer]
+              - button "Soft Drinks" [ref=e24] [cursor=pointer]
+              - button "Vino" [ref=e25] [cursor=pointer]
+              - button "All" [ref=e26] [cursor=pointer]
+          - generic [ref=e29]:
+            - generic [ref=e289]:
+              - generic [ref=e291]: OUT OF STOCK
+              - paragraph [ref=e292]: Sipsmith Tonic
+              - generic [ref=e293]:
+                - paragraph [ref=e294]: Standard
+                - paragraph [ref=e295]: €12,00
+            - generic [ref=e296] [cursor=pointer]:
+              - paragraph [ref=e297]: Lemonsoda
+              - generic [ref=e298]:
+                - paragraph [ref=e299]: Standard
+                - paragraph [ref=e300]: €3,00
+            - generic [ref=e301] [cursor=pointer]:
+              - paragraph [ref=e302]: Ginger Beer
+              - generic [ref=e303]:
+                - paragraph [ref=e304]: Bottiglia 200ml
+                - paragraph [ref=e305]: €4,00
+            - generic [ref=e306] [cursor=pointer]:
+              - paragraph [ref=e307]: Vodka Ginger Beer
+              - generic [ref=e308]:
+                - paragraph [ref=e309]: Standard
+                - paragraph [ref=e310]: €8,00
+            - generic [ref=e311]:
+              - generic [ref=e313]: OUT OF STOCK
+              - paragraph [ref=e314]: Gin Ginger Beer
+              - generic [ref=e315]:
+                - paragraph [ref=e316]: Standard
+                - paragraph [ref=e317]: €8,00
+            - generic [ref=e318] [cursor=pointer]:
+              - paragraph [ref=e319]: Shot Vodka
+              - generic [ref=e320]:
+                - paragraph [ref=e321]: Standard
+                - paragraph [ref=e322]: €3,00
+              - generic [ref=e323]: FAV
+            - generic [ref=e324] [cursor=pointer]:
+              - paragraph [ref=e325]: Shot Gin Gordon's
+              - generic [ref=e326]:
+                - paragraph [ref=e327]: Standard
+                - paragraph [ref=e328]: €3,00
+            - generic [ref=e329] [cursor=pointer]:
+              - paragraph [ref=e330]: Shot Campari
+              - generic [ref=e331]:
+                - paragraph [ref=e332]: Standard
+                - paragraph [ref=e333]: €3,00
+            - generic [ref=e334] [cursor=pointer]:
+              - paragraph [ref=e335]: Shot Sipsmith
+              - generic [ref=e336]:
+                - paragraph [ref=e337]: Standard
+                - paragraph [ref=e338]: €5,00
+            - generic [ref=e339] [cursor=pointer]:
+              - paragraph [ref=e340]: Coca Cola
+              - generic [ref=e341]:
+                - paragraph [ref=e342]: Can
+                - paragraph [ref=e343]: €3,00
+            - generic [ref=e279] [cursor=pointer]:
+              - paragraph [ref=e280]: Vino Bianco
+              - generic [ref=e281]:
+                - paragraph [ref=e282]: Bicchiere
+                - paragraph [ref=e283]: €5,00
+            - generic [ref=e284] [cursor=pointer]:
+              - paragraph [ref=e285]: Vino Bianco
+              - generic [ref=e286]:
+                - paragraph [ref=e287]: Bottiglia
+                - paragraph [ref=e288]: €25,00
+            - generic [ref=e344] [cursor=pointer]:
+              - paragraph [ref=e345]: Tonica
+              - generic [ref=e346]:
+                - paragraph [ref=e347]: Standard
+                - paragraph [ref=e348]: €4,00
+            - generic [ref=e349] [cursor=pointer]:
+              - paragraph [ref=e350]: Pirlo Campari
+              - generic [ref=e351]:
+                - paragraph [ref=e352]: Standard
+                - paragraph [ref=e353]: €5,00
+              - generic [ref=e354]: FAV
+            - generic [ref=e355] [cursor=pointer]:
+              - paragraph [ref=e356]: Shot Tequila
+              - generic [ref=e357]:
+                - paragraph [ref=e358]: Standard
+                - paragraph [ref=e359]: €3,00
+              - generic [ref=e360]: FAV
+            - generic [ref=e361] [cursor=pointer]:
+              - paragraph [ref=e362]: Americano
+              - generic [ref=e363]:
+                - paragraph [ref=e364]: Standard
+                - paragraph [ref=e365]: €8,00
+            - generic [ref=e366] [cursor=pointer]:
+              - paragraph [ref=e367]: Negroni
+              - generic [ref=e368]:
+                - paragraph [ref=e369]: Standard
+                - paragraph [ref=e370]: €8,00
+            - generic [ref=e371] [cursor=pointer]:
+              - paragraph [ref=e372]: Vodka Lemon
+              - generic [ref=e373]:
+                - paragraph [ref=e374]: Standard
+                - paragraph [ref=e375]: €8,00
+              - generic [ref=e376]: FAV
+            - generic [ref=e377] [cursor=pointer]:
+              - paragraph [ref=e378]: Vodka Lemon
+              - generic [ref=e379]:
+                - paragraph [ref=e380]: Carico
+                - paragraph [ref=e381]: €10,00
+            - generic [ref=e382] [cursor=pointer]:
+              - paragraph [ref=e383]: Beck's
+              - generic [ref=e384]:
+                - paragraph [ref=e385]: 33cl
+                - paragraph [ref=e386]: €4,00
+              - generic [ref=e387]: FAV
+            - generic [ref=e388] [cursor=pointer]:
+              - paragraph [ref=e389]: Paloma
+              - generic [ref=e390]:
+                - paragraph [ref=e391]: Standard
+                - paragraph [ref=e392]: €8,00
+            - generic [ref=e393]:
+              - generic [ref=e395]: OUT OF STOCK
+              - paragraph [ref=e396]: Gin Tonic
+              - generic [ref=e397]:
+                - paragraph [ref=e398]: Standard
+                - paragraph [ref=e399]: €8,00
+              - generic [ref=e400]: FAV
+            - generic [ref=e401]:
+              - generic [ref=e403]: OUT OF STOCK
+              - paragraph [ref=e404]: Gin Tonic
+              - generic [ref=e405]:
+                - paragraph [ref=e406]: Carico
+                - paragraph [ref=e407]: €10,00
+            - generic [ref=e408] [cursor=pointer]:
+              - paragraph [ref=e409]: Gin Lemon
+              - generic [ref=e410]:
+                - paragraph [ref=e411]: Standard
+                - paragraph [ref=e412]: €8,00
+              - generic [ref=e413]: FAV
+            - generic [ref=e414] [cursor=pointer]:
+              - paragraph [ref=e415]: Gin Lemon
+              - generic [ref=e416]:
+                - paragraph [ref=e417]: Carico
+                - paragraph [ref=e418]: €10,00
+            - generic [ref=e419] [cursor=pointer]:
+              - paragraph [ref=e420]: Sipsmith Lemon
+              - generic [ref=e421]:
+                - paragraph [ref=e422]: Standard
+                - paragraph [ref=e423]: €12,00
+            - generic [ref=e424] [cursor=pointer]:
+              - paragraph [ref=e425]: Acqua
+              - generic [ref=e426]:
+                - paragraph [ref=e427]: 50cl
+                - paragraph [ref=e428]: €2,00
+              - generic [ref=e429]: FAV
+            - generic [ref=e430] [cursor=pointer]:
+              - paragraph [ref=e431]: Wuhrer
+              - generic [ref=e432]:
+                - paragraph [ref=e433]: 66cl
+                - paragraph [ref=e434]: €6,00
+              - generic [ref=e435]: FAV
+            - generic [ref=e436] [cursor=pointer]:
+              - paragraph [ref=e437]: Coca Rum
+              - generic [ref=e438]:
+                - paragraph [ref=e439]: Standard
+                - paragraph [ref=e440]: €8,00
+            - generic [ref=e441] [cursor=pointer]:
+              - paragraph [ref=e442]: Shot Rum
+              - generic [ref=e443]:
+                - paragraph [ref=e444]: Standard
+                - paragraph [ref=e445]: €3,00
+            - generic [ref=e446] [cursor=pointer]:
+              - paragraph [ref=e447]: Shot Hierbas
+              - generic [ref=e448]:
+                - paragraph [ref=e449]: Standard
+                - paragraph [ref=e450]: €3,00
+              - generic [ref=e451]: FAV
+            - generic [ref=e452]:
+              - generic [ref=e454]: OUT OF STOCK
+              - paragraph [ref=e455]: Vodka Tonic
+              - generic [ref=e456]:
+                - paragraph [ref=e457]: Carico
+                - paragraph [ref=e458]: €10,00
+            - generic [ref=e459]:
+              - generic [ref=e461]: OUT OF STOCK
+              - paragraph [ref=e462]: Vodka Tonic
+              - generic [ref=e463]:
+                - paragraph [ref=e464]: Standard
+                - paragraph [ref=e465]: €8,00
+              - generic [ref=e466]: FAV
+        - generic [ref=e101]:
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - paragraph [ref=e104]: "Logged in as:"
+              - paragraph [ref=e105]:
+                - text: Admin User
+                - generic [ref=e106]: (Admin)
+            - button "Logout" [ref=e107] [cursor=pointer]
+          - generic [ref=e108]:
+            - heading "Current Order" [level=2] [ref=e109]
+            - generic [ref=e467]:
+              - generic [ref=e468]:
+                - generic [ref=e469]:
+                  - paragraph [ref=e470]: Shot Vodka - Standard
+                  - paragraph [ref=e471]: €3,00
+                - generic [ref=e472]:
+                  - button "-" [ref=e473] [cursor=pointer]
+                  - generic [ref=e474]: "2"
+                  - button "+" [ref=e475] [cursor=pointer]
+              - generic [ref=e484]:
+                - generic [ref=e485]:
+                  - paragraph [ref=e486]: Beck's - 33cl
+                  - paragraph [ref=e487]: €4,00
+                - generic [ref=e488]:
+                  - button "-" [ref=e489] [cursor=pointer]
+                  - generic [ref=e490]: "1"
+                  - button "+" [ref=e491] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e113] [cursor=pointer]:
+            - generic [ref=e114]: EDIT
+            - generic [ref=e115]: Edit Layout
+          - generic [ref=e116]:
+            - generic [ref=e476]:
+              - generic [ref=e477]: Subtotal
+              - generic [ref=e478]: €10,00
+            - generic [ref=e117]:
+              - button "Manage Tabs" [ref=e479] [cursor=pointer]
+              - button "Clear" [ref=e480] [cursor=pointer]
+            - generic [ref=e481]:
+              - button "ASSIGN TABLE" [ref=e482] [cursor=pointer]
+              - button "Payment" [ref=e483] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

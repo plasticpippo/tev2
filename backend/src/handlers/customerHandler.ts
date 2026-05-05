@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
 import * as customerService from '../services/customerService';
+import { prisma } from '../prisma';
 import { logError, logDataAccess } from '../utils/logger';
 
 import {
@@ -24,16 +25,24 @@ const createCustomerSchema = z.object({
   notes: z.string().max(1000).nullable(),
 });
 
-const updateCustomerSchema = z.object({
-  name: z.string().min(1, "Name is required").max(200).optional(),
-  email: z.string().email("Invalid email format").max(255).nullable().or(z.literal('')),
-  phone: z.string().max(50).nullable(),
-  vatNumber: z.string().max(50).nullable(),
-  address: z.string().max(500).nullable(),
-  city: z.string().max(100).nullable(),
-  postalCode: z.string().max(20).nullable(),
-  country: z.string().max(100).nullable(),
-  notes: z.string().max(1000).nullable(),
+const customerFieldSchema = {
+  name: z.string().min(1, "Name is required").max(200),
+  email: z.union([
+    z.string().email("Invalid email format").max(255),
+    z.literal('')
+  ]),
+  phone: z.string().max(50),
+  vatNumber: z.string().max(50),
+  address: z.string().max(500),
+  city: z.string().max(100),
+  postalCode: z.string().max(20),
+  country: z.string().max(100),
+  notes: z.string().max(1000),
+  isActive: z.boolean(),
+};
+
+const updateCustomerSchema = z.object(customerFieldSchema).partial().extend({
+  isActive: z.boolean().optional(),
 });
 
 const validateVATNumber = (vat: string | undefined): boolean => {
@@ -223,24 +232,22 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
       return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
-    const validation = updateCustomerSchema.safeParse(req.body);
-    if (!validation.success) {
-      return res.status(400).json({
-        error: t('customers.validationFailed'),
-        details: validation.error.errors,
-      });
-    }
+    const { name, email, phone, vatNumber, address, city, postalCode, country, notes, isActive } = req.body;
 
-    const { name, email, phone, vatNumber, address, city, postalCode, country, notes } = validation.data;
-    const { isActive } = req.body;
-
-    if (vatNumber && !validateVATNumber(vatNumber)) {
+    // Validate VAT if provided
+    if (vatNumber !== undefined && vatNumber !== null && vatNumber !== '' && !validateVATNumber(vatNumber)) {
       return res.status(400).json({
         error: t('customers.invalidVatNumber'),
       });
     }
 
-    if (email !== undefined && email !== null) {
+    // Validate email format if provided
+    if (email !== undefined && email !== null && email !== '') {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ error: t('customers.invalidEmailFormat') });
+      }
+      // Check uniqueness
       const isUnique = await customerService.checkEmailUniqueness(email, Number(id));
       if (!isUnique) {
         return res.status(409).json({ error: t('customers.duplicateEmail') });
@@ -301,6 +308,51 @@ customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Resp
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: t('customers.deleteFailed') });
+  }
+});
+
+// Dedicated endpoint for toggling customer active status
+customersRouter.patch('/:id/toggle-status', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  try {
+    const { id } = req.params;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      return res.status(401).json({ error: t('auth.userNotFound') });
+    }
+
+    // Get current customer
+    const currentCustomer = await prisma.customer.findFirst({
+      where: { id: Number(id), deletedAt: null },
+    });
+
+    if (!currentCustomer) {
+      return res.status(404).json({ error: t('customers.notFound') });
+    }
+
+    // Toggle the status
+    const customer = await prisma.customer.update({
+      where: { id: Number(id) },
+      data: {
+        isActive: !currentCustomer.isActive,
+        updatedAt: new Date(),
+      },
+      include: {
+        user: {
+          select: { id: true, username: true },
+        },
+      },
+    });
+
+    logDataAccess('customer', customer.id, 'UPDATE', userId, req.user?.username);
+
+    res.json(customer);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error toggling customer status', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: t('customers.updateStatusFailed') });
   }
 });
 

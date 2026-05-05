@@ -1,0 +1,144 @@
+- generic [ref=e2]:
+  - generic [ref=e469]:
+    - banner [ref=e470]:
+      - generic [ref=e472]:
+        - heading "Pannello Amministratore" [level=1] [ref=e473]
+        - paragraph [ref=e474]: Connesso come Admin User
+      - generic [ref=e475]:
+        - button "Vai al POS" [ref=e476] [cursor=pointer]
+        - button "Esci" [ref=e477] [cursor=pointer]
+    - generic [ref=e478]:
+      - navigation [ref=e479]:
+        - button "Comprimi barra laterale" [ref=e481] [cursor=pointer]:
+          - img [ref=e482]
+        - button "Dashboard" [ref=e691] [cursor=pointer]:
+          - img [ref=e693]
+          - generic [ref=e695]: Dashboard
+        - button "Analisi" [ref=e696] [cursor=pointer]:
+          - img [ref=e698]
+          - generic [ref=e700]: Analisi
+        - button "Analisi di Profitto" [ref=e701] [cursor=pointer]:
+          - img [ref=e703]
+          - generic [ref=e705]: Analisi di Profitto
+        - button "Transazioni" [ref=e706] [cursor=pointer]:
+          - img [ref=e708]
+          - generic [ref=e710]: Transazioni
+        - button "Scontrini 14" [ref=e711] [cursor=pointer]:
+          - img [ref=e713]
+          - generic [ref=e715]: Scontrini
+          - button "14" [ref=e716]
+        - button "Registro Attività" [ref=e717] [cursor=pointer]:
+          - img [ref=e719]
+          - generic [ref=e721]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e722] [cursor=pointer]:
+          - img [ref=e724]
+          - generic [ref=e726]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e727] [cursor=pointer]:
+          - img [ref=e729]
+          - generic [ref=e731]: Clienti
+        - button "Prodotti" [ref=e732] [cursor=pointer]:
+          - img [ref=e734]
+          - generic [ref=e736]: Prodotti
+        - button "Categorie" [ref=e737] [cursor=pointer]:
+          - img [ref=e739]
+          - generic [ref=e741]: Categorie
+        - button "Articoli Magazzino" [ref=e742] [cursor=pointer]:
+          - img [ref=e744]
+          - generic [ref=e746]: Articoli Magazzino
+        - button "Inventario" [ref=e747] [cursor=pointer]:
+          - img [ref=e749]
+          - generic [ref=e751]: Inventario
+        - button "Gestione Costi" [ref=e752] [cursor=pointer]:
+          - img [ref=e754]
+          - generic [ref=e756]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e757] [cursor=pointer]:
+          - img [ref=e759]
+          - generic [ref=e761]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e762] [cursor=pointer]:
+          - img [ref=e764]
+          - generic [ref=e766]: Report Scostamento
+        - button "Utenti" [ref=e767] [cursor=pointer]:
+          - img [ref=e769]
+          - generic [ref=e771]: Utenti
+        - button "Casse" [ref=e772] [cursor=pointer]:
+          - img [ref=e774]
+          - generic [ref=e776]: Casse
+        - button "Tavoli e Layout" [ref=e777] [cursor=pointer]:
+          - img [ref=e779]
+          - generic [ref=e781]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e782] [cursor=pointer]:
+          - img [ref=e784]
+          - generic [ref=e786]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e787] [cursor=pointer]:
+          - img [ref=e789]
+          - generic [ref=e792]: Impostazioni
+      - main [ref=e590]:
+        - generic [ref=e793]:
+          - generic [ref=e794]:
+            - button "Lingua" [ref=e795] [cursor=pointer]
+            - button "Impostazioni Fiscali" [active] [ref=e796] [cursor=pointer]
+            - button "Giorno Lavorativo" [ref=e797] [cursor=pointer]
+            - button "Informazioni Attività" [ref=e798] [cursor=pointer]
+            - button "Backup" [ref=e799] [cursor=pointer]
+            - button "Email" [ref=e800] [cursor=pointer]
+            - button "Ricevuta da Pagamento" [ref=e801] [cursor=pointer]
+          - generic [ref=e813]:
+            - heading "Impostazioni Fiscali" [level=3] [ref=e814]
+            - generic [ref=e815]:
+              - paragraph [ref=e816]: Come gestire le tasse?
+              - generic [ref=e817]:
+                - generic [ref=e818] [cursor=pointer]:
+                  - radio "Esclusiva La tassa viene aggiunta al prezzo visualizzato" [ref=e819]
+                  - generic [ref=e820]:
+                    - text: Esclusiva
+                    - paragraph [ref=e821]: La tassa viene aggiunta al prezzo visualizzato
+                - generic [ref=e822] [cursor=pointer]:
+                  - radio "Inclusiva La tassa è già inclusa nel prezzo visualizzato" [checked] [ref=e823]
+                  - generic [ref=e824]:
+                    - text: Inclusiva
+                    - paragraph [ref=e825]: La tassa è già inclusa nel prezzo visualizzato
+                - generic [ref=e826] [cursor=pointer]:
+                  - radio "Nessuna Tassa Nessuna tassa verrà applicata" [ref=e827]
+                  - generic [ref=e828]:
+                    - text: Nessuna Tassa
+                    - paragraph [ref=e829]: Nessuna tassa verrà applicata
+            - generic [ref=e831]:
+              - generic [ref=e832]:
+                - heading "Aliquote IVA" [level=3] [ref=e833]
+                - button "Aggiungi Aliquota" [ref=e834] [cursor=pointer]
+              - generic [ref=e835]:
+                - generic [ref=e837]:
+                  - generic [ref=e838]:
+                    - paragraph [ref=e840]: Zero Rate (0%)
+                    - paragraph [ref=e841]: 0% tax rate
+                  - generic [ref=e842]:
+                    - button "Imposta come Predefinito" [ref=e843] [cursor=pointer]
+                    - button "Modifica" [ref=e844] [cursor=pointer]
+                    - button "Elimina" [ref=e845] [cursor=pointer]
+                - generic [ref=e847]:
+                  - generic [ref=e848]:
+                    - paragraph [ref=e850]: Reduced Rate (10%)
+                    - paragraph [ref=e851]: 10% tax rate
+                  - generic [ref=e852]:
+                    - button "Imposta come Predefinito" [ref=e853] [cursor=pointer]
+                    - button "Modifica" [ref=e854] [cursor=pointer]
+                    - button "Elimina" [ref=e855] [cursor=pointer]
+                - generic [ref=e857]:
+                  - generic [ref=e858]:
+                    - generic [ref=e859]:
+                      - paragraph [ref=e860]: Standard Rate (19%)
+                      - generic [ref=e861]: Predefinito
+                    - paragraph [ref=e862]: 19% tax rate
+                  - generic [ref=e863]:
+                    - button "Modifica" [ref=e864] [cursor=pointer]
+                    - button "Elimina" [ref=e865] [cursor=pointer]
+                - generic [ref=e867]:
+                  - generic [ref=e868]:
+                    - paragraph [ref=e870]: Luxury Rate (22%)
+                    - paragraph [ref=e871]: 22% tax rate
+                  - generic [ref=e872]:
+                    - button "Imposta come Predefinito" [ref=e873] [cursor=pointer]
+                    - button "Modifica" [ref=e874] [cursor=pointer]
+                    - button "Elimina" [ref=e875] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e690] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,0 +1,242 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e607] [cursor=pointer]:
+          - img [ref=e609]
+          - generic [ref=e611]: Dashboard
+        - button "Analytics" [ref=e612] [cursor=pointer]:
+          - img [ref=e614]
+          - generic [ref=e616]: Analytics
+        - button "Profit Analytics" [ref=e617] [cursor=pointer]:
+          - img [ref=e619]
+          - generic [ref=e621]: Profit Analytics
+        - button "Transactions" [ref=e622] [cursor=pointer]:
+          - img [ref=e624]
+          - generic [ref=e626]: Transactions
+        - button "Receipts 14" [ref=e627] [cursor=pointer]:
+          - img [ref=e629]
+          - generic [ref=e631]: Receipts
+          - button "14" [ref=e632]
+        - button "Activity Log" [ref=e633] [cursor=pointer]:
+          - img [ref=e635]
+          - generic [ref=e637]: Activity Log
+        - button "Daily Closing Summary" [ref=e638] [cursor=pointer]:
+          - img [ref=e640]
+          - generic [ref=e642]: Daily Closing Summary
+        - button "Customers" [ref=e643] [cursor=pointer]:
+          - img [ref=e645]
+          - generic [ref=e647]: Customers
+        - button "Products" [ref=e648] [cursor=pointer]:
+          - img [ref=e650]
+          - generic [ref=e652]: Products
+        - button "Categories" [ref=e653] [cursor=pointer]:
+          - img [ref=e655]
+          - generic [ref=e657]: Categories
+        - button "Stock Items" [ref=e658] [cursor=pointer]:
+          - img [ref=e660]
+          - generic [ref=e662]: Stock Items
+        - button "Inventory" [ref=e663] [cursor=pointer]:
+          - img [ref=e665]
+          - generic [ref=e667]: Inventory
+        - button "Cost Management" [ref=e668] [cursor=pointer]:
+          - img [ref=e670]
+          - generic [ref=e672]: Cost Management
+        - button "Inventory Counts" [ref=e673] [cursor=pointer]:
+          - img [ref=e675]
+          - generic [ref=e677]: Inventory Counts
+        - button "Variance Reports" [ref=e678] [cursor=pointer]:
+          - img [ref=e680]
+          - generic [ref=e682]: Variance Reports
+        - button "Users" [ref=e683] [cursor=pointer]:
+          - img [ref=e685]
+          - generic [ref=e687]: Users
+        - button "Tills" [ref=e688] [cursor=pointer]:
+          - img [ref=e690]
+          - generic [ref=e692]: Tills
+        - button "Tables & Layout" [ref=e693] [cursor=pointer]:
+          - img [ref=e695]
+          - generic [ref=e697]: Tables & Layout
+        - button "Itemised Consumption" [ref=e698] [cursor=pointer]:
+          - img [ref=e700]
+          - generic [ref=e702]: Itemised Consumption
+        - button "Settings" [ref=e703] [cursor=pointer]:
+          - img [ref=e705]
+          - generic [ref=e708]: Settings
+      - main [ref=e240]:
+        - generic [ref=e442]:
+          - generic [ref=e443]:
+            - heading "Customer Management" [level=2] [ref=e444]
+            - button "New Customer" [ref=e445] [cursor=pointer]:
+              - img [ref=e446]
+              - text: New Customer
+          - generic [ref=e449]:
+            - generic [ref=e450]:
+              - generic [ref=e451]: Search
+              - textbox "Search" [ref=e452]:
+                - /placeholder: Search customers...
+            - generic [ref=e453]:
+              - generic [ref=e454]: Status
+              - combobox "Status" [ref=e455]:
+                - option "All Statuses" [selected]
+                - option "Active"
+                - option "Inactive"
+            - button "Clear Filters" [ref=e457] [cursor=pointer]
+          - generic [ref=e458]: Showing
+          - table [ref=e709]:
+            - rowgroup [ref=e710]:
+              - row "Name Email Phone VAT Number Status Actions" [ref=e711]:
+                - columnheader "Name" [ref=e712]
+                - columnheader "Email" [ref=e713]
+                - columnheader "Phone" [ref=e714]
+                - columnheader "VAT Number" [ref=e715]
+                - columnheader "Status" [ref=e716]
+                - columnheader "Actions" [ref=e717]
+            - rowgroup [ref=e718]:
+              - row "E2E Test Customer e2e-test@example.com +39 333 3334444 - Active" [ref=e719]:
+                - cell "E2E Test Customer" [ref=e720]
+                - cell "e2e-test@example.com" [ref=e721]
+                - cell "+39 333 3334444" [ref=e722]
+                - cell "-" [ref=e723]
+                - cell "Active" [ref=e724]
+                - cell [ref=e725]:
+                  - generic [ref=e726]:
+                    - button "View" [ref=e727] [cursor=pointer]:
+                      - img [ref=e728]
+                    - button "Edit" [ref=e731] [cursor=pointer]:
+                      - img [ref=e732]
+                    - button "Deactivate" [ref=e734] [cursor=pointer]:
+                      - img [ref=e735]
+              - row "gino gino@gino.it 0000000000 it30481205012957 Active" [ref=e737]:
+                - cell "gino" [ref=e738]
+                - cell "gino@gino.it" [ref=e739]
+                - cell "0000000000" [ref=e740]
+                - cell "it30481205012957" [ref=e741]
+                - cell "Active" [ref=e742]
+                - cell [ref=e743]:
+                  - generic [ref=e744]:
+                    - button "View" [ref=e745] [cursor=pointer]:
+                      - img [ref=e746]
+                    - button "Edit" [ref=e749] [cursor=pointer]:
+                      - img [ref=e750]
+                    - button "Deactivate" [ref=e752] [cursor=pointer]:
+                      - img [ref=e753]
+              - row "QA Test Customer qa@test.com 1234567890 - Active" [ref=e755]:
+                - cell "QA Test Customer" [ref=e756]
+                - cell "qa@test.com" [ref=e757]
+                - cell "1234567890" [ref=e758]
+                - cell "-" [ref=e759]
+                - cell "Active" [ref=e760]
+                - cell [ref=e761]:
+                  - generic [ref=e762]:
+                    - button "View" [ref=e763] [cursor=pointer]:
+                      - img [ref=e764]
+                    - button "Edit" [ref=e767] [cursor=pointer]:
+                      - img [ref=e768]
+                    - button "Deactivate" [ref=e770] [cursor=pointer]:
+                      - img [ref=e771]
+              - row "Test Customer test@example.com 1234567890 - Active" [ref=e773]:
+                - cell "Test Customer" [ref=e774]
+                - cell "test@example.com" [ref=e775]
+                - cell "1234567890" [ref=e776]
+                - cell "-" [ref=e777]
+                - cell "Active" [ref=e778]
+                - cell [ref=e779]:
+                  - generic [ref=e780]:
+                    - button "View" [ref=e781] [cursor=pointer]:
+                      - img [ref=e782]
+                    - button "Edit" [ref=e785] [cursor=pointer]:
+                      - img [ref=e786]
+                    - button "Deactivate" [ref=e788] [cursor=pointer]:
+                      - img [ref=e789]
+              - row "Test Customer Playwright playwright-test@example.com +39 333 9999999 IT12345678901 Active" [ref=e791]:
+                - cell "Test Customer Playwright" [ref=e792]
+                - cell "playwright-test@example.com" [ref=e793]
+                - cell "+39 333 9999999" [ref=e794]
+                - cell "IT12345678901" [ref=e795]
+                - cell "Active" [ref=e796]
+                - cell [ref=e797]:
+                  - generic [ref=e798]:
+                    - button "View" [ref=e799] [cursor=pointer]:
+                      - img [ref=e800]
+                    - button "Edit" [ref=e803] [cursor=pointer]:
+                      - img [ref=e804]
+                    - button "Deactivate" [ref=e806] [cursor=pointer]:
+                      - img [ref=e807]
+              - row "Validation Test Customer validation@example.com +39 333 1234567 - Active" [ref=e809]:
+                - cell "Validation Test Customer" [ref=e810]
+                - cell "validation@example.com" [ref=e811]
+                - cell "+39 333 1234567" [ref=e812]
+                - cell "-" [ref=e813]
+                - cell "Active" [ref=e814]
+                - cell [ref=e815]:
+                  - generic [ref=e816]:
+                    - button "View" [ref=e817] [cursor=pointer]:
+                      - img [ref=e818]
+                    - button "Edit" [ref=e821] [cursor=pointer]:
+                      - img [ref=e822]
+                    - button "Deactivate" [ref=e824] [cursor=pointer]:
+                      - img [ref=e825]
+          - generic [ref=e828]:
+            - generic [ref=e830]:
+              - heading "Edit Customer" [level=3] [ref=e831]
+              - button [ref=e832] [cursor=pointer]:
+                - img [ref=e833]
+            - generic [ref=e836]:
+              - generic [ref=e837]:
+                - generic [ref=e838]: Name *
+                - textbox "Name *" [active] [ref=e839]:
+                  - /placeholder: Customer name
+                  - text: QA Test Customer
+              - generic [ref=e840]:
+                - generic [ref=e841]: Email
+                - textbox "Email" [ref=e842]:
+                  - /placeholder: customer@example.com
+                  - text: qa@test.com
+                - paragraph [ref=e843]: Used for receipt delivery
+              - generic [ref=e844]:
+                - generic [ref=e845]: Phone
+                - textbox "Phone" [ref=e846]:
+                  - /placeholder: +39 02 1234567
+                  - text: "1234567890"
+              - generic [ref=e847]:
+                - generic [ref=e848]: VAT Number
+                - textbox "VAT Number" [ref=e849]:
+                  - /placeholder: IT12345678901
+                - paragraph [ref=e850]: Required for business receipts
+              - generic [ref=e851]:
+                - generic [ref=e852]: Address
+                - textbox "Address" [ref=e853]:
+                  - /placeholder: Street address
+              - generic [ref=e854]:
+                - generic [ref=e855]:
+                  - generic [ref=e856]: City
+                  - textbox "City" [ref=e857]
+                - generic [ref=e858]:
+                  - generic [ref=e859]: Postal Code
+                  - textbox "Postal Code" [ref=e860]:
+                    - /placeholder: Postal code
+              - generic [ref=e861]:
+                - generic [ref=e862]: Country
+                - textbox "Country" [ref=e863]:
+                  - /placeholder: IT
+              - generic [ref=e864]:
+                - generic [ref=e865]: Notes
+                - textbox "Notes" [ref=e866]:
+                  - /placeholder: Additional notes...
+                - paragraph [ref=e867]: 1000 characters remaining
+              - generic [ref=e868]: "* Required fields"
+              - generic [ref=e869]:
+                - button "Cancel" [ref=e870] [cursor=pointer]
+                - button "Save Changes" [ref=e871] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,0 +1,330 @@
+- generic [ref=e2]:
+  - generic [ref=e2107]:
+    - banner [ref=e2108]:
+      - generic [ref=e2110]:
+        - heading "Admin Panel" [level=1] [ref=e2111]
+        - paragraph [ref=e2112]: Logged in as Admin User
+      - generic [ref=e2113]:
+        - button "Switch to POS" [ref=e2114] [cursor=pointer]
+        - button "Logout" [ref=e2115] [cursor=pointer]
+    - generic [ref=e2116]:
+      - navigation [ref=e2117]:
+        - button "Collapse sidebar" [ref=e2119] [cursor=pointer]:
+          - img [ref=e2120]
+        - button "Dashboard" [ref=e2328] [cursor=pointer]:
+          - img [ref=e2330]
+          - generic [ref=e2332]: Dashboard
+        - button "Analytics" [ref=e2333] [cursor=pointer]:
+          - img [ref=e2335]
+          - generic [ref=e2337]: Analytics
+        - button "Profit Analytics" [ref=e2338] [cursor=pointer]:
+          - img [ref=e2340]
+          - generic [ref=e2342]: Profit Analytics
+        - button "Transactions" [ref=e2343] [cursor=pointer]:
+          - img [ref=e2345]
+          - generic [ref=e2347]: Transactions
+        - button "Receipts 14" [ref=e2348] [cursor=pointer]:
+          - img [ref=e2350]
+          - generic [ref=e2352]: Receipts
+          - button "14" [ref=e2353]
+        - button "Activity Log" [ref=e2354] [cursor=pointer]:
+          - img [ref=e2356]
+          - generic [ref=e2358]: Activity Log
+        - button "Daily Closing Summary" [ref=e2359] [cursor=pointer]:
+          - img [ref=e2361]
+          - generic [ref=e2363]: Daily Closing Summary
+        - button "Customers" [ref=e2364] [cursor=pointer]:
+          - img [ref=e2366]
+          - generic [ref=e2368]: Customers
+        - button "Products" [ref=e2369] [cursor=pointer]:
+          - img [ref=e2371]
+          - generic [ref=e2373]: Products
+        - button "Categories" [ref=e2374] [cursor=pointer]:
+          - img [ref=e2376]
+          - generic [ref=e2378]: Categories
+        - button "Stock Items" [ref=e2379] [cursor=pointer]:
+          - img [ref=e2381]
+          - generic [ref=e2383]: Stock Items
+        - button "Inventory" [ref=e2384] [cursor=pointer]:
+          - img [ref=e2386]
+          - generic [ref=e2388]: Inventory
+        - button "Cost Management" [ref=e2389] [cursor=pointer]:
+          - img [ref=e2391]
+          - generic [ref=e2393]: Cost Management
+        - button "Inventory Counts" [ref=e2394] [cursor=pointer]:
+          - img [ref=e2396]
+          - generic [ref=e2398]: Inventory Counts
+        - button "Variance Reports" [ref=e2399] [cursor=pointer]:
+          - img [ref=e2401]
+          - generic [ref=e2403]: Variance Reports
+        - button "Users" [ref=e2404] [cursor=pointer]:
+          - img [ref=e2406]
+          - generic [ref=e2408]: Users
+        - button "Tills" [ref=e2409] [cursor=pointer]:
+          - img [ref=e2411]
+          - generic [ref=e2413]: Tills
+        - button "Tables & Layout" [ref=e2414] [cursor=pointer]:
+          - img [ref=e2416]
+          - generic [ref=e2418]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2419] [cursor=pointer]:
+          - img [ref=e2421]
+          - generic [ref=e2423]: Itemised Consumption
+        - button "Settings" [ref=e2424] [cursor=pointer]:
+          - img [ref=e2426]
+          - generic [ref=e2429]: Settings
+      - main [ref=e2228]:
+        - generic [ref=e2430]:
+          - heading "Transactions" [level=2] [ref=e2431]
+          - generic [ref=e2432]:
+            - generic [ref=e2433]:
+              - 'button "Filter by {{filter}}" [ref=e2434] [cursor=pointer]': Today
+              - 'button "Filter by {{filter}}" [ref=e2435] [cursor=pointer]': Yesterday
+              - 'button "Filter by {{filter}}" [ref=e2436] [cursor=pointer]': Last 7 Days
+              - 'button "Filter by {{filter}}" [pressed] [ref=e2437] [cursor=pointer]': Last 30 Days
+              - button "Filter by custom date range" [ref=e2438] [cursor=pointer]: Custom
+            - generic [ref=e2440]:
+              - generic [ref=e2441]:
+                - generic [ref=e2442]: Till
+                - combobox "Filter by till" [ref=e2443]:
+                  - option "All Tills" [selected]
+                  - option "Main Bar"
+                  - option "Entrata"
+              - generic [ref=e2444]:
+                - generic [ref=e2445]: User
+                - combobox "Filter by user" [ref=e2446]:
+                  - option "All Users" [selected]
+                  - option "Bar"
+                  - option "Cassa"
+                  - option "Admin User"
+          - generic [ref=e2447]: 29 transactions found
+          - generic [ref=e2448]:
+            - generic [ref=e2449]:
+              - button "View details for transaction 551" [ref=e2451] [cursor=pointer]:
+                - generic [ref=e2452]:
+                  - generic [ref=e2453]: €3,00
+                  - generic [ref=e2454]: Main Bar
+                - generic [ref=e2455]:
+                  - generic [ref=e2456]: admin (Cash)
+                  - generic [ref=e2457]: 05/05/2026, 12:56
+              - button "View details for transaction 550" [ref=e2459] [cursor=pointer]:
+                - generic [ref=e2460]:
+                  - generic [ref=e2461]: €5,00
+                  - generic [ref=e2462]: Main Bar
+                - generic [ref=e2463]:
+                  - generic [ref=e2464]: admin (Card)
+                  - generic [ref=e2465]: 05/05/2026, 11:32
+              - button "View details for transaction 549" [ref=e2467] [cursor=pointer]:
+                - generic [ref=e2468]:
+                  - generic [ref=e2469]: €7,00
+                  - generic [ref=e2470]: Main Bar
+                - generic [ref=e2471]:
+                  - generic [ref=e2472]: admin (Cash)
+                  - generic [ref=e2473]: 05/05/2026, 11:31
+              - button "View details for transaction 548" [ref=e2475] [cursor=pointer]:
+                - generic [ref=e2476]:
+                  - generic [ref=e2477]: €2,00
+                  - generic [ref=e2478]: Main Bar
+                - generic [ref=e2479]:
+                  - generic [ref=e2480]: admin (Cash)
+                  - generic [ref=e2481]: 27/04/2026, 17:36
+              - button "View details for transaction 547" [ref=e2483] [cursor=pointer]:
+                - generic [ref=e2484]:
+                  - generic [ref=e2485]: €7,00
+                  - generic [ref=e2486]: Main Bar
+                - generic [ref=e2487]:
+                  - generic [ref=e2488]: admin (Cash)
+                  - generic [ref=e2489]: 27/04/2026, 13:39
+              - button "View details for transaction 546" [ref=e2491] [cursor=pointer]:
+                - generic [ref=e2492]:
+                  - generic [ref=e2493]: €8,00
+                  - generic [ref=e2494]: Main Bar
+                - generic [ref=e2495]:
+                  - generic [ref=e2496]: admin (Card)
+                  - generic [ref=e2497]: 22/04/2026, 03:04
+                - generic [ref=e2499]: "Receipt #R000023"
+              - button "View details for transaction 545" [ref=e2501] [cursor=pointer]:
+                - generic [ref=e2502]:
+                  - generic [ref=e2503]: €2,00
+                  - generic [ref=e2504]: Main Bar
+                - generic [ref=e2505]:
+                  - generic [ref=e2506]: admin (Card)
+                  - generic [ref=e2507]: 21/04/2026, 22:59
+                - generic [ref=e2509]: "Receipt #R000022"
+              - button "View details for transaction 544" [ref=e2511] [cursor=pointer]:
+                - generic [ref=e2512]:
+                  - generic [ref=e2513]: €4,00
+                  - generic [ref=e2514]: Main Bar
+                - generic [ref=e2515]:
+                  - generic [ref=e2516]: admin (Card)
+                  - generic [ref=e2517]: 19/04/2026, 21:33
+                - generic [ref=e2519]: "Receipt #R000020"
+              - button "View details for transaction 543" [ref=e2521] [cursor=pointer]:
+                - generic [ref=e2522]:
+                  - generic [ref=e2523]: €11,00
+                  - generic [ref=e2524]: Main Bar
+                - generic [ref=e2525]:
+                  - generic [ref=e2526]: admin (Cash)
+                  - generic [ref=e2527]: 19/04/2026, 21:32
+                - generic [ref=e2529]: "Receipt #R000019"
+              - button "View details for transaction 542" [ref=e2531] [cursor=pointer]:
+                - generic [ref=e2532]:
+                  - generic [ref=e2533]: €8,00
+                  - generic [ref=e2534]: Main Bar
+                - generic [ref=e2535]:
+                  - generic [ref=e2536]: admin (cash)
+                  - generic [ref=e2537]: 09/04/2026, 20:47
+                - generic [ref=e2538]:
+                  - generic [ref=e2539]: VOIDED
+                  - generic [ref=e2540]: Test void - API verification
+              - button "View details for transaction 541" [ref=e2542] [cursor=pointer]:
+                - generic [ref=e2543]:
+                  - generic [ref=e2544]: €4,00
+                  - generic [ref=e2545]: Main Bar
+                - generic [ref=e2546]:
+                  - generic [ref=e2547]: admin (Cash)
+                  - generic [ref=e2548]: 09/04/2026, 02:28
+                - generic [ref=e2550]: "Receipt #R000018"
+              - button "View details for transaction 540" [ref=e2552] [cursor=pointer]:
+                - generic [ref=e2553]:
+                  - generic [ref=e2554]: €8,00
+                  - generic [ref=e2555]: Main Bar
+                - generic [ref=e2556]:
+                  - generic [ref=e2557]: admin (Cash)
+                  - generic [ref=e2558]: 09/04/2026, 02:20
+                - generic [ref=e2560]: "Receipt #R000017"
+              - button "View details for transaction 539" [ref=e2562] [cursor=pointer]:
+                - generic [ref=e2563]:
+                  - generic [ref=e2564]: €37,00
+                  - generic [ref=e2565]: Main Bar
+                - generic [ref=e2566]:
+                  - generic [ref=e2567]: admin (Card)
+                  - generic [ref=e2568]: 08/04/2026, 07:47
+                - generic [ref=e2570]: "Receipt #R000016"
+              - button "View details for transaction 538" [ref=e2572] [cursor=pointer]:
+                - generic [ref=e2573]:
+                  - generic [ref=e2574]: €12,00
+                  - generic [ref=e2575]: Main Bar
+                - generic [ref=e2576]:
+                  - generic [ref=e2577]: admin (Card)
+                  - generic [ref=e2578]: 07/04/2026, 00:07
+                - generic [ref=e2580]: "Receipt #R000015"
+              - button "View details for transaction 537" [ref=e2582] [cursor=pointer]:
+                - generic [ref=e2583]:
+                  - generic [ref=e2584]: €4,00
+                  - generic [ref=e2585]: Main Bar
+                - generic [ref=e2586]:
+                  - generic [ref=e2587]: admin (Card)
+                  - generic [ref=e2588]: 05/04/2026, 20:25
+                - generic [ref=e2590]: "Receipt #R000014"
+              - button "View details for transaction 536" [ref=e2592] [cursor=pointer]:
+                - generic [ref=e2593]:
+                  - generic [ref=e2594]: €8,00
+                  - generic [ref=e2595]: Main Bar
+                - generic [ref=e2596]:
+                  - generic [ref=e2597]: admin (Cash)
+                  - generic [ref=e2598]: 05/04/2026, 20:19
+                - generic [ref=e2600]: "Receipt #DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438"
+              - button "View details for transaction 535" [ref=e2602] [cursor=pointer]:
+                - generic [ref=e2603]:
+                  - generic [ref=e2604]: €11,00
+                  - generic [ref=e2605]: Main Bar
+                - generic [ref=e2606]:
+                  - generic [ref=e2607]: admin (Cash)
+                  - generic [ref=e2608]: 05/04/2026, 20:13
+                - generic [ref=e2610]: "Receipt #R000013"
+              - button "View details for transaction 534" [ref=e2612] [cursor=pointer]:
+                - generic [ref=e2613]:
+                  - generic [ref=e2614]: €8,00
+                  - generic [ref=e2615]: Main Bar
+                - generic [ref=e2616]:
+                  - generic [ref=e2617]: admin (Cash)
+                  - generic [ref=e2618]: 05/04/2026, 18:36
+                - generic [ref=e2620]: "Receipt #R000012"
+              - button "View details for transaction 533" [ref=e2622] [cursor=pointer]:
+                - generic [ref=e2623]:
+                  - generic [ref=e2624]: €8,00
+                  - generic [ref=e2625]: Main Bar
+                - generic [ref=e2626]:
+                  - generic [ref=e2627]: admin (Cash)
+                  - generic [ref=e2628]: 05/04/2026, 18:25
+                - generic [ref=e2630]: "Receipt #DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939"
+              - button "View details for transaction 532" [ref=e2632] [cursor=pointer]:
+                - generic [ref=e2633]:
+                  - generic [ref=e2634]: €17,00
+                  - generic [ref=e2635]: Main Bar
+                - generic [ref=e2636]:
+                  - generic [ref=e2637]: admin (Cash)
+                  - generic [ref=e2638]: 05/04/2026, 16:12
+              - button "View details for transaction 531" [ref=e2640] [cursor=pointer]:
+                - generic [ref=e2641]:
+                  - generic [ref=e2642]: €0,00
+                  - generic [ref=e2643]: Main Bar
+                - generic [ref=e2644]:
+                  - generic [ref=e2645]: admin (Card)
+                  - generic [ref=e2646]: 05/04/2026, 14:34
+                - generic [ref=e2648]: Complimentary
+              - button "View details for transaction 530" [ref=e2650] [cursor=pointer]:
+                - generic [ref=e2651]:
+                  - generic [ref=e2652]: €8,00
+                  - generic [ref=e2653]: Main Bar
+                - generic [ref=e2654]:
+                  - generic [ref=e2655]: admin (Cash)
+                  - generic [ref=e2656]: 05/04/2026, 13:34
+                - generic [ref=e2658]: "Receipt #R000010"
+              - button "View details for transaction 529" [ref=e2660] [cursor=pointer]:
+                - generic [ref=e2661]:
+                  - generic [ref=e2662]: €3,00
+                  - generic [ref=e2663]: Main Bar
+                - generic [ref=e2664]:
+                  - generic [ref=e2665]: admin (Cash)
+                  - generic [ref=e2666]: 05/04/2026, 13:34
+                - generic [ref=e2668]: "Receipt #R000011"
+              - button "View details for transaction 528" [ref=e2670] [cursor=pointer]:
+                - generic [ref=e2671]:
+                  - generic [ref=e2672]: €3,00
+                  - generic [ref=e2673]: Main Bar
+                - generic [ref=e2674]:
+                  - generic [ref=e2675]: admin (Cash)
+                  - generic [ref=e2676]: 05/04/2026, 13:26
+              - button "View details for transaction 527" [ref=e2678] [cursor=pointer]:
+                - generic [ref=e2679]:
+                  - generic [ref=e2680]: €3,00
+                  - generic [ref=e2681]: Main Bar
+                - generic [ref=e2682]:
+                  - generic [ref=e2683]: admin (Cash)
+                  - generic [ref=e2684]: 05/04/2026, 13:24
+                - generic [ref=e2686]: "Receipt #R000009"
+              - button "View details for transaction 526" [ref=e2688] [cursor=pointer]:
+                - generic [ref=e2689]:
+                  - generic [ref=e2690]: €8,00
+                  - generic [ref=e2691]: Main Bar
+                - generic [ref=e2692]:
+                  - generic [ref=e2693]: admin (Cash)
+                  - generic [ref=e2694]: 05/04/2026, 13:23
+                - generic [ref=e2696]: "Receipt #R000021"
+              - button "View details for transaction 525" [ref=e2698] [cursor=pointer]:
+                - generic [ref=e2699]:
+                  - generic [ref=e2700]: €8,00
+                  - generic [ref=e2701]: Main Bar
+                - generic [ref=e2702]:
+                  - generic [ref=e2703]: admin (Cash)
+                  - generic [ref=e2704]: 05/04/2026, 13:06
+                - generic [ref=e2706]: "Receipt #R000008"
+              - button "View details for transaction 524" [ref=e2708] [cursor=pointer]:
+                - generic [ref=e2709]:
+                  - generic [ref=e2710]: €8,00
+                  - generic [ref=e2711]: Main Bar
+                - generic [ref=e2712]:
+                  - generic [ref=e2713]: admin (Cash)
+                  - generic [ref=e2714]: 05/04/2026, 13:01
+                - generic [ref=e2716]: "Receipt #R000024"
+              - button "View details for transaction 523" [ref=e2718] [cursor=pointer]:
+                - generic [ref=e2719]:
+                  - generic [ref=e2720]: €8,00
+                  - generic [ref=e2721]: Main Bar
+                - generic [ref=e2722]:
+                  - generic [ref=e2723]: admin (Cash)
+                  - generic [ref=e2724]: 05/04/2026, 08:17
+            - paragraph [ref=e2726]: Select a transaction to view details
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

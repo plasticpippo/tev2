@@ -1,0 +1,124 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e770] [cursor=pointer]:
+          - img [ref=e772]
+          - generic [ref=e774]: Dashboard
+        - button "Analytics" [ref=e775] [cursor=pointer]:
+          - img [ref=e777]
+          - generic [ref=e779]: Analytics
+        - button "Profit Analytics" [ref=e780] [cursor=pointer]:
+          - img [ref=e782]
+          - generic [ref=e784]: Profit Analytics
+        - button "Transactions" [ref=e785] [cursor=pointer]:
+          - img [ref=e787]
+          - generic [ref=e789]: Transactions
+        - button "Receipts 14" [ref=e790] [cursor=pointer]:
+          - img [ref=e792]
+          - generic [ref=e794]: Receipts
+          - button "14" [ref=e795]
+        - button "Activity Log" [ref=e796] [cursor=pointer]:
+          - img [ref=e798]
+          - generic [ref=e800]: Activity Log
+        - button "Daily Closing Summary" [ref=e801] [cursor=pointer]:
+          - img [ref=e803]
+          - generic [ref=e805]: Daily Closing Summary
+        - button "Customers" [ref=e806] [cursor=pointer]:
+          - img [ref=e808]
+          - generic [ref=e810]: Customers
+        - button "Products" [ref=e811] [cursor=pointer]:
+          - img [ref=e813]
+          - generic [ref=e815]: Products
+        - button "Categories" [ref=e816] [cursor=pointer]:
+          - img [ref=e818]
+          - generic [ref=e820]: Categories
+        - button "Stock Items" [ref=e821] [cursor=pointer]:
+          - img [ref=e823]
+          - generic [ref=e825]: Stock Items
+        - button "Inventory" [ref=e826] [cursor=pointer]:
+          - img [ref=e828]
+          - generic [ref=e830]: Inventory
+        - button "Cost Management" [ref=e831] [cursor=pointer]:
+          - img [ref=e833]
+          - generic [ref=e835]: Cost Management
+        - button "Inventory Counts" [ref=e836] [cursor=pointer]:
+          - img [ref=e838]
+          - generic [ref=e840]: Inventory Counts
+        - button "Variance Reports" [ref=e841] [cursor=pointer]:
+          - img [ref=e843]
+          - generic [ref=e845]: Variance Reports
+        - button "Users" [ref=e846] [cursor=pointer]:
+          - img [ref=e848]
+          - generic [ref=e850]: Users
+        - button "Tills" [ref=e851] [cursor=pointer]:
+          - img [ref=e853]
+          - generic [ref=e855]: Tills
+        - button "Tables & Layout" [ref=e856] [cursor=pointer]:
+          - img [ref=e858]
+          - generic [ref=e860]: Tables & Layout
+        - button "Itemised Consumption" [ref=e861] [cursor=pointer]:
+          - img [ref=e863]
+          - generic [ref=e865]: Itemised Consumption
+        - button "Settings" [ref=e866] [cursor=pointer]:
+          - img [ref=e868]
+          - generic [ref=e871]: Settings
+      - main [ref=e240]:
+        - generic [ref=e872]:
+          - heading "Receipt Management" [level=2] [ref=e873]
+          - generic [ref=e874]:
+            - generic [ref=e875]:
+              - generic [ref=e876]:
+                - generic [ref=e877]: Search
+                - textbox "Search" [ref=e878]:
+                  - /placeholder: Receipt number or customer...
+              - generic [ref=e879]:
+                - generic [ref=e880]: Status
+                - combobox "Status" [ref=e881]:
+                  - option "All Statuses"
+                  - option "Draft" [selected]
+                  - option "Issued"
+                  - option "Voided"
+              - generic [ref=e882]:
+                - generic [ref=e883]: Generation
+                - combobox "Generation" [ref=e884]:
+                  - option "All Generation Statuses" [selected]
+                  - option "Pending"
+                  - option "Completed"
+                  - option "Failed"
+              - generic [ref=e885]:
+                - generic [ref=e886]: Email Status
+                - combobox "Email Status" [ref=e887]:
+                  - option "All Email Statuses" [selected]
+                  - option "Pending"
+                  - option "Sent"
+                  - option "Failed"
+              - generic [ref=e888]:
+                - generic [ref=e889]: From Date
+                - button "From Date" [ref=e891] [cursor=pointer]:
+                  - img [ref=e892]
+                  - generic [ref=e894]: From Date
+              - generic [ref=e895]:
+                - generic [ref=e896]: To Date
+                - button "To Date" [ref=e898] [cursor=pointer]:
+                  - img [ref=e899]
+                  - generic [ref=e901]: To Date
+              - generic [ref=e902]:
+                - generic [ref=e903]: Customer
+                - textbox "Search customer..." [ref=e905]
+            - generic [ref=e906]:
+              - button "Search" [ref=e907] [cursor=pointer]
+              - button "Clear Filters" [ref=e908] [cursor=pointer]
+          - generic [ref=e909]: Showing 20 of 27 receipts
+          - generic [ref=e912]: Loading receipts...
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

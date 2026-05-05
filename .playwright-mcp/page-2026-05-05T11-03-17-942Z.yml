@@ -1,0 +1,238 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Admin Panel" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Logged in as Admin User
+      - generic [ref=e125]:
+        - button "Switch to POS" [ref=e126] [cursor=pointer]
+        - button "Logout" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Collapse sidebar" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e1535] [cursor=pointer]:
+          - img [ref=e1537]
+          - generic [ref=e1539]: Dashboard
+        - button "Analytics" [ref=e1540] [cursor=pointer]:
+          - img [ref=e1542]
+          - generic [ref=e1544]: Analytics
+        - button "Profit Analytics" [ref=e1545] [cursor=pointer]:
+          - img [ref=e1547]
+          - generic [ref=e1549]: Profit Analytics
+        - button "Transactions" [ref=e1550] [cursor=pointer]:
+          - img [ref=e1552]
+          - generic [ref=e1554]: Transactions
+        - button "Receipts 14" [ref=e1555] [cursor=pointer]:
+          - img [ref=e1557]
+          - generic [ref=e1559]: Receipts
+          - button "14" [ref=e1560]
+        - button "Activity Log" [ref=e1561] [cursor=pointer]:
+          - img [ref=e1563]
+          - generic [ref=e1565]: Activity Log
+        - button "Daily Closing Summary" [ref=e1566] [cursor=pointer]:
+          - img [ref=e1568]
+          - generic [ref=e1570]: Daily Closing Summary
+        - button "Customers" [ref=e1571] [cursor=pointer]:
+          - img [ref=e1573]
+          - generic [ref=e1575]: Customers
+        - button "Products" [ref=e1576] [cursor=pointer]:
+          - img [ref=e1578]
+          - generic [ref=e1580]: Products
+        - button "Categories" [ref=e1581] [cursor=pointer]:
+          - img [ref=e1583]
+          - generic [ref=e1585]: Categories
+        - button "Stock Items" [ref=e1586] [cursor=pointer]:
+          - img [ref=e1588]
+          - generic [ref=e1590]: Stock Items
+        - button "Inventory" [ref=e1591] [cursor=pointer]:
+          - img [ref=e1593]
+          - generic [ref=e1595]: Inventory
+        - button "Cost Management" [ref=e1596] [cursor=pointer]:
+          - img [ref=e1598]
+          - generic [ref=e1600]: Cost Management
+        - button "Inventory Counts" [ref=e1601] [cursor=pointer]:
+          - img [ref=e1603]
+          - generic [ref=e1605]: Inventory Counts
+        - button "Variance Reports" [ref=e1606] [cursor=pointer]:
+          - img [ref=e1608]
+          - generic [ref=e1610]: Variance Reports
+        - button "Users" [ref=e1611] [cursor=pointer]:
+          - img [ref=e1613]
+          - generic [ref=e1615]: Users
+        - button "Tills" [ref=e1616] [cursor=pointer]:
+          - img [ref=e1618]
+          - generic [ref=e1620]: Tills
+        - button "Tables & Layout" [ref=e1621] [cursor=pointer]:
+          - img [ref=e1623]
+          - generic [ref=e1625]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1626] [cursor=pointer]:
+          - img [ref=e1628]
+          - generic [ref=e1630]: Itemised Consumption
+        - button "Settings" [ref=e1631] [cursor=pointer]:
+          - img [ref=e1633]
+          - generic [ref=e1636]: Settings
+      - main [ref=e240]:
+        - generic [ref=e1637]:
+          - heading "Itemised Consumption" [level=2] [ref=e1639]
+          - generic [ref=e1640]:
+            - heading "Filter Consumption Data" [level=3] [ref=e1641]
+            - generic [ref=e1642]:
+              - generic [ref=e1643]:
+                - generic [ref=e1644]: Start Date
+                - textbox [ref=e1645]
+              - generic [ref=e1646]:
+                - generic [ref=e1647]: End Date
+                - textbox [ref=e1648]
+              - generic [ref=e1649]:
+                - generic [ref=e1650]: Category
+                - combobox [ref=e1651]:
+                  - option "All Categories"
+                  - option "Shots"
+                  - option "Beer"
+                  - option "Cocktails" [selected]
+                  - option "Soft Drinks"
+                  - option "Entrata"
+                  - option "Vino"
+              - generic [ref=e1652]:
+                - generic [ref=e1653]: Stock Item Type
+                - combobox [ref=e1654]:
+                  - option "All Types" [selected]
+                  - option "Ingredient"
+                  - option "Sellable Good"
+            - generic [ref=e1655]:
+              - button "Apply Filters" [active] [ref=e1656] [cursor=pointer]
+              - button "Reset Filters" [ref=e1657] [cursor=pointer]
+          - generic [ref=e1896]:
+            - heading "Consumption Totals" [level=3] [ref=e1897]
+            - table [ref=e1899]:
+              - rowgroup [ref=e1900]:
+                - row "Stock Item Type Total Quantity" [ref=e1901]:
+                  - columnheader "Stock Item" [ref=e1902]
+                  - columnheader "Type" [ref=e1903]
+                  - columnheader "Total Quantity" [ref=e1904]
+              - rowgroup [ref=e1905]:
+                - row "Lemonsoda Ingredient 5160" [ref=e1906]:
+                  - cell "Lemonsoda" [ref=e1907]
+                  - cell "Ingredient" [ref=e1908]
+                  - cell "5160" [ref=e1909]
+                - row "Campari Ingredient 2500" [ref=e1910]:
+                  - cell "Campari" [ref=e1911]
+                  - cell "Ingredient" [ref=e1912]
+                  - cell "2500" [ref=e1913]
+                - row "Vodka Moskovskaya Ingredient 1720" [ref=e1914]:
+                  - cell "Vodka Moskovskaya" [ref=e1915]
+                  - cell "Ingredient" [ref=e1916]
+                  - cell "1720" [ref=e1917]
+                - row "Vino Bianco Ingredient 1250" [ref=e1918]:
+                  - cell "Vino Bianco" [ref=e1919]
+                  - cell "Ingredient" [ref=e1920]
+                  - cell "1250" [ref=e1921]
+                - row "Gin Gordon's Ingredient 960" [ref=e1922]:
+                  - cell "Gin Gordon's" [ref=e1923]
+                  - cell "Ingredient" [ref=e1924]
+                  - cell "960" [ref=e1925]
+                - row "Tonica Fever Tree Ingredient 240" [ref=e1926]:
+                  - cell "Tonica Fever Tree" [ref=e1927]
+                  - cell "Ingredient" [ref=e1928]
+                  - cell "240" [ref=e1929]
+                - row "Sipsmith Ingredient 60" [ref=e1930]:
+                  - cell "Sipsmith" [ref=e1931]
+                  - cell "Ingredient" [ref=e1932]
+                  - cell "60" [ref=e1933]
+          - table [ref=e1934]:
+            - rowgroup [ref=e1935]:
+              - row "Product Variant Category Stock Item Type Quantity Consumed" [ref=e1936]:
+                - columnheader "Product" [ref=e1937]
+                - columnheader "Variant" [ref=e1938]
+                - columnheader "Category" [ref=e1939]
+                - columnheader "Stock Item" [ref=e1940]
+                - columnheader "Type" [ref=e1941]
+                - columnheader "Quantity Consumed" [ref=e1942]
+            - rowgroup [ref=e1943]:
+              - row "Gin Lemon Standard Cocktails Gin Gordon's Ingredient 900" [ref=e1944]:
+                - cell "Gin Lemon" [ref=e1945]
+                - cell "Standard" [ref=e1946]
+                - cell "Cocktails" [ref=e1947]
+                - cell "Gin Gordon's" [ref=e1948]
+                - cell "Ingredient" [ref=e1949]
+                - cell "900" [ref=e1950]
+              - row "Gin Lemon Standard Cocktails Lemonsoda Ingredient 1800" [ref=e1951]:
+                - cell "Gin Lemon" [ref=e1952]
+                - cell "Standard" [ref=e1953]
+                - cell "Cocktails" [ref=e1954]
+                - cell "Lemonsoda" [ref=e1955]
+                - cell "Ingredient" [ref=e1956]
+                - cell "1800" [ref=e1957]
+              - row "Gin Tonic Standard Cocktails Gin Gordon's Ingredient 60" [ref=e1958]:
+                - cell "Gin Tonic" [ref=e1959]
+                - cell "Standard" [ref=e1960]
+                - cell "Cocktails" [ref=e1961]
+                - cell "Gin Gordon's" [ref=e1962]
+                - cell "Ingredient" [ref=e1963]
+                - cell "60" [ref=e1964]
+              - row "Gin Tonic Standard Cocktails Tonica Fever Tree Ingredient 120" [ref=e1965]:
+                - cell "Gin Tonic" [ref=e1966]
+                - cell "Standard" [ref=e1967]
+                - cell "Cocktails" [ref=e1968]
+                - cell "Tonica Fever Tree" [ref=e1969]
+                - cell "Ingredient" [ref=e1970]
+                - cell "120" [ref=e1971]
+              - row "Pirlo Campari Standard Cocktails Vino Bianco Ingredient 1250" [ref=e1972]:
+                - cell "Pirlo Campari" [ref=e1973]
+                - cell "Standard" [ref=e1974]
+                - cell "Cocktails" [ref=e1975]
+                - cell "Vino Bianco" [ref=e1976]
+                - cell "Ingredient" [ref=e1977]
+                - cell "1250" [ref=e1978]
+              - row "Pirlo Campari Standard Cocktails Campari Ingredient 2500" [ref=e1979]:
+                - cell "Pirlo Campari" [ref=e1980]
+                - cell "Standard" [ref=e1981]
+                - cell "Cocktails" [ref=e1982]
+                - cell "Campari" [ref=e1983]
+                - cell "Ingredient" [ref=e1984]
+                - cell "2500" [ref=e1985]
+              - row "Sipsmith Tonic Standard Cocktails Sipsmith Ingredient 60" [ref=e1986]:
+                - cell "Sipsmith Tonic" [ref=e1987]
+                - cell "Standard" [ref=e1988]
+                - cell "Cocktails" [ref=e1989]
+                - cell "Sipsmith" [ref=e1990]
+                - cell "Ingredient" [ref=e1991]
+                - cell "60" [ref=e1992]
+              - row "Sipsmith Tonic Standard Cocktails Tonica Fever Tree Ingredient 120" [ref=e1993]:
+                - cell "Sipsmith Tonic" [ref=e1994]
+                - cell "Standard" [ref=e1995]
+                - cell "Cocktails" [ref=e1996]
+                - cell "Tonica Fever Tree" [ref=e1997]
+                - cell "Ingredient" [ref=e1998]
+                - cell "120" [ref=e1999]
+              - row "Vodka Lemon Carico Cocktails Vodka Moskovskaya Ingredient 100" [ref=e2000]:
+                - cell "Vodka Lemon" [ref=e2001]
+                - cell "Carico" [ref=e2002]
+                - cell "Cocktails" [ref=e2003]
+                - cell "Vodka Moskovskaya" [ref=e2004]
+                - cell "Ingredient" [ref=e2005]
+                - cell "100" [ref=e2006]
+              - row "Vodka Lemon Carico Cocktails Lemonsoda Ingredient 120" [ref=e2007]:
+                - cell "Vodka Lemon" [ref=e2008]
+                - cell "Carico" [ref=e2009]
+                - cell "Cocktails" [ref=e2010]
+                - cell "Lemonsoda" [ref=e2011]
+                - cell "Ingredient" [ref=e2012]
+                - cell "120" [ref=e2013]
+              - row "Vodka Lemon Standard Cocktails Vodka Moskovskaya Ingredient 1620" [ref=e2014]:
+                - cell "Vodka Lemon" [ref=e2015]
+                - cell "Standard" [ref=e2016]
+                - cell "Cocktails" [ref=e2017]
+                - cell "Vodka Moskovskaya" [ref=e2018]
+                - cell "Ingredient" [ref=e2019]
+                - cell "1620" [ref=e2020]
+              - row "Vodka Lemon Standard Cocktails Lemonsoda Ingredient 3240" [ref=e2021]:
+                - cell "Vodka Lemon" [ref=e2022]
+                - cell "Standard" [ref=e2023]
+                - cell "Cocktails" [ref=e2024]
+                - cell "Lemonsoda" [ref=e2025]
+                - cell "Ingredient" [ref=e2026]
+                - cell "3240" [ref=e2027]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
