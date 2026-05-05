@@ -225,7 +225,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
     
     try {
       if (table) {
-        await updateTable(table.id, tableData);
+        await updateTable(table.id, { ...tableData, version: table.version });
       } else {
         await addTable({ ...tableData, room: {} as Room, tabs: [] });
       }
@@ -521,8 +521,9 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
     {
       key: 'r',
       ctrl: true,
+      shift: true,
       callback: () => {
-        // Ctrl+R: Refresh data
+        // Ctrl+Shift+R: Refresh data
         refreshData();
       }
     },

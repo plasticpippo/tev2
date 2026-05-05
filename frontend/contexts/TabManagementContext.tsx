@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { v4 as uuidv4 } from 'uuid';
 import type { OrderItem, Tab } from '../../shared/types';
 import * as api from '../services/apiService';
+import { useToast } from './ToastContext';
 import { useSessionContext } from './SessionContext';
 import { useOrderContext } from './OrderContext';
 import { useGlobalDataContext } from './GlobalDataContext';

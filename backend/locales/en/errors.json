@@ -101,7 +101,8 @@
     "positionUpdateFailed": "Failed to update table position",
     "statusRequired": "Status is required",
     "invalidStatus": "Invalid status value",
-    "statusUpdateFailed": "Failed to update table status"
+    "statusUpdateFailed": "Failed to update table status",
+    "conflict": "This table has been modified by another user. Please refresh and try again."
   },
   "tabs": {
     "notFound": "Tab not found",
@@ -109,6 +110,7 @@
     "nameNonEmpty": "Tab name cannot be empty",
     "duplicateName": "A tab with this name already exists",
     "tableNotFound": "Table not found",
+    "tableNotAvailable": "Table is not available",
     "fetchFailed": "Failed to fetch tabs",
     "fetchOneFailed": "Failed to fetch tab",
     "createFailed": "Failed to create tab",

@@ -223,6 +223,7 @@ export interface Table {
     status: 'available' | 'occupied' | 'bill_requested' | 'reserved' | 'unavailable';
     roomId: string;
     items?: any[]; // Added for storing order items directly on tables
+    version: number;
     createdAt: string;
     updatedAt: string;
     room: Room;
@@ -237,6 +238,7 @@ export interface Tab {
     tillId: number;
     tillName: string;
     tableId?: string;
+    version: number;
 }
 
 export interface ConsumptionReportItem {

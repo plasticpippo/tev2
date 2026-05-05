@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { Table } from '../../shared/types';
 import * as api from '../services/apiService';
 import { useSessionContext } from './SessionContext';
@@ -25,6 +26,7 @@ interface TableAssignmentProviderProps {
 
 export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = ({ children }) => {
   const [assignedTable, setAssignedTable] = useState<Table | null>(null);
+  const { t } = useTranslation();
 
   const { activeTab } = useOrderContext();
   const { assignedTillId } = useSessionContext();
@@ -44,9 +46,9 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
         
         // Check if table is available before allowing assignment
         if (table.status !== 'available') {
-          const statusMessage = table.status === 'occupied' 
-            ? 'This table is currently occupied. Please select another table.'
-            : `This table is currently ${table.status.replace('_', ' ')}. Please select another table.`;
+          const statusMessage = table.status === 'occupied'
+            ? t('common.tableAssignmentModal.tableOccupied')
+            : t('common.tableAssignmentModal.tableUnavailable', { status: table.status.replace('_', ' ') });
           console.warn(`Table ${table.name} is ${table.status}`);
           addToast(statusMessage, 'error');
           return;
@@ -82,7 +84,7 @@ export const TableAssignmentProvider: React.FC<TableAssignmentProviderProps> = (
       }
     } catch (error) {
       console.error('Error handling table assignment:', error);
-      addToast('Failed to assign table. Please try again.', 'error');
+      addToast(t('common.tableAssignmentModal.assignFailed'), 'error');
     }
   };
 

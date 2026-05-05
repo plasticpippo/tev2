@@ -137,7 +137,7 @@ export const validateTableSize = (width: number, height: number): string | null 
 };
 
 export const validateTableStatus = (status: string): string | null => {
-  const validStatuses = ['available', 'occupied', 'reserved', 'unavailable'];
+  const validStatuses = ['available', 'occupied', 'reserved', 'unavailable', 'bill_requested'];
   if (!validStatuses.includes(status)) {
     return 'Invalid table status';
   }

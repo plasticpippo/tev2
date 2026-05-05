@@ -13,7 +13,12 @@ interface TableContextType {
   tables: Table[];
   layoutMode: LayoutMode;
   selectedRoomId: string | null;
-  loading: boolean;
+  isFetching: boolean;
+  isSavingRoom: boolean;
+  isDeletingRoom: boolean;
+  isSavingTable: boolean;
+  isDeletingTable: boolean;
+  isUpdatingPosition: boolean;
   error: string | null;
   setRooms: (rooms: Room[]) => void;
   setTables: (tables: Table[]) => void;
@@ -39,17 +44,33 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [tables, setTables] = useState<Table[]>([]);
   const [layoutMode, setLayoutMode] = useState<LayoutMode>('view');
   const [selectedRoomId, setSelectedRoomId] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
+  const [isSavingRoom, setIsSavingRoom] = useState<boolean>(false);
+  const [isDeletingRoom, setIsDeletingRoom] = useState<boolean>(false);
+  const [isSavingTable, setIsSavingTable] = useState<boolean>(false);
+  const [isDeletingTable, setIsDeletingTable] = useState<boolean>(false);
+  const [isUpdatingPosition, setIsUpdatingPosition] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
 
   const { addToast } = useToast();
   const { currentUser } = useSessionContext();
   const isMountedRef = useRef(true);
+  const fetchCountRef = useRef(0);
+
+  const startFetching = useCallback(() => {
+    fetchCountRef.current += 1;
+    if (fetchCountRef.current === 1) setIsFetching(true);
+  }, []);
+
+  const stopFetching = useCallback(() => {
+    fetchCountRef.current = Math.max(0, fetchCountRef.current - 1);
+    if (fetchCountRef.current === 0) setIsFetching(false);
+  }, []);
 
   // Fetch rooms from API
   const fetchRooms = useCallback(async () => {
+    startFetching();
     try {
-      setLoading(true);
       const data = await getRooms();
       if (isMountedRef.current) {
         setRooms(data);
@@ -63,15 +84,15 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error fetching rooms:', err);
     } finally {
       if (isMountedRef.current) {
-        setLoading(false);
+        stopFetching();
       }
     }
-  }, [addToast, t]);
+  }, [addToast, startFetching, stopFetching, t]);
 
   // Fetch tables from API
   const fetchTables = useCallback(async () => {
+    startFetching();
     try {
-      setLoading(true);
       const data = await getTables();
       if (isMountedRef.current) {
         setTables(data);
@@ -85,15 +106,15 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error fetching tables:', err);
     } finally {
       if (isMountedRef.current) {
-        setLoading(false);
+        stopFetching();
       }
     }
-  }, [addToast, t]);
+  }, [addToast, startFetching, stopFetching, t]);
 
   // Add a new room
   const addRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>) => {
     try {
-      setLoading(true);
+      setIsSavingRoom(true);
       const newRoom = await saveRoom(roomData);
       setRooms(prev => [...prev, newRoom]);
       addToast(t('tableContext.roomCreated', { name: newRoom.name }), 'success');
@@ -105,14 +126,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error adding room:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsSavingRoom(false);
     }
   }, [addToast, t]);
 
   // Update a room
   const updateRoom = useCallback(async (id: string, roomData: Partial<Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'>>) => {
     try {
-      setLoading(true);
+      setIsSavingRoom(true);
       const updatedRoom = await saveRoom({ ...roomData, id } as Omit<Room, 'id' | 'createdAt' | 'updatedAt' | 'tables'> & { id?: string });
       setRooms(prev => prev.map(room => room.id === id ? updatedRoom : room));
       addToast(t('tableContext.roomUpdated'), 'success');
@@ -124,14 +145,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error updating room:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsSavingRoom(false);
     }
   }, [addToast, t]);
 
   // Delete a room
   const deleteRoom = useCallback(async (id: string) => {
     try {
-      setLoading(true);
+      setIsDeletingRoom(true);
       const result = await deleteRoomService(id);
 
       if (!result.success) {
@@ -152,14 +173,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error deleting room:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsDeletingRoom(false);
     }
   }, [addToast, selectedRoomId, t]);
 
   // Add a new table
   const addTable = useCallback(async (tableData: Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>) => {
     try {
-      setLoading(true);
+      setIsSavingTable(true);
       const newTable = await saveTable(tableData);
       setTables(prev => [...prev, newTable]);
       addToast(t('tableContext.tableCreated', { name: newTable.name }), 'success');
@@ -171,14 +192,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error adding table:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsSavingTable(false);
     }
   }, [addToast, t]);
 
   // Update a table
   const updateTable = useCallback(async (id: string, tableData: Partial<Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'>>) => {
     try {
-      setLoading(true);
+      setIsSavingTable(true);
       const updatedTable = await saveTable({ ...tableData, id } as Omit<Table, 'id' | 'createdAt' | 'updatedAt' | 'room' | 'tabs'> & { id?: string });
       setTables(prev => prev.map(table => table.id === id ? updatedTable : table));
       addToast(t('tableContext.tableUpdated'), 'success');
@@ -190,14 +211,14 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error updating table:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsSavingTable(false);
     }
   }, [addToast, t]);
 
   // Delete a table
   const deleteTable = useCallback(async (id: string) => {
     try {
-      setLoading(true);
+      setIsDeletingTable(true);
       const result = await deleteTableService(id);
 
       if (!result.success) {
@@ -213,42 +234,43 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       console.error('Error deleting table:', err);
       throw err;
     } finally {
-      setLoading(false);
+      setIsDeletingTable(false);
     }
   }, [addToast, t]);
 
   // Update table position (for drag and drop)
   const updateTablePosition = useCallback(async (id: string, x: number, y: number) => {
-    // Store original values before optimistic update for potential rollback
-    const originalTable = tables.find(t => t.id === id);
-    const originalX = originalTable?.x;
-    const originalY = originalTable?.y;
+    // Store original values for rollback
+    const originalPosRef: { x: number | undefined; y: number | undefined; version?: number } = { x: undefined, y: undefined };
 
-    // Optimistically update the local state for immediate UI feedback
-    setTables(prev =>
-      prev.map(table =>
-        table.id === id ? { ...table, x, y } : table
-      )
-    );
+    // Optimistically update the local state with incremented version
+    setTables(prev => {
+      const originalTable = prev.find(t => t.id === id);
+      originalPosRef.x = originalTable?.x;
+      originalPosRef.y = originalTable?.y;
+      originalPosRef.version = originalTable?.version;
+      return prev.map(table => (table.id === id ? { ...table, x, y, version: (table.version ?? 0) + 1 } : table));
+    });
 
     // Then update the backend
+    setIsUpdatingPosition(true);
     try {
-      await updateTablePositionService(id, x, y);
+      const result = await updateTablePositionService(id, x, y, originalPosRef.version ?? 0);
+      // Update local state with authoritative data from backend
+      setTables(prev => prev.map(t => t.id === id ? result : t));
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : t('tableContext.failedUpdatePosition');
       setError(errorMessage);
       addToast(errorMessage, 'error');
       console.error('Error updating table position:', error);
-      // Revert the optimistic update using original values
-      if (originalX !== undefined && originalY !== undefined) {
-        setTables(prev =>
-          prev.map(table =>
-            table.id === id ? { ...table, x: originalX, y: originalY } : table
-          )
-        );
+      // Revert the optimistic update using original values from ref
+      if (originalPosRef.x !== undefined && originalPosRef.y !== undefined) {
+        setTables(prev => prev.map(table => (table.id === id ? { ...table, x: originalPosRef.x!, y: originalPosRef.y!, version: originalPosRef.version! } : table)));
       }
+    } finally {
+      setIsUpdatingPosition(false);
     }
-  }, [addToast, tables, t]);
+  }, [addToast, t]);
 
   // Refresh all data
   const refreshData = useCallback(async () => {
@@ -307,7 +329,12 @@ export const TableProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         tables,
         layoutMode,
         selectedRoomId,
-        loading,
+        isFetching,
+        isSavingRoom,
+        isDeletingRoom,
+        isSavingTable,
+        isDeletingTable,
+        isUpdatingPosition,
         error,
         setRooms,
         setTables,

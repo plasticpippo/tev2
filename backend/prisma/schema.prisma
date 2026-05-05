@@ -216,6 +216,7 @@ model Table {
   capacity Int? // Optional field to store table capacity
   items Json? // Added for storing order items directly on tables
   ownerId Int? @map("owner_id") // Optional owner field for ownership verification
+  version Int @default(0)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)

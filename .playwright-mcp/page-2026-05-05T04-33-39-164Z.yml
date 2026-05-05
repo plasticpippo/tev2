@@ -1,0 +1,150 @@
+- generic [ref=e2]:
+  - generic [ref=e412]:
+    - banner [ref=e413]:
+      - generic [ref=e415]:
+        - heading "Admin Panel" [level=1] [ref=e416]
+        - paragraph [ref=e417]: Logged in as Admin User
+      - generic [ref=e418]:
+        - button "Switch to POS" [ref=e419] [cursor=pointer]
+        - button "Logout" [ref=e420] [cursor=pointer]
+    - generic [ref=e421]:
+      - navigation [ref=e422]:
+        - button "Collapse sidebar" [ref=e424] [cursor=pointer]:
+          - img [ref=e425]
+        - button "Dashboard" [ref=e633] [cursor=pointer]:
+          - img [ref=e635]
+          - generic [ref=e637]: Dashboard
+        - button "Analytics" [ref=e638] [cursor=pointer]:
+          - img [ref=e640]
+          - generic [ref=e642]: Analytics
+        - button "Profit Analytics" [ref=e643] [cursor=pointer]:
+          - img [ref=e645]
+          - generic [ref=e647]: Profit Analytics
+        - button "Transactions" [ref=e648] [cursor=pointer]:
+          - img [ref=e650]
+          - generic [ref=e652]: Transactions
+        - button "Receipts 14" [ref=e653] [cursor=pointer]:
+          - img [ref=e655]
+          - generic [ref=e657]: Receipts
+          - button "14" [ref=e658]
+        - button "Activity Log" [ref=e659] [cursor=pointer]:
+          - img [ref=e661]
+          - generic [ref=e663]: Activity Log
+        - button "Daily Closing Summary" [ref=e664] [cursor=pointer]:
+          - img [ref=e666]
+          - generic [ref=e668]: Daily Closing Summary
+        - button "Customers" [ref=e669] [cursor=pointer]:
+          - img [ref=e671]
+          - generic [ref=e673]: Customers
+        - button "Products" [ref=e674] [cursor=pointer]:
+          - img [ref=e676]
+          - generic [ref=e678]: Products
+        - button "Categories" [ref=e679] [cursor=pointer]:
+          - img [ref=e681]
+          - generic [ref=e683]: Categories
+        - button "Stock Items" [ref=e684] [cursor=pointer]:
+          - img [ref=e686]
+          - generic [ref=e688]: Stock Items
+        - button "Inventory" [ref=e689] [cursor=pointer]:
+          - img [ref=e691]
+          - generic [ref=e693]: Inventory
+        - button "Cost Management" [ref=e694] [cursor=pointer]:
+          - img [ref=e696]
+          - generic [ref=e698]: Cost Management
+        - button "Inventory Counts" [ref=e699] [cursor=pointer]:
+          - img [ref=e701]
+          - generic [ref=e703]: Inventory Counts
+        - button "Variance Reports" [ref=e704] [cursor=pointer]:
+          - img [ref=e706]
+          - generic [ref=e708]: Variance Reports
+        - button "Users" [ref=e709] [cursor=pointer]:
+          - img [ref=e711]
+          - generic [ref=e713]: Users
+        - button "Tills" [ref=e714] [cursor=pointer]:
+          - img [ref=e716]
+          - generic [ref=e718]: Tills
+        - button "Tables & Layout" [ref=e719] [cursor=pointer]:
+          - img [ref=e721]
+          - generic [ref=e723]: Tables & Layout
+        - button "Itemised Consumption" [ref=e724] [cursor=pointer]:
+          - img [ref=e726]
+          - generic [ref=e728]: Itemised Consumption
+        - button "Settings" [ref=e729] [cursor=pointer]:
+          - img [ref=e731]
+          - generic [ref=e734]: Settings
+      - main [ref=e533]:
+        - generic [ref=e735]:
+          - generic [ref=e737]:
+            - button "Layout L" [ref=e738] [cursor=pointer]:
+              - text: Layout
+              - generic [ref=e739]: L
+            - button "Rooms M" [ref=e740] [cursor=pointer]:
+              - text: Rooms
+              - generic [ref=e741]: M
+            - button "Tables T" [ref=e742] [cursor=pointer]:
+              - text: Tables
+              - generic [ref=e743]: T
+          - generic [ref=e744]:
+            - 'heading "Quick Tips: Layout" [level=4] [ref=e745]':
+              - img [ref=e746]
+              - text: "Quick Tips: Layout"
+            - list [ref=e748]:
+              - listitem [ref=e749]:
+                - generic [ref=e750]: •
+                - text: Use View Mode to see the current layout without editing
+              - listitem [ref=e751]:
+                - generic [ref=e752]: •
+                - text: Switch to Edit Mode to add or modify tables
+              - listitem [ref=e753]:
+                - generic [ref=e754]: •
+                - text: Use Drag Mode to reposition existing tables
+              - listitem [ref=e755]:
+                - generic [ref=e756]: •
+                - text: Select a room from the dropdown to focus on specific area
+              - listitem [ref=e757]:
+                - generic [ref=e758]: •
+                - text: Try keyboard shortcut Ctrl+D to cycle through layout modes
+          - generic [ref=e760]:
+            - generic [ref=e761]:
+              - heading "Table Layout Editor ?" [level=3] [ref=e762]:
+                - text: Table Layout Editor
+                - generic "Visual table layout management" [ref=e763]: "?"
+              - generic [ref=e764]:
+                - combobox "Select a room to focus on specific area" [ref=e765]:
+                  - option "Select a room"
+                  - option "Main Hall" [selected]
+                  - option "Terrace"
+                - combobox "Change layout mode (view, edit, drag)" [ref=e766]:
+                  - option "View Mode" [selected]
+                  - option "Edit Mode"
+                  - option "Drag Mode"
+            - generic [ref=e767]:
+              - generic [ref=e768]:
+                - heading "Main Hall" [level=3] [ref=e780]
+                - paragraph [ref=e781]: Indoor dining area
+                - paragraph [ref=e782]: "Mode: view"
+              - generic [ref=e770]:
+                - generic "Table 1 - Occupied" [ref=e783]:
+                  - generic [ref=e784]: Table 1
+                - generic "Table 3 - Available" [ref=e785]:
+                  - generic [ref=e786]: Table 3
+                - generic "Table 4 - Available" [ref=e787]:
+                  - generic [ref=e788]: Table 4
+                - generic "Table 2 - Available" [ref=e789]:
+                  - generic [ref=e790]: Table 2
+                - generic [ref=e791]: 4 tables
+                - generic [ref=e792]:
+                  - paragraph [ref=e793]: Table Status
+                  - generic [ref=e796]: Available
+                  - generic [ref=e799]: Occupied
+                  - generic [ref=e802]: Bill Requested
+                  - generic [ref=e805]: Unavailable
+              - generic [ref=e808]:
+                - generic [ref=e809]: "Tip:"
+                - text: Switch to Edit or Drag mode to reposition tables
+            - generic [ref=e776]:
+              - paragraph [ref=e777]: "View Mode: Browse the layout without making changes"
+              - paragraph [ref=e778]: "Edit Mode: Add, modify, or delete tables"
+              - paragraph [ref=e779]: "Drag Mode: Move existing tables around"
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

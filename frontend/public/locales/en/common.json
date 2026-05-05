@@ -186,7 +186,10 @@
     "statusLabelOccupied": "Occupied",
     "statusLabelBillRequested": "Bill Requested",
     "statusLabelReserved": "Reserved",
-    "statusLabelUnavailable": "Unavailable"
+    "statusLabelUnavailable": "Unavailable",
+    "tableOccupied": "This table is currently occupied. Please select another table.",
+    "tableUnavailable": "This table is currently {{status}}. Please select another table.",
+    "assignFailed": "Failed to assign table. Please try again."
   },
   "tableLayoutEditor": {
     "selectRoom": "Select a Room",

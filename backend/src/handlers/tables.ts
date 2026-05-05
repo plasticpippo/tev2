@@ -164,7 +164,12 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
+    const { name, roomId, x, y, width, height, status, capacity, items, version } = req.body;
+
+    // Validate version for optimistic locking
+    if (version === undefined || typeof version !== 'number' || version < 0) {
+      return res.status(400).json({ error: t('errors:validation.invalidFormat') });
+    }
 
     const table = await prisma.table.findUnique({
       where: { id },
@@ -216,8 +221,12 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       }
     }
 
-    const updatedTable = await prisma.table.update({
-      where: { id },
+    // Use updateMany with version check for optimistic locking
+    const updateResult = await prisma.table.updateMany({
+      where: {
+        id,
+        version: version
+      },
       data: {
         ...(sanitizedName !== undefined && { name: sanitizedName }),
         ...(roomId !== undefined && { roomId }),
@@ -227,12 +236,27 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
         ...(height !== undefined && { height: parseFloat(height.toString()) }),
         ...(status !== undefined && { status }),
         ...(capacity !== undefined && { capacity: parseInt(capacity.toString(), 10) }),
-        ...(items !== undefined && { items }), // Include items if provided
+        ...(items !== undefined && { items }),
+        version: { increment: 1 }
       },
+    });
+
+    // Check if the update succeeded (version matched)
+    if (updateResult.count === 0) {
+      return res.status(409).json({ error: t('errors:tables.conflict') });
+    }
+
+    // Fetch the updated table
+    const updatedTable = await prisma.table.findUnique({
+      where: { id },
       include: {
         room: true,
       },
     });
+
+    if (!updatedTable) {
+      return res.status(404).json({ error: t('errors:tables.notFound') });
+    }
 
     // Parse items JSON for response consistency
     const updatedTableWithParsedItems = {
@@ -295,30 +319,46 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    const { x, y } = req.body;
+    const { x, y, version } = req.body;
 
-    const table = await prisma.table.findUnique({
-      where: { id },
-    });
-
-    if (!table) {
-      return res.status(404).json({ error: t('errors:tables.notFound') });
+    // Validate version for optimistic locking
+    if (version === undefined || typeof version !== 'number' || version < 0) {
+      return res.status(400).json({ error: t('errors:validation.invalidFormat') });
     }
 
     if (x === undefined || y === undefined) {
       return res.status(400).json({ error: t('errors:tables.coordinatesRequired') });
     }
 
-    const updatedTable = await prisma.table.update({
-      where: { id },
+    // Use updateMany with version check for optimistic locking
+    const updateResult = await prisma.table.updateMany({
+      where: {
+        id,
+        version: version
+      },
       data: {
         x: parseFloat(x.toString()),
         y: parseFloat(y.toString()),
+        version: { increment: 1 }
       },
+    });
+
+    // Check if the update succeeded (version matched)
+    if (updateResult.count === 0) {
+      return res.status(409).json({ error: t('errors:tables.conflict') });
+    }
+
+    // Fetch the updated table
+    const updatedTable = await prisma.table.findUnique({
+      where: { id },
       include: {
         room: true,
       },
     });
+
+    if (!updatedTable) {
+      return res.status(404).json({ error: t('errors:tables.notFound') });
+    }
 
     res.json(updatedTable);
   } catch (error) {

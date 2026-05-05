@@ -121,15 +121,15 @@ export const deleteTable = async (tableId: string): Promise<{ success: boolean; 
 };
 
 // Function to update table position specifically (for drag/drop operations)
-export const updateTablePosition = async (tableId: string, x: number, y: number): Promise<Table> => {
+export const updateTablePosition = async (tableId: string, x: number, y: number, version: number): Promise<Table> => {
   try {
     const response = await fetch(apiUrl(`/api/tables/${tableId}/position`), {
       method: 'PUT',
       headers: getAuthHeaders(),
       credentials: 'include',
-      body: JSON.stringify({ x, y })  // Changed from positionX/positionY to x/y
+      body: JSON.stringify({ x, y, version })
     });
-    
+
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });

@@ -186,7 +186,10 @@
     "statusLabelOccupied": "Occupato",
     "statusLabelBillRequested": "Richiesta Conto",
     "statusLabelReserved": "Prenotato",
-    "statusLabelUnavailable": "Non disponibile"
+    "statusLabelUnavailable": "Non disponibile",
+    "tableOccupied": "Questo tavolo è attualmente occupato. Seleziona un altro tavolo.",
+    "tableUnavailable": "Questo tavolo è attualmente {{status}}. Seleziona un altro tavolo.",
+    "assignFailed": "Impossibile assegnare il tavolo. Riprova."
   },
   "tableLayoutEditor": {
     "selectRoom": "Seleziona una Stanza",

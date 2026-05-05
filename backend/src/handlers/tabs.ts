@@ -158,6 +158,22 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
         throw new Error(t('tabs.duplicateName'));
       }
 
+      // Check table availability if tableId is provided
+      if (tableId) {
+        const table = await tx.table.findUnique({
+          where: { id: tableId },
+          select: { status: true }
+        });
+
+        if (!table) {
+          throw new Error(t('tabs.tableNotFound'));
+        }
+
+        if (table.status !== TABLE_STATUS.AVAILABLE) {
+          throw new Error(t('tabs.tableNotAvailable'));
+        }
+      }
+
       // Create the tab
       const newTab = await tx.tab.create({
         data: {
@@ -183,8 +199,16 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     });
     res.status(201).json(tab);
   } catch (error) {
-    if (error instanceof Error && error.message === t('tabs.duplicateName')) {
-      return res.status(409).json({ error: t('tabs.duplicateName') });
+    if (error instanceof Error) {
+      if (error.message === t('tabs.duplicateName')) {
+        return res.status(409).json({ error: t('tabs.duplicateName') });
+      }
+      if (error.message === t('tabs.tableNotFound')) {
+        return res.status(404).json({ error: t('tabs.tableNotFound') });
+      }
+      if (error.message === t('tabs.tableNotAvailable')) {
+        return res.status(409).json({ error: t('tabs.tableNotAvailable') });
+      }
     }
 
     logError(error instanceof Error ? error : t('tabs.log.createError'), {
@@ -480,6 +504,20 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
         }
         // If new table assigned, set to occupied
         if (tableId) {
+          // Check table availability before assigning
+          const table = await tx.table.findUnique({
+            where: { id: tableId },
+            select: { status: true }
+          });
+
+          if (!table) {
+            throw new Error(t('tabs.tableNotFound'));
+          }
+
+          if (table.status !== TABLE_STATUS.AVAILABLE) {
+            throw new Error(t('tabs.tableNotAvailable'));
+          }
+
           await validateAndUpdateTableStatus(tx, tableId, TABLE_STATUS.OCCUPIED);
         }
       }
@@ -501,6 +539,12 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       }
       if (error.message === t('tabs.conflict')) {
         return res.status(409).json({ error: t('tabs.conflict') });
+      }
+      if (error.message === t('tabs.tableNotFound')) {
+        return res.status(404).json({ error: t('tabs.tableNotFound') });
+      }
+      if (error.message === t('tabs.tableNotAvailable')) {
+        return res.status(409).json({ error: t('tabs.tableNotAvailable') });
       }
     }
 
