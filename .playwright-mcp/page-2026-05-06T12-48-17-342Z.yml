@@ -1,0 +1,238 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e3981] [cursor=pointer]:
+          - img [ref=e3983]
+          - generic [ref=e3985]: Dashboard
+        - button "Analisi" [ref=e3986] [cursor=pointer]:
+          - img [ref=e3988]
+          - generic [ref=e3990]: Analisi
+        - button "Analisi di Profitto" [ref=e3991] [cursor=pointer]:
+          - img [ref=e3993]
+          - generic [ref=e3995]: Analisi di Profitto
+        - button "Transazioni" [ref=e3996] [cursor=pointer]:
+          - img [ref=e3998]
+          - generic [ref=e4000]: Transazioni
+        - button "Scontrini 14" [ref=e4001] [cursor=pointer]:
+          - img [ref=e4003]
+          - generic [ref=e4005]: Scontrini
+          - button "14" [ref=e4006]
+        - button "Registro Attività" [ref=e4007] [cursor=pointer]:
+          - img [ref=e4009]
+          - generic [ref=e4011]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e4012] [cursor=pointer]:
+          - img [ref=e4014]
+          - generic [ref=e4016]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e4017] [cursor=pointer]:
+          - img [ref=e4019]
+          - generic [ref=e4021]: Clienti
+        - button "Prodotti" [ref=e4022] [cursor=pointer]:
+          - img [ref=e4024]
+          - generic [ref=e4026]: Prodotti
+        - button "Categorie" [ref=e4027] [cursor=pointer]:
+          - img [ref=e4029]
+          - generic [ref=e4031]: Categorie
+        - button "Articoli Magazzino" [ref=e4032] [cursor=pointer]:
+          - img [ref=e4034]
+          - generic [ref=e4036]: Articoli Magazzino
+        - button "Inventario" [ref=e4037] [cursor=pointer]:
+          - img [ref=e4039]
+          - generic [ref=e4041]: Inventario
+        - button "Gestione Costi" [ref=e4042] [cursor=pointer]:
+          - img [ref=e4044]
+          - generic [ref=e4046]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e4047] [cursor=pointer]:
+          - img [ref=e4049]
+          - generic [ref=e4051]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e4052] [cursor=pointer]:
+          - img [ref=e4054]
+          - generic [ref=e4056]: Report Scostamento
+        - button "Utenti" [ref=e4057] [cursor=pointer]:
+          - img [ref=e4059]
+          - generic [ref=e4061]: Utenti
+        - button "Casse" [ref=e4062] [cursor=pointer]:
+          - img [ref=e4064]
+          - generic [ref=e4066]: Casse
+        - button "Tavoli e Layout" [ref=e4067] [cursor=pointer]:
+          - img [ref=e4069]
+          - generic [ref=e4071]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e4072] [cursor=pointer]:
+          - img [ref=e4074]
+          - generic [ref=e4076]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e4077] [cursor=pointer]:
+          - img [ref=e4079]
+          - generic [ref=e4082]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e4083]:
+          - generic [ref=e4084]:
+            - heading "Articoli Magazzino" [level=3] [ref=e4085]
+            - button "Aggiungi Articolo" [ref=e4086] [cursor=pointer]
+          - generic [ref=e4088]:
+            - textbox "Cerca articoli magazzino..." [ref=e4089]
+            - generic:
+              - img
+          - generic [ref=e4090]:
+            - generic [ref=e4091]:
+              - generic [ref=e4092]:
+                - paragraph [ref=e4093]: Sipsmith
+                - paragraph [ref=e4094]: Ingredient (Tracciato in ml)
+              - generic [ref=e4095]:
+                - generic [ref=e4096]: 240 ml in magazzino
+                - button "Modifica" [ref=e4097] [cursor=pointer]
+                - button "Elimina" [ref=e4098] [cursor=pointer]
+            - generic [ref=e4099]:
+              - generic [ref=e4100]:
+                - paragraph [ref=e4101]: Tessera ARCI
+                - paragraph [ref=e4102]: Sellable Good (Tracciato in pcs)
+              - generic [ref=e4103]:
+                - generic [ref=e4104]: 27 pcs in magazzino
+                - button "Modifica" [ref=e4105] [cursor=pointer]
+                - button "Elimina" [ref=e4106] [cursor=pointer]
+            - generic [ref=e4107]:
+              - generic [ref=e4108]:
+                - paragraph [ref=e4109]: Vermouth Carpano Rosso
+                - paragraph [ref=e4110]: Ingredient (Tracciato in ml)
+              - generic [ref=e4111]:
+                - generic [ref=e4112]: 1000 ml in magazzino
+                - button "Modifica" [ref=e4113] [cursor=pointer]
+                - button "Elimina" [ref=e4114] [cursor=pointer]
+            - generic [ref=e4115]:
+              - generic [ref=e4116]:
+                - paragraph [ref=e4117]: Rum Pampero Bianco
+                - paragraph [ref=e4118]: Ingredient (Tracciato in ml)
+              - generic [ref=e4119]:
+                - generic [ref=e4120]: 1040 ml in magazzino
+                - button "Modifica" [ref=e4121] [cursor=pointer]
+                - button "Elimina" [ref=e4122] [cursor=pointer]
+            - generic [ref=e4123]:
+              - generic [ref=e4124]:
+                - paragraph [ref=e4125]: Ginger Beer Fever Tree
+                - paragraph [ref=e4126]: Ingredient (Tracciato in ml)
+              - generic [ref=e4127]:
+                - generic [ref=e4128]: 2800 ml in magazzino
+                - button "Modifica" [ref=e4129] [cursor=pointer]
+                - button "Elimina" [ref=e4130] [cursor=pointer]
+            - generic [ref=e4131]:
+              - generic [ref=e4132]:
+                - paragraph [ref=e4133]: Tequila Sierra Silver
+                - paragraph [ref=e4134]: Ingredient (Tracciato in ml)
+              - generic [ref=e4135]:
+                - generic [ref=e4136]: 280 ml in magazzino
+                - button "Modifica" [ref=e4137] [cursor=pointer]
+                - button "Elimina" [ref=e4138] [cursor=pointer]
+            - generic [ref=e4139]:
+              - generic [ref=e4140]:
+                - paragraph [ref=e4141]: Hierbas
+                - paragraph [ref=e4142]: Ingredient (Tracciato in ml)
+              - generic [ref=e4143]:
+                - generic [ref=e4144]: 230 ml in magazzino
+                - button "Modifica" [ref=e4145] [cursor=pointer]
+                - button "Elimina" [ref=e4146] [cursor=pointer]
+            - generic [ref=e4147]:
+              - generic [ref=e4148]:
+                - paragraph [ref=e4149]: Birra Wuhrer
+                - paragraph [ref=e4150]: Sellable Good (Tracciato in pcs)
+              - generic [ref=e4151]:
+                - generic [ref=e4152]: 15 pcs in magazzino
+                - button "Modifica" [ref=e4153] [cursor=pointer]
+                - button "Elimina" [ref=e4154] [cursor=pointer]
+            - generic [ref=e4155]:
+              - generic [ref=e4156]:
+                - paragraph [ref=e4157]: Vino Bianco
+                - paragraph [ref=e4158]: Ingredient (Tracciato in ml)
+              - generic [ref=e4159]:
+                - generic [ref=e4160]: 6650 ml in magazzino
+                - button "Modifica" [ref=e4161] [cursor=pointer]
+                - button "Elimina" [ref=e4162] [cursor=pointer]
+            - generic [ref=e4163]:
+              - generic [ref=e4164]:
+                - paragraph [ref=e4165]: Gin Gordon's
+                - paragraph [ref=e4166]: Ingredient (Tracciato in ml)
+              - generic [ref=e4167]:
+                - generic [ref=e4168]: 3350 ml in magazzino
+                - button "Modifica" [ref=e4169] [cursor=pointer]
+                - button "Elimina" [ref=e4170] [cursor=pointer]
+            - generic [ref=e4171]:
+              - generic [ref=e4172]:
+                - paragraph [ref=e4173]: Tonica Fever Tree
+                - paragraph [ref=e4174]: Ingredient (Tracciato in ml)
+              - generic [ref=e4175]:
+                - generic [ref=e4176]: 80 ml in magazzino
+                - button "Modifica" [ref=e4177] [cursor=pointer]
+                - button "Elimina" [ref=e4178] [cursor=pointer]
+            - generic [ref=e4179]:
+              - generic [ref=e4180]:
+                - paragraph [ref=e4181]: Vodka Moskovskaya
+                - paragraph [ref=e4182]: Ingredient (Tracciato in ml)
+              - generic [ref=e4183]:
+                - generic [ref=e4184]: 4420 ml in magazzino
+                - button "Modifica" [ref=e4185] [cursor=pointer]
+                - button "Elimina" [ref=e4186] [cursor=pointer]
+            - generic [ref=e4187]:
+              - generic [ref=e4188]:
+                - paragraph [ref=e4189]: Lemonsoda
+                - paragraph [ref=e4190]: Ingredient (Tracciato in ml)
+              - generic [ref=e4191]:
+                - generic [ref=e4192]: 1770 ml in magazzino
+                - button "Modifica" [ref=e4193] [cursor=pointer]
+                - button "Elimina" [ref=e4194] [cursor=pointer]
+            - generic [ref=e4195]:
+              - generic [ref=e4196]:
+                - paragraph [ref=e4197]: Birra Beck's
+                - paragraph [ref=e4198]: Sellable Good (Tracciato in pcs)
+              - generic [ref=e4199]:
+                - generic [ref=e4200]: 115 pcs in magazzino
+                - button "Modifica" [ref=e4201] [cursor=pointer]
+                - button "Elimina" [ref=e4202] [cursor=pointer]
+            - generic [ref=e4203]:
+              - generic [ref=e4204]:
+                - paragraph [ref=e4205]: H2O
+                - paragraph [ref=e4206]: Sellable Good (Tracciato in pcs)
+              - generic [ref=e4207]:
+                - generic [ref=e4208]: 28 pcs in magazzino
+                - button "Modifica" [ref=e4209] [cursor=pointer]
+                - button "Elimina" [ref=e4210] [cursor=pointer]
+            - generic [ref=e4211]:
+              - generic [ref=e4212]:
+                - paragraph [ref=e4213]: Bibita Pompelma
+                - paragraph [ref=e4214]: Ingredient (Tracciato in ml)
+              - generic [ref=e4215]:
+                - generic [ref=e4216]: 1160 ml in magazzino
+                - button "Modifica" [ref=e4217] [cursor=pointer]
+                - button "Elimina" [ref=e4218] [cursor=pointer]
+            - generic [ref=e4219]:
+              - generic [ref=e4220]:
+                - paragraph [ref=e4221]: Coca Cola
+                - paragraph [ref=e4222]: Ingredient (Tracciato in ml)
+              - generic [ref=e4223]:
+                - generic [ref=e4224]: 10080 ml in magazzino
+                - button "Modifica" [ref=e4225] [cursor=pointer]
+                - button "Elimina" [ref=e4226] [cursor=pointer]
+            - generic [ref=e4227]:
+              - generic [ref=e4228]:
+                - paragraph [ref=e4229]: Campari
+                - paragraph [ref=e4230]: Ingredient (Tracciato in ml)
+              - generic [ref=e4231]:
+                - generic [ref=e4232]: 2470 ml in magazzino
+                - button "Modifica" [ref=e4233] [cursor=pointer]
+                - button "Elimina" [ref=e4234] [cursor=pointer]
+            - generic [ref=e4235]:
+              - generic [ref=e4236]:
+                - paragraph [ref=e4237]: QA Test Item
+                - paragraph [ref=e4238]: Ingredient (Tracciato in ml)
+              - generic [ref=e4239]:
+                - generic [ref=e4240]: 150 ml in magazzino
+                - button "Modifica" [ref=e4241] [cursor=pointer]
+                - button "Elimina" [ref=e4242] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,0 +1,211 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e3349] [cursor=pointer]:
+          - img [ref=e3351]
+          - generic [ref=e3353]: Dashboard
+        - button "Analisi" [ref=e3354] [cursor=pointer]:
+          - img [ref=e3356]
+          - generic [ref=e3358]: Analisi
+        - button "Analisi di Profitto" [ref=e3359] [cursor=pointer]:
+          - img [ref=e3361]
+          - generic [ref=e3363]: Analisi di Profitto
+        - button "Transazioni" [ref=e3364] [cursor=pointer]:
+          - img [ref=e3366]
+          - generic [ref=e3368]: Transazioni
+        - button "Scontrini 14" [ref=e3369] [cursor=pointer]:
+          - img [ref=e3371]
+          - generic [ref=e3373]: Scontrini
+          - button "14" [ref=e3374]
+        - button "Registro Attività" [ref=e3375] [cursor=pointer]:
+          - img [ref=e3377]
+          - generic [ref=e3379]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e3380] [cursor=pointer]:
+          - img [ref=e3382]
+          - generic [ref=e3384]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e3385] [cursor=pointer]:
+          - img [ref=e3387]
+          - generic [ref=e3389]: Clienti
+        - button "Prodotti" [ref=e3390] [cursor=pointer]:
+          - img [ref=e3392]
+          - generic [ref=e3394]: Prodotti
+        - button "Categorie" [ref=e3395] [cursor=pointer]:
+          - img [ref=e3397]
+          - generic [ref=e3399]: Categorie
+        - button "Articoli Magazzino" [ref=e3400] [cursor=pointer]:
+          - img [ref=e3402]
+          - generic [ref=e3404]: Articoli Magazzino
+        - button "Inventario" [ref=e3405] [cursor=pointer]:
+          - img [ref=e3407]
+          - generic [ref=e3409]: Inventario
+        - button "Gestione Costi" [ref=e3410] [cursor=pointer]:
+          - img [ref=e3412]
+          - generic [ref=e3414]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e3415] [cursor=pointer]:
+          - img [ref=e3417]
+          - generic [ref=e3419]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e3420] [cursor=pointer]:
+          - img [ref=e3422]
+          - generic [ref=e3424]: Report Scostamento
+        - button "Utenti" [ref=e3425] [cursor=pointer]:
+          - img [ref=e3427]
+          - generic [ref=e3429]: Utenti
+        - button "Casse" [ref=e3430] [cursor=pointer]:
+          - img [ref=e3432]
+          - generic [ref=e3434]: Casse
+        - button "Tavoli e Layout" [ref=e3435] [cursor=pointer]:
+          - img [ref=e3437]
+          - generic [ref=e3439]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e3440] [cursor=pointer]:
+          - img [ref=e3442]
+          - generic [ref=e3444]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e3445] [cursor=pointer]:
+          - img [ref=e3447]
+          - generic [ref=e3450]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e3275]:
+          - heading "Variance Analysis Report" [level=2] [ref=e3276]
+          - button "Generate New Report" [ref=e3278] [cursor=pointer]:
+            - heading "Generate New Report" [level=3] [ref=e3279]
+            - img [ref=e3280]
+          - generic [ref=e3282]:
+            - generic [ref=e3451]:
+              - heading "Reports (7)" [level=3] [ref=e3453]
+              - table [ref=e3455]:
+                - rowgroup [ref=e3456]:
+                  - row "Period Variance Var % Status" [ref=e3457]:
+                    - columnheader "Period" [ref=e3458]
+                    - columnheader "Variance" [ref=e3459]
+                    - columnheader "Var %" [ref=e3460]
+                    - columnheader "Status" [ref=e3461]
+                - rowgroup [ref=e3462]:
+                  - row "01/05/2026 06/05/2026 €1503,500000 0.0% draft" [ref=e3463] [cursor=pointer]:
+                    - cell "01/05/2026 06/05/2026" [ref=e3464]:
+                      - paragraph [ref=e3465]: 01/05/2026
+                      - paragraph [ref=e3466]: 06/05/2026
+                    - cell "€1503,500000" [ref=e3467]
+                    - cell "0.0%" [ref=e3468]
+                    - cell "draft" [ref=e3469]
+                  - row "01/04/2026 14/04/2026 €-3,702432 0.0% draft" [ref=e3470] [cursor=pointer]:
+                    - cell "01/04/2026 14/04/2026" [ref=e3471]:
+                      - paragraph [ref=e3472]: 01/04/2026
+                      - paragraph [ref=e3473]: 14/04/2026
+                    - cell "€-3,702432" [ref=e3474]
+                    - cell "0.0%" [ref=e3475]
+                    - cell "draft" [ref=e3476]
+                  - row "01/04/2026 16/04/2026 €0,000000 0.0% draft" [ref=e3477] [cursor=pointer]:
+                    - cell "01/04/2026 16/04/2026" [ref=e3478]:
+                      - paragraph [ref=e3479]: 01/04/2026
+                      - paragraph [ref=e3480]: 16/04/2026
+                    - cell "€0,000000" [ref=e3481]
+                    - cell "0.0%" [ref=e3482]
+                    - cell "draft" [ref=e3483]
+                  - row "01/04/2026 10/04/2026 €0,000000 0.0% draft" [ref=e3484] [cursor=pointer]:
+                    - cell "01/04/2026 10/04/2026" [ref=e3485]:
+                      - paragraph [ref=e3486]: 01/04/2026
+                      - paragraph [ref=e3487]: 10/04/2026
+                    - cell "€0,000000" [ref=e3488]
+                    - cell "0.0%" [ref=e3489]
+                    - cell "draft" [ref=e3490]
+                  - row "01/04/2026 15/04/2026 €0,000000 0.0% draft" [ref=e3491] [cursor=pointer]:
+                    - cell "01/04/2026 15/04/2026" [ref=e3492]:
+                      - paragraph [ref=e3493]: 01/04/2026
+                      - paragraph [ref=e3494]: 15/04/2026
+                    - cell "€0,000000" [ref=e3495]
+                    - cell "0.0%" [ref=e3496]
+                    - cell "draft" [ref=e3497]
+                  - row "01/04/2026 10/04/2026 €0,000000 0.0% draft" [ref=e3498] [cursor=pointer]:
+                    - cell "01/04/2026 10/04/2026" [ref=e3499]:
+                      - paragraph [ref=e3500]: 01/04/2026
+                      - paragraph [ref=e3501]: 10/04/2026
+                    - cell "€0,000000" [ref=e3502]
+                    - cell "0.0%" [ref=e3503]
+                    - cell "draft" [ref=e3504]
+                  - row "01/04/2026 09/04/2026 €-775,000000 0.0% draft" [ref=e3505] [cursor=pointer]:
+                    - cell "01/04/2026 09/04/2026" [ref=e3506]:
+                      - paragraph [ref=e3507]: 01/04/2026
+                      - paragraph [ref=e3508]: 09/04/2026
+                    - cell "€-775,000000" [ref=e3509]
+                    - cell "0.0%" [ref=e3510]
+                    - cell "draft" [ref=e3511]
+            - generic [ref=e3513]:
+              - generic [ref=e3514]:
+                - generic [ref=e3515]:
+                  - heading "Report Summary" [level=3] [ref=e3516]
+                  - generic [ref=e3517]: draft
+                - generic [ref=e3518]:
+                  - generic [ref=e3519]:
+                    - paragraph [ref=e3520]: Theoretical Cost
+                    - paragraph [ref=e3521]: €0,000000
+                  - generic [ref=e3522]:
+                    - paragraph [ref=e3523]: Actual Cost
+                    - paragraph [ref=e3524]: €1503,500000
+                  - generic [ref=e3525]:
+                    - paragraph [ref=e3526]: Variance Value
+                    - paragraph [ref=e3527]: €1503,500000
+                  - generic [ref=e3528]:
+                    - paragraph [ref=e3529]: Variance %
+                    - paragraph [ref=e3530]: 0.0%
+                - generic [ref=e3531]:
+                  - generic [ref=e3532]: "Period: 01/05/2026 - 06/05/2026"
+                  - generic [ref=e3533]: "Created by: Admin User"
+                  - generic [ref=e3534]: "Created: 06/05/2026, 15:39"
+              - generic [ref=e3535]:
+                - heading "Ingredient Details (2)" [level=4] [ref=e3537]
+                - table [ref=e3539]:
+                  - rowgroup [ref=e3540]:
+                    - row "Ingredient Theoretical Qty Actual Qty Variance Qty Unit Cost Variance Value Variance % Status" [ref=e3541]:
+                      - columnheader "Ingredient" [ref=e3542]
+                      - columnheader "Theoretical Qty" [ref=e3543]
+                      - columnheader "Actual Qty" [ref=e3544]
+                      - columnheader "Variance Qty" [ref=e3545]
+                      - columnheader "Unit Cost" [ref=e3546]
+                      - columnheader "Variance Value" [ref=e3547]
+                      - columnheader "Variance %" [ref=e3548]
+                      - columnheader "Status" [ref=e3549]
+                  - rowgroup [ref=e3550]:
+                    - row "Bibita Pompelma 0.00 97.00 97.00 €15,500000 €1503,500000 100.0% critical" [ref=e3551]:
+                      - cell "Bibita Pompelma" [ref=e3552]
+                      - cell "0.00" [ref=e3553]
+                      - cell "97.00" [ref=e3554]
+                      - cell "97.00" [ref=e3555]
+                      - cell "€15,500000" [ref=e3556]
+                      - cell "€1503,500000" [ref=e3557]
+                      - cell "100.0%" [ref=e3558]
+                      - cell "critical" [ref=e3559]
+                    - row "QA Test Item Item not found in inventory counts 0.00 50.00 50.00 €0,000000 €0,000000 100.0% missing data" [ref=e3560]:
+                      - cell "QA Test Item Item not found in inventory counts" [ref=e3561]:
+                        - text: QA Test Item
+                        - paragraph [ref=e3562]: Item not found in inventory counts
+                      - cell "0.00" [ref=e3563]
+                      - cell "50.00" [ref=e3564]
+                      - cell "50.00" [ref=e3565]
+                      - cell "€0,000000" [ref=e3566]
+                      - cell "€0,000000" [ref=e3567]
+                      - cell "100.0%" [ref=e3568]
+                      - cell "missing data" [ref=e3569]
+              - generic [ref=e3570]:
+                - heading "Possible Causes" [level=4] [ref=e3571]
+                - list [ref=e3572]:
+                  - listitem [ref=e3573]: Spillage or waste during preparation
+                  - listitem [ref=e3574]: Over-portioning by staff
+                  - listitem [ref=e3575]: Unauthorized consumption or theft
+                  - listitem [ref=e3576]: Receiving errors - quantity mismatch on delivery
+                  - listitem [ref=e3577]: Inventory counting errors
+                  - listitem [ref=e3578]: Recipe drift - actual usage differs from recipe spec
+                  - listitem [ref=e3579]: Unrecorded spoilage or expired items
+              - generic [ref=e3580]:
+                - button "Mark as Reviewed" [ref=e3581] [cursor=pointer]
+                - button "Mark as Final" [ref=e3582] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

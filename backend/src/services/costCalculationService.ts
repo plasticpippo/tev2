@@ -119,7 +119,8 @@ export async function updateVariantTheoreticalCost(variantId: number): Promise<V
 
   let currentMargin: number | null = null;
   if (theoreticalCost !== null && theoreticalCost > 0 && price > 0) {
-    const marginValue = price - roundCost(theoreticalCost);
+    const roundedTheoreticalCost = roundMoney(theoreticalCost);
+    const marginValue = price - roundedTheoreticalCost;
     currentMargin = roundMoney((marginValue / price) * 100);
   }
 

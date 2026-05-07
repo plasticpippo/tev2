@@ -1,0 +1,206 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - button "Schermo Intero" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "Pannello Admin" [ref=e11] [cursor=pointer]
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Prodotti" [level=2] [ref=e18]
+            - generic [ref=e19]:
+              - button "Preferiti" [ref=e20] [cursor=pointer]
+              - button "Shots" [ref=e21] [cursor=pointer]
+              - button "Beer" [ref=e22] [cursor=pointer]
+              - button "Cocktails" [ref=e23] [cursor=pointer]
+              - button "Soft Drinks" [ref=e24] [cursor=pointer]
+              - button "Vino" [ref=e25] [cursor=pointer]
+              - button "Tutti" [ref=e26] [cursor=pointer]
+          - generic [ref=e29]:
+            - generic [ref=e119]:
+              - generic [ref=e121]: ESAURITO
+              - paragraph [ref=e122]: Sipsmith Tonic
+              - generic [ref=e123]:
+                - paragraph [ref=e124]: Standard
+                - paragraph [ref=e125]: €12,00
+            - generic [ref=e126] [cursor=pointer]:
+              - paragraph [ref=e127]: Vodka Ginger Beer
+              - generic [ref=e128]:
+                - paragraph [ref=e129]: Standard
+                - paragraph [ref=e130]: €8,00
+            - generic [ref=e131]:
+              - generic [ref=e133]: ESAURITO
+              - paragraph [ref=e134]: Gin Ginger Beer
+              - generic [ref=e135]:
+                - paragraph [ref=e136]: Standard
+                - paragraph [ref=e137]: €8,00
+            - generic [ref=e36] [cursor=pointer]:
+              - paragraph [ref=e37]: Pirlo Campari
+              - generic [ref=e38]:
+                - paragraph [ref=e39]: Standard
+                - paragraph [ref=e40]: €5,00
+              - generic [ref=e41]: FAV
+            - generic [ref=e138] [cursor=pointer]:
+              - paragraph [ref=e139]: Americano
+              - generic [ref=e140]:
+                - paragraph [ref=e141]: Standard
+                - paragraph [ref=e142]: €8,00
+            - generic [ref=e143] [cursor=pointer]:
+              - paragraph [ref=e144]: Negroni
+              - generic [ref=e145]:
+                - paragraph [ref=e146]: Standard
+                - paragraph [ref=e147]: €8,00
+            - generic [ref=e48] [cursor=pointer]:
+              - paragraph [ref=e49]: Vodka Lemon
+              - generic [ref=e50]:
+                - paragraph [ref=e51]: Standard
+                - paragraph [ref=e52]: €8,00
+              - generic [ref=e53]: FAV
+            - generic [ref=e148] [cursor=pointer]:
+              - paragraph [ref=e149]: Vodka Lemon
+              - generic [ref=e150]:
+                - paragraph [ref=e151]: Carico
+                - paragraph [ref=e152]: €10,00
+            - generic [ref=e153] [cursor=pointer]:
+              - paragraph [ref=e154]: Paloma
+              - generic [ref=e155]:
+                - paragraph [ref=e156]: Standard
+                - paragraph [ref=e157]: €8,00
+            - generic [ref=e60]:
+              - generic [ref=e62]: ESAURITO
+              - paragraph [ref=e63]: Gin Tonic
+              - generic [ref=e64]:
+                - paragraph [ref=e65]: Standard
+                - paragraph [ref=e66]: €8,00
+              - generic [ref=e67]: FAV
+            - generic [ref=e158]:
+              - generic [ref=e160]: ESAURITO
+              - paragraph [ref=e161]: Gin Tonic
+              - generic [ref=e162]:
+                - paragraph [ref=e163]: Carico
+                - paragraph [ref=e164]: €10,00
+            - generic [ref=e68] [cursor=pointer]:
+              - paragraph [ref=e69]: Gin Lemon
+              - generic [ref=e70]:
+                - paragraph [ref=e71]: Standard
+                - paragraph [ref=e72]: €8,00
+              - generic [ref=e73]: FAV
+            - generic [ref=e165] [cursor=pointer]:
+              - paragraph [ref=e166]: Gin Lemon
+              - generic [ref=e167]:
+                - paragraph [ref=e168]: Carico
+                - paragraph [ref=e169]: €10,00
+            - generic [ref=e170] [cursor=pointer]:
+              - paragraph [ref=e171]: Sipsmith Lemon
+              - generic [ref=e172]:
+                - paragraph [ref=e173]: Standard
+                - paragraph [ref=e174]: €12,00
+            - generic [ref=e175] [cursor=pointer]:
+              - paragraph [ref=e176]: Coca Rum
+              - generic [ref=e177]:
+                - paragraph [ref=e178]: Standard
+                - paragraph [ref=e179]: €8,00
+            - generic [ref=e180]:
+              - generic [ref=e182]: ESAURITO
+              - paragraph [ref=e183]: Vodka Tonic
+              - generic [ref=e184]:
+                - paragraph [ref=e185]: Carico
+                - paragraph [ref=e186]: €10,00
+            - generic [ref=e92]:
+              - generic [ref=e94]: ESAURITO
+              - paragraph [ref=e95]: Vodka Tonic
+              - generic [ref=e96]:
+                - paragraph [ref=e97]: Standard
+                - paragraph [ref=e98]: €8,00
+              - generic [ref=e99]: FAV
+        - generic [ref=e101]:
+          - generic [ref=e102]:
+            - generic [ref=e103]:
+              - paragraph [ref=e104]: "Connesso come:"
+              - paragraph [ref=e105]:
+                - text: Admin User
+                - generic [ref=e106]: (Admin)
+            - button "Esci" [ref=e107] [cursor=pointer]
+          - generic [ref=e108]:
+            - heading "Ordine Corrente" [level=2] [ref=e109]
+            - generic [ref=e612]:
+              - generic [ref=e613]:
+                - generic [ref=e614]:
+                  - paragraph [ref=e615]: Americano - Standard
+                  - paragraph [ref=e616]: €8,00
+                - generic [ref=e617]:
+                  - button "-" [ref=e618] [cursor=pointer]
+                  - generic [ref=e619]: "1"
+                  - button "+" [ref=e620] [cursor=pointer]
+              - generic [ref=e629]:
+                - generic [ref=e630]:
+                  - paragraph [ref=e631]: Negroni - Standard
+                  - paragraph [ref=e632]: €8,00
+                - generic [ref=e633]:
+                  - button "-" [ref=e634] [cursor=pointer]
+                  - generic [ref=e635]: "1"
+                  - button "+" [ref=e636] [cursor=pointer]
+          - button "MODIFICA Modifica Layout" [ref=e113] [cursor=pointer]:
+            - generic [ref=e114]: MODIFICA
+            - generic [ref=e115]: Modifica Layout
+          - generic [ref=e116]:
+            - generic [ref=e621]:
+              - generic [ref=e622]: Subtotale
+              - generic [ref=e623]: €16,00
+            - generic [ref=e610]:
+              - button "Gestisci Conti" [ref=e624] [cursor=pointer]
+              - button "Cancella" [ref=e625] [cursor=pointer]
+            - generic [ref=e626]:
+              - button "ASSEGNA TAVOLO" [ref=e627] [cursor=pointer]
+              - button "Pagamento" [ref=e628] [cursor=pointer]
+  - generic [ref=e693]:
+    - generic [ref=e694]:
+      - heading "Completa Pagamento" [level=2] [ref=e695]
+      - button "Chiudi" [ref=e696] [cursor=pointer]: ×
+    - generic [ref=e697]:
+      - generic [ref=e698]:
+        - generic [ref=e700]: Sconto
+        - generic [ref=e701]:
+          - generic [ref=e702]: Importo Sconto
+          - generic [ref=e703]:
+            - button "Diminuisci sconto" [ref=e704] [cursor=pointer]: "-"
+            - generic [ref=e705]: €2,00
+            - button "Aumenta sconto" [ref=e706] [cursor=pointer]: +
+          - paragraph [ref=e707]: "Max: €16,00"
+        - generic [ref=e708]:
+          - generic [ref=e709]: Aggiunta Rapida
+          - generic [ref=e710]:
+            - button "Aggiunta Rapida 10" [ref=e711] [cursor=pointer]: "10"
+            - button "Aggiunta Rapida 20" [ref=e712] [cursor=pointer]: "20"
+            - button "Aggiunta Rapida 50" [ref=e713] [cursor=pointer]: "50"
+        - generic [ref=e714]:
+          - generic [ref=e715]: Motivo (opzionale)
+          - textbox "Inserisci motivo dello sconto..." [ref=e716]
+      - generic [ref=e717]:
+        - generic [ref=e718]: Importo Mancia
+        - generic [ref=e719]:
+          - button "Diminuisci mancia" [ref=e720] [cursor=pointer]: "-"
+          - generic [ref=e721]: €2,00
+          - button "Aumenta mancia" [active] [ref=e722] [cursor=pointer]: +
+      - generic [ref=e723]:
+        - generic [ref=e724]:
+          - generic [ref=e725]: Subtotale
+          - generic [ref=e726]: €13,44
+        - generic [ref=e727]:
+          - generic [ref=e728]: Tassa
+          - generic [ref=e729]: €2,56
+        - generic [ref=e730]:
+          - generic [ref=e731]: Sconto
+          - generic [ref=e732]: "-€2,00"
+        - generic [ref=e733]:
+          - generic [ref=e734]: Mancia
+          - generic [ref=e735]: €2,00
+        - generic [ref=e736]:
+          - generic [ref=e737]: Totale Finale
+          - generic [ref=e738]: €16,00
+    - generic [ref=e740]:
+      - button "Paga in CONTANTI" [ref=e741] [cursor=pointer]
+      - button "Paga con CARTA" [ref=e742] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

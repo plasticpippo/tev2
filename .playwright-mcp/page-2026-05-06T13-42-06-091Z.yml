@@ -1,0 +1,194 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e134] [cursor=pointer]:
+          - img [ref=e136]
+          - generic [ref=e138]: Dashboard
+        - button "Analisi" [ref=e139] [cursor=pointer]:
+          - img [ref=e141]
+          - generic [ref=e143]: Analisi
+        - button "Analisi di Profitto" [ref=e144] [cursor=pointer]:
+          - img [ref=e146]
+          - generic [ref=e148]: Analisi di Profitto
+        - button "Transazioni" [ref=e150] [cursor=pointer]:
+          - img [ref=e152]
+          - generic [ref=e154]: Transazioni
+        - button "Scontrini 14" [ref=e155] [cursor=pointer]:
+          - img [ref=e157]
+          - generic [ref=e159]: Scontrini
+          - button "14" [ref=e160]
+        - button "Registro Attività" [ref=e161] [cursor=pointer]:
+          - img [ref=e163]
+          - generic [ref=e165]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e166] [cursor=pointer]:
+          - img [ref=e168]
+          - generic [ref=e170]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e172] [cursor=pointer]:
+          - img [ref=e174]
+          - generic [ref=e176]: Clienti
+        - button "Prodotti" [ref=e177] [cursor=pointer]:
+          - img [ref=e179]
+          - generic [ref=e181]: Prodotti
+        - button "Categorie" [ref=e182] [cursor=pointer]:
+          - img [ref=e184]
+          - generic [ref=e186]: Categorie
+        - button "Articoli Magazzino" [ref=e187] [cursor=pointer]:
+          - img [ref=e189]
+          - generic [ref=e191]: Articoli Magazzino
+        - button "Inventario" [ref=e192] [cursor=pointer]:
+          - img [ref=e194]
+          - generic [ref=e196]: Inventario
+        - button "Gestione Costi" [ref=e197] [cursor=pointer]:
+          - img [ref=e199]
+          - generic [ref=e201]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e202] [cursor=pointer]:
+          - img [ref=e204]
+          - generic [ref=e206]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e207] [cursor=pointer]:
+          - img [ref=e209]
+          - generic [ref=e211]: Report Scostamento
+        - button "Utenti" [ref=e213] [cursor=pointer]:
+          - img [ref=e215]
+          - generic [ref=e217]: Utenti
+        - button "Casse" [ref=e218] [cursor=pointer]:
+          - img [ref=e220]
+          - generic [ref=e222]: Casse
+        - button "Tavoli e Layout" [ref=e223] [cursor=pointer]:
+          - img [ref=e225]
+          - generic [ref=e227]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e228] [cursor=pointer]:
+          - img [ref=e230]
+          - generic [ref=e232]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e234] [cursor=pointer]:
+          - img [ref=e236]
+          - generic [ref=e239]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e241]:
+          - generic [ref=e242]:
+            - heading "Vendite Giornata Lavorativa Corrente (Tutte le Casse)" [level=2] [ref=e243]
+            - generic [ref=e244]:
+              - generic [ref=e245]:
+                - paragraph [ref=e246]: Vendite Lorde
+                - paragraph [ref=e247]: 47,00 €
+              - generic [ref=e248]:
+                - paragraph [ref=e249]: Sconti Totali
+                - paragraph [ref=e250]: 2,00 €
+              - generic [ref=e251]:
+                - paragraph [ref=e252]: Vendite Nette
+                - paragraph [ref=e253]: 45,00 €
+              - generic [ref=e254]:
+                - paragraph [ref=e255]: Contanti Totali
+                - paragraph [ref=e256]: 16,00 €
+              - generic [ref=e257]:
+                - paragraph [ref=e258]: Carta Totale
+                - paragraph [ref=e259]: 21,00 €
+              - generic [ref=e260]:
+                - paragraph [ref=e261]: Tasse Totali
+                - paragraph [ref=e262]: 5,92 €
+              - generic [ref=e263]:
+                - paragraph [ref=e264]: Mance Totali
+                - paragraph [ref=e265]: 2,00 €
+          - generic [ref=e266]:
+            - generic [ref=e267]:
+              - heading "Gestione Giornata Lavorativa" [level=2] [ref=e268]
+              - button "Chiudi Giornata Lavorativa Corrente" [ref=e270] [cursor=pointer]
+            - generic [ref=e271]:
+              - heading "Chiusure Recenti" [level=2] [ref=e272]
+              - generic [ref=e273]: Nessuna chiusura recente
+          - generic [ref=e275]:
+            - generic [ref=e276]:
+              - heading "Stato Cassa" [level=2] [ref=e277]
+              - generic [ref=e278]:
+                - generic [ref=e279]:
+                  - generic [ref=e280]:
+                    - generic [ref=e281]:
+                      - heading "Main Bar" [level=3] [ref=e282]
+                      - generic [ref=e283]: Attivo
+                    - paragraph [ref=e284]: "Utente: Admin User"
+                  - generic [ref=e285]:
+                    - paragraph [ref=e286]: Vendite Giornata Corrente
+                    - paragraph [ref=e287]: 45,00 €
+                    - generic [ref=e288]:
+                      - generic [ref=e289]:
+                        - generic [ref=e290]: "Contanti:"
+                        - generic [ref=e291]: 16,00 €
+                      - generic [ref=e292]:
+                        - generic [ref=e293]: "Carta:"
+                        - generic [ref=e294]: 21,00 €
+                - generic [ref=e295]:
+                  - generic [ref=e296]:
+                    - generic [ref=e297]:
+                      - heading "Entrata" [level=3] [ref=e298]
+                      - generic [ref=e299]: Inattivo
+                    - paragraph [ref=e300]: "Utente: Nessuna Attività"
+                  - generic [ref=e301]:
+                    - paragraph [ref=e302]: Vendite Giornata Corrente
+                    - paragraph [ref=e303]: 0,00 €
+                    - generic [ref=e304]:
+                      - generic [ref=e305]:
+                        - generic [ref=e306]: "Contanti:"
+                        - generic [ref=e307]: 0,00 €
+                      - generic [ref=e308]:
+                        - generic [ref=e309]: "Carta:"
+                        - generic [ref=e310]: 0,00 €
+                - generic [ref=e311]:
+                  - generic [ref=e312]:
+                    - generic [ref=e313]:
+                      - heading "QA Till Updated" [level=3] [ref=e314]
+                      - generic [ref=e315]: Inattivo
+                    - paragraph [ref=e316]: "Utente: Nessuna Attività"
+                  - generic [ref=e317]:
+                    - paragraph [ref=e318]: Vendite Giornata Corrente
+                    - paragraph [ref=e319]: 0,00 €
+                    - generic [ref=e320]:
+                      - generic [ref=e321]:
+                        - generic [ref=e322]: "Contanti:"
+                        - generic [ref=e323]: 0,00 €
+                      - generic [ref=e324]:
+                        - generic [ref=e325]: "Carta:"
+                        - generic [ref=e326]: 0,00 €
+            - generic [ref=e327]:
+              - heading "Tutti i Conti Aperti" [level=2] [ref=e328]
+              - generic [ref=e330]:
+                - generic [ref=e331]:
+                  - generic [ref=e332]:
+                    - paragraph [ref=e333]: QA Test Tab 2
+                    - paragraph [ref=e334]: su tabManagementContext.placeholderTillName
+                  - paragraph [ref=e335]: €34,00
+                - generic [ref=e336]:
+                  - generic [ref=e337]:
+                    - paragraph [ref=e338]: QA Test Tab
+                    - paragraph [ref=e339]: su tabManagementContext.placeholderTillName
+                  - paragraph [ref=e340]: €0,00
+                - generic [ref=e341]:
+                  - generic [ref=e342]:
+                    - paragraph [ref=e343]: primo drink
+                    - paragraph [ref=e344]: su Placeholder Till Name
+                  - paragraph [ref=e345]: €200,00
+                - generic [ref=e346]:
+                  - generic [ref=e347]:
+                    - paragraph [ref=e348]: djs
+                    - paragraph [ref=e349]: su Placeholder Till Name
+                  - paragraph [ref=e350]: €26,00
+                - generic [ref=e351]:
+                  - generic [ref=e352]:
+                    - paragraph [ref=e353]: staff
+                    - paragraph [ref=e354]: su Placeholder Till Name
+                  - paragraph [ref=e355]: €102,00
+                - generic [ref=e356]:
+                  - generic [ref=e357]:
+                    - paragraph [ref=e358]: Sbagli Buttati
+                    - paragraph [ref=e359]: su Placeholder Till Name
+                  - paragraph [ref=e360]: €0,00
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

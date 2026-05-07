@@ -239,24 +239,23 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
     .then(async response => {
       clearTimeout(timeoutId);
       
-      // Handle 403 Forbidden specifically (usually means token is invalid/expired)
+      // Handle 401 Unauthorized (invalid or expired token)
+      if (response.status === 401) {
+        console.log(i18n.t('api.tokenExpiredInvalid'));
+
+        // Clear authentication data
+        localStorage.removeItem('authToken');
+        localStorage.removeItem('currentUser');
+
+        // Redirect to login
+        window.location.href = '/';
+        throw new Error(i18n.t('api.invalidToken'));
+      }
+
+      // Handle 403 Forbidden (CSRF failure, authorization issues)
       if (response.status === 403) {
         const errorData = await response.json().catch(() => ({}));
-        
-        // Check if the error is related to token expiration
-        if (errorData.error && (errorData.error.includes('Invalid or expired token') || errorData.error.includes('expired'))) {
-          console.log(i18n.t('api.tokenExpiredInvalid'));
-          
-          // Clear authentication data
-          localStorage.removeItem('authToken');
-          localStorage.removeItem('currentUser');
-          
-          // Redirect to login if on a protected route
-          if (window.location.pathname !== '/' && window.location.pathname !== '/login') {
-            window.location.href = '/';
-          }
-        }
-        
+
         throw new Error(errorData.error || i18n.t('api.invalidToken'));
       }
       

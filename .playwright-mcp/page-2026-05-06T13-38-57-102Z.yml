@@ -1,0 +1,138 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e3013] [cursor=pointer]:
+          - img [ref=e3015]
+          - generic [ref=e3017]: Dashboard
+        - button "Analisi" [ref=e3018] [cursor=pointer]:
+          - img [ref=e3020]
+          - generic [ref=e3022]: Analisi
+        - button "Analisi di Profitto" [ref=e3023] [cursor=pointer]:
+          - img [ref=e3025]
+          - generic [ref=e3027]: Analisi di Profitto
+        - button "Transazioni" [ref=e3028] [cursor=pointer]:
+          - img [ref=e3030]
+          - generic [ref=e3032]: Transazioni
+        - button "Scontrini 14" [ref=e3033] [cursor=pointer]:
+          - img [ref=e3035]
+          - generic [ref=e3037]: Scontrini
+          - button "14" [ref=e3038]
+        - button "Registro Attività" [ref=e3039] [cursor=pointer]:
+          - img [ref=e3041]
+          - generic [ref=e3043]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e3044] [cursor=pointer]:
+          - img [ref=e3046]
+          - generic [ref=e3048]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e3049] [cursor=pointer]:
+          - img [ref=e3051]
+          - generic [ref=e3053]: Clienti
+        - button "Prodotti" [ref=e3054] [cursor=pointer]:
+          - img [ref=e3056]
+          - generic [ref=e3058]: Prodotti
+        - button "Categorie" [ref=e3059] [cursor=pointer]:
+          - img [ref=e3061]
+          - generic [ref=e3063]: Categorie
+        - button "Articoli Magazzino" [ref=e3064] [cursor=pointer]:
+          - img [ref=e3066]
+          - generic [ref=e3068]: Articoli Magazzino
+        - button "Inventario" [ref=e3069] [cursor=pointer]:
+          - img [ref=e3071]
+          - generic [ref=e3073]: Inventario
+        - button "Gestione Costi" [ref=e3074] [cursor=pointer]:
+          - img [ref=e3076]
+          - generic [ref=e3078]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e3079] [cursor=pointer]:
+          - img [ref=e3081]
+          - generic [ref=e3083]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e3084] [cursor=pointer]:
+          - img [ref=e3086]
+          - generic [ref=e3088]: Report Scostamento
+        - button "Utenti" [ref=e3089] [cursor=pointer]:
+          - img [ref=e3091]
+          - generic [ref=e3093]: Utenti
+        - button "Casse" [ref=e3094] [cursor=pointer]:
+          - img [ref=e3096]
+          - generic [ref=e3098]: Casse
+        - button "Tavoli e Layout" [ref=e3099] [cursor=pointer]:
+          - img [ref=e3101]
+          - generic [ref=e3103]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e3104] [cursor=pointer]:
+          - img [ref=e3106]
+          - generic [ref=e3108]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e3109] [cursor=pointer]:
+          - img [ref=e3111]
+          - generic [ref=e3114]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e2927]:
+          - generic [ref=e2928]:
+            - heading "Conteggi Inventario" [level=2] [ref=e3115]
+            - button "Nuovo Conteggio" [ref=e3116] [cursor=pointer]
+          - generic [ref=e2931]:
+            - button "All" [ref=e3117] [cursor=pointer]
+            - button "Draft" [ref=e3118] [cursor=pointer]
+            - button "Submitted" [ref=e3119] [cursor=pointer]
+            - button "Approved" [ref=e3120] [cursor=pointer]
+          - table [ref=e3121]:
+            - rowgroup [ref=e3122]:
+              - row "Data Tipo Stato Voci Note Azioni" [ref=e3123]:
+                - columnheader "Data" [ref=e3124]
+                - columnheader "Tipo" [ref=e3125]
+                - columnheader "Stato" [ref=e3126]
+                - columnheader "Voci" [ref=e3127]
+                - columnheader "Note" [ref=e3128]
+                - columnheader "Azioni" [ref=e3129]
+            - rowgroup [ref=e3130]:
+              - row "06/05/2026 Controllo Spot Draft 0 QA test spot count Invia Visualizza" [ref=e3131]:
+                - cell "06/05/2026" [ref=e3132]
+                - cell "Controllo Spot" [ref=e3133]:
+                  - generic [ref=e3134]: Controllo Spot
+                - cell "Draft" [ref=e3135]:
+                  - generic [ref=e3136]: Draft
+                - cell "0" [ref=e3137]
+                - cell "QA test spot count" [ref=e3138]
+                - cell "Invia Visualizza" [ref=e3139]:
+                  - button "Invia" [ref=e3140] [cursor=pointer]
+                  - button "Visualizza" [ref=e3141] [cursor=pointer]
+              - row "14/04/2026 Conteggio Completo Approved 0 6dp precision test Visualizza" [ref=e3142]:
+                - cell "14/04/2026" [ref=e3143]
+                - cell "Conteggio Completo" [ref=e3144]:
+                  - generic [ref=e3145]: Conteggio Completo
+                - cell "Approved" [ref=e3146]:
+                  - generic [ref=e3147]: Approved
+                - cell "0" [ref=e3148]
+                - cell "6dp precision test" [ref=e3149]
+                - cell "Visualizza" [ref=e3150]:
+                  - button "Visualizza" [ref=e3151] [cursor=pointer]
+              - row "10/04/2026 Conteggio Completo Draft 0 Test count via e2e Invia Visualizza" [ref=e3152]:
+                - cell "10/04/2026" [ref=e3153]
+                - cell "Conteggio Completo" [ref=e3154]:
+                  - generic [ref=e3155]: Conteggio Completo
+                - cell "Draft" [ref=e3156]:
+                  - generic [ref=e3157]: Draft
+                - cell "0" [ref=e3158]
+                - cell "Test count via e2e" [ref=e3159]
+                - cell "Invia Visualizza" [ref=e3160]:
+                  - button "Invia" [ref=e3161] [cursor=pointer]
+                  - button "Visualizza" [ref=e3162] [cursor=pointer]
+              - row "09/04/2026 Conteggio Completo Approved 0 Test inventory count Visualizza" [ref=e3163]:
+                - cell "09/04/2026" [ref=e3164]
+                - cell "Conteggio Completo" [ref=e3165]:
+                  - generic [ref=e3166]: Conteggio Completo
+                - cell "Approved" [ref=e3167]:
+                  - generic [ref=e3168]: Approved
+                - cell "0" [ref=e3169]
+                - cell "Test inventory count" [ref=e3170]
+                - cell "Visualizza" [ref=e3171]:
+                  - button "Visualizza" [ref=e3172] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

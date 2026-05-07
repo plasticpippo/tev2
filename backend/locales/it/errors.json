@@ -1,4 +1,10 @@
 {
+  "auth": {
+    "noTokenProvided": "Nessun token fornito",
+    "invalidCredentials": "Nome utente o password non validi",
+    "tokenRevoked": "Il token è stato revocato",
+    "invalidOrExpiredToken": "Token non valido o scaduto"
+  },
   "validation": {
     "required": "Questo campo è obbligatorio",
     "invalidFormat": "Formato non valido",
@@ -395,6 +401,7 @@
     "notFound": "Transazione non trovata",
     "alreadyVoided": "La transazione è già stata annullata",
     "invalidVoidStatus": "Solo le transazioni completate o omaggio possono essere annullate",
-    "voidFailed": "Annullamento transazione fallito"
+    "voidFailed": "Annullamento transazione fallito",
+    "negativeDiscount": "Lo sconto non può essere negativo"
   }
 }

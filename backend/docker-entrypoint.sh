@@ -60,7 +60,8 @@ run_migrations() {
     local exit_code=$?
     if [ $exit_code -ne 0 ]; then
         log_error "Migration failed with exit code: $exit_code"
-        return $exit_code
+        log_error "Container will sleep to prevent restart loops. Fix the migration and rebuild."
+        sleep infinity
     fi
     
     log "Migrations completed successfully"
@@ -90,16 +91,11 @@ if [ $attempt -ge $max_attempts ]; then
 fi
 
 # Run migrations
-if ! run_migrations; then
-    log_error "Migration failed! Container will not start."
-    log_error "Please check the logs and restore from backup if needed."
-    exit 1
-fi
+run_migrations
 
 # Run database seeding
 log "Running database seed..."
-node dist/prisma/seed.js 2>&1
-if [ $? -ne 0 ]; then
+if ! node dist/prisma/seed.js 2>&1; then
     log_warn "Seed failed (this is OK if data already exists)"
 else
     log "Seed completed successfully"

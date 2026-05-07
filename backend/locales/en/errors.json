@@ -1,4 +1,10 @@
 {
+  "auth": {
+    "noTokenProvided": "No token provided",
+    "invalidCredentials": "Invalid username or password",
+    "tokenRevoked": "Token has been revoked",
+    "invalidOrExpiredToken": "Invalid or expired token"
+  },
   "validation": {
     "required": "This field is required",
     "invalidFormat": "Invalid format",
@@ -395,6 +401,7 @@
     "notFound": "Transaction not found",
     "alreadyVoided": "Transaction is already voided",
     "invalidVoidStatus": "Only completed or complimentary transactions can be voided",
-    "voidFailed": "Failed to void transaction"
+    "voidFailed": "Failed to void transaction",
+    "negativeDiscount": "Discount cannot be negative"
   }
 }

@@ -1,0 +1,122 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e6753] [cursor=pointer]:
+          - img [ref=e6755]
+          - generic [ref=e6757]: Dashboard
+        - button "Analisi" [ref=e6758] [cursor=pointer]:
+          - img [ref=e6760]
+          - generic [ref=e6762]: Analisi
+        - button "Analisi di Profitto" [ref=e6763] [cursor=pointer]:
+          - img [ref=e6765]
+          - generic [ref=e6767]: Analisi di Profitto
+        - button "Transazioni" [ref=e6768] [cursor=pointer]:
+          - img [ref=e6770]
+          - generic [ref=e6772]: Transazioni
+        - button "Scontrini 14" [ref=e6773] [cursor=pointer]:
+          - img [ref=e6775]
+          - generic [ref=e6777]: Scontrini
+          - button "14" [ref=e6778]
+        - button "Registro Attività" [ref=e6779] [cursor=pointer]:
+          - img [ref=e6781]
+          - generic [ref=e6783]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e6784] [cursor=pointer]:
+          - img [ref=e6786]
+          - generic [ref=e6788]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e6789] [cursor=pointer]:
+          - img [ref=e6791]
+          - generic [ref=e6793]: Clienti
+        - button "Prodotti" [ref=e6794] [cursor=pointer]:
+          - img [ref=e6796]
+          - generic [ref=e6798]: Prodotti
+        - button "Categorie" [ref=e6799] [cursor=pointer]:
+          - img [ref=e6801]
+          - generic [ref=e6803]: Categorie
+        - button "Articoli Magazzino" [ref=e6804] [cursor=pointer]:
+          - img [ref=e6806]
+          - generic [ref=e6808]: Articoli Magazzino
+        - button "Inventario" [ref=e6809] [cursor=pointer]:
+          - img [ref=e6811]
+          - generic [ref=e6813]: Inventario
+        - button "Gestione Costi" [ref=e6814] [cursor=pointer]:
+          - img [ref=e6816]
+          - generic [ref=e6818]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e6819] [cursor=pointer]:
+          - img [ref=e6821]
+          - generic [ref=e6823]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e6824] [cursor=pointer]:
+          - img [ref=e6826]
+          - generic [ref=e6828]: Report Scostamento
+        - button "Utenti" [ref=e6829] [cursor=pointer]:
+          - img [ref=e6831]
+          - generic [ref=e6833]: Utenti
+        - button "Casse" [ref=e6834] [cursor=pointer]:
+          - img [ref=e6836]
+          - generic [ref=e6838]: Casse
+        - button "Tavoli e Layout" [ref=e6839] [cursor=pointer]:
+          - img [ref=e6841]
+          - generic [ref=e6843]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e6844] [cursor=pointer]:
+          - img [ref=e6846]
+          - generic [ref=e6848]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e6849] [cursor=pointer]:
+          - img [ref=e6851]
+          - generic [ref=e6854]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e6329]:
+          - generic [ref=e6330]:
+            - heading "Gestione Utenti" [level=3] [ref=e6331]
+            - button "Aggiungi Utente" [ref=e6332] [cursor=pointer]
+          - generic [ref=e6333]:
+            - generic [ref=e6334]:
+              - generic [ref=e6335]:
+                - paragraph [ref=e6336]: Bar
+                - paragraph [ref=e6337]: bar - Cassiere
+              - generic [ref=e6338]:
+                - button "Report" [ref=e6339] [cursor=pointer]
+                - button "Modifica" [ref=e6340] [cursor=pointer]
+                - button "Elimina" [ref=e6341] [cursor=pointer]
+            - generic [ref=e6342]:
+              - generic [ref=e6343]:
+                - paragraph [ref=e6344]: Cassa
+                - paragraph [ref=e6345]: cassa - Cassiere
+              - generic [ref=e6346]:
+                - button "Report" [ref=e6347] [cursor=pointer]
+                - button "Modifica" [ref=e6348] [cursor=pointer]
+                - button "Elimina" [ref=e6349] [cursor=pointer]
+            - generic [ref=e6350]:
+              - generic [ref=e6351]:
+                - paragraph [ref=e6352]: Admin User
+                - paragraph [ref=e6353]: admin - Amministratore
+              - generic [ref=e6354]:
+                - button "Report" [ref=e6355] [cursor=pointer]
+                - button "Modifica" [ref=e6356] [cursor=pointer]
+                - button "Elimina" [ref=e6357] [cursor=pointer]
+            - generic [ref=e6358]:
+              - generic [ref=e6359]:
+                - paragraph [ref=e6360]: QA User
+                - paragraph [ref=e6361]: qauser - Amministratore
+              - generic [ref=e6362]:
+                - button "Report" [ref=e6363] [cursor=pointer]
+                - button "Modifica" [ref=e6364] [cursor=pointer]
+                - button "Elimina" [ref=e6365] [cursor=pointer]
+            - generic [ref=e6855]:
+              - generic [ref=e6856]:
+                - paragraph [ref=e6857]: This Is A Very Long Name That Exceeds Normal Length Expectations And Should Test The Limits Of The Input Field Validation System ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890
+                - paragraph [ref=e6858]: verylongusernamethatiswayoverthenormallimit1234567890abcdefghijklmnopqrstuvwxyz - Cassiere
+              - generic [ref=e6859]:
+                - button "Report" [ref=e6860] [cursor=pointer]
+                - button "Modifica" [ref=e6861] [cursor=pointer]
+                - button "Elimina" [ref=e6862] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

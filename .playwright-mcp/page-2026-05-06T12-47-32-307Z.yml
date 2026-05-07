@@ -1,0 +1,190 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e3035] [cursor=pointer]:
+          - img [ref=e3037]
+          - generic [ref=e3039]: Dashboard
+        - button "Analisi" [ref=e3040] [cursor=pointer]:
+          - img [ref=e3042]
+          - generic [ref=e3044]: Analisi
+        - button "Analisi di Profitto" [ref=e3045] [cursor=pointer]:
+          - img [ref=e3047]
+          - generic [ref=e3049]: Analisi di Profitto
+        - button "Transazioni" [ref=e3050] [cursor=pointer]:
+          - img [ref=e3052]
+          - generic [ref=e3054]: Transazioni
+        - button "Scontrini 14" [ref=e3055] [cursor=pointer]:
+          - img [ref=e3057]
+          - generic [ref=e3059]: Scontrini
+          - button "14" [ref=e3060]
+        - button "Registro Attività" [ref=e3061] [cursor=pointer]:
+          - img [ref=e3063]
+          - generic [ref=e3065]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e3066] [cursor=pointer]:
+          - img [ref=e3068]
+          - generic [ref=e3070]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e3071] [cursor=pointer]:
+          - img [ref=e3073]
+          - generic [ref=e3075]: Clienti
+        - button "Prodotti" [ref=e3076] [cursor=pointer]:
+          - img [ref=e3078]
+          - generic [ref=e3080]: Prodotti
+        - button "Categorie" [ref=e3081] [cursor=pointer]:
+          - img [ref=e3083]
+          - generic [ref=e3085]: Categorie
+        - button "Articoli Magazzino" [ref=e3086] [cursor=pointer]:
+          - img [ref=e3088]
+          - generic [ref=e3090]: Articoli Magazzino
+        - button "Inventario" [ref=e3091] [cursor=pointer]:
+          - img [ref=e3093]
+          - generic [ref=e3095]: Inventario
+        - button "Gestione Costi" [ref=e3096] [cursor=pointer]:
+          - img [ref=e3098]
+          - generic [ref=e3100]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e3101] [cursor=pointer]:
+          - img [ref=e3103]
+          - generic [ref=e3105]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e3106] [cursor=pointer]:
+          - img [ref=e3108]
+          - generic [ref=e3110]: Report Scostamento
+        - button "Utenti" [ref=e3111] [cursor=pointer]:
+          - img [ref=e3113]
+          - generic [ref=e3115]: Utenti
+        - button "Casse" [ref=e3116] [cursor=pointer]:
+          - img [ref=e3118]
+          - generic [ref=e3120]: Casse
+        - button "Tavoli e Layout" [ref=e3121] [cursor=pointer]:
+          - img [ref=e3123]
+          - generic [ref=e3125]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e3126] [cursor=pointer]:
+          - img [ref=e3128]
+          - generic [ref=e3130]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e3131] [cursor=pointer]:
+          - img [ref=e3133]
+          - generic [ref=e3136]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e3137]:
+          - generic [ref=e3138]:
+            - heading "Gestione Clienti" [level=2] [ref=e3139]
+            - button "Nuovo Cliente" [ref=e3140] [cursor=pointer]:
+              - img [ref=e3141]
+              - text: Nuovo Cliente
+          - generic [ref=e3144]:
+            - generic [ref=e3145]:
+              - generic [ref=e3146]: Cerca
+              - textbox "Cerca" [ref=e3147]:
+                - /placeholder: Cerca clienti...
+            - generic [ref=e3148]:
+              - generic [ref=e3149]: Stato
+              - combobox "Stato" [ref=e3150]:
+                - option "Tutti gli Stati" [selected]
+                - option "Attivo"
+                - option "Inattivo"
+            - button "Cancella Filtri" [ref=e3152] [cursor=pointer]
+          - generic [ref=e3153]: Mostrando
+          - table [ref=e3157]:
+            - rowgroup [ref=e3158]:
+              - row "Nome Email Telefono Partita IVA Stato Azioni" [ref=e3159]:
+                - columnheader "Nome" [ref=e3160]
+                - columnheader "Email" [ref=e3161]
+                - columnheader "Telefono" [ref=e3162]
+                - columnheader "Partita IVA" [ref=e3163]
+                - columnheader "Stato" [ref=e3164]
+                - columnheader "Azioni" [ref=e3165]
+            - rowgroup [ref=e3166]:
+              - row "E2E Test Customer e2e-test@example.com +39 333 3334444 - Attivo" [ref=e3167]:
+                - cell "E2E Test Customer" [ref=e3168]
+                - cell "e2e-test@example.com" [ref=e3169]
+                - cell "+39 333 3334444" [ref=e3170]
+                - cell "-" [ref=e3171]
+                - cell "Attivo" [ref=e3172]
+                - cell [ref=e3173]:
+                  - generic [ref=e3174]:
+                    - button "Visualizza" [ref=e3175] [cursor=pointer]:
+                      - img [ref=e3176]
+                    - button "Modifica" [ref=e3179] [cursor=pointer]:
+                      - img [ref=e3180]
+                    - button "Disattiva" [ref=e3182] [cursor=pointer]:
+                      - img [ref=e3183]
+              - row "gino gino@gino.it 0000000000 it30481205012957 Attivo" [ref=e3185]:
+                - cell "gino" [ref=e3186]
+                - cell "gino@gino.it" [ref=e3187]
+                - cell "0000000000" [ref=e3188]
+                - cell "it30481205012957" [ref=e3189]
+                - cell "Attivo" [ref=e3190]
+                - cell [ref=e3191]:
+                  - generic [ref=e3192]:
+                    - button "Visualizza" [ref=e3193] [cursor=pointer]:
+                      - img [ref=e3194]
+                    - button "Modifica" [ref=e3197] [cursor=pointer]:
+                      - img [ref=e3198]
+                    - button "Disattiva" [ref=e3200] [cursor=pointer]:
+                      - img [ref=e3201]
+              - row "QA Test Customer Updated qa@test.com 1234567890 - Attivo" [ref=e3203]:
+                - cell "QA Test Customer Updated" [ref=e3204]
+                - cell "qa@test.com" [ref=e3205]
+                - cell "1234567890" [ref=e3206]
+                - cell "-" [ref=e3207]
+                - cell "Attivo" [ref=e3208]
+                - cell [ref=e3209]:
+                  - generic [ref=e3210]:
+                    - button "Visualizza" [ref=e3211] [cursor=pointer]:
+                      - img [ref=e3212]
+                    - button "Modifica" [ref=e3215] [cursor=pointer]:
+                      - img [ref=e3216]
+                    - button "Disattiva" [ref=e3218] [cursor=pointer]:
+                      - img [ref=e3219]
+              - row "Test Customer test@example.com 1234567890 - Attivo" [ref=e3221]:
+                - cell "Test Customer" [ref=e3222]
+                - cell "test@example.com" [ref=e3223]
+                - cell "1234567890" [ref=e3224]
+                - cell "-" [ref=e3225]
+                - cell "Attivo" [ref=e3226]
+                - cell [ref=e3227]:
+                  - generic [ref=e3228]:
+                    - button "Visualizza" [ref=e3229] [cursor=pointer]:
+                      - img [ref=e3230]
+                    - button "Modifica" [ref=e3233] [cursor=pointer]:
+                      - img [ref=e3234]
+                    - button "Disattiva" [ref=e3236] [cursor=pointer]:
+                      - img [ref=e3237]
+              - row "Test Customer Playwright playwright-test@example.com +39 333 9999999 IT12345678901 Attivo" [ref=e3239]:
+                - cell "Test Customer Playwright" [ref=e3240]
+                - cell "playwright-test@example.com" [ref=e3241]
+                - cell "+39 333 9999999" [ref=e3242]
+                - cell "IT12345678901" [ref=e3243]
+                - cell "Attivo" [ref=e3244]
+                - cell [ref=e3245]:
+                  - generic [ref=e3246]:
+                    - button "Visualizza" [ref=e3247] [cursor=pointer]:
+                      - img [ref=e3248]
+                    - button "Modifica" [ref=e3251] [cursor=pointer]:
+                      - img [ref=e3252]
+                    - button "Disattiva" [ref=e3254] [cursor=pointer]:
+                      - img [ref=e3255]
+              - row "Validation Test Customer validation@example.com +39 333 1234567 - Attivo" [ref=e3257]:
+                - cell "Validation Test Customer" [ref=e3258]
+                - cell "validation@example.com" [ref=e3259]
+                - cell "+39 333 1234567" [ref=e3260]
+                - cell "-" [ref=e3261]
+                - cell "Attivo" [ref=e3262]
+                - cell [ref=e3263]:
+                  - generic [ref=e3264]:
+                    - button "Visualizza" [ref=e3265] [cursor=pointer]:
+                      - img [ref=e3266]
+                    - button "Modifica" [ref=e3269] [cursor=pointer]:
+                      - img [ref=e3270]
+                    - button "Disattiva" [ref=e3272] [cursor=pointer]:
+                      - img [ref=e3273]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

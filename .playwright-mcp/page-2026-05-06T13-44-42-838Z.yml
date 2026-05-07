@@ -1,0 +1,518 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e867] [cursor=pointer]:
+          - img [ref=e869]
+          - generic [ref=e871]: Dashboard
+        - button "Analisi" [ref=e872] [cursor=pointer]:
+          - img [ref=e874]
+          - generic [ref=e876]: Analisi
+        - button "Analisi di Profitto" [ref=e877] [cursor=pointer]:
+          - img [ref=e879]
+          - generic [ref=e881]: Analisi di Profitto
+        - button "Transazioni" [ref=e882] [cursor=pointer]:
+          - img [ref=e884]
+          - generic [ref=e886]: Transazioni
+        - button "Scontrini 14" [ref=e887] [cursor=pointer]:
+          - img [ref=e889]
+          - generic [ref=e891]: Scontrini
+          - button "14" [ref=e892]
+        - button "Registro Attività" [ref=e893] [cursor=pointer]:
+          - img [ref=e895]
+          - generic [ref=e897]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e898] [cursor=pointer]:
+          - img [ref=e900]
+          - generic [ref=e902]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e903] [cursor=pointer]:
+          - img [ref=e905]
+          - generic [ref=e907]: Clienti
+        - button "Prodotti" [ref=e908] [cursor=pointer]:
+          - img [ref=e910]
+          - generic [ref=e912]: Prodotti
+        - button "Categorie" [ref=e913] [cursor=pointer]:
+          - img [ref=e915]
+          - generic [ref=e917]: Categorie
+        - button "Articoli Magazzino" [ref=e918] [cursor=pointer]:
+          - img [ref=e920]
+          - generic [ref=e922]: Articoli Magazzino
+        - button "Inventario" [ref=e923] [cursor=pointer]:
+          - img [ref=e925]
+          - generic [ref=e927]: Inventario
+        - button "Gestione Costi" [ref=e928] [cursor=pointer]:
+          - img [ref=e930]
+          - generic [ref=e932]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e933] [cursor=pointer]:
+          - img [ref=e935]
+          - generic [ref=e937]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e938] [cursor=pointer]:
+          - img [ref=e940]
+          - generic [ref=e942]: Report Scostamento
+        - button "Utenti" [ref=e943] [cursor=pointer]:
+          - img [ref=e945]
+          - generic [ref=e947]: Utenti
+        - button "Casse" [ref=e948] [cursor=pointer]:
+          - img [ref=e950]
+          - generic [ref=e952]: Casse
+        - button "Tavoli e Layout" [ref=e953] [cursor=pointer]:
+          - img [ref=e955]
+          - generic [ref=e957]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e958] [cursor=pointer]:
+          - img [ref=e960]
+          - generic [ref=e962]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e963] [cursor=pointer]:
+          - img [ref=e965]
+          - generic [ref=e968]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e969]:
+          - heading "Gestione Scontrini" [level=2] [ref=e970]
+          - generic [ref=e971]:
+            - generic [ref=e972]:
+              - generic [ref=e973]:
+                - generic [ref=e974]: Cerca
+                - textbox "Cerca" [ref=e975]:
+                  - /placeholder: Numero scontrino o cliente...
+              - generic [ref=e976]:
+                - generic [ref=e977]: Stato
+                - combobox "Stato" [ref=e978]:
+                  - option "Tutti gli Stati" [selected]
+                  - option "Bozza"
+                  - option "Emesso"
+                  - option "Annullato"
+              - generic [ref=e979]:
+                - generic [ref=e980]: Generazione
+                - combobox "Generazione" [ref=e981]:
+                  - option "Tutti gli Stati Generazione" [selected]
+                  - option "In Attesa"
+                  - option "Completato"
+                  - option "Fallito"
+              - generic [ref=e982]:
+                - generic [ref=e983]: Stato Email
+                - combobox "Stato Email" [ref=e984]:
+                  - option "Tutti gli Stati Email" [selected]
+                  - option "In Attesa"
+                  - option "Inviata"
+                  - option "Fallita"
+              - generic [ref=e985]:
+                - generic [ref=e986]: Da Data
+                - button "Da Data" [ref=e988] [cursor=pointer]:
+                  - img [ref=e989]
+                  - generic [ref=e991]: Da Data
+              - generic [ref=e992]:
+                - generic [ref=e993]: A Data
+                - button "A Data" [ref=e995] [cursor=pointer]:
+                  - img [ref=e996]
+                  - generic [ref=e998]: A Data
+              - generic [ref=e999]:
+                - generic [ref=e1000]: Cliente
+                - textbox "Cerca cliente..." [ref=e1002]
+            - generic [ref=e1003]:
+              - button "Cerca" [ref=e1004] [cursor=pointer]
+              - button "Cancella Filtri" [ref=e1005] [cursor=pointer]
+          - generic [ref=e1006]: Visualizzazione di 20 di 27 scontrini
+          - generic [ref=e1008]:
+            - table [ref=e1010]:
+              - rowgroup [ref=e1011]:
+                - 'row "Scontrino # Transazione Cliente Stato Generazione Email Totale Data Emissione Azioni" [ref=e1012]':
+                  - 'columnheader "Scontrino #" [ref=e1013]'
+                  - columnheader "Transazione" [ref=e1014]
+                  - columnheader "Cliente" [ref=e1015]
+                  - columnheader "Stato" [ref=e1016]
+                  - columnheader "Generazione" [ref=e1017]
+                  - columnheader "Email" [ref=e1018]
+                  - columnheader "Totale" [ref=e1019]
+                  - columnheader "Data Emissione" [ref=e1020]
+                  - columnheader "Azioni" [ref=e1021]
+              - rowgroup [ref=e1022]:
+                - 'row "R000023 #546 Nessun Cliente Emesso In Attesa Non Inviata €8,00 28/04/2026, 04:24" [ref=e1023]':
+                  - cell "R000023" [ref=e1024]
+                  - cell "#546" [ref=e1025]
+                  - cell "Nessun Cliente" [ref=e1026]
+                  - cell "Emesso" [ref=e1027]
+                  - cell "In Attesa" [ref=e1028]:
+                    - generic [ref=e1029]:
+                      - img [ref=e1030]
+                      - generic [ref=e1033]: In Attesa
+                  - cell "Non Inviata" [ref=e1034]
+                  - cell "€8,00" [ref=e1035]
+                  - cell "28/04/2026, 04:24" [ref=e1036]
+                  - cell [ref=e1037]:
+                    - generic [ref=e1038]:
+                      - button "Vedi Dettagli" [ref=e1039] [cursor=pointer]:
+                        - img [ref=e1040]
+                      - button "Scarica PDF" [ref=e1043] [cursor=pointer]:
+                        - img [ref=e1044]
+                      - button "Invia Email" [disabled] [ref=e1046]:
+                        - img [ref=e1047]
+                - 'row "R000022 #545 Nessun Cliente Emesso Completato Non Inviata €2,00 21/04/2026, 22:59" [ref=e1049]':
+                  - cell "R000022" [ref=e1050]
+                  - cell "#545" [ref=e1051]
+                  - cell "Nessun Cliente" [ref=e1052]
+                  - cell "Emesso" [ref=e1053]
+                  - cell "Completato" [ref=e1054]:
+                    - generic [ref=e1056]: Completato
+                  - cell "Non Inviata" [ref=e1057]
+                  - cell "€2,00" [ref=e1058]
+                  - cell "21/04/2026, 22:59" [ref=e1059]
+                  - cell [ref=e1060]:
+                    - generic [ref=e1061]:
+                      - button "Vedi Dettagli" [ref=e1062] [cursor=pointer]:
+                        - img [ref=e1063]
+                      - button "Scarica PDF" [ref=e1066] [cursor=pointer]:
+                        - img [ref=e1067]
+                      - button "Invia Email" [disabled] [ref=e1069]:
+                        - img [ref=e1070]
+                - 'row "R000020 #544 Nessun Cliente Emesso Completato Fallita €4,00 19/04/2026, 21:33" [ref=e1072]':
+                  - cell "R000020" [ref=e1073]
+                  - cell "#544" [ref=e1074]
+                  - cell "Nessun Cliente" [ref=e1075]
+                  - cell "Emesso" [ref=e1076]
+                  - cell "Completato" [ref=e1077]:
+                    - generic [ref=e1079]: Completato
+                  - cell "Fallita" [ref=e1080]:
+                    - generic [ref=e1081]:
+                      - generic [ref=e1082]: Fallita
+                      - button "receipts.actions.resendEmail" [ref=e1083] [cursor=pointer]:
+                        - img [ref=e1084]
+                  - cell "€4,00" [ref=e1086]
+                  - cell "19/04/2026, 21:33" [ref=e1087]
+                  - cell [ref=e1088]:
+                    - generic [ref=e1089]:
+                      - button "Vedi Dettagli" [ref=e1090] [cursor=pointer]:
+                        - img [ref=e1091]
+                      - button "Scarica PDF" [ref=e1094] [cursor=pointer]:
+                        - img [ref=e1095]
+                      - button "Invia Email" [disabled] [ref=e1097]:
+                        - img [ref=e1098]
+                      - button "receipts.actions.resendEmail" [ref=e1100] [cursor=pointer]:
+                        - img [ref=e1101]
+                - 'row "R000019 #543 Nessun Cliente Emesso Completato Inviata €11,00 19/04/2026, 21:32" [ref=e1103]':
+                  - cell "R000019" [ref=e1104]
+                  - cell "#543" [ref=e1105]
+                  - cell "Nessun Cliente" [ref=e1106]
+                  - cell "Emesso" [ref=e1107]
+                  - cell "Completato" [ref=e1108]:
+                    - generic [ref=e1110]: Completato
+                  - cell "Inviata" [ref=e1111]:
+                    - generic [ref=e1113]: Inviata
+                  - cell "€11,00" [ref=e1114]
+                  - cell "19/04/2026, 21:32" [ref=e1115]
+                  - cell [ref=e1116]:
+                    - generic [ref=e1117]:
+                      - button "Vedi Dettagli" [ref=e1118] [cursor=pointer]:
+                        - img [ref=e1119]
+                      - button "Scarica PDF" [ref=e1122] [cursor=pointer]:
+                        - img [ref=e1123]
+                      - button "Invia Email" [disabled] [ref=e1125]:
+                        - img [ref=e1126]
+                - 'row "R000018 #541 Nessun Cliente Emesso Completato Non Inviata €4,00 09/04/2026, 02:28" [ref=e1128]':
+                  - cell "R000018" [ref=e1129]
+                  - cell "#541" [ref=e1130]
+                  - cell "Nessun Cliente" [ref=e1131]
+                  - cell "Emesso" [ref=e1132]
+                  - cell "Completato" [ref=e1133]:
+                    - generic [ref=e1135]: Completato
+                  - cell "Non Inviata" [ref=e1136]
+                  - cell "€4,00" [ref=e1137]
+                  - cell "09/04/2026, 02:28" [ref=e1138]
+                  - cell [ref=e1139]:
+                    - generic [ref=e1140]:
+                      - button "Vedi Dettagli" [ref=e1141] [cursor=pointer]:
+                        - img [ref=e1142]
+                      - button "Scarica PDF" [ref=e1145] [cursor=pointer]:
+                        - img [ref=e1146]
+                      - button "Invia Email" [disabled] [ref=e1148]:
+                        - img [ref=e1149]
+                - 'row "R000017 #540 Nessun Cliente Emesso Completato Non Inviata €8,00 09/04/2026, 02:20" [ref=e1151]':
+                  - cell "R000017" [ref=e1152]
+                  - cell "#540" [ref=e1153]
+                  - cell "Nessun Cliente" [ref=e1154]
+                  - cell "Emesso" [ref=e1155]
+                  - cell "Completato" [ref=e1156]:
+                    - generic [ref=e1158]: Completato
+                  - cell "Non Inviata" [ref=e1159]
+                  - cell "€8,00" [ref=e1160]
+                  - cell "09/04/2026, 02:20" [ref=e1161]
+                  - cell [ref=e1162]:
+                    - generic [ref=e1163]:
+                      - button "Vedi Dettagli" [ref=e1164] [cursor=pointer]:
+                        - img [ref=e1165]
+                      - button "Scarica PDF" [ref=e1168] [cursor=pointer]:
+                        - img [ref=e1169]
+                      - button "Invia Email" [disabled] [ref=e1171]:
+                        - img [ref=e1172]
+                - 'row "R000016 #539 Nessun Cliente Emesso Completato Non Inviata €37,00 08/04/2026, 07:47" [ref=e1174]':
+                  - cell "R000016" [ref=e1175]
+                  - cell "#539" [ref=e1176]
+                  - cell "Nessun Cliente" [ref=e1177]
+                  - cell "Emesso" [ref=e1178]
+                  - cell "Completato" [ref=e1179]:
+                    - generic [ref=e1181]: Completato
+                  - cell "Non Inviata" [ref=e1182]
+                  - cell "€37,00" [ref=e1183]
+                  - cell "08/04/2026, 07:47" [ref=e1184]
+                  - cell [ref=e1185]:
+                    - generic [ref=e1186]:
+                      - button "Vedi Dettagli" [ref=e1187] [cursor=pointer]:
+                        - img [ref=e1188]
+                      - button "Scarica PDF" [ref=e1191] [cursor=pointer]:
+                        - img [ref=e1192]
+                      - button "Invia Email" [disabled] [ref=e1194]:
+                        - img [ref=e1195]
+                - 'row "R000015 #538 Nessun Cliente Emesso Completato Non Inviata €12,00 07/04/2026, 00:07" [ref=e1197]':
+                  - cell "R000015" [ref=e1198]
+                  - cell "#538" [ref=e1199]
+                  - cell "Nessun Cliente" [ref=e1200]
+                  - cell "Emesso" [ref=e1201]
+                  - cell "Completato" [ref=e1202]:
+                    - generic [ref=e1204]: Completato
+                  - cell "Non Inviata" [ref=e1205]
+                  - cell "€12,00" [ref=e1206]
+                  - cell "07/04/2026, 00:07" [ref=e1207]
+                  - cell [ref=e1208]:
+                    - generic [ref=e1209]:
+                      - button "Vedi Dettagli" [ref=e1210] [cursor=pointer]:
+                        - img [ref=e1211]
+                      - button "Scarica PDF" [ref=e1214] [cursor=pointer]:
+                        - img [ref=e1215]
+                      - button "Invia Email" [disabled] [ref=e1217]:
+                        - img [ref=e1218]
+                - 'row "R000014 #537 Nessun Cliente Emesso Completato Non Inviata €4,00 05/04/2026, 20:25" [ref=e1220]':
+                  - cell "R000014" [ref=e1221]
+                  - cell "#537" [ref=e1222]
+                  - cell "Nessun Cliente" [ref=e1223]
+                  - cell "Emesso" [ref=e1224]
+                  - cell "Completato" [ref=e1225]:
+                    - generic [ref=e1227]: Completato
+                  - cell "Non Inviata" [ref=e1228]
+                  - cell "€4,00" [ref=e1229]
+                  - cell "05/04/2026, 20:25" [ref=e1230]
+                  - cell [ref=e1231]:
+                    - generic [ref=e1232]:
+                      - button "Vedi Dettagli" [ref=e1233] [cursor=pointer]:
+                        - img [ref=e1234]
+                      - button "Scarica PDF" [ref=e1237] [cursor=pointer]:
+                        - img [ref=e1238]
+                      - button "Invia Email" [disabled] [ref=e1240]:
+                        - img [ref=e1241]
+                - 'row "DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438 #536 Nessun Cliente Bozza In Attesa Non Inviata €8,00 -" [ref=e1243]':
+                  - cell "DRAFT-371e5b94-f41a-46cd-a3ec-bed2f1718438" [ref=e1244]
+                  - cell "#536" [ref=e1245]
+                  - cell "Nessun Cliente" [ref=e1246]
+                  - cell "Bozza" [ref=e1247]
+                  - cell "In Attesa" [ref=e1248]:
+                    - generic [ref=e1249]:
+                      - img [ref=e1250]
+                      - generic [ref=e1253]: In Attesa
+                  - cell "Non Inviata" [ref=e1254]
+                  - cell "€8,00" [ref=e1255]
+                  - cell "-" [ref=e1256]
+                  - cell [ref=e1257]:
+                    - generic [ref=e1258]:
+                      - button "Vedi Dettagli" [ref=e1259] [cursor=pointer]:
+                        - img [ref=e1260]
+                      - button "Emetti Scontrino" [ref=e1263] [cursor=pointer]:
+                        - img [ref=e1264]
+                - 'row "R000013 #535 Nessun Cliente Emesso Completato Non Inviata €11,00 05/04/2026, 20:13" [ref=e1266]':
+                  - cell "R000013" [ref=e1267]
+                  - cell "#535" [ref=e1268]
+                  - cell "Nessun Cliente" [ref=e1269]
+                  - cell "Emesso" [ref=e1270]
+                  - cell "Completato" [ref=e1271]:
+                    - generic [ref=e1273]: Completato
+                  - cell "Non Inviata" [ref=e1274]
+                  - cell "€11,00" [ref=e1275]
+                  - cell "05/04/2026, 20:13" [ref=e1276]
+                  - cell [ref=e1277]:
+                    - generic [ref=e1278]:
+                      - button "Vedi Dettagli" [ref=e1279] [cursor=pointer]:
+                        - img [ref=e1280]
+                      - button "Scarica PDF" [ref=e1283] [cursor=pointer]:
+                        - img [ref=e1284]
+                      - button "Invia Email" [disabled] [ref=e1286]:
+                        - img [ref=e1287]
+                - 'row "R000012 #534 Nessun Cliente Emesso Completato Non Inviata €8,00 05/04/2026, 18:36" [ref=e1289]':
+                  - cell "R000012" [ref=e1290]
+                  - cell "#534" [ref=e1291]
+                  - cell "Nessun Cliente" [ref=e1292]
+                  - cell "Emesso" [ref=e1293]
+                  - cell "Completato" [ref=e1294]:
+                    - generic [ref=e1296]: Completato
+                  - cell "Non Inviata" [ref=e1297]
+                  - cell "€8,00" [ref=e1298]
+                  - cell "05/04/2026, 18:36" [ref=e1299]
+                  - cell [ref=e1300]:
+                    - generic [ref=e1301]:
+                      - button "Vedi Dettagli" [ref=e1302] [cursor=pointer]:
+                        - img [ref=e1303]
+                      - button "Scarica PDF" [ref=e1306] [cursor=pointer]:
+                        - img [ref=e1307]
+                      - button "Invia Email" [disabled] [ref=e1309]:
+                        - img [ref=e1310]
+                - 'row "DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939 #533 Nessun Cliente Bozza In Attesa Non Inviata €8,00 -" [ref=e1312]':
+                  - cell "DRAFT-d712f25d-bc96-4ab7-81fb-e7a72cac1939" [ref=e1313]
+                  - cell "#533" [ref=e1314]
+                  - cell "Nessun Cliente" [ref=e1315]
+                  - cell "Bozza" [ref=e1316]
+                  - cell "In Attesa" [ref=e1317]:
+                    - generic [ref=e1318]:
+                      - img [ref=e1319]
+                      - generic [ref=e1322]: In Attesa
+                  - cell "Non Inviata" [ref=e1323]
+                  - cell "€8,00" [ref=e1324]
+                  - cell "-" [ref=e1325]
+                  - cell [ref=e1326]:
+                    - generic [ref=e1327]:
+                      - button "Vedi Dettagli" [ref=e1328] [cursor=pointer]:
+                        - img [ref=e1329]
+                      - button "Emetti Scontrino" [ref=e1332] [cursor=pointer]:
+                        - img [ref=e1333]
+                - 'row "R000010 #530 Nessun Cliente Emesso Completato Non Inviata €8,00 05/04/2026, 13:34" [ref=e1335]':
+                  - cell "R000010" [ref=e1336]
+                  - cell "#530" [ref=e1337]
+                  - cell "Nessun Cliente" [ref=e1338]
+                  - cell "Emesso" [ref=e1339]
+                  - cell "Completato" [ref=e1340]:
+                    - generic [ref=e1342]: Completato
+                  - cell "Non Inviata" [ref=e1343]
+                  - cell "€8,00" [ref=e1344]
+                  - cell "05/04/2026, 13:34" [ref=e1345]
+                  - cell [ref=e1346]:
+                    - generic [ref=e1347]:
+                      - button "Vedi Dettagli" [ref=e1348] [cursor=pointer]:
+                        - img [ref=e1349]
+                      - button "Scarica PDF" [ref=e1352] [cursor=pointer]:
+                        - img [ref=e1353]
+                      - button "Invia Email" [disabled] [ref=e1355]:
+                        - img [ref=e1356]
+                - 'row "R000011 #529 Nessun Cliente Emesso In Attesa Non Inviata €3,00 05/04/2026, 16:07" [ref=e1358]':
+                  - cell "R000011" [ref=e1359]
+                  - cell "#529" [ref=e1360]
+                  - cell "Nessun Cliente" [ref=e1361]
+                  - cell "Emesso" [ref=e1362]
+                  - cell "In Attesa" [ref=e1363]:
+                    - generic [ref=e1364]:
+                      - img [ref=e1365]
+                      - generic [ref=e1368]: In Attesa
+                  - cell "Non Inviata" [ref=e1369]
+                  - cell "€3,00" [ref=e1370]
+                  - cell "05/04/2026, 16:07" [ref=e1371]
+                  - cell [ref=e1372]:
+                    - generic [ref=e1373]:
+                      - button "Vedi Dettagli" [ref=e1374] [cursor=pointer]:
+                        - img [ref=e1375]
+                      - button "Scarica PDF" [ref=e1378] [cursor=pointer]:
+                        - img [ref=e1379]
+                      - button "Invia Email" [disabled] [ref=e1381]:
+                        - img [ref=e1382]
+                - 'row "R000009 #527 Nessun Cliente Emesso Completato Non Inviata €3,00 05/04/2026, 13:24" [ref=e1384]':
+                  - cell "R000009" [ref=e1385]
+                  - cell "#527" [ref=e1386]
+                  - cell "Nessun Cliente" [ref=e1387]
+                  - cell "Emesso" [ref=e1388]
+                  - cell "Completato" [ref=e1389]:
+                    - generic [ref=e1391]: Completato
+                  - cell "Non Inviata" [ref=e1392]
+                  - cell "€3,00" [ref=e1393]
+                  - cell "05/04/2026, 13:24" [ref=e1394]
+                  - cell [ref=e1395]:
+                    - generic [ref=e1396]:
+                      - button "Vedi Dettagli" [ref=e1397] [cursor=pointer]:
+                        - img [ref=e1398]
+                      - button "Scarica PDF" [ref=e1401] [cursor=pointer]:
+                        - img [ref=e1402]
+                      - button "Invia Email" [disabled] [ref=e1404]:
+                        - img [ref=e1405]
+                - 'row "R000021 #526 Nessun Cliente Emesso In Attesa Non Inviata €8,00 21/04/2026, 22:59" [ref=e1407]':
+                  - cell "R000021" [ref=e1408]
+                  - cell "#526" [ref=e1409]
+                  - cell "Nessun Cliente" [ref=e1410]
+                  - cell "Emesso" [ref=e1411]
+                  - cell "In Attesa" [ref=e1412]:
+                    - generic [ref=e1413]:
+                      - img [ref=e1414]
+                      - generic [ref=e1417]: In Attesa
+                  - cell "Non Inviata" [ref=e1418]
+                  - cell "€8,00" [ref=e1419]
+                  - cell "21/04/2026, 22:59" [ref=e1420]
+                  - cell [ref=e1421]:
+                    - generic [ref=e1422]:
+                      - button "Vedi Dettagli" [ref=e1423] [cursor=pointer]:
+                        - img [ref=e1424]
+                      - button "Scarica PDF" [ref=e1427] [cursor=pointer]:
+                        - img [ref=e1428]
+                      - button "Invia Email" [disabled] [ref=e1430]:
+                        - img [ref=e1431]
+                - 'row "R000008 #525 Nessun Cliente Emesso Completato Non Inviata €8,00 05/04/2026, 13:06" [ref=e1433]':
+                  - cell "R000008" [ref=e1434]
+                  - cell "#525" [ref=e1435]
+                  - cell "Nessun Cliente" [ref=e1436]
+                  - cell "Emesso" [ref=e1437]
+                  - cell "Completato" [ref=e1438]:
+                    - generic [ref=e1440]: Completato
+                  - cell "Non Inviata" [ref=e1441]
+                  - cell "€8,00" [ref=e1442]
+                  - cell "05/04/2026, 13:06" [ref=e1443]
+                  - cell [ref=e1444]:
+                    - generic [ref=e1445]:
+                      - button "Vedi Dettagli" [ref=e1446] [cursor=pointer]:
+                        - img [ref=e1447]
+                      - button "Scarica PDF" [ref=e1450] [cursor=pointer]:
+                        - img [ref=e1451]
+                      - button "Invia Email" [disabled] [ref=e1453]:
+                        - img [ref=e1454]
+                - 'row "R000024 #524 Nessun Cliente Emesso In Attesa Non Inviata €8,00 28/04/2026, 23:23" [ref=e1456]':
+                  - cell "R000024" [ref=e1457]
+                  - cell "#524" [ref=e1458]
+                  - cell "Nessun Cliente" [ref=e1459]
+                  - cell "Emesso" [ref=e1460]
+                  - cell "In Attesa" [ref=e1461]:
+                    - generic [ref=e1462]:
+                      - img [ref=e1463]
+                      - generic [ref=e1466]: In Attesa
+                  - cell "Non Inviata" [ref=e1467]
+                  - cell "€8,00" [ref=e1468]
+                  - cell "28/04/2026, 23:23" [ref=e1469]
+                  - cell [ref=e1470]:
+                    - generic [ref=e1471]:
+                      - button "Vedi Dettagli" [ref=e1472] [cursor=pointer]:
+                        - img [ref=e1473]
+                      - button "Scarica PDF" [ref=e1476] [cursor=pointer]:
+                        - img [ref=e1477]
+                      - button "Invia Email" [disabled] [ref=e1479]:
+                        - img [ref=e1480]
+                - 'row "R000007 #509 Nessun Cliente Emesso In Attesa Non Inviata €4,00 03/04/2026, 04:12" [ref=e1482]':
+                  - cell "R000007" [ref=e1483]
+                  - cell "#509" [ref=e1484]
+                  - cell "Nessun Cliente" [ref=e1485]
+                  - cell "Emesso" [ref=e1486]
+                  - cell "In Attesa" [ref=e1487]:
+                    - generic [ref=e1488]:
+                      - img [ref=e1489]
+                      - generic [ref=e1492]: In Attesa
+                  - cell "Non Inviata" [ref=e1493]
+                  - cell "€4,00" [ref=e1494]
+                  - cell "03/04/2026, 04:12" [ref=e1495]
+                  - cell [ref=e1496]:
+                    - generic [ref=e1497]:
+                      - button "Vedi Dettagli" [ref=e1498] [cursor=pointer]:
+                        - img [ref=e1499]
+                      - button "Scarica PDF" [ref=e1502] [cursor=pointer]:
+                        - img [ref=e1503]
+                      - button "Invia Email" [disabled] [ref=e1505]:
+                        - img [ref=e1506]
+            - generic [ref=e1508]:
+              - button "Precedente" [disabled] [ref=e1509]
+              - generic [ref=e1510]: Pagina 1 di 2
+              - button "Successivo" [ref=e1511] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

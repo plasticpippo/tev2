@@ -157,19 +157,19 @@ transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADM
     
     // Validate tax matches
     let validatedTax = calculatedTax;
-    if (tax === 0) {
-      validatedTax = 0;
-    } else {
-      const taxDifference = Math.abs(subtractMoney(tax || 0, calculatedTax));
-      if (taxDifference > 0.01) {
-        return res.status(400).json({ 
-          error: t('errors:transactions.taxMismatch', { expected: formatMoney(calculatedTax), received: formatMoney(tax || 0) }) 
-        });
-      }
-      validatedTax = tax || 0;
+    const clientTax = tax || 0;
+    const taxDifference = Math.abs(subtractMoney(clientTax, calculatedTax));
+    if (taxDifference > 0.01) {
+      return res.status(400).json({ 
+        error: t('errors:transactions.taxMismatch', { expected: formatMoney(calculatedTax), received: formatMoney(clientTax) }) 
+      });
     }
+    validatedTax = clientTax;
     
     // Calculate final total
+    if (discount !== undefined && discount !== null && discount < 0) {
+      return res.status(400).json({ error: t('errors:transactions.negativeDiscount') });
+    }
     const discountAmount = discount || 0;
     const preDiscountTotal = addMoney(addMoney(calculatedSubtotal, validatedTax), tip || 0);
     const finalTotal = subtractMoney(preDiscountTotal, discountAmount);
@@ -298,7 +298,7 @@ const transaction = await tx.transaction.create({
     tillName,
     idempotencyKey: idempotencyKey || null,
     idempotencyCreatedAt: idempotencyKey ? new Date() : null,
-    totalCost: totalCost !== null ? totalCost : null,
+    totalCost: totalCost !== null ? totalCost : 0,
     costCalculatedAt,
     grossMargin: grossMargin !== null ? grossMargin : null,
     marginPercent: marginPercent !== null ? marginPercent : null,
@@ -323,6 +323,28 @@ const transaction = await tx.transaction.create({
             totalCost: itemCost?.totalCost ?? null,
           };
         }),
+      });
+
+      // 3c. Create audit log for transaction creation
+      await tx.transactionAuditLog.create({
+        data: {
+          transactionId: transaction.id,
+          action: 'create',
+          newValues: {
+            subtotal: calculatedSubtotal,
+            tax: validatedTax,
+            tip: tip || 0,
+            total: finalTotal,
+            discount: discountAmount,
+            paymentMethod,
+            itemCount: items.length,
+            totalCost: totalCost ?? 0,
+          },
+          userId: authenticatedUserId,
+          userName: authenticatedUserName,
+          ipAddress: req.ip || null,
+          userAgent: req.headers['user-agent'] || null,
+        },
       });
 
       // 4. Decrement stock levels (if any consumptions)
@@ -778,7 +800,7 @@ transactionsRouter.post(
           }
         }
 
-        // 5. Update transaction status to voided
+        // 5. Update transaction status to voided and reverse cost fields
         const updatedTransaction = await tx.transaction.update({
           where: { id: Number(id) },
           data: {
@@ -786,6 +808,36 @@ transactionsRouter.post(
             voidedAt: new Date(),
             voidReason: reason.trim(),
             voidedBy: authenticatedUserId,
+            totalCost: 0,
+            grossMargin: null,
+            marginPercent: null,
+            costCalculatedAt: null,
+          },
+        });
+
+        // 6. Create audit log for transaction void
+        await tx.transactionAuditLog.create({
+          data: {
+            transactionId: Number(id),
+            action: 'void',
+            oldValues: {
+              status: transaction.status,
+              totalCost: decimalToNumber(transaction.totalCost),
+              grossMargin: transaction.grossMargin ? decimalToNumber(transaction.grossMargin) : null,
+            },
+            newValues: {
+              status: 'voided',
+              voidReason: reason.trim(),
+              totalCost: 0,
+              restoredItems: Array.from(restorations.entries()).map(([sid, d]) => ({
+                stockItemId: sid,
+                quantity: d.quantity,
+              })),
+            },
+            userId: authenticatedUserId!,
+            userName: authenticatedUserName!,
+            ipAddress: req.ip || null,
+            userAgent: req.headers['user-agent'] || null,
           },
         });
 

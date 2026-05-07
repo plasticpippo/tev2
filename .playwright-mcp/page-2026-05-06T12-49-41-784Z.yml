@@ -1,0 +1,103 @@
+- generic [ref=e2]:
+  - generic [ref=e119]:
+    - banner [ref=e120]:
+      - generic [ref=e122]:
+        - heading "Pannello Amministratore" [level=1] [ref=e123]
+        - paragraph [ref=e124]: Connesso come Admin User
+      - generic [ref=e125]:
+        - button "Vai al POS" [ref=e126] [cursor=pointer]
+        - button "Esci" [ref=e127] [cursor=pointer]
+    - generic [ref=e128]:
+      - navigation [ref=e129]:
+        - button "Comprimi barra laterale" [ref=e131] [cursor=pointer]:
+          - img [ref=e132]
+        - button "Dashboard" [ref=e5466] [cursor=pointer]:
+          - img [ref=e5468]
+          - generic [ref=e5470]: Dashboard
+        - button "Analisi" [ref=e5471] [cursor=pointer]:
+          - img [ref=e5473]
+          - generic [ref=e5475]: Analisi
+        - button "Analisi di Profitto" [ref=e5476] [cursor=pointer]:
+          - img [ref=e5478]
+          - generic [ref=e5480]: Analisi di Profitto
+        - button "Transazioni" [ref=e5481] [cursor=pointer]:
+          - img [ref=e5483]
+          - generic [ref=e5485]: Transazioni
+        - button "Scontrini 14" [ref=e5486] [cursor=pointer]:
+          - img [ref=e5488]
+          - generic [ref=e5490]: Scontrini
+          - button "14" [ref=e5491]
+        - button "Registro Attività" [ref=e5492] [cursor=pointer]:
+          - img [ref=e5494]
+          - generic [ref=e5496]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e5497] [cursor=pointer]:
+          - img [ref=e5499]
+          - generic [ref=e5501]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e5502] [cursor=pointer]:
+          - img [ref=e5504]
+          - generic [ref=e5506]: Clienti
+        - button "Prodotti" [ref=e5507] [cursor=pointer]:
+          - img [ref=e5509]
+          - generic [ref=e5511]: Prodotti
+        - button "Categorie" [ref=e5512] [cursor=pointer]:
+          - img [ref=e5514]
+          - generic [ref=e5516]: Categorie
+        - button "Articoli Magazzino" [ref=e5517] [cursor=pointer]:
+          - img [ref=e5519]
+          - generic [ref=e5521]: Articoli Magazzino
+        - button "Inventario" [ref=e5522] [cursor=pointer]:
+          - img [ref=e5524]
+          - generic [ref=e5526]: Inventario
+        - button "Gestione Costi" [ref=e5527] [cursor=pointer]:
+          - img [ref=e5529]
+          - generic [ref=e5531]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e5532] [cursor=pointer]:
+          - img [ref=e5534]
+          - generic [ref=e5536]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e5537] [cursor=pointer]:
+          - img [ref=e5539]
+          - generic [ref=e5541]: Report Scostamento
+        - button "Utenti" [ref=e5542] [cursor=pointer]:
+          - img [ref=e5544]
+          - generic [ref=e5546]: Utenti
+        - button "Casse" [ref=e5547] [cursor=pointer]:
+          - img [ref=e5549]
+          - generic [ref=e5551]: Casse
+        - button "Tavoli e Layout" [ref=e5552] [cursor=pointer]:
+          - img [ref=e5554]
+          - generic [ref=e5556]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e5557] [cursor=pointer]:
+          - img [ref=e5559]
+          - generic [ref=e5561]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e5562] [cursor=pointer]:
+          - img [ref=e5564]
+          - generic [ref=e5567]: Impostazioni
+      - main [ref=e240]:
+        - generic [ref=e5568]:
+          - generic [ref=e5569]:
+            - paragraph [ref=e5570]: "Questo dispositivo è attualmente assegnato come: Main Bar"
+            - paragraph [ref=e5571]: Puoi riassegnare questo dispositivo a una cassa diversa qui sotto.
+          - generic [ref=e5572]:
+            - heading "Gestisci Tutte le Casse" [level=3] [ref=e5573]
+            - button "Aggiungi Cassa" [ref=e5574] [cursor=pointer]
+          - generic [ref=e5575]:
+            - generic [ref=e5576]:
+              - paragraph [ref=e5578]: Main Bar
+              - generic [ref=e5579]:
+                - generic [ref=e5580]: Attualmente Assegnato
+                - button "Modifica" [ref=e5581] [cursor=pointer]
+                - button "Elimina" [ref=e5582] [cursor=pointer]
+            - generic [ref=e5583]:
+              - paragraph [ref=e5585]: Entrata
+              - generic [ref=e5586]:
+                - button "Assegna Questo Dispositivo" [ref=e5587] [cursor=pointer]
+                - button "Modifica" [ref=e5588] [cursor=pointer]
+                - button "Elimina" [ref=e5589] [cursor=pointer]
+            - generic [ref=e5590]:
+              - paragraph [ref=e5592]: QA Till Updated
+              - generic [ref=e5593]:
+                - button "Assegna Questo Dispositivo" [ref=e5594] [cursor=pointer]
+                - button "Modifica" [ref=e5595] [cursor=pointer]
+                - button "Elimina" [ref=e5596] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

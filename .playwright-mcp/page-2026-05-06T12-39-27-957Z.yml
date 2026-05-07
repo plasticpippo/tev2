@@ -1,0 +1,19 @@
+- generic [active]:
+  - generic:
+    - generic [ref=e251]:
+      - button "Cambia Lingua" [ref=e254] [cursor=pointer]:
+        - generic [ref=e255]: IT
+        - img [ref=e256]
+      - heading "Bar POS Pro" [level=2] [ref=e258]
+      - paragraph [ref=e259]: "Cassa: Main Bar"
+      - generic [ref=e260]:
+        - generic [ref=e261]:
+          - generic [ref=e262]: Nome Utente
+          - textbox [ref=e263]
+        - generic [ref=e264]:
+          - generic [ref=e265]: Password
+          - textbox [ref=e266]: admin123
+        - button "Accedi" [ref=e267] [cursor=pointer]
+        - paragraph [ref=e271]: Nome utente o password mancanti. Inserisci entrambi i campi.
+    - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+      - img [ref=e5]

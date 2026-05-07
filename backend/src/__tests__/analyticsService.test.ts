@@ -52,7 +52,7 @@ function makeTransaction(overrides: {
     idempotencyCreatedAt: null,
     totalCost: overrides.totalCost !== undefined && overrides.totalCost !== null
       ? new Decimal(overrides.totalCost)
-      : null,
+      : new Decimal(0),
     costCalculatedAt: overrides.totalCost ? new Date() : null,
     grossMargin: overrides.totalCost !== undefined && overrides.totalCost !== null
       ? new Decimal((overrides.subtotal ?? 100) - overrides.totalCost)
