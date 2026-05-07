@@ -975,7 +975,8 @@
         "download": "Download PDF",
         "email": "Send Email",
         "issue": "Issue Receipt",
-        "viewCustomer": "View Customer Details"
+        "viewCustomer": "View Customer Details",
+        "resendEmail": "Resend Email"
     },
     "issue": {
       "confirm": "Issue this receipt? This action cannot be undone.",

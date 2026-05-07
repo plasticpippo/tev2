@@ -33,7 +33,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
   const { t } = useTranslation();
   const { currentUser, assignedTillId } = useSessionContext();
   const { orderItems, setOrderItems, clearOrder, activeTab, setActiveTab } = useOrderContext();
-  const { appData } = useGlobalDataContext();
+  const { appData, currentTillName } = useGlobalDataContext();
   const { setIsTabsModalOpen, transferSourceTab, setTransferSourceTab, setIsTransferModalOpen } = useUIStateContext();
   const { assignedTable } = useTableAssignmentContext();
   const { addToast } = useToast();
@@ -45,7 +45,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
         name,
         items: [],
         tillId: assignedTillId,
-        tillName: t('tabManagementContext.placeholderTillName'), // This should come from GlobalDataContext
+        tillName: currentTillName,
         createdAt: new Date().toISOString(),
         tableId: assignedTable?.id
       });
@@ -182,7 +182,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
           type: 'new' as const,
           name: destination.name,
           tillId: assignedTillId,
-          tillName: t('tabManagementContext.placeholderTillName'),
+          tillName: currentTillName,
           tableId: assignedTable?.id
         };
     } else {

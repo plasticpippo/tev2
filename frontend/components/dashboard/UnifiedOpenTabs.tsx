@@ -2,9 +2,21 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Tab } from '../@shared/types';
 import { formatCurrency } from '../../utils/formatting';
+import { useGlobalDataContext } from '../../contexts/GlobalDataContext';
 
 export const UnifiedOpenTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
     const { t } = useTranslation('admin');
+    const { appData } = useGlobalDataContext();
+    
+    const resolveTillName = (tab: Tab): string => {
+        if (tab.tillId) {
+            const till = appData.tills.find(t => t.id === tab.tillId);
+            if (till) return till.name;
+        }
+        // Fallback: if stored tillName looks like a raw i18n key, use a placeholder
+        if (tab.tillName && !tab.tillName.includes('.')) return tab.tillName;
+        return t('globalDataContext.unknownTill');
+    };
     
     return (
         <div className="bg-slate-900 p-4 rounded-lg flex flex-col h-full">
@@ -18,11 +30,12 @@ export const UnifiedOpenTabs: React.FC<{ tabs: Tab[] }> = ({ tabs }) => {
                              // Ensure tab.items is an array before calling reduce
                              const itemsArray = Array.isArray(tab.items) ? tab.items : [];
                              const tabTotal = itemsArray.reduce((sum, item) => sum + item.price * item.quantity, 0);
+                             const tillName = resolveTillName(tab);
                              return (
                                 <div key={tab.id} className="bg-slate-800 p-3 rounded-md flex justify-between items-center">
                                     <div>
                                         <p className="font-bold">{tab.name}</p>
-                                        <p className="text-sm text-slate-400">{t('dashboard.on')} {tab.tillName}</p>
+                                        <p className="text-sm text-slate-400">{t('dashboard.on')} {tillName}</p>
                                     </div>
                                     <p className="font-semibold text-lg text-amber-400">{formatCurrency(tabTotal)}</p>
                                 </div>

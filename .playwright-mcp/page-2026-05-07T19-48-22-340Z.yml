@@ -1,0 +1,18 @@
+- generic:
+  - generic:
+    - generic [ref=e2]:
+      - button "Cambia Lingua" [ref=e5] [cursor=pointer]:
+        - generic [ref=e6]: IT
+        - img [ref=e7]
+      - heading "Bar POS Pro" [level=2] [ref=e9]
+      - paragraph [ref=e10]: "Cassa: Cassa Sconosciuta"
+      - generic [ref=e11]:
+        - generic [ref=e12]:
+          - generic [ref=e13]: Nome Utente
+          - textbox [active] [ref=e14]
+        - generic [ref=e15]:
+          - generic [ref=e16]: Password
+          - textbox [ref=e17]
+        - button "Accedi" [ref=e18] [cursor=pointer]
+    - button "Attiva tastiera virtuale" [ref=e19] [cursor=pointer]:
+      - img [ref=e20]

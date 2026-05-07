@@ -171,7 +171,7 @@ const DateRangeButton: React.FC<{preset: DateRangePreset, label: string}> = ({pr
 onClick={() => setDateRange(preset)}
 className={`px-3 py-2 min-h-11 text-sm rounded-md transition ${dateRange === preset ? 'bg-amber-500 text-white' : 'bg-slate-700 hover:bg-slate-600'}`}
 aria-pressed={dateRange === preset}
-aria-label={t('transactions.ariaLabels.filterBy', { label })}
+aria-label={t('transactions.ariaLabels.filterBy', { filter: label })}
 data-testid={`date-range-${preset}`}
 >
 {label}

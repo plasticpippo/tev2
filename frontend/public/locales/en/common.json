@@ -697,5 +697,10 @@
     "tabClosed": "Tab closed successfully.",
     "deleteFailed": "Failed to delete tab.",
     "emptyTab": "Cannot close a tab that has items."
+  },
+  "tabManagementContext": {
+    "placeholderTillName": "Unknown Till",
+    "itemFallbackName": "Item {{variantId}}",
+    "orderSessionAssignTabFailed": "Failed to update order session status when assigning to tab"
   }
 }

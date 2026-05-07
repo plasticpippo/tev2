@@ -986,7 +986,8 @@
       "download": "Scarica PDF",
       "email": "Invia Email",
       "issue": "Emetti Scontrino",
-      "viewCustomer": "Vedi Dettagli Cliente"
+      "viewCustomer": "Vedi Dettagli Cliente",
+      "resendEmail": "Reinvia Email"
     },
     "issue": {
       "confirm": "Emettere questo scontrino? Questa azione non può essere annullata.",

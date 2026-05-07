@@ -1,0 +1,1226 @@
+- generic [ref=e2]:
+  - generic [ref=e116]:
+    - banner [ref=e117]:
+      - generic [ref=e119]:
+        - heading "Pannello Amministratore" [level=1] [ref=e120]
+        - paragraph [ref=e121]: Connesso come Admin User
+      - generic [ref=e122]:
+        - button "Vai al POS" [ref=e123] [cursor=pointer]
+        - button "Esci" [ref=e124] [cursor=pointer]
+    - generic [ref=e125]:
+      - navigation [ref=e126]:
+        - button "Comprimi barra laterale" [ref=e128] [cursor=pointer]:
+          - img [ref=e129]
+        - button "Dashboard" [ref=e331] [cursor=pointer]:
+          - img [ref=e333]
+          - generic [ref=e335]: Dashboard
+        - button "Analisi" [ref=e336] [cursor=pointer]:
+          - img [ref=e338]
+          - generic [ref=e340]: Analisi
+        - button "Analisi di Profitto" [ref=e341] [cursor=pointer]:
+          - img [ref=e343]
+          - generic [ref=e345]: Analisi di Profitto
+        - button "Transazioni" [ref=e346] [cursor=pointer]:
+          - img [ref=e348]
+          - generic [ref=e350]: Transazioni
+        - button "Scontrini" [ref=e351] [cursor=pointer]:
+          - img [ref=e353]
+          - generic [ref=e355]: Scontrini
+        - button "Registro Attività" [ref=e356] [cursor=pointer]:
+          - img [ref=e358]
+          - generic [ref=e360]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e361] [cursor=pointer]:
+          - img [ref=e363]
+          - generic [ref=e365]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e366] [cursor=pointer]:
+          - img [ref=e368]
+          - generic [ref=e370]: Clienti
+        - button "Prodotti" [ref=e371] [cursor=pointer]:
+          - img [ref=e373]
+          - generic [ref=e375]: Prodotti
+        - button "Categorie" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Categorie
+        - button "Articoli Magazzino" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Articoli Magazzino
+        - button "Inventario" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Inventario
+        - button "Gestione Costi" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Report Scostamento
+        - button "Utenti" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Utenti
+        - button "Casse" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Casse
+        - button "Tavoli e Layout" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e431]: Impostazioni
+      - main [ref=e236]:
+        - generic [ref=e432]:
+          - heading "Transazioni" [level=2] [ref=e433]
+          - generic [ref=e434]:
+            - generic [ref=e435]:
+              - button "Filtra per Oggi" [ref=e436] [cursor=pointer]: Oggi
+              - button "Filtra per Ieri" [ref=e437] [cursor=pointer]: Ieri
+              - button "Filtra per Ultimi 7 Giorni" [ref=e438] [cursor=pointer]: Ultimi 7 Giorni
+              - button "Filtra per Ultimi 30 Giorni" [pressed] [ref=e439] [cursor=pointer]: Ultimi 30 Giorni
+              - button "Filtra per intervallo di date personalizzato" [ref=e440] [cursor=pointer]: Personalizzato
+            - generic [ref=e442]:
+              - generic [ref=e443]:
+                - generic [ref=e444]: Cassa
+                - combobox "Filtra per cassa" [ref=e445]:
+                  - option "Tutte le Casse" [selected]
+                  - option "Main Bar"
+                  - option "Entrata"
+              - generic [ref=e446]:
+                - generic [ref=e447]: Utente
+                - combobox "Filtra per utente" [ref=e448]:
+                  - option "Tutti gli Utenti" [selected]
+                  - option "Admin User"
+                  - option "Bar"
+                  - option "Cassa"
+          - generic [ref=e449]: 158 transazioni trovate
+          - generic [ref=e450]:
+            - generic [ref=e451]:
+              - button "Visualizza dettagli per transazione 787" [ref=e453] [cursor=pointer]:
+                - generic [ref=e454]:
+                  - generic [ref=e455]: €9,00
+                  - generic [ref=e456]: Main Bar
+                - generic [ref=e457]:
+                  - generic [ref=e458]: admin (Card)
+                  - generic [ref=e459]: 07/05/2026, 13:48
+              - button "Visualizza dettagli per transazione 786" [ref=e461] [cursor=pointer]:
+                - generic [ref=e462]:
+                  - generic [ref=e463]: €15,00
+                  - generic [ref=e464]: Main Bar
+                - generic [ref=e465]:
+                  - generic [ref=e466]: admin (Card)
+                  - generic [ref=e467]: 07/05/2026, 13:06
+              - button "Visualizza dettagli per transazione 785" [ref=e469] [cursor=pointer]:
+                - generic [ref=e470]:
+                  - generic [ref=e471]: €8,00
+                  - generic [ref=e472]: Main Bar
+                - generic [ref=e473]:
+                  - generic [ref=e474]: bar (Card)
+                  - generic [ref=e475]: 19/04/2026, 03:21
+                - generic [ref=e476]:
+                  - generic [ref=e477]: VOIDED
+                  - generic [ref=e478]: QA Test Void - Testing transaction void functionality
+              - button "Visualizza dettagli per transazione 784" [ref=e480] [cursor=pointer]:
+                - generic [ref=e481]:
+                  - generic [ref=e482]: €8,00
+                  - generic [ref=e483]: Main Bar
+                - generic [ref=e484]:
+                  - generic [ref=e485]: bar (Card)
+                  - generic [ref=e486]: 19/04/2026, 02:56
+              - button "Visualizza dettagli per transazione 783" [ref=e488] [cursor=pointer]:
+                - generic [ref=e489]:
+                  - generic [ref=e490]: €4,00
+                  - generic [ref=e491]: Main Bar
+                - generic [ref=e492]:
+                  - generic [ref=e493]: bar (Cash)
+                  - generic [ref=e494]: 19/04/2026, 02:16
+              - button "Visualizza dettagli per transazione 782" [ref=e496] [cursor=pointer]:
+                - generic [ref=e497]:
+                  - generic [ref=e498]: €8,00
+                  - generic [ref=e499]: Main Bar
+                - generic [ref=e500]:
+                  - generic [ref=e501]: bar (Card)
+                  - generic [ref=e502]: 19/04/2026, 02:09
+              - button "Visualizza dettagli per transazione 781" [ref=e504] [cursor=pointer]:
+                - generic [ref=e505]:
+                  - generic [ref=e506]: €9,00
+                  - generic [ref=e507]: Main Bar
+                - generic [ref=e508]:
+                  - generic [ref=e509]: bar (Cash)
+                  - generic [ref=e510]: 19/04/2026, 01:54
+              - button "Visualizza dettagli per transazione 780" [ref=e512] [cursor=pointer]:
+                - generic [ref=e513]:
+                  - generic [ref=e514]: €10,00
+                  - generic [ref=e515]: Entrata
+                - generic [ref=e516]:
+                  - generic [ref=e517]: cassa (Card)
+                  - generic [ref=e518]: 19/04/2026, 01:35
+              - button "Visualizza dettagli per transazione 779" [ref=e520] [cursor=pointer]:
+                - generic [ref=e521]:
+                  - generic [ref=e522]: €20,00
+                  - generic [ref=e523]: Entrata
+                - generic [ref=e524]:
+                  - generic [ref=e525]: cassa (Cash)
+                  - generic [ref=e526]: 19/04/2026, 01:35
+              - button "Visualizza dettagli per transazione 778" [ref=e528] [cursor=pointer]:
+                - generic [ref=e529]:
+                  - generic [ref=e530]: €10,00
+                  - generic [ref=e531]: Entrata
+                - generic [ref=e532]:
+                  - generic [ref=e533]: cassa (Cash)
+                  - generic [ref=e534]: 19/04/2026, 01:16
+              - button "Visualizza dettagli per transazione 777" [ref=e536] [cursor=pointer]:
+                - generic [ref=e537]:
+                  - generic [ref=e538]: €11,00
+                  - generic [ref=e539]: Main Bar
+                - generic [ref=e540]:
+                  - generic [ref=e541]: bar (Card)
+                  - generic [ref=e542]: 19/04/2026, 01:14
+              - button "Visualizza dettagli per transazione 776" [ref=e544] [cursor=pointer]:
+                - generic [ref=e545]:
+                  - generic [ref=e546]: €4,00
+                  - generic [ref=e547]: Main Bar
+                - generic [ref=e548]:
+                  - generic [ref=e549]: bar (Cash)
+                  - generic [ref=e550]: 19/04/2026, 01:13
+              - button "Visualizza dettagli per transazione 775" [ref=e552] [cursor=pointer]:
+                - generic [ref=e553]:
+                  - generic [ref=e554]: €0,00
+                  - generic [ref=e555]: Entrata
+                - generic [ref=e556]:
+                  - generic [ref=e557]: cassa (Cash)
+                  - generic [ref=e558]: 19/04/2026, 01:13
+              - button "Visualizza dettagli per transazione 774" [ref=e560] [cursor=pointer]:
+                - generic [ref=e561]:
+                  - generic [ref=e562]: €0,00
+                  - generic [ref=e563]: Entrata
+                - generic [ref=e564]:
+                  - generic [ref=e565]: cassa (Cash)
+                  - generic [ref=e566]: 19/04/2026, 01:09
+              - button "Visualizza dettagli per transazione 773" [ref=e568] [cursor=pointer]:
+                - generic [ref=e569]:
+                  - generic [ref=e570]: €10,00
+                  - generic [ref=e571]: Entrata
+                - generic [ref=e572]:
+                  - generic [ref=e573]: cassa (Card)
+                  - generic [ref=e574]: 19/04/2026, 01:09
+              - button "Visualizza dettagli per transazione 772" [ref=e576] [cursor=pointer]:
+                - generic [ref=e577]:
+                  - generic [ref=e578]: €10,00
+                  - generic [ref=e579]: Entrata
+                - generic [ref=e580]:
+                  - generic [ref=e581]: cassa (Cash)
+                  - generic [ref=e582]: 19/04/2026, 01:08
+              - button "Visualizza dettagli per transazione 771" [ref=e584] [cursor=pointer]:
+                - generic [ref=e585]:
+                  - generic [ref=e586]: €2,00
+                  - generic [ref=e587]: Main Bar
+                - generic [ref=e588]:
+                  - generic [ref=e589]: bar (Cash)
+                  - generic [ref=e590]: 19/04/2026, 00:56
+              - button "Visualizza dettagli per transazione 770" [ref=e592] [cursor=pointer]:
+                - generic [ref=e593]:
+                  - generic [ref=e594]: €4,00
+                  - generic [ref=e595]: Main Bar
+                - generic [ref=e596]:
+                  - generic [ref=e597]: bar (Cash)
+                  - generic [ref=e598]: 19/04/2026, 00:06
+              - button "Visualizza dettagli per transazione 769" [ref=e600] [cursor=pointer]:
+                - generic [ref=e601]:
+                  - generic [ref=e602]: €10,00
+                  - generic [ref=e603]: Entrata
+                - generic [ref=e604]:
+                  - generic [ref=e605]: cassa (Cash)
+                  - generic [ref=e606]: 18/04/2026, 23:55
+              - button "Visualizza dettagli per transazione 768" [ref=e608] [cursor=pointer]:
+                - generic [ref=e609]:
+                  - generic [ref=e610]: €0,00
+                  - generic [ref=e611]: Entrata
+                - generic [ref=e612]:
+                  - generic [ref=e613]: cassa (Cash)
+                  - generic [ref=e614]: 18/04/2026, 23:43
+              - button "Visualizza dettagli per transazione 767" [ref=e616] [cursor=pointer]:
+                - generic [ref=e617]:
+                  - generic [ref=e618]: €4,00
+                  - generic [ref=e619]: Main Bar
+                - generic [ref=e620]:
+                  - generic [ref=e621]: bar (Cash)
+                  - generic [ref=e622]: 18/04/2026, 05:47
+              - button "Visualizza dettagli per transazione 766" [ref=e624] [cursor=pointer]:
+                - generic [ref=e625]:
+                  - generic [ref=e626]: €6,00
+                  - generic [ref=e627]: Main Bar
+                - generic [ref=e628]:
+                  - generic [ref=e629]: bar (Cash)
+                  - generic [ref=e630]: 18/04/2026, 05:14
+              - button "Visualizza dettagli per transazione 765" [ref=e632] [cursor=pointer]:
+                - generic [ref=e633]:
+                  - generic [ref=e634]: €8,00
+                  - generic [ref=e635]: Main Bar
+                - generic [ref=e636]:
+                  - generic [ref=e637]: bar (Cash)
+                  - generic [ref=e638]: 18/04/2026, 05:01
+              - button "Visualizza dettagli per transazione 764" [ref=e640] [cursor=pointer]:
+                - generic [ref=e641]:
+                  - generic [ref=e642]: €9,00
+                  - generic [ref=e643]: Main Bar
+                - generic [ref=e644]:
+                  - generic [ref=e645]: bar (Cash)
+                  - generic [ref=e646]: 18/04/2026, 04:50
+              - button "Visualizza dettagli per transazione 763" [ref=e648] [cursor=pointer]:
+                - generic [ref=e649]:
+                  - generic [ref=e650]: €9,00
+                  - generic [ref=e651]: Main Bar
+                - generic [ref=e652]:
+                  - generic [ref=e653]: bar (Cash)
+                  - generic [ref=e654]: 18/04/2026, 04:42
+              - button "Visualizza dettagli per transazione 762" [ref=e656] [cursor=pointer]:
+                - generic [ref=e657]:
+                  - generic [ref=e658]: €16,00
+                  - generic [ref=e659]: Main Bar
+                - generic [ref=e660]:
+                  - generic [ref=e661]: bar (Cash)
+                  - generic [ref=e662]: 18/04/2026, 04:25
+              - button "Visualizza dettagli per transazione 761" [ref=e664] [cursor=pointer]:
+                - generic [ref=e665]:
+                  - generic [ref=e666]: €3,00
+                  - generic [ref=e667]: Main Bar
+                - generic [ref=e668]:
+                  - generic [ref=e669]: bar (Card)
+                  - generic [ref=e670]: 18/04/2026, 04:09
+              - button "Visualizza dettagli per transazione 760" [ref=e672] [cursor=pointer]:
+                - generic [ref=e673]:
+                  - generic [ref=e674]: €4,00
+                  - generic [ref=e675]: Main Bar
+                - generic [ref=e676]:
+                  - generic [ref=e677]: bar (Cash)
+                  - generic [ref=e678]: 18/04/2026, 03:58
+              - button "Visualizza dettagli per transazione 759" [ref=e680] [cursor=pointer]:
+                - generic [ref=e681]:
+                  - generic [ref=e682]: €10,00
+                  - generic [ref=e683]: Entrata
+                - generic [ref=e684]:
+                  - generic [ref=e685]: cassa (Cash)
+                  - generic [ref=e686]: 18/04/2026, 03:44
+              - button "Visualizza dettagli per transazione 758" [ref=e688] [cursor=pointer]:
+                - generic [ref=e689]:
+                  - generic [ref=e690]: €8,00
+                  - generic [ref=e691]: Main Bar
+                - generic [ref=e692]:
+                  - generic [ref=e693]: bar (Cash)
+                  - generic [ref=e694]: 18/04/2026, 03:33
+              - button "Visualizza dettagli per transazione 757" [ref=e696] [cursor=pointer]:
+                - generic [ref=e697]:
+                  - generic [ref=e698]: €30,00
+                  - generic [ref=e699]: Entrata
+                - generic [ref=e700]:
+                  - generic [ref=e701]: cassa (Cash)
+                  - generic [ref=e702]: 18/04/2026, 03:30
+              - button "Visualizza dettagli per transazione 756" [ref=e704] [cursor=pointer]:
+                - generic [ref=e705]:
+                  - generic [ref=e706]: €20,00
+                  - generic [ref=e707]: Entrata
+                - generic [ref=e708]:
+                  - generic [ref=e709]: cassa (Cash)
+                  - generic [ref=e710]: 18/04/2026, 03:26
+              - button "Visualizza dettagli per transazione 755" [ref=e712] [cursor=pointer]:
+                - generic [ref=e713]:
+                  - generic [ref=e714]: €0,00
+                  - generic [ref=e715]: Entrata
+                - generic [ref=e716]:
+                  - generic [ref=e717]: cassa (Cash)
+                  - generic [ref=e718]: 18/04/2026, 03:24
+              - button "Visualizza dettagli per transazione 754" [ref=e720] [cursor=pointer]:
+                - generic [ref=e721]:
+                  - generic [ref=e722]: €30,00
+                  - generic [ref=e723]: Entrata
+                - generic [ref=e724]:
+                  - generic [ref=e725]: cassa (Cash)
+                  - generic [ref=e726]: 18/04/2026, 03:11
+              - button "Visualizza dettagli per transazione 753" [ref=e728] [cursor=pointer]:
+                - generic [ref=e729]:
+                  - generic [ref=e730]: €0,00
+                  - generic [ref=e731]: Entrata
+                - generic [ref=e732]:
+                  - generic [ref=e733]: cassa (Cash)
+                  - generic [ref=e734]: 18/04/2026, 02:55
+              - button "Visualizza dettagli per transazione 752" [ref=e736] [cursor=pointer]:
+                - generic [ref=e737]:
+                  - generic [ref=e738]: €0,00
+                  - generic [ref=e739]: Entrata
+                - generic [ref=e740]:
+                  - generic [ref=e741]: cassa (Cash)
+                  - generic [ref=e742]: 18/04/2026, 02:48
+              - button "Visualizza dettagli per transazione 751" [ref=e744] [cursor=pointer]:
+                - generic [ref=e745]:
+                  - generic [ref=e746]: €0,00
+                  - generic [ref=e747]: Entrata
+                - generic [ref=e748]:
+                  - generic [ref=e749]: cassa (Cash)
+                  - generic [ref=e750]: 18/04/2026, 02:41
+              - button "Visualizza dettagli per transazione 750" [ref=e752] [cursor=pointer]:
+                - generic [ref=e753]:
+                  - generic [ref=e754]: €20,00
+                  - generic [ref=e755]: Entrata
+                - generic [ref=e756]:
+                  - generic [ref=e757]: cassa (Cash)
+                  - generic [ref=e758]: 18/04/2026, 02:41
+              - button "Visualizza dettagli per transazione 749" [ref=e760] [cursor=pointer]:
+                - generic [ref=e761]:
+                  - generic [ref=e762]: €4,00
+                  - generic [ref=e763]: Main Bar
+                - generic [ref=e764]:
+                  - generic [ref=e765]: bar (Cash)
+                  - generic [ref=e766]: 18/04/2026, 02:29
+              - button "Visualizza dettagli per transazione 748" [ref=e768] [cursor=pointer]:
+                - generic [ref=e769]:
+                  - generic [ref=e770]: €8,00
+                  - generic [ref=e771]: Main Bar
+                - generic [ref=e772]:
+                  - generic [ref=e773]: bar (Card)
+                  - generic [ref=e774]: 18/04/2026, 02:20
+              - button "Visualizza dettagli per transazione 747" [ref=e776] [cursor=pointer]:
+                - generic [ref=e777]:
+                  - generic [ref=e778]: €20,00
+                  - generic [ref=e779]: Entrata
+                - generic [ref=e780]:
+                  - generic [ref=e781]: cassa (Cash)
+                  - generic [ref=e782]: 18/04/2026, 02:06
+              - button "Visualizza dettagli per transazione 746" [ref=e784] [cursor=pointer]:
+                - generic [ref=e785]:
+                  - generic [ref=e786]: €10,00
+                  - generic [ref=e787]: Entrata
+                - generic [ref=e788]:
+                  - generic [ref=e789]: cassa (Cash)
+                  - generic [ref=e790]: 18/04/2026, 02:04
+              - button "Visualizza dettagli per transazione 745" [ref=e792] [cursor=pointer]:
+                - generic [ref=e793]:
+                  - generic [ref=e794]: €10,00
+                  - generic [ref=e795]: Entrata
+                - generic [ref=e796]:
+                  - generic [ref=e797]: cassa (Cash)
+                  - generic [ref=e798]: 18/04/2026, 01:51
+              - button "Visualizza dettagli per transazione 744" [ref=e800] [cursor=pointer]:
+                - generic [ref=e801]:
+                  - generic [ref=e802]: €0,00
+                  - generic [ref=e803]: Entrata
+                - generic [ref=e804]:
+                  - generic [ref=e805]: cassa (Cash)
+                  - generic [ref=e806]: 18/04/2026, 01:49
+              - button "Visualizza dettagli per transazione 743" [ref=e808] [cursor=pointer]:
+                - generic [ref=e809]:
+                  - generic [ref=e810]: €0,00
+                  - generic [ref=e811]: Entrata
+                - generic [ref=e812]:
+                  - generic [ref=e813]: cassa (Cash)
+                  - generic [ref=e814]: 18/04/2026, 01:47
+              - button "Visualizza dettagli per transazione 742" [ref=e816] [cursor=pointer]:
+                - generic [ref=e817]:
+                  - generic [ref=e818]: €30,00
+                  - generic [ref=e819]: Entrata
+                - generic [ref=e820]:
+                  - generic [ref=e821]: cassa (Card)
+                  - generic [ref=e822]: 18/04/2026, 01:43
+              - button "Visualizza dettagli per transazione 741" [ref=e824] [cursor=pointer]:
+                - generic [ref=e825]:
+                  - generic [ref=e826]: €6,00
+                  - generic [ref=e827]: Main Bar
+                - generic [ref=e828]:
+                  - generic [ref=e829]: bar (Card)
+                  - generic [ref=e830]: 18/04/2026, 01:31
+              - button "Visualizza dettagli per transazione 740" [ref=e832] [cursor=pointer]:
+                - generic [ref=e833]:
+                  - generic [ref=e834]: €20,00
+                  - generic [ref=e835]: Entrata
+                - generic [ref=e836]:
+                  - generic [ref=e837]: cassa (Cash)
+                  - generic [ref=e838]: 18/04/2026, 01:16
+              - button "Visualizza dettagli per transazione 739" [ref=e840] [cursor=pointer]:
+                - generic [ref=e841]:
+                  - generic [ref=e842]: €0,00
+                  - generic [ref=e843]: Entrata
+                - generic [ref=e844]:
+                  - generic [ref=e845]: cassa (Cash)
+                  - generic [ref=e846]: 18/04/2026, 00:49
+              - button "Visualizza dettagli per transazione 738" [ref=e848] [cursor=pointer]:
+                - generic [ref=e849]:
+                  - generic [ref=e850]: €0,00
+                  - generic [ref=e851]: Entrata
+                - generic [ref=e852]:
+                  - generic [ref=e853]: cassa (Cash)
+                  - generic [ref=e854]: 18/04/2026, 00:48
+              - button "Visualizza dettagli per transazione 737" [ref=e856] [cursor=pointer]:
+                - generic [ref=e857]:
+                  - generic [ref=e858]: €0,00
+                  - generic [ref=e859]: Entrata
+                - generic [ref=e860]:
+                  - generic [ref=e861]: cassa (Cash)
+                  - generic [ref=e862]: 18/04/2026, 00:48
+              - button "Visualizza dettagli per transazione 736" [ref=e864] [cursor=pointer]:
+                - generic [ref=e865]:
+                  - generic [ref=e866]: €20,00
+                  - generic [ref=e867]: Entrata
+                - generic [ref=e868]:
+                  - generic [ref=e869]: cassa (Card)
+                  - generic [ref=e870]: 18/04/2026, 00:30
+              - button "Visualizza dettagli per transazione 735" [ref=e872] [cursor=pointer]:
+                - generic [ref=e873]:
+                  - generic [ref=e874]: €10,00
+                  - generic [ref=e875]: Entrata
+                - generic [ref=e876]:
+                  - generic [ref=e877]: cassa (Card)
+                  - generic [ref=e878]: 18/04/2026, 00:27
+              - button "Visualizza dettagli per transazione 734" [ref=e880] [cursor=pointer]:
+                - generic [ref=e881]:
+                  - generic [ref=e882]: €10,00
+                  - generic [ref=e883]: Entrata
+                - generic [ref=e884]:
+                  - generic [ref=e885]: cassa (Cash)
+                  - generic [ref=e886]: 18/04/2026, 00:27
+              - button "Visualizza dettagli per transazione 733" [ref=e888] [cursor=pointer]:
+                - generic [ref=e889]:
+                  - generic [ref=e890]: €10,00
+                  - generic [ref=e891]: Entrata
+                - generic [ref=e892]:
+                  - generic [ref=e893]: cassa (Card)
+                  - generic [ref=e894]: 18/04/2026, 00:24
+              - button "Visualizza dettagli per transazione 732" [ref=e896] [cursor=pointer]:
+                - generic [ref=e897]:
+                  - generic [ref=e898]: €0,00
+                  - generic [ref=e899]: Main Bar
+                - generic [ref=e900]:
+                  - generic [ref=e901]: admin (Card)
+                  - generic [ref=e902]: 15/04/2026, 21:31
+                - generic [ref=e904]: Omaggio
+              - button "Visualizza dettagli per transazione 731" [ref=e906] [cursor=pointer]:
+                - generic [ref=e907]:
+                  - generic [ref=e908]: €0,00
+                  - generic [ref=e909]: Main Bar
+                - generic [ref=e910]:
+                  - generic [ref=e911]: admin (Card)
+                  - generic [ref=e912]: 15/04/2026, 21:10
+                - generic [ref=e914]: Omaggio
+              - button "Visualizza dettagli per transazione 730" [ref=e916] [cursor=pointer]:
+                - generic [ref=e917]:
+                  - generic [ref=e918]: €0,00
+                  - generic [ref=e919]: Main Bar
+                - generic [ref=e920]:
+                  - generic [ref=e921]: admin (Card)
+                  - generic [ref=e922]: 12/04/2026, 06:43
+                - generic [ref=e924]: Omaggio
+              - button "Visualizza dettagli per transazione 729" [ref=e926] [cursor=pointer]:
+                - generic [ref=e927]:
+                  - generic [ref=e928]: €0,00
+                  - generic [ref=e929]: Main Bar
+                - generic [ref=e930]:
+                  - generic [ref=e931]: admin (Card)
+                  - generic [ref=e932]: 12/04/2026, 05:26
+                - generic [ref=e934]: Omaggio
+              - button "Visualizza dettagli per transazione 728" [ref=e936] [cursor=pointer]:
+                - generic [ref=e937]:
+                  - generic [ref=e938]: €0,00
+                  - generic [ref=e939]: Main Bar
+                - generic [ref=e940]:
+                  - generic [ref=e941]: admin (Card)
+                  - generic [ref=e942]: 12/04/2026, 05:26
+                - generic [ref=e944]: Omaggio
+              - button "Visualizza dettagli per transazione 727" [ref=e946] [cursor=pointer]:
+                - generic [ref=e947]:
+                  - generic [ref=e948]: €0,00
+                  - generic [ref=e949]: Main Bar
+                - generic [ref=e950]:
+                  - generic [ref=e951]: admin (Card)
+                  - generic [ref=e952]: 12/04/2026, 05:26
+                - generic [ref=e954]: Omaggio
+              - button "Visualizza dettagli per transazione 726" [ref=e956] [cursor=pointer]:
+                - generic [ref=e957]:
+                  - generic [ref=e958]: €0,00
+                  - generic [ref=e959]: Main Bar
+                - generic [ref=e960]:
+                  - generic [ref=e961]: admin (Card)
+                  - generic [ref=e962]: 12/04/2026, 05:26
+                - generic [ref=e964]: Omaggio
+              - button "Visualizza dettagli per transazione 724" [ref=e966] [cursor=pointer]:
+                - generic [ref=e967]:
+                  - generic [ref=e968]: €15,00
+                  - generic [ref=e969]: Main Bar
+                - generic [ref=e970]:
+                  - generic [ref=e971]: bar (Cash)
+                  - generic [ref=e972]: 12/04/2026, 03:08
+              - button "Visualizza dettagli per transazione 723" [ref=e974] [cursor=pointer]:
+                - generic [ref=e975]:
+                  - generic [ref=e976]: €3,00
+                  - generic [ref=e977]: Main Bar
+                - generic [ref=e978]:
+                  - generic [ref=e979]: bar (Cash)
+                  - generic [ref=e980]: 12/04/2026, 02:25
+              - button "Visualizza dettagli per transazione 722" [ref=e982] [cursor=pointer]:
+                - generic [ref=e983]:
+                  - generic [ref=e984]: €0,00
+                  - generic [ref=e985]: Entrata
+                - generic [ref=e986]:
+                  - generic [ref=e987]: cassa (Cash)
+                  - generic [ref=e988]: 12/04/2026, 02:23
+              - button "Visualizza dettagli per transazione 721" [ref=e990] [cursor=pointer]:
+                - generic [ref=e991]:
+                  - generic [ref=e992]: €20,00
+                  - generic [ref=e993]: Entrata
+                - generic [ref=e994]:
+                  - generic [ref=e995]: cassa (Card)
+                  - generic [ref=e996]: 12/04/2026, 02:23
+              - button "Visualizza dettagli per transazione 720" [ref=e998] [cursor=pointer]:
+                - generic [ref=e999]:
+                  - generic [ref=e1000]: €9,00
+                  - generic [ref=e1001]: Main Bar
+                - generic [ref=e1002]:
+                  - generic [ref=e1003]: bar (Cash)
+                  - generic [ref=e1004]: 12/04/2026, 02:14
+              - button "Visualizza dettagli per transazione 719" [ref=e1006] [cursor=pointer]:
+                - generic [ref=e1007]:
+                  - generic [ref=e1008]: €20,00
+                  - generic [ref=e1009]: Entrata
+                - generic [ref=e1010]:
+                  - generic [ref=e1011]: cassa (Card)
+                  - generic [ref=e1012]: 12/04/2026, 02:03
+              - button "Visualizza dettagli per transazione 718" [ref=e1014] [cursor=pointer]:
+                - generic [ref=e1015]:
+                  - generic [ref=e1016]: €0,00
+                  - generic [ref=e1017]: Entrata
+                - generic [ref=e1018]:
+                  - generic [ref=e1019]: cassa (Cash)
+                  - generic [ref=e1020]: 12/04/2026, 01:51
+              - button "Visualizza dettagli per transazione 717" [ref=e1022] [cursor=pointer]:
+                - generic [ref=e1023]:
+                  - generic [ref=e1024]: €20,00
+                  - generic [ref=e1025]: Entrata
+                - generic [ref=e1026]:
+                  - generic [ref=e1027]: cassa (Cash)
+                  - generic [ref=e1028]: 12/04/2026, 01:39
+              - button "Visualizza dettagli per transazione 716" [ref=e1030] [cursor=pointer]:
+                - generic [ref=e1031]:
+                  - generic [ref=e1032]: €8,00
+                  - generic [ref=e1033]: Main Bar
+                - generic [ref=e1034]:
+                  - generic [ref=e1035]: bar (Cash)
+                  - generic [ref=e1036]: 12/04/2026, 01:34
+              - button "Visualizza dettagli per transazione 715" [ref=e1038] [cursor=pointer]:
+                - generic [ref=e1039]:
+                  - generic [ref=e1040]: €2,00
+                  - generic [ref=e1041]: Main Bar
+                - generic [ref=e1042]:
+                  - generic [ref=e1043]: bar (Cash)
+                  - generic [ref=e1044]: 12/04/2026, 01:24
+              - button "Visualizza dettagli per transazione 714" [ref=e1046] [cursor=pointer]:
+                - generic [ref=e1047]:
+                  - generic [ref=e1048]: €4,00
+                  - generic [ref=e1049]: Main Bar
+                - generic [ref=e1050]:
+                  - generic [ref=e1051]: bar (Cash)
+                  - generic [ref=e1052]: 12/04/2026, 01:21
+              - button "Visualizza dettagli per transazione 713" [ref=e1054] [cursor=pointer]:
+                - generic [ref=e1055]:
+                  - generic [ref=e1056]: €20,00
+                  - generic [ref=e1057]: Entrata
+                - generic [ref=e1058]:
+                  - generic [ref=e1059]: cassa (Cash)
+                  - generic [ref=e1060]: 12/04/2026, 01:19
+              - button "Visualizza dettagli per transazione 712" [ref=e1062] [cursor=pointer]:
+                - generic [ref=e1063]:
+                  - generic [ref=e1064]: €10,00
+                  - generic [ref=e1065]: Entrata
+                - generic [ref=e1066]:
+                  - generic [ref=e1067]: cassa (Cash)
+                  - generic [ref=e1068]: 12/04/2026, 01:15
+              - button "Visualizza dettagli per transazione 711" [ref=e1070] [cursor=pointer]:
+                - generic [ref=e1071]:
+                  - generic [ref=e1072]: €10,00
+                  - generic [ref=e1073]: Main Bar
+                - generic [ref=e1074]:
+                  - generic [ref=e1075]: bar (Card)
+                  - generic [ref=e1076]: 12/04/2026, 01:09
+              - button "Visualizza dettagli per transazione 710" [ref=e1078] [cursor=pointer]:
+                - generic [ref=e1079]:
+                  - generic [ref=e1080]: €8,00
+                  - generic [ref=e1081]: Main Bar
+                - generic [ref=e1082]:
+                  - generic [ref=e1083]: bar (Card)
+                  - generic [ref=e1084]: 12/04/2026, 01:07
+              - button "Visualizza dettagli per transazione 709" [ref=e1086] [cursor=pointer]:
+                - generic [ref=e1087]:
+                  - generic [ref=e1088]: €8,00
+                  - generic [ref=e1089]: Main Bar
+                - generic [ref=e1090]:
+                  - generic [ref=e1091]: bar (Card)
+                  - generic [ref=e1092]: 12/04/2026, 01:07
+              - button "Visualizza dettagli per transazione 708" [ref=e1094] [cursor=pointer]:
+                - generic [ref=e1095]:
+                  - generic [ref=e1096]: €0,00
+                  - generic [ref=e1097]: Entrata
+                - generic [ref=e1098]:
+                  - generic [ref=e1099]: cassa (Cash)
+                  - generic [ref=e1100]: 12/04/2026, 01:03
+              - button "Visualizza dettagli per transazione 707" [ref=e1102] [cursor=pointer]:
+                - generic [ref=e1103]:
+                  - generic [ref=e1104]: €6,00
+                  - generic [ref=e1105]: Main Bar
+                - generic [ref=e1106]:
+                  - generic [ref=e1107]: bar (Cash)
+                  - generic [ref=e1108]: 12/04/2026, 00:44
+              - button "Visualizza dettagli per transazione 706" [ref=e1110] [cursor=pointer]:
+                - generic [ref=e1111]:
+                  - generic [ref=e1112]: €0,00
+                  - generic [ref=e1113]: Entrata
+                - generic [ref=e1114]:
+                  - generic [ref=e1115]: cassa (Cash)
+                  - generic [ref=e1116]: 12/04/2026, 00:38
+              - button "Visualizza dettagli per transazione 705" [ref=e1118] [cursor=pointer]:
+                - generic [ref=e1119]:
+                  - generic [ref=e1120]: €3,00
+                  - generic [ref=e1121]: Main Bar
+                - generic [ref=e1122]:
+                  - generic [ref=e1123]: bar (Cash)
+                  - generic [ref=e1124]: 12/04/2026, 00:37
+              - button "Visualizza dettagli per transazione 704" [ref=e1126] [cursor=pointer]:
+                - generic [ref=e1127]:
+                  - generic [ref=e1128]: €0,00
+                  - generic [ref=e1129]: Entrata
+                - generic [ref=e1130]:
+                  - generic [ref=e1131]: cassa (Cash)
+                  - generic [ref=e1132]: 12/04/2026, 00:37
+              - button "Visualizza dettagli per transazione 703" [ref=e1134] [cursor=pointer]:
+                - generic [ref=e1135]:
+                  - generic [ref=e1136]: €21,00
+                  - generic [ref=e1137]: Main Bar
+                - generic [ref=e1138]:
+                  - generic [ref=e1139]: bar (Card)
+                  - generic [ref=e1140]: 12/04/2026, 00:35
+              - button "Visualizza dettagli per transazione 702" [ref=e1142] [cursor=pointer]:
+                - generic [ref=e1143]:
+                  - generic [ref=e1144]: €4,00
+                  - generic [ref=e1145]: Main Bar
+                - generic [ref=e1146]:
+                  - generic [ref=e1147]: bar (Cash)
+                  - generic [ref=e1148]: 12/04/2026, 00:31
+              - button "Visualizza dettagli per transazione 701" [ref=e1150] [cursor=pointer]:
+                - generic [ref=e1151]:
+                  - generic [ref=e1152]: €2,00
+                  - generic [ref=e1153]: Main Bar
+                - generic [ref=e1154]:
+                  - generic [ref=e1155]: bar (Cash)
+                  - generic [ref=e1156]: 12/04/2026, 00:28
+              - button "Visualizza dettagli per transazione 700" [ref=e1158] [cursor=pointer]:
+                - generic [ref=e1159]:
+                  - generic [ref=e1160]: €2,00
+                  - generic [ref=e1161]: Main Bar
+                - generic [ref=e1162]:
+                  - generic [ref=e1163]: bar (Card)
+                  - generic [ref=e1164]: 12/04/2026, 00:25
+              - button "Visualizza dettagli per transazione 699" [ref=e1166] [cursor=pointer]:
+                - generic [ref=e1167]:
+                  - generic [ref=e1168]: €20,00
+                  - generic [ref=e1169]: Entrata
+                - generic [ref=e1170]:
+                  - generic [ref=e1171]: cassa (Cash)
+                  - generic [ref=e1172]: 12/04/2026, 00:22
+              - button "Visualizza dettagli per transazione 698" [ref=e1174] [cursor=pointer]:
+                - generic [ref=e1175]:
+                  - generic [ref=e1176]: €6,00
+                  - generic [ref=e1177]: Main Bar
+                - generic [ref=e1178]:
+                  - generic [ref=e1179]: bar (Cash)
+                  - generic [ref=e1180]: 12/04/2026, 00:08
+              - button "Visualizza dettagli per transazione 697" [ref=e1182] [cursor=pointer]:
+                - generic [ref=e1183]:
+                  - generic [ref=e1184]: €0,00
+                  - generic [ref=e1185]: Entrata
+                - generic [ref=e1186]:
+                  - generic [ref=e1187]: cassa (Cash)
+                  - generic [ref=e1188]: 12/04/2026, 00:05
+              - button "Visualizza dettagli per transazione 696" [ref=e1190] [cursor=pointer]:
+                - generic [ref=e1191]:
+                  - generic [ref=e1192]: €4,00
+                  - generic [ref=e1193]: Main Bar
+                - generic [ref=e1194]:
+                  - generic [ref=e1195]: bar (Cash)
+                  - generic [ref=e1196]: 12/04/2026, 00:05
+              - button "Visualizza dettagli per transazione 695" [ref=e1198] [cursor=pointer]:
+                - generic [ref=e1199]:
+                  - generic [ref=e1200]: €0,00
+                  - generic [ref=e1201]: Entrata
+                - generic [ref=e1202]:
+                  - generic [ref=e1203]: cassa (Cash)
+                  - generic [ref=e1204]: 12/04/2026, 00:00
+              - button "Visualizza dettagli per transazione 694" [ref=e1206] [cursor=pointer]:
+                - generic [ref=e1207]:
+                  - generic [ref=e1208]: €0,00
+                  - generic [ref=e1209]: Entrata
+                - generic [ref=e1210]:
+                  - generic [ref=e1211]: cassa (Cash)
+                  - generic [ref=e1212]: 11/04/2026, 23:56
+              - button "Visualizza dettagli per transazione 693" [ref=e1214] [cursor=pointer]:
+                - generic [ref=e1215]:
+                  - generic [ref=e1216]: €0,00
+                  - generic [ref=e1217]: Entrata
+                - generic [ref=e1218]:
+                  - generic [ref=e1219]: cassa (Cash)
+                  - generic [ref=e1220]: 11/04/2026, 23:55
+              - button "Visualizza dettagli per transazione 692" [ref=e1222] [cursor=pointer]:
+                - generic [ref=e1223]:
+                  - generic [ref=e1224]: €0,00
+                  - generic [ref=e1225]: Entrata
+                - generic [ref=e1226]:
+                  - generic [ref=e1227]: cassa (Cash)
+                  - generic [ref=e1228]: 11/04/2026, 23:34
+              - button "Visualizza dettagli per transazione 691" [ref=e1230] [cursor=pointer]:
+                - generic [ref=e1231]:
+                  - generic [ref=e1232]: €0,00
+                  - generic [ref=e1233]: Entrata
+                - generic [ref=e1234]:
+                  - generic [ref=e1235]: cassa (Cash)
+                  - generic [ref=e1236]: 11/04/2026, 23:08
+              - button "Visualizza dettagli per transazione 690" [ref=e1238] [cursor=pointer]:
+                - generic [ref=e1239]:
+                  - generic [ref=e1240]: €8,00
+                  - generic [ref=e1241]: Main Bar
+                - generic [ref=e1242]:
+                  - generic [ref=e1243]: bar (Cash)
+                  - generic [ref=e1244]: 11/04/2026, 23:04
+              - button "Visualizza dettagli per transazione 689" [ref=e1246] [cursor=pointer]:
+                - generic [ref=e1247]:
+                  - generic [ref=e1248]: €8,00
+                  - generic [ref=e1249]: Main Bar
+                - generic [ref=e1250]:
+                  - generic [ref=e1251]: bar (Cash)
+                  - generic [ref=e1252]: 11/04/2026, 04:32
+              - button "Visualizza dettagli per transazione 688" [ref=e1254] [cursor=pointer]:
+                - generic [ref=e1255]:
+                  - generic [ref=e1256]: €8,00
+                  - generic [ref=e1257]: Main Bar
+                - generic [ref=e1258]:
+                  - generic [ref=e1259]: bar (Cash)
+                  - generic [ref=e1260]: 11/04/2026, 04:20
+              - button "Visualizza dettagli per transazione 687" [ref=e1262] [cursor=pointer]:
+                - generic [ref=e1263]:
+                  - generic [ref=e1264]: €8,00
+                  - generic [ref=e1265]: Main Bar
+                - generic [ref=e1266]:
+                  - generic [ref=e1267]: bar (Cash)
+                  - generic [ref=e1268]: 11/04/2026, 04:08
+              - button "Visualizza dettagli per transazione 686" [ref=e1270] [cursor=pointer]:
+                - generic [ref=e1271]:
+                  - generic [ref=e1272]: €8,00
+                  - generic [ref=e1273]: Main Bar
+                - generic [ref=e1274]:
+                  - generic [ref=e1275]: bar (Cash)
+                  - generic [ref=e1276]: 11/04/2026, 04:03
+              - button "Visualizza dettagli per transazione 685" [ref=e1278] [cursor=pointer]:
+                - generic [ref=e1279]:
+                  - generic [ref=e1280]: €4,00
+                  - generic [ref=e1281]: Main Bar
+                - generic [ref=e1282]:
+                  - generic [ref=e1283]: bar (Cash)
+                  - generic [ref=e1284]: 11/04/2026, 04:02
+              - button "Visualizza dettagli per transazione 684" [ref=e1286] [cursor=pointer]:
+                - generic [ref=e1287]:
+                  - generic [ref=e1288]: €6,00
+                  - generic [ref=e1289]: Main Bar
+                - generic [ref=e1290]:
+                  - generic [ref=e1291]: bar (Card)
+                  - generic [ref=e1292]: 11/04/2026, 03:37
+              - button "Visualizza dettagli per transazione 683" [ref=e1294] [cursor=pointer]:
+                - generic [ref=e1295]:
+                  - generic [ref=e1296]: €10,00
+                  - generic [ref=e1297]: Main Bar
+                - generic [ref=e1298]:
+                  - generic [ref=e1299]: bar (Cash)
+                  - generic [ref=e1300]: 11/04/2026, 03:29
+              - button "Visualizza dettagli per transazione 682" [ref=e1302] [cursor=pointer]:
+                - generic [ref=e1303]:
+                  - generic [ref=e1304]: €8,00
+                  - generic [ref=e1305]: Main Bar
+                - generic [ref=e1306]:
+                  - generic [ref=e1307]: admin (Card)
+                  - generic [ref=e1308]: 11/04/2026, 03:12
+              - button "Visualizza dettagli per transazione 681" [ref=e1310] [cursor=pointer]:
+                - generic [ref=e1311]:
+                  - generic [ref=e1312]: €8,00
+                  - generic [ref=e1313]: Main Bar
+                - generic [ref=e1314]:
+                  - generic [ref=e1315]: admin (Cash)
+                  - generic [ref=e1316]: 11/04/2026, 03:11
+              - button "Visualizza dettagli per transazione 680" [ref=e1318] [cursor=pointer]:
+                - generic [ref=e1319]:
+                  - generic [ref=e1320]: €8,00
+                  - generic [ref=e1321]: Main Bar
+                - generic [ref=e1322]:
+                  - generic [ref=e1323]: admin (Card)
+                  - generic [ref=e1324]: 11/04/2026, 03:06
+              - button "Visualizza dettagli per transazione 679" [ref=e1326] [cursor=pointer]:
+                - generic [ref=e1327]:
+                  - generic [ref=e1328]: €4,00
+                  - generic [ref=e1329]: Main Bar
+                - generic [ref=e1330]:
+                  - generic [ref=e1331]: admin (Cash)
+                  - generic [ref=e1332]: 11/04/2026, 03:01
+              - button "Visualizza dettagli per transazione 678" [ref=e1334] [cursor=pointer]:
+                - generic [ref=e1335]:
+                  - generic [ref=e1336]: €8,00
+                  - generic [ref=e1337]: Main Bar
+                - generic [ref=e1338]:
+                  - generic [ref=e1339]: admin (Cash)
+                  - generic [ref=e1340]: 11/04/2026, 02:59
+              - button "Visualizza dettagli per transazione 677" [ref=e1342] [cursor=pointer]:
+                - generic [ref=e1343]:
+                  - generic [ref=e1344]: €3,00
+                  - generic [ref=e1345]: Main Bar
+                - generic [ref=e1346]:
+                  - generic [ref=e1347]: admin (Cash)
+                  - generic [ref=e1348]: 11/04/2026, 02:50
+              - button "Visualizza dettagli per transazione 676" [ref=e1350] [cursor=pointer]:
+                - generic [ref=e1351]:
+                  - generic [ref=e1352]: €20,00
+                  - generic [ref=e1353]: Entrata
+                - generic [ref=e1354]:
+                  - generic [ref=e1355]: cassa (Cash)
+                  - generic [ref=e1356]: 11/04/2026, 02:43
+              - button "Visualizza dettagli per transazione 675" [ref=e1358] [cursor=pointer]:
+                - generic [ref=e1359]:
+                  - generic [ref=e1360]: €17,00
+                  - generic [ref=e1361]: Main Bar
+                - generic [ref=e1362]:
+                  - generic [ref=e1363]: admin (Cash)
+                  - generic [ref=e1364]: 11/04/2026, 02:34
+              - button "Visualizza dettagli per transazione 674" [ref=e1366] [cursor=pointer]:
+                - generic [ref=e1367]:
+                  - generic [ref=e1368]: €10,00
+                  - generic [ref=e1369]: Entrata
+                - generic [ref=e1370]:
+                  - generic [ref=e1371]: cassa (Card)
+                  - generic [ref=e1372]: 11/04/2026, 02:30
+              - button "Visualizza dettagli per transazione 673" [ref=e1374] [cursor=pointer]:
+                - generic [ref=e1375]:
+                  - generic [ref=e1376]: €3,00
+                  - generic [ref=e1377]: Main Bar
+                - generic [ref=e1378]:
+                  - generic [ref=e1379]: admin (Cash)
+                  - generic [ref=e1380]: 11/04/2026, 02:12
+              - button "Visualizza dettagli per transazione 672" [ref=e1382] [cursor=pointer]:
+                - generic [ref=e1383]:
+                  - generic [ref=e1384]: €9,00
+                  - generic [ref=e1385]: Main Bar
+                - generic [ref=e1386]:
+                  - generic [ref=e1387]: admin (Cash)
+                  - generic [ref=e1388]: 11/04/2026, 02:11
+              - button "Visualizza dettagli per transazione 671" [ref=e1390] [cursor=pointer]:
+                - generic [ref=e1391]:
+                  - generic [ref=e1392]: €8,00
+                  - generic [ref=e1393]: Main Bar
+                - generic [ref=e1394]:
+                  - generic [ref=e1395]: admin (Card)
+                  - generic [ref=e1396]: 11/04/2026, 02:10
+              - button "Visualizza dettagli per transazione 670" [ref=e1398] [cursor=pointer]:
+                - generic [ref=e1399]:
+                  - generic [ref=e1400]: €6,00
+                  - generic [ref=e1401]: Main Bar
+                - generic [ref=e1402]:
+                  - generic [ref=e1403]: admin (Cash)
+                  - generic [ref=e1404]: 11/04/2026, 02:07
+              - button "Visualizza dettagli per transazione 669" [ref=e1406] [cursor=pointer]:
+                - generic [ref=e1407]:
+                  - generic [ref=e1408]: €8,00
+                  - generic [ref=e1409]: Main Bar
+                - generic [ref=e1410]:
+                  - generic [ref=e1411]: admin (Cash)
+                  - generic [ref=e1412]: 11/04/2026, 02:05
+              - button "Visualizza dettagli per transazione 668" [ref=e1414] [cursor=pointer]:
+                - generic [ref=e1415]:
+                  - generic [ref=e1416]: €9,00
+                  - generic [ref=e1417]: Main Bar
+                - generic [ref=e1418]:
+                  - generic [ref=e1419]: admin (Cash)
+                  - generic [ref=e1420]: 11/04/2026, 01:53
+              - button "Visualizza dettagli per transazione 667" [ref=e1422] [cursor=pointer]:
+                - generic [ref=e1423]:
+                  - generic [ref=e1424]: €10,00
+                  - generic [ref=e1425]: Entrata
+                - generic [ref=e1426]:
+                  - generic [ref=e1427]: cassa (Cash)
+                  - generic [ref=e1428]: 11/04/2026, 01:47
+              - button "Visualizza dettagli per transazione 666" [ref=e1430] [cursor=pointer]:
+                - generic [ref=e1431]:
+                  - generic [ref=e1432]: €0,00
+                  - generic [ref=e1433]: Entrata
+                - generic [ref=e1434]:
+                  - generic [ref=e1435]: cassa (Cash)
+                  - generic [ref=e1436]: 11/04/2026, 01:47
+              - button "Visualizza dettagli per transazione 665" [ref=e1438] [cursor=pointer]:
+                - generic [ref=e1439]:
+                  - generic [ref=e1440]: €0,00
+                  - generic [ref=e1441]: Entrata
+                - generic [ref=e1442]:
+                  - generic [ref=e1443]: cassa (Cash)
+                  - generic [ref=e1444]: 11/04/2026, 01:46
+              - button "Visualizza dettagli per transazione 664" [ref=e1446] [cursor=pointer]:
+                - generic [ref=e1447]:
+                  - generic [ref=e1448]: €20,00
+                  - generic [ref=e1449]: Entrata
+                - generic [ref=e1450]:
+                  - generic [ref=e1451]: cassa (Cash)
+                  - generic [ref=e1452]: 11/04/2026, 01:46
+              - button "Visualizza dettagli per transazione 663" [ref=e1454] [cursor=pointer]:
+                - generic [ref=e1455]:
+                  - generic [ref=e1456]: €0,00
+                  - generic [ref=e1457]: Entrata
+                - generic [ref=e1458]:
+                  - generic [ref=e1459]: cassa (Cash)
+                  - generic [ref=e1460]: 11/04/2026, 01:34
+              - button "Visualizza dettagli per transazione 662" [ref=e1462] [cursor=pointer]:
+                - generic [ref=e1463]:
+                  - generic [ref=e1464]: €8,00
+                  - generic [ref=e1465]: Main Bar
+                - generic [ref=e1466]:
+                  - generic [ref=e1467]: admin (Cash)
+                  - generic [ref=e1468]: 11/04/2026, 01:33
+              - button "Visualizza dettagli per transazione 661" [ref=e1470] [cursor=pointer]:
+                - generic [ref=e1471]:
+                  - generic [ref=e1472]: €10,00
+                  - generic [ref=e1473]: Entrata
+                - generic [ref=e1474]:
+                  - generic [ref=e1475]: cassa (Cash)
+                  - generic [ref=e1476]: 11/04/2026, 01:30
+              - button "Visualizza dettagli per transazione 660" [ref=e1478] [cursor=pointer]:
+                - generic [ref=e1479]:
+                  - generic [ref=e1480]: €10,00
+                  - generic [ref=e1481]: Entrata
+                - generic [ref=e1482]:
+                  - generic [ref=e1483]: cassa (Cash)
+                  - generic [ref=e1484]: 11/04/2026, 01:29
+              - button "Visualizza dettagli per transazione 659" [ref=e1486] [cursor=pointer]:
+                - generic [ref=e1487]:
+                  - generic [ref=e1488]: €8,00
+                  - generic [ref=e1489]: Main Bar
+                - generic [ref=e1490]:
+                  - generic [ref=e1491]: admin (Cash)
+                  - generic [ref=e1492]: 11/04/2026, 01:28
+              - button "Visualizza dettagli per transazione 658" [ref=e1494] [cursor=pointer]:
+                - generic [ref=e1495]:
+                  - generic [ref=e1496]: €20,00
+                  - generic [ref=e1497]: Entrata
+                - generic [ref=e1498]:
+                  - generic [ref=e1499]: cassa (Cash)
+                  - generic [ref=e1500]: 11/04/2026, 01:22
+              - button "Visualizza dettagli per transazione 657" [ref=e1502] [cursor=pointer]:
+                - generic [ref=e1503]:
+                  - generic [ref=e1504]: €20,00
+                  - generic [ref=e1505]: Entrata
+                - generic [ref=e1506]:
+                  - generic [ref=e1507]: cassa (Card)
+                  - generic [ref=e1508]: 11/04/2026, 01:12
+              - button "Visualizza dettagli per transazione 656" [ref=e1510] [cursor=pointer]:
+                - generic [ref=e1511]:
+                  - generic [ref=e1512]: €10,00
+                  - generic [ref=e1513]: Entrata
+                - generic [ref=e1514]:
+                  - generic [ref=e1515]: cassa (Card)
+                  - generic [ref=e1516]: 11/04/2026, 01:11
+              - button "Visualizza dettagli per transazione 655" [ref=e1518] [cursor=pointer]:
+                - generic [ref=e1519]:
+                  - generic [ref=e1520]: €20,00
+                  - generic [ref=e1521]: Entrata
+                - generic [ref=e1522]:
+                  - generic [ref=e1523]: cassa (Cash)
+                  - generic [ref=e1524]: 11/04/2026, 01:10
+              - button "Visualizza dettagli per transazione 654" [ref=e1526] [cursor=pointer]:
+                - generic [ref=e1527]:
+                  - generic [ref=e1528]: €20,00
+                  - generic [ref=e1529]: Entrata
+                - generic [ref=e1530]:
+                  - generic [ref=e1531]: cassa (Cash)
+                  - generic [ref=e1532]: 11/04/2026, 01:09
+              - button "Visualizza dettagli per transazione 653" [ref=e1534] [cursor=pointer]:
+                - generic [ref=e1535]:
+                  - generic [ref=e1536]: €20,00
+                  - generic [ref=e1537]: Entrata
+                - generic [ref=e1538]:
+                  - generic [ref=e1539]: cassa (Cash)
+                  - generic [ref=e1540]: 11/04/2026, 01:09
+              - button "Visualizza dettagli per transazione 652" [ref=e1542] [cursor=pointer]:
+                - generic [ref=e1543]:
+                  - generic [ref=e1544]: €16,00
+                  - generic [ref=e1545]: Main Bar
+                - generic [ref=e1546]:
+                  - generic [ref=e1547]: admin (Card)
+                  - generic [ref=e1548]: 11/04/2026, 01:08
+              - button "Visualizza dettagli per transazione 651" [ref=e1550] [cursor=pointer]:
+                - generic [ref=e1551]:
+                  - generic [ref=e1552]: €10,00
+                  - generic [ref=e1553]: Entrata
+                - generic [ref=e1554]:
+                  - generic [ref=e1555]: cassa (Card)
+                  - generic [ref=e1556]: 11/04/2026, 01:06
+              - button "Visualizza dettagli per transazione 650" [ref=e1558] [cursor=pointer]:
+                - generic [ref=e1559]:
+                  - generic [ref=e1560]: €8,00
+                  - generic [ref=e1561]: Main Bar
+                - generic [ref=e1562]:
+                  - generic [ref=e1563]: admin (Cash)
+                  - generic [ref=e1564]: 11/04/2026, 01:04
+              - button "Visualizza dettagli per transazione 649" [ref=e1566] [cursor=pointer]:
+                - generic [ref=e1567]:
+                  - generic [ref=e1568]: €20,00
+                  - generic [ref=e1569]: Main Bar
+                - generic [ref=e1570]:
+                  - generic [ref=e1571]: admin (Cash)
+                  - generic [ref=e1572]: 11/04/2026, 01:02
+              - button "Visualizza dettagli per transazione 648" [ref=e1574] [cursor=pointer]:
+                - generic [ref=e1575]:
+                  - generic [ref=e1576]: €0,00
+                  - generic [ref=e1577]: Entrata
+                - generic [ref=e1578]:
+                  - generic [ref=e1579]: cassa (Cash)
+                  - generic [ref=e1580]: 11/04/2026, 01:02
+              - button "Visualizza dettagli per transazione 647" [ref=e1582] [cursor=pointer]:
+                - generic [ref=e1583]:
+                  - generic [ref=e1584]: €10,00
+                  - generic [ref=e1585]: Entrata
+                - generic [ref=e1586]:
+                  - generic [ref=e1587]: cassa (Card)
+                  - generic [ref=e1588]: 11/04/2026, 01:02
+              - button "Visualizza dettagli per transazione 646" [ref=e1590] [cursor=pointer]:
+                - generic [ref=e1591]:
+                  - generic [ref=e1592]: €0,00
+                  - generic [ref=e1593]: Entrata
+                - generic [ref=e1594]:
+                  - generic [ref=e1595]: cassa (Cash)
+                  - generic [ref=e1596]: 11/04/2026, 01:00
+              - button "Visualizza dettagli per transazione 645" [ref=e1598] [cursor=pointer]:
+                - generic [ref=e1599]:
+                  - generic [ref=e1600]: €10,00
+                  - generic [ref=e1601]: Entrata
+                - generic [ref=e1602]:
+                  - generic [ref=e1603]: cassa (Card)
+                  - generic [ref=e1604]: 11/04/2026, 00:59
+              - button "Visualizza dettagli per transazione 644" [ref=e1606] [cursor=pointer]:
+                - generic [ref=e1607]:
+                  - generic [ref=e1608]: €0,00
+                  - generic [ref=e1609]: Entrata
+                - generic [ref=e1610]:
+                  - generic [ref=e1611]: cassa (Cash)
+                  - generic [ref=e1612]: 11/04/2026, 00:58
+              - button "Visualizza dettagli per transazione 643" [ref=e1614] [cursor=pointer]:
+                - generic [ref=e1615]:
+                  - generic [ref=e1616]: €10,00
+                  - generic [ref=e1617]: Entrata
+                - generic [ref=e1618]:
+                  - generic [ref=e1619]: cassa (Cash)
+                  - generic [ref=e1620]: 11/04/2026, 00:57
+              - button "Visualizza dettagli per transazione 642" [ref=e1622] [cursor=pointer]:
+                - generic [ref=e1623]:
+                  - generic [ref=e1624]: €20,00
+                  - generic [ref=e1625]: Entrata
+                - generic [ref=e1626]:
+                  - generic [ref=e1627]: cassa (Cash)
+                  - generic [ref=e1628]: 11/04/2026, 00:55
+              - button "Visualizza dettagli per transazione 641" [ref=e1630] [cursor=pointer]:
+                - generic [ref=e1631]:
+                  - generic [ref=e1632]: €0,00
+                  - generic [ref=e1633]: Entrata
+                - generic [ref=e1634]:
+                  - generic [ref=e1635]: cassa (Cash)
+                  - generic [ref=e1636]: 11/04/2026, 00:53
+              - button "Visualizza dettagli per transazione 640" [ref=e1638] [cursor=pointer]:
+                - generic [ref=e1639]:
+                  - generic [ref=e1640]: €0,00
+                  - generic [ref=e1641]: Entrata
+                - generic [ref=e1642]:
+                  - generic [ref=e1643]: cassa (Cash)
+                  - generic [ref=e1644]: 11/04/2026, 00:50
+              - button "Visualizza dettagli per transazione 639" [ref=e1646] [cursor=pointer]:
+                - generic [ref=e1647]:
+                  - generic [ref=e1648]: €0,00
+                  - generic [ref=e1649]: Main Bar
+                - generic [ref=e1650]:
+                  - generic [ref=e1651]: admin (Cash)
+                  - generic [ref=e1652]: 10/04/2026, 21:58
+                - generic [ref=e1654]: Omaggio
+              - button "Visualizza dettagli per transazione 638" [ref=e1656] [cursor=pointer]:
+                - generic [ref=e1657]:
+                  - generic [ref=e1658]: €0,00
+                  - generic [ref=e1659]: Main Bar
+                - generic [ref=e1660]:
+                  - generic [ref=e1661]: admin (Cash)
+                  - generic [ref=e1662]: 09/04/2026, 23:58
+                - generic [ref=e1664]: Omaggio
+              - button "Visualizza dettagli per transazione 637" [ref=e1666] [cursor=pointer]:
+                - generic [ref=e1667]:
+                  - generic [ref=e1668]: €0,00
+                  - generic [ref=e1669]: Main Bar
+                - generic [ref=e1670]:
+                  - generic [ref=e1671]: admin (Cash)
+                  - generic [ref=e1672]: 09/04/2026, 22:03
+                - generic [ref=e1674]: Omaggio
+              - button "Visualizza dettagli per transazione 636" [ref=e1676] [cursor=pointer]:
+                - generic [ref=e1677]:
+                  - generic [ref=e1678]: €0,00
+                  - generic [ref=e1679]: Main Bar
+                - generic [ref=e1680]:
+                  - generic [ref=e1681]: admin (Card)
+                  - generic [ref=e1682]: 09/04/2026, 22:03
+                - generic [ref=e1684]: Omaggio
+              - button "Visualizza dettagli per transazione 635" [ref=e1686] [cursor=pointer]:
+                - generic [ref=e1687]:
+                  - generic [ref=e1688]: €0,00
+                  - generic [ref=e1689]: Main Bar
+                - generic [ref=e1690]:
+                  - generic [ref=e1691]: admin (Card)
+                  - generic [ref=e1692]: 08/04/2026, 22:59
+                - generic [ref=e1694]: Omaggio
+              - button "Visualizza dettagli per transazione 634" [ref=e1696] [cursor=pointer]:
+                - generic [ref=e1697]:
+                  - generic [ref=e1698]: €4,00
+                  - generic [ref=e1699]: Main Bar
+                - generic [ref=e1700]:
+                  - generic [ref=e1701]: bar (Cash)
+                  - generic [ref=e1702]: 08/04/2026, 22:56
+              - button "Visualizza dettagli per transazione 633" [ref=e1704] [cursor=pointer]:
+                - generic [ref=e1705]:
+                  - generic [ref=e1706]: €2,00
+                  - generic [ref=e1707]: Main Bar
+                - generic [ref=e1708]:
+                  - generic [ref=e1709]: bar (Cash)
+                  - generic [ref=e1710]: 08/04/2026, 22:36
+              - button "Visualizza dettagli per transazione 632" [ref=e1712] [cursor=pointer]:
+                - generic [ref=e1713]:
+                  - generic [ref=e1714]: €40,00
+                  - generic [ref=e1715]: Main Bar
+                - generic [ref=e1716]:
+                  - generic [ref=e1717]: bar (Cash)
+                  - generic [ref=e1718]: 08/04/2026, 21:08
+              - button "Visualizza dettagli per transazione 631" [ref=e1720] [cursor=pointer]:
+                - generic [ref=e1721]:
+                  - generic [ref=e1722]: €0,00
+                  - generic [ref=e1723]: Main Bar
+                - generic [ref=e1724]:
+                  - generic [ref=e1725]: admin (Card)
+                  - generic [ref=e1726]: 08/04/2026, 14:26
+                - generic [ref=e1728]: Omaggio
+              - button "Visualizza dettagli per transazione 630" [ref=e1730] [cursor=pointer]:
+                - generic [ref=e1731]:
+                  - generic [ref=e1732]: €4,00
+                  - generic [ref=e1733]: Main Bar
+                - generic [ref=e1734]:
+                  - generic [ref=e1735]: admin (Card)
+                  - generic [ref=e1736]: 08/04/2026, 01:40
+              - button "Visualizza dettagli per transazione 629" [ref=e1738] [cursor=pointer]:
+                - generic [ref=e1739]:
+                  - generic [ref=e1740]: €0,00
+                  - generic [ref=e1741]: Main Bar
+                - generic [ref=e1742]:
+                  - generic [ref=e1743]: admin (Cash)
+                  - generic [ref=e1744]: 07/04/2026, 19:10
+                - generic [ref=e1746]: Omaggio
+            - paragraph [ref=e1748]: Seleziona una transazione per vedere i dettagli
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
