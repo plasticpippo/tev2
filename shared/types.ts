@@ -203,7 +203,10 @@ export interface DailyClosing {
   closedAt: string;
   summary: {
     transactions: number;
-    totalSales: number;
+    totalSales?: number;
+    netSales?: number;
+    grossSales?: number;
+    totalDiscounts?: number;
     totalTax: number;
     totalTips: number;
     paymentMethods: Record<string, { count: number; total: number }>;

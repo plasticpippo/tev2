@@ -139,9 +139,10 @@ interface IngredientDetailPanelProps {
   ingredient: IngredientCostInfo;
   onClose: () => void;
   onUpdateClick: () => void;
+  refreshTrigger?: number;
 }
 
-const IngredientDetailPanel: React.FC<IngredientDetailPanelProps> = ({ ingredient, onClose, onUpdateClick }) => {
+const IngredientDetailPanel: React.FC<IngredientDetailPanelProps> = ({ ingredient, onClose, onUpdateClick, refreshTrigger }) => {
   const { t } = useTranslation('admin');
   const [history, setHistory] = useState<CostHistoryEntry[]>([]);
   const [loading, setLoading] = useState(true);
@@ -159,7 +160,7 @@ const IngredientDetailPanel: React.FC<IngredientDetailPanelProps> = ({ ingredien
       }
     };
     load();
-  }, [ingredient.id]);
+  }, [ingredient.id, refreshTrigger]);
 
   return (
     <div className="bg-slate-800 rounded-lg p-6 border border-slate-700 h-full overflow-y-auto">
@@ -376,6 +377,7 @@ const IngredientCostsTab: React.FC<{ onModalOpen: (ingredient: IngredientCostInf
             ingredient={selectedIngredient}
             onClose={() => setSelectedId(null)}
             onUpdateClick={() => onModalOpen(selectedIngredient)}
+            refreshTrigger={refreshTrigger}
           />
         </div>
       )}

@@ -77,7 +77,7 @@ return (
                                     <span className="text-slate-300">{format(new Date(closing.closedAt), 'MMM dd, HH:mm')}</span>
                                     <span className="text-amber-400">{closing.userName}</span>
                                     <span className="text-green-400">{t('managerDashboard.transactions', { count: closing.summary?.transactions || 0 })}</span>
-                                    <span className="text-green-400">{isMoneyValid(closing.summary?.totalSales) ? formatMoney(closing.summary.totalSales) : '€0.00'}</span>
+                                    <span className="text-green-400">{isMoneyValid(closing.summary?.netSales || closing.summary?.totalSales) ? formatMoney(closing.summary?.netSales || closing.summary?.totalSales) : '€0.00'}</span>
                                 </div>
                             ))}
                         </div>

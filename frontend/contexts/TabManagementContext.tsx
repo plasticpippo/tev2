@@ -94,7 +94,7 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
     }
   };
   
-  const handleLoadTab = (tabId: number) => {
+  const handleLoadTab = async (tabId: number) => {
     const tab = appData.tabs.find(t => t.id === tabId);
     if (tab) {
       // Fix items without names when loading a tab
@@ -105,6 +105,16 @@ export const TabManagementProvider: React.FC<TabManagementProviderProps> = ({ ch
       setOrderItems(correctedItems);
       setActiveTab(tab);
       setIsTabsModalOpen(false);
+
+      // Immediately persist the order session so the backend has an active
+      // session with the tab items. Without this the autosave debounce (500ms)
+      // leaves a window where the backend has no matching session, causing
+      // payment processing to fail with a 500 error.
+      try {
+        await api.saveOrderSession(correctedItems);
+      } catch (error) {
+        console.error('Failed to save order session for loaded tab:', error);
+      }
     }
   };
   

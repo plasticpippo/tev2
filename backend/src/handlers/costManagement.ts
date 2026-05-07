@@ -96,7 +96,7 @@ costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, as
       lastCostUpdate: item.lastCostUpdate,
       costUpdateReason: item.costUpdateReason,
       costStatus: getCostStatus(item.standardCost, item.lastCostUpdate),
-      recentHistory: item.costHistory.map((h) => ({
+      history: item.costHistory.map((h) => ({
         id: h.id,
         previousCost: decimalToNumber(h.previousCost),
         newCost: decimalToNumber(h.newCost),

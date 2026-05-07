@@ -63,7 +63,7 @@ className="text-slate-400 hover:text-white text-2xl w-11 h-11 min-h-11 min-w-11 
               </div>
               <div className="bg-slate-900 p-3 rounded-lg">
                 <p className="text-slate-400 text-sm">{t('dailyClosing.totalSales')}</p>
-                <p className="font-bold text-xl text-green-400">{formatCurrency(closing.summary?.totalSales || 0)}</p>
+                <p className="font-bold text-xl text-green-400">{formatCurrency(closing.summary?.netSales || closing.summary?.totalSales || 0)}</p>
               </div>
               <div className="bg-slate-900 p-3 rounded-lg">
                 <p className="text-slate-400 text-sm">{t('dailyClosing.totalTax')}</p>
