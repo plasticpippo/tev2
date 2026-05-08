@@ -1,0 +1,173 @@
+- generic [ref=e2]:
+  - generic [ref=e244]:
+    - banner [ref=e245]:
+      - generic [ref=e247]:
+        - heading "Pannello Amministratore" [level=1] [ref=e248]
+        - paragraph [ref=e249]: Connesso come Admin User
+      - generic [ref=e250]:
+        - button "Vai al POS" [ref=e251] [cursor=pointer]
+        - button "Esci" [ref=e252] [cursor=pointer]
+    - generic [ref=e253]:
+      - navigation [ref=e254]:
+        - button "Comprimi barra laterale" [ref=e256] [cursor=pointer]:
+          - img [ref=e257]
+        - button "Dashboard" [ref=e259] [cursor=pointer]:
+          - img [ref=e261]
+          - generic [ref=e263]: Dashboard
+        - button "Analisi" [ref=e264] [cursor=pointer]:
+          - img [ref=e266]
+          - generic [ref=e268]: Analisi
+        - button "Analisi di Profitto" [ref=e269] [cursor=pointer]:
+          - img [ref=e271]
+          - generic [ref=e273]: Analisi di Profitto
+        - button "Transazioni" [ref=e275] [cursor=pointer]:
+          - img [ref=e277]
+          - generic [ref=e279]: Transazioni
+        - button "Scontrini 2" [ref=e280] [cursor=pointer]:
+          - img [ref=e282]
+          - generic [ref=e284]: Scontrini
+          - button "2" [ref=e285]
+        - button "Registro Attività" [ref=e286] [cursor=pointer]:
+          - img [ref=e288]
+          - generic [ref=e290]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e291] [cursor=pointer]:
+          - img [ref=e293]
+          - generic [ref=e295]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e297] [cursor=pointer]:
+          - img [ref=e299]
+          - generic [ref=e301]: Clienti
+        - button "Prodotti" [ref=e302] [cursor=pointer]:
+          - img [ref=e304]
+          - generic [ref=e306]: Prodotti
+        - button "Categorie" [ref=e307] [cursor=pointer]:
+          - img [ref=e309]
+          - generic [ref=e311]: Categorie
+        - button "Articoli Magazzino" [ref=e312] [cursor=pointer]:
+          - img [ref=e314]
+          - generic [ref=e316]: Articoli Magazzino
+        - button "Inventario" [ref=e317] [cursor=pointer]:
+          - img [ref=e319]
+          - generic [ref=e321]: Inventario
+        - button "Gestione Costi" [ref=e322] [cursor=pointer]:
+          - img [ref=e324]
+          - generic [ref=e326]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e327] [cursor=pointer]:
+          - img [ref=e329]
+          - generic [ref=e331]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e332] [cursor=pointer]:
+          - img [ref=e334]
+          - generic [ref=e336]: Report Scostamento
+        - button "Utenti" [ref=e338] [cursor=pointer]:
+          - img [ref=e340]
+          - generic [ref=e342]: Utenti
+        - button "Casse" [ref=e343] [cursor=pointer]:
+          - img [ref=e345]
+          - generic [ref=e347]: Casse
+        - button "Tavoli e Layout" [ref=e348] [cursor=pointer]:
+          - img [ref=e350]
+          - generic [ref=e352]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e353] [cursor=pointer]:
+          - img [ref=e355]
+          - generic [ref=e357]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e359] [cursor=pointer]:
+          - img [ref=e361]
+          - generic [ref=e364]: Impostazioni
+      - main [ref=e365]:
+        - generic [ref=e366]:
+          - generic [ref=e367]:
+            - heading "Vendite Giornata Lavorativa Corrente (Tutte le Casse)" [level=2] [ref=e368]
+            - generic [ref=e369]:
+              - generic [ref=e370]:
+                - paragraph [ref=e371]: Vendite Lorde
+                - paragraph [ref=e372]: 0,00 €
+              - generic [ref=e373]:
+                - paragraph [ref=e374]: Sconti Totali
+                - paragraph [ref=e375]: 0,00 €
+              - generic [ref=e376]:
+                - paragraph [ref=e377]: Vendite Nette
+                - paragraph [ref=e378]: 0,00 €
+              - generic [ref=e379]:
+                - paragraph [ref=e380]: Contanti Totali
+                - paragraph [ref=e381]: 0,00 €
+              - generic [ref=e382]:
+                - paragraph [ref=e383]: Carta Totale
+                - paragraph [ref=e384]: 0,00 €
+              - generic [ref=e385]:
+                - paragraph [ref=e386]: Tasse Totali
+                - paragraph [ref=e387]: 0,00 €
+              - generic [ref=e388]:
+                - paragraph [ref=e389]: Mance Totali
+                - paragraph [ref=e390]: 0,00 €
+          - generic [ref=e391]:
+            - generic [ref=e392]:
+              - heading "Gestione Giornata Lavorativa" [level=2] [ref=e393]
+              - button "Chiudi Giornata Lavorativa Corrente" [ref=e395] [cursor=pointer]
+            - generic [ref=e396]:
+              - heading "Chiusure Recenti" [level=2] [ref=e397]
+              - generic [ref=e398]:
+                - generic [ref=e399]:
+                  - generic [ref=e400]: May 08, 11:00
+                  - generic [ref=e401]: Admin User
+                  - generic [ref=e402]: 0 trans
+                  - generic [ref=e403]: €0.00
+                - generic [ref=e404]:
+                  - generic [ref=e405]: May 07, 11:00
+                  - generic [ref=e406]: Admin User
+                  - generic [ref=e407]: 0 trans
+                  - generic [ref=e408]: €0.00
+          - generic [ref=e410]:
+            - generic [ref=e411]:
+              - heading "Stato Cassa" [level=2] [ref=e412]
+              - generic [ref=e413]:
+                - generic [ref=e414]:
+                  - generic [ref=e415]:
+                    - generic [ref=e416]:
+                      - heading "Main Bar" [level=3] [ref=e417]
+                      - generic [ref=e418]: Inattivo
+                    - paragraph [ref=e419]: "Utente: Nessuna Attività"
+                  - generic [ref=e420]:
+                    - paragraph [ref=e421]: Vendite Giornata Corrente
+                    - paragraph [ref=e422]: 0,00 €
+                    - generic [ref=e423]:
+                      - generic [ref=e424]:
+                        - generic [ref=e425]: "Contanti:"
+                        - generic [ref=e426]: 0,00 €
+                      - generic [ref=e427]:
+                        - generic [ref=e428]: "Carta:"
+                        - generic [ref=e429]: 0,00 €
+                - generic [ref=e430]:
+                  - generic [ref=e431]:
+                    - generic [ref=e432]:
+                      - heading "Entrata" [level=3] [ref=e433]
+                      - generic [ref=e434]: Inattivo
+                    - paragraph [ref=e435]: "Utente: Nessuna Attività"
+                  - generic [ref=e436]:
+                    - paragraph [ref=e437]: Vendite Giornata Corrente
+                    - paragraph [ref=e438]: 0,00 €
+                    - generic [ref=e439]:
+                      - generic [ref=e440]:
+                        - generic [ref=e441]: "Contanti:"
+                        - generic [ref=e442]: 0,00 €
+                      - generic [ref=e443]:
+                        - generic [ref=e444]: "Carta:"
+                        - generic [ref=e445]: 0,00 €
+            - generic [ref=e446]:
+              - heading "Tutti i Conti Aperti" [level=2] [ref=e447]
+              - generic [ref=e449]:
+                - generic [ref=e450]:
+                  - generic [ref=e451]:
+                    - paragraph [ref=e452]: djs
+                    - paragraph [ref=e453]: su Main Bar
+                  - paragraph [ref=e454]: €40,00
+                - generic [ref=e455]:
+                  - generic [ref=e456]:
+                    - paragraph [ref=e457]: primo drink
+                    - paragraph [ref=e458]: su Main Bar
+                  - paragraph [ref=e459]: €87,00
+                - generic [ref=e460]:
+                  - generic [ref=e461]:
+                    - paragraph [ref=e462]: staff
+                    - paragraph [ref=e463]: su Main Bar
+                  - paragraph [ref=e464]: €225,00
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

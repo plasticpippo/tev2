@@ -1,0 +1,117 @@
+- generic [ref=e2]:
+  - generic [ref=e244]:
+    - banner [ref=e245]:
+      - generic [ref=e247]:
+        - heading "Pannello Amministratore" [level=1] [ref=e248]
+        - paragraph [ref=e249]: Connesso come Admin User
+      - generic [ref=e250]:
+        - button "Vai al POS" [ref=e251] [cursor=pointer]
+        - button "Esci" [ref=e252] [cursor=pointer]
+    - generic [ref=e253]:
+      - navigation [ref=e254]:
+        - button "Comprimi barra laterale" [ref=e256] [cursor=pointer]:
+          - img [ref=e257]
+        - button "Dashboard" [ref=e465] [cursor=pointer]:
+          - img [ref=e467]
+          - generic [ref=e469]: Dashboard
+        - button "Analisi" [ref=e470] [cursor=pointer]:
+          - img [ref=e472]
+          - generic [ref=e474]: Analisi
+        - button "Analisi di Profitto" [ref=e475] [cursor=pointer]:
+          - img [ref=e477]
+          - generic [ref=e479]: Analisi di Profitto
+        - button "Transazioni" [ref=e480] [cursor=pointer]:
+          - img [ref=e482]
+          - generic [ref=e484]: Transazioni
+        - button "Scontrini 2" [ref=e485] [cursor=pointer]:
+          - img [ref=e487]
+          - generic [ref=e489]: Scontrini
+          - button "2" [ref=e490]
+        - button "Registro Attività" [ref=e491] [cursor=pointer]:
+          - img [ref=e493]
+          - generic [ref=e495]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e496] [cursor=pointer]:
+          - img [ref=e498]
+          - generic [ref=e500]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e501] [cursor=pointer]:
+          - img [ref=e503]
+          - generic [ref=e505]: Clienti
+        - button "Prodotti" [ref=e506] [cursor=pointer]:
+          - img [ref=e508]
+          - generic [ref=e510]: Prodotti
+        - button "Categorie" [ref=e511] [cursor=pointer]:
+          - img [ref=e513]
+          - generic [ref=e515]: Categorie
+        - button "Articoli Magazzino" [ref=e516] [cursor=pointer]:
+          - img [ref=e518]
+          - generic [ref=e520]: Articoli Magazzino
+        - button "Inventario" [ref=e521] [cursor=pointer]:
+          - img [ref=e523]
+          - generic [ref=e525]: Inventario
+        - button "Gestione Costi" [ref=e526] [cursor=pointer]:
+          - img [ref=e528]
+          - generic [ref=e530]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e531] [cursor=pointer]:
+          - img [ref=e533]
+          - generic [ref=e535]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e536] [cursor=pointer]:
+          - img [ref=e538]
+          - generic [ref=e540]: Report Scostamento
+        - button "Utenti" [ref=e541] [cursor=pointer]:
+          - img [ref=e543]
+          - generic [ref=e545]: Utenti
+        - button "Casse" [ref=e546] [cursor=pointer]:
+          - img [ref=e548]
+          - generic [ref=e550]: Casse
+        - button "Tavoli e Layout" [ref=e551] [cursor=pointer]:
+          - img [ref=e553]
+          - generic [ref=e555]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e556] [cursor=pointer]:
+          - img [ref=e558]
+          - generic [ref=e560]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e561] [cursor=pointer]:
+          - img [ref=e563]
+          - generic [ref=e566]: Impostazioni
+      - main [ref=e365]:
+        - generic [ref=e567]:
+          - generic [ref=e568]:
+            - heading "Conteggi Inventario" [level=2] [ref=e569]
+            - button "Nuovo Conteggio" [ref=e570] [cursor=pointer]
+          - generic [ref=e571]:
+            - button "All" [ref=e572] [cursor=pointer]
+            - button "Draft" [ref=e573] [cursor=pointer]
+            - button "Submitted" [ref=e574] [cursor=pointer]
+            - button "Approved" [ref=e575] [cursor=pointer]
+          - table [ref=e576]:
+            - rowgroup [ref=e577]:
+              - row "Data Tipo Stato Voci Note Azioni" [ref=e578]:
+                - columnheader "Data" [ref=e579]
+                - columnheader "Tipo" [ref=e580]
+                - columnheader "Stato" [ref=e581]
+                - columnheader "Voci" [ref=e582]
+                - columnheader "Note" [ref=e583]
+                - columnheader "Azioni" [ref=e584]
+            - rowgroup [ref=e585]:
+              - row "07/05/2026 Conteggio Completo Draft 2 Bug-15 test count Invia Visualizza" [ref=e586]:
+                - cell "07/05/2026" [ref=e587]
+                - cell "Conteggio Completo" [ref=e588]:
+                  - generic [ref=e589]: Conteggio Completo
+                - cell "Draft" [ref=e590]:
+                  - generic [ref=e591]: Draft
+                - cell "2" [ref=e592]
+                - cell "Bug-15 test count" [ref=e593]
+                - cell "Invia Visualizza" [ref=e594]:
+                  - button "Invia" [ref=e595] [cursor=pointer]
+                  - button "Visualizza" [ref=e596] [cursor=pointer]
+              - row "20/04/2026 Conteggio Completo Approved 0 Monthly full inventory count Visualizza" [ref=e597]:
+                - cell "20/04/2026" [ref=e598]
+                - cell "Conteggio Completo" [ref=e599]:
+                  - generic [ref=e600]: Conteggio Completo
+                - cell "Approved" [ref=e601]:
+                  - generic [ref=e602]: Approved
+                - cell "0" [ref=e603]
+                - cell "Monthly full inventory count" [ref=e604]
+                - cell "Visualizza" [ref=e605]:
+                  - button "Visualizza" [ref=e606] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
