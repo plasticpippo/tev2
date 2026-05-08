@@ -290,7 +290,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
       </div>
 
 	{/* Product grid area */}
-			<div className="flex-1 overflow-y-auto">
+			<div className="flex-1 overflow-y-auto overflow-x-hidden">
 				<div className="@container relative w-full h-full p-4">
                       {/* Available Products Panel in edit mode - placed before the grid */}
                       {isEditMode && currentCategoryId !== 'all' && (

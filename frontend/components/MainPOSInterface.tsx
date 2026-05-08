@@ -132,7 +132,7 @@ return (
  <div className="hidden md:flex flex-row h-full w-full">
  <div className="flex-1 min-w-0 h-full flex flex-col">
  {/* Product Grid with Layout System */}
- <div className="flex-1 overflow-y-auto bg-slate-900">
+ <div className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-900">
  <ProductGridLayout
  products={appData.products}
  categories={appData.categories}

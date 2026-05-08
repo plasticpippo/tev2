@@ -437,7 +437,7 @@ const InventoryCountPanel: React.FC = () => {
           <tbody>
             {counts.map((count) => {
               const isExpanded = expandedId === count.id;
-              const itemCount = count._count?.items ?? 0;
+              const itemCount = count.itemCount ?? 0;
               return (
                 <React.Fragment key={count.id}>
                   <tr>

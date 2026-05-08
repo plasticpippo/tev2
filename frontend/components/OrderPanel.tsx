@@ -131,7 +131,7 @@ export const OrderPanel: React.FC<OrderPanelProps> = ({ orderItems, user, onUpda
   );
 
   return (
-    <div className="w-full md:w-80 lg:w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full min-w-0">
+    <div className="w-full md:w-80 lg:w-96 bg-slate-800 border-l border-slate-700 relative flex flex-col h-full min-w-0 overflow-hidden">
       {/* Header section - stays at top */}
       <div className="p-4 border-b border-slate-700 flex-shrink-0 flex justify-between items-start">
         <div>

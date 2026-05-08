@@ -64,7 +64,7 @@ export interface InventoryCountSummary {
   createdBy: number;
   createdAt: string;
   createdByName?: string;
-  _count?: { items: number };
+  itemCount?: number;
 }
 
 export interface InventoryCountDetail extends InventoryCountSummary {

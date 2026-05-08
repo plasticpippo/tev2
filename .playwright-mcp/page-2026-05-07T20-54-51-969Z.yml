@@ -1,0 +1,4 @@
+- generic [ref=e2]:
+  - generic [ref=e3]: Caricamento POS...
+  - button "Attiva tastiera virtuale" [ref=e4]:
+    - img [ref=e5]

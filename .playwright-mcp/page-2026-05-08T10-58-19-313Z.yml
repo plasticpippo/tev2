@@ -1,0 +1,180 @@
+- generic [ref=e2]:
+  - generic [ref=e244]:
+    - banner [ref=e245]:
+      - generic [ref=e247]:
+        - heading "Pannello Amministratore" [level=1] [ref=e248]
+        - paragraph [ref=e249]: Connesso come Admin User
+      - generic [ref=e250]:
+        - button "Vai al POS" [ref=e251] [cursor=pointer]
+        - button "Esci" [ref=e252] [cursor=pointer]
+    - generic [ref=e253]:
+      - navigation [ref=e254]:
+        - button "Comprimi barra laterale" [ref=e256] [cursor=pointer]:
+          - img [ref=e257]
+        - button "Dashboard" [ref=e465] [cursor=pointer]:
+          - img [ref=e467]
+          - generic [ref=e469]: Dashboard
+        - button "Analisi" [ref=e470] [cursor=pointer]:
+          - img [ref=e472]
+          - generic [ref=e474]: Analisi
+        - button "Analisi di Profitto" [ref=e475] [cursor=pointer]:
+          - img [ref=e477]
+          - generic [ref=e479]: Analisi di Profitto
+        - button "Transazioni" [ref=e480] [cursor=pointer]:
+          - img [ref=e482]
+          - generic [ref=e484]: Transazioni
+        - button "Scontrini 2" [ref=e485] [cursor=pointer]:
+          - img [ref=e487]
+          - generic [ref=e489]: Scontrini
+          - button "2" [ref=e490]
+        - button "Registro Attività" [ref=e491] [cursor=pointer]:
+          - img [ref=e493]
+          - generic [ref=e495]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e496] [cursor=pointer]:
+          - img [ref=e498]
+          - generic [ref=e500]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e501] [cursor=pointer]:
+          - img [ref=e503]
+          - generic [ref=e505]: Clienti
+        - button "Prodotti" [ref=e506] [cursor=pointer]:
+          - img [ref=e508]
+          - generic [ref=e510]: Prodotti
+        - button "Categorie" [ref=e511] [cursor=pointer]:
+          - img [ref=e513]
+          - generic [ref=e515]: Categorie
+        - button "Articoli Magazzino" [ref=e516] [cursor=pointer]:
+          - img [ref=e518]
+          - generic [ref=e520]: Articoli Magazzino
+        - button "Inventario" [ref=e521] [cursor=pointer]:
+          - img [ref=e523]
+          - generic [ref=e525]: Inventario
+        - button "Gestione Costi" [ref=e526] [cursor=pointer]:
+          - img [ref=e528]
+          - generic [ref=e530]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e531] [cursor=pointer]:
+          - img [ref=e533]
+          - generic [ref=e535]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e536] [cursor=pointer]:
+          - img [ref=e538]
+          - generic [ref=e540]: Report Scostamento
+        - button "Utenti" [ref=e541] [cursor=pointer]:
+          - img [ref=e543]
+          - generic [ref=e545]: Utenti
+        - button "Casse" [ref=e546] [cursor=pointer]:
+          - img [ref=e548]
+          - generic [ref=e550]: Casse
+        - button "Tavoli e Layout" [ref=e551] [cursor=pointer]:
+          - img [ref=e553]
+          - generic [ref=e555]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e556] [cursor=pointer]:
+          - img [ref=e558]
+          - generic [ref=e560]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e561] [cursor=pointer]:
+          - img [ref=e563]
+          - generic [ref=e566]: Impostazioni
+      - main [ref=e365]:
+        - generic [ref=e567]:
+          - heading "Consumo Dettagliato" [level=2] [ref=e569]
+          - generic [ref=e570]:
+            - heading "Filtra Dati Consumo" [level=3] [ref=e571]
+            - generic [ref=e572]:
+              - generic [ref=e573]:
+                - generic [ref=e574]: Data Inizio
+                - textbox [ref=e575]
+              - generic [ref=e576]:
+                - generic [ref=e577]: Data Fine
+                - textbox [ref=e578]
+              - generic [ref=e579]:
+                - generic [ref=e580]: Categoria
+                - combobox [ref=e581]:
+                  - option "Tutte le Categorie"
+                  - option "Shots" [selected]
+                  - option "Beer"
+                  - option "Cocktails"
+                  - option "Soft Drinks"
+                  - option "Entrata"
+                  - option "Vino"
+                  - option "Dash"
+              - generic [ref=e582]:
+                - generic [ref=e583]: Tipo Articolo Magazzino
+                - combobox [ref=e584]:
+                  - option "Tutti i Tipi"
+                  - option "Sellable Good" [selected]
+                  - option "Ingredient"
+            - button "Reimposta Filtri" [ref=e586] [cursor=pointer]
+          - generic [ref=e847]:
+            - heading "Totali Consumo" [level=3] [ref=e848]
+            - table [ref=e850]:
+              - rowgroup [ref=e851]:
+                - row "Articolo Magazzino Tipo Quantità Totale" [ref=e852]:
+                  - columnheader "Articolo Magazzino" [ref=e853]
+                  - columnheader "Tipo" [ref=e854]
+                  - columnheader "Quantità Totale" [ref=e855]
+              - rowgroup [ref=e856]:
+                - row "Hierbas Ingredient 900" [ref=e857]:
+                  - cell "Hierbas" [ref=e858]
+                  - cell "Ingredient" [ref=e859]
+                  - cell "900" [ref=e860]
+                - row "Vodka Moskovskaya Ingredient 870" [ref=e861]:
+                  - cell "Vodka Moskovskaya" [ref=e862]
+                  - cell "Ingredient" [ref=e863]
+                  - cell "870" [ref=e864]
+                - row "Tequila Sierra Silver Ingredient 780" [ref=e865]:
+                  - cell "Tequila Sierra Silver" [ref=e866]
+                  - cell "Ingredient" [ref=e867]
+                  - cell "780" [ref=e868]
+                - row "Amaro Montenegro Ingredient 120" [ref=e869]:
+                  - cell "Amaro Montenegro" [ref=e870]
+                  - cell "Ingredient" [ref=e871]
+                  - cell "120" [ref=e872]
+                - row "Amaretto di Saronno Ingredient 60" [ref=e873]:
+                  - cell "Amaretto di Saronno" [ref=e874]
+                  - cell "Ingredient" [ref=e875]
+                  - cell "60" [ref=e876]
+          - table [ref=e877]:
+            - rowgroup [ref=e878]:
+              - row "Prodotto Variante Categoria Articolo Magazzino Tipo Quantità Consumata" [ref=e879]:
+                - columnheader "Prodotto" [ref=e880]
+                - columnheader "Variante" [ref=e881]
+                - columnheader "Categoria" [ref=e882]
+                - columnheader "Articolo Magazzino" [ref=e883]
+                - columnheader "Tipo" [ref=e884]
+                - columnheader "Quantità Consumata" [ref=e885]
+            - rowgroup [ref=e886]:
+              - row "Shot Amaretto Standard Shots Amaretto di Saronno Ingredient 60" [ref=e887]:
+                - cell "Shot Amaretto" [ref=e888]
+                - cell "Standard" [ref=e889]
+                - cell "Shots" [ref=e890]
+                - cell "Amaretto di Saronno" [ref=e891]
+                - cell "Ingredient" [ref=e892]
+                - cell "60" [ref=e893]
+              - row "Shot Hierbas Standard Shots Hierbas Ingredient 900" [ref=e894]:
+                - cell "Shot Hierbas" [ref=e895]
+                - cell "Standard" [ref=e896]
+                - cell "Shots" [ref=e897]
+                - cell "Hierbas" [ref=e898]
+                - cell "Ingredient" [ref=e899]
+                - cell "900" [ref=e900]
+              - row "Shot Montenegro Standard Shots Amaro Montenegro Ingredient 120" [ref=e901]:
+                - cell "Shot Montenegro" [ref=e902]
+                - cell "Standard" [ref=e903]
+                - cell "Shots" [ref=e904]
+                - cell "Amaro Montenegro" [ref=e905]
+                - cell "Ingredient" [ref=e906]
+                - cell "120" [ref=e907]
+              - row "Shot Tequila Standard Shots Tequila Sierra Silver Ingredient 780" [ref=e908]:
+                - cell "Shot Tequila" [ref=e909]
+                - cell "Standard" [ref=e910]
+                - cell "Shots" [ref=e911]
+                - cell "Tequila Sierra Silver" [ref=e912]
+                - cell "Ingredient" [ref=e913]
+                - cell "780" [ref=e914]
+              - row "Shot Vodka Standard Shots Vodka Moskovskaya Ingredient 870" [ref=e915]:
+                - cell "Shot Vodka" [ref=e916]
+                - cell "Standard" [ref=e917]
+                - cell "Shots" [ref=e918]
+                - cell "Vodka Moskovskaya" [ref=e919]
+                - cell "Ingredient" [ref=e920]
+                - cell "870" [ref=e921]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

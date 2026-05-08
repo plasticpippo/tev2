@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Category, StockItem } from '../../../shared/types';
 
@@ -27,7 +27,8 @@ export const ItemisedConsumptionFilter: React.FC<FilterProps> = ({
   // Extract unique stock item types
   const stockItemTypes = [...new Set(stockItems.map(item => item.type))];
 
-  const handleApplyFilters = () => {
+  // Auto-apply filters whenever any value changes
+  useEffect(() => {
     const filters: {
       startDate?: string;
       endDate?: string;
@@ -41,15 +42,13 @@ export const ItemisedConsumptionFilter: React.FC<FilterProps> = ({
     if (selectedStockItemType !== 'all') filters.stockItemType = selectedStockItemType;
 
     onFilterChange(filters);
-  };
+  }, [startDate, endDate, selectedCategory, selectedStockItemType]);
 
   const handleResetFilters = () => {
     setStartDate('');
     setEndDate('');
     setSelectedCategory('all');
     setSelectedStockItemType('all');
-    
-    onFilterChange({});
   };
 
   return (
@@ -114,12 +113,6 @@ export const ItemisedConsumptionFilter: React.FC<FilterProps> = ({
       </div>
       
 <div className="flex gap-3 mt-4">
-<button
-onClick={handleApplyFilters}
-className="bg-amber-600 hover:bg-amber-500 text-white font-semibold py-2 px-4 min-h-11 rounded-md transition"
->
-{t('itemisedConsumption.applyFilters')}
-</button>
 <button
 onClick={handleResetFilters}
 className="bg-slate-600 hover:bg-slate-500 text-white font-semibold py-2 px-4 min-h-11 rounded-md transition"
