@@ -132,9 +132,15 @@ stop_backend() {
 
 restore_backup() {
     local clean="$PROJECT_ROOT/backups/_restore_clean.sql"
+    mkdir -p "$PROJECT_ROOT/backups"
 
     info "Stripping non-standard psql commands from backup..."
-    sed '/^\\restrict /d; /^\\unrestrict /d' "$BACKUP_FILE" > "$clean"
+    if [[ "$BACKUP_FILE" == *.gz ]]; then
+        info "Detected compressed backup, decompressing..."
+        gunzip -c "$BACKUP_FILE" | sed '/^\\restrict /d; /^\\unrestrict /d' > "$clean"
+    else
+        sed '/^\\restrict /d; /^\\unrestrict /d' "$BACKUP_FILE" > "$clean"
+    fi
 
     info "Terminating active connections..."
     run_psql_postgres -c \
@@ -146,15 +152,17 @@ restore_backup() {
     ok "Database dropped"
 
     info "Creating fresh database..."
-    run_psql_postgres -c "CREATE DATABASE $POSTGRES_DB;" > /dev/null 2>&1
+    run_psql_postgres -c "CREATE DATABASE $POSTGRES_DB TEMPLATE template0;" > /dev/null 2>&1
     ok "Database created"
 
     info "Restoring backup..."
     local restore_log
-    restore_log=$(cat "$clean" | docker compose exec -T db psql -U "$POSTGRES_USER" "$POSTGRES_DB" 2>&1) || true
+    restore_log=$(docker compose exec -T db psql -X -U "$POSTGRES_USER" --no-owner "$POSTGRES_DB" < "$clean" 2>&1) || true
 
     local error_count
-    error_count=$(echo "$restore_log" | grep -ci "error" 2>/dev/null || echo "0")
+    error_count=$(echo "$restore_log" | grep -ciE "^ERROR:" 2>/dev/null || true)
+    error_count=$(echo "$error_count" | head -1 | tr -dc '0-9')
+    error_count=${error_count:-0}
     if [[ "$error_count" -gt 0 ]]; then
         warn "Restore completed with $error_count notice(s). Showing first 10:"
         echo "$restore_log" | grep -i "error" | head -10
@@ -164,6 +172,11 @@ restore_backup() {
     fi
 
     rm -f "$clean"
+
+    # Update query planner statistics (recommended by PostgreSQL after restore)
+    info "Updating query planner statistics..."
+    run_psql -c "ANALYZE;" > /dev/null 2>&1 || true
+    ok "Statistics updated"
 }
 
 #===============================================================================
@@ -183,7 +196,9 @@ clean_migrations_table() {
         [[ -z "$mig" ]] && continue
         if [[ ! -d "$PROJECT_ROOT/backend/prisma/migrations/$mig" ]]; then
             info "  Removing orphan: $mig"
-            run_psql -c "DELETE FROM _prisma_migrations WHERE migration_name = '$mig';" > /dev/null 2>&1
+            local escaped_mig
+            escaped_mig=$(echo "$mig" | sed "s/'/''/g")
+            run_psql -c "DELETE FROM _prisma_migrations WHERE migration_name = '${escaped_mig}';" > /dev/null 2>&1
             orphan_count=$((orphan_count + 1))
         fi
     done <<< "$db_migrations"
@@ -194,22 +209,28 @@ clean_migrations_table() {
         ok "No orphaned migrations"
     fi
 
-    # 4b. Remove failed entries (finished_at IS NULL) -- they'll be retried
-    local failed_count
-    failed_count=$(run_psql -t -A -c \
-        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL;" 2>/dev/null | tr -d ' ')
+    # 4b. Resolve failed entries (finished_at IS NULL) using Prisma's official mechanism
+    local failed_migrations
+    failed_migrations=$(run_psql -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at;" 2>/dev/null || echo "")
 
-    if [[ "$failed_count" -gt 0 ]]; then
-        info "  Removing $failed_count failed/unfinished migration entry/entries"
-        run_psql -c "DELETE FROM _prisma_migrations WHERE finished_at IS NULL;" > /dev/null 2>&1
-        ok "Failed entries cleared"
+    local failed_count=0
+    while IFS= read -r mig; do
+        [[ -z "$mig" ]] && continue
+        info "  Rolling back failed migration: $mig"
+        run_backend_cmd npx prisma migrate resolve --rolled-back "$mig" > /dev/null 2>&1 || true
+        failed_count=$((failed_count + 1))
+    done <<< "$failed_migrations"
+
+    if [[ $failed_count -gt 0 ]]; then
+        ok "Rolled back $failed_count failed migration(s) (will be retried by migrate deploy)"
     fi
 
     # 4c. Summary
     local remaining
     remaining=$(run_psql -t -A -c \
-        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
-    info "  $remaining valid migration(s) already recorded"
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ' || true)
+    info "  ${remaining:-0} valid migration(s) already recorded"
 }
 
 #===============================================================================
@@ -260,13 +281,13 @@ apply_migrations() {
         if is_already_exists_error "$output"; then
             # Extract the failed migration name
             local failed_name
-            failed_name=$(echo "$output" | grep -oP "(?<=Migration name: )\S+" | head -1)
+            failed_name=$(echo "$output" | grep -oE "Migration name: [^ ]+" | head -1 | sed 's/Migration name: //')
 
             # If not found in output, check the database for the failed entry
             if [[ -z "$failed_name" ]]; then
                 failed_name=$(run_psql -t -A -c \
                     "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" \
-                    2>/dev/null | tr -d ' ')
+                    2>/dev/null | tr -d ' ' || true)
             fi
 
             if [[ -n "$failed_name" ]]; then
@@ -282,7 +303,7 @@ apply_migrations() {
             local blocked_name
             blocked_name=$(run_psql -t -A -c \
                 "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" \
-                2>/dev/null | tr -d ' ')
+                2>/dev/null | tr -d ' ' || true)
 
             if [[ -n "$blocked_name" ]]; then
                 info "  Found blocked migration '$blocked_name', attempting to resolve..."
@@ -338,7 +359,8 @@ start_and_verify() {
     # Verify migration count
     local final_count
     final_count=$(run_psql -t -A -c \
-        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ' || true)
+    final_count=${final_count:-0}
 
     # Count codebase migrations
     local codebase_count
@@ -369,6 +391,24 @@ start_and_verify() {
 # Main
 #===============================================================================
 
+confirm_restore() {
+    warn "This operation will:"
+    printf '  - Stop the backend service\n'
+    printf '  - DROP the existing database: %s\n' "$POSTGRES_DB"
+    printf '  - Create a fresh database\n'
+    printf '  - Restore data from: %s\n' "$BACKUP_FILE"
+    printf '  - Apply any pending migrations\n'
+    printf '\n'
+    warn "ALL EXISTING DATA WILL BE LOST!"
+    printf '\n'
+    read -p "Are you sure you want to continue? (yes/no): " -r
+    printf '\n'
+    if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
+        info "Restore cancelled by user"
+        exit 0
+    fi
+}
+
 main() {
     BACKUP_FILE="${1:-$PROJECT_ROOT/backups/recovery.sql}"
 
@@ -392,6 +432,7 @@ main() {
 
     load_env
     validate
+    confirm_restore
     stop_backend
     restore_backup
     clean_migrations_table

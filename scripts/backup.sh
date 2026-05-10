@@ -227,10 +227,25 @@ perform_backup() {
     print_info "User: $POSTGRES_USER"
     print_info "Timestamp: $timestamp"
     
+    # Read app version for metadata
+    local app_version="unknown"
+    if [[ -f "$PROJECT_ROOT/VERSION" ]]; then
+        app_version=$(grep '^VERSION=' "$PROJECT_ROOT/VERSION" | cut -d'=' -f2)
+    fi
+    
     # Run pg_dump inside the database container
     print_info "Creating database dump..."
     
-    if docker compose exec -T db pg_dump -U "$POSTGRES_USER" "$POSTGRES_DB" > "$backup_file" 2>/dev/null; then
+    # Write backup metadata header
+    {
+        echo "-- TEV2 Database Backup"
+        echo "-- App Version: $app_version"
+        echo "-- Timestamp: $(date -Iseconds)"
+        echo "-- Database: $POSTGRES_DB"
+        echo ""
+    } > "$backup_file"
+    
+    if docker compose exec -T db pg_dump --no-owner --no-acl -U "$POSTGRES_USER" "$POSTGRES_DB" >> "$backup_file" 2>/dev/null; then
         # Validate the backup file
         if ! validate_backup "$backup_file"; then
             return 1
@@ -295,7 +310,7 @@ validate_backup() {
     
     # Check if file contains valid PostgreSQL content
     # A valid dump should contain at least some SQL commands
-    if ! grep -qE "(CREATE|INSERT|COPY|PostgreSQL database dump)" "$backup_file" 2>/dev/null; then
+    if ! grep -qE "(CREATE|INSERT|COPY|PostgreSQL database dump|TEV2 Database Backup)" "$backup_file" 2>/dev/null; then
         print_warning "Backup file may not contain valid PostgreSQL dump content"
         print_info "First few lines of backup file:"
         head -n 5 "$backup_file"

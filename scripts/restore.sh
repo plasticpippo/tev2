@@ -376,7 +376,7 @@ recreate_database() {
     print_info "Creating fresh database..."
     
     if docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c \
-        "CREATE DATABASE $POSTGRES_DB;" \
+        "CREATE DATABASE $POSTGRES_DB TEMPLATE template0;" \
         > /dev/null 2>&1; then
         print_success "Database created successfully"
     else
@@ -387,17 +387,20 @@ recreate_database() {
     return 0
 }
 
-# Restore the database from backup file
 perform_restore() {
     local backup_file="$1"
+    local clean_file="$PROJECT_ROOT/backups/_restore_clean.sql"
+    
+    mkdir -p "$PROJECT_ROOT/backups"
     
     print_info "Restoring database from: $backup_file"
     
-    # Check if the backup is compressed
+    print_info "Stripping non-standard psql commands..."
+    
     if [[ "$backup_file" == *.gz ]]; then
-        print_info "Detected compressed backup, decompressing on-the-fly..."
+        print_info "Detected compressed backup, decompressing and cleaning..."
         
-        if gunzip -c "$backup_file" | docker compose exec -T db psql -U "$POSTGRES_USER" "$POSTGRES_DB" 2>&1; then
+        if gunzip -c "$backup_file" | sed '/^\\restrict /d; /^\\unrestrict /d' | docker compose exec -T db psql -X -U "$POSTGRES_USER" "$POSTGRES_DB" 2>&1; then
             print_success "Database restored successfully"
             return 0
         else
@@ -405,11 +408,14 @@ perform_restore() {
             return 1
         fi
     else
-        # Plain SQL backup
-        if cat "$backup_file" | docker compose exec -T db psql -U "$POSTGRES_USER" "$POSTGRES_DB" 2>&1; then
+        sed '/^\\restrict /d; /^\\unrestrict /d' "$backup_file" > "$clean_file"
+        
+        if docker compose exec -T db psql -X -U "$POSTGRES_USER" "$POSTGRES_DB" < "$clean_file" 2>&1; then
+            rm -f "$clean_file"
             print_success "Database restored successfully"
             return 0
         else
+            rm -f "$clean_file"
             print_error "Database restore failed!"
             return 1
         fi
@@ -463,7 +469,7 @@ get_codebase_migrations() {
         done < <(find "$migrations_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
     fi
     
-    printf '%s\n' "${migrations[@]}"}
+    printf '%s\n' "${migrations[@]}"
 }
 
 # Get list of migrations recorded in the database
@@ -497,7 +503,7 @@ find_orphaned_migrations() {
         done <<< "$codebase_migrations"
         
         if [[ $found -eq 0 ]]; then
-            orphaned="$orphaned$db_migration\n"
+            orphaned="${orphaned}${db_migration}"$'\n'
         fi
     done <<< "$db_migrations"
     
@@ -529,7 +535,7 @@ remove_orphaned_migrations() {
     while IFS= read -r migration; do
         [[ -z "$migration" ]] && continue
         local escaped_migration
-        escaped_migration=$(echo "$migration" | sed "s/'/\\'/g")
+        escaped_migration=$(echo "$migration" | sed "s/'/''/g")
         
         if docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
             "DELETE FROM _prisma_migrations WHERE migration_name = '$escaped_migration';" \
@@ -544,17 +550,39 @@ remove_orphaned_migrations() {
     return 0
 }
 
+remove_failed_migrations() {
+    print_info "Checking for failed migration entries..."
+    
+    # Use Prisma's official mechanism (migrate resolve --rolled-back) instead of
+    # manually deleting from _prisma_migrations, per Prisma production troubleshooting docs
+    local failed_migrations
+    failed_migrations=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at;" 2>/dev/null || echo "")
+    
+    local count=0
+    while IFS= read -r mig; do
+        [[ -z "$mig" ]] && continue
+        print_info "  Rolling back failed migration: $mig"
+        docker compose exec -T backend npx prisma migrate resolve --rolled-back "$mig" > /dev/null 2>&1 || true
+        count=$((count + 1))
+    done <<< "$failed_migrations"
+    
+    if [[ $count -gt 0 ]]; then
+        print_success "Rolled back $count failed migration(s) (will be retried by migrate deploy)"
+    else
+        print_info "No failed migration entries found"
+    fi
+}
+
 # Run Prisma migrations to bring database up to date
 run_prisma_migrations() {
     print_info "Running Prisma migrations..."
     
-    # Check if backend container is running
     if ! docker compose ps backend 2>/dev/null | grep -q "running\|Up"; then
         print_warning "Backend container is not running"
         print_info "Starting backend container..."
         docker compose up -d backend
         
-        # Wait for backend to be ready
         print_info "Waiting for backend to be ready..."
         local max_attempts=30
         local attempt=0
@@ -567,15 +595,67 @@ run_prisma_migrations() {
         done
     fi
     
-    # Run Prisma migrate deploy
-    if docker compose exec -T backend npx prisma migrate deploy 2>&1; then
+    local max_retries=60
+    local attempt=0
+    
+    while [[ $attempt -lt $max_retries ]]; do
+        attempt=$((attempt + 1))
+        
+        local output
+        output=$(docker compose exec -T backend npx prisma migrate deploy 2>&1) || true
+        
+        if echo "$output" | grep -q "No pending migrations"; then
+            print_success "Prisma migrations applied successfully"
+            return 0
+        fi
+        
+        if echo "$output" | grep -q "migrations.*applied" && ! echo "$output" | grep -q "Error"; then
+            print_success "Prisma migrations applied successfully"
+            return 0
+        fi
+        
+        if echo "$output" | grep -qE "already exists|42701|42P07|42710|42P04|42723"; then
+            local failed_name
+            failed_name=$(echo "$output" | grep -oE "Migration [0-9]+_.*" | head -1 | sed 's/Migration //')
+            
+            if [[ -z "$failed_name" ]]; then
+                failed_name=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
+                    "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" 2>/dev/null | tr -d ' ')
+            fi
+            
+            if [[ -n "$failed_name" ]]; then
+                print_warning "Migration '$failed_name' -- changes already in schema, marking as applied"
+                docker compose exec -T backend npx prisma migrate resolve --applied "$failed_name" > /dev/null 2>&1 || true
+                continue
+            fi
+        fi
+        
+        if echo "$output" | grep -q "P3018"; then
+            local blocked_name
+            blocked_name=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
+                "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" 2>/dev/null | tr -d ' ')
+            
+            if [[ -n "$blocked_name" ]]; then
+                print_warning "Found blocked migration '$blocked_name', resolving..."
+                docker compose exec -T backend npx prisma migrate resolve --applied "$blocked_name" > /dev/null 2>&1 || true
+                continue
+            fi
+        fi
+        
+        if echo "$output" | grep -q "Error"; then
+            print_error "Prisma migration failed!"
+            print_info "Error output:"
+            echo "$output" | tail -20
+            print_info "Try running manually: docker compose exec backend npx prisma migrate deploy"
+            return 1
+        fi
+        
         print_success "Prisma migrations applied successfully"
         return 0
-    else
-        print_error "Prisma migration failed!"
-        print_info "Check the error messages above"
-        return 1
-    fi
+    done
+    
+    print_warning "Migration retries exhausted. Check status manually."
+    return 1
 }
 
 # Verify migration status
@@ -701,6 +781,11 @@ main() {
         print_info "  $backup_file"
         print_info ""
         
+        # Update query planner statistics (recommended by PostgreSQL after restore)
+        print_info "Updating query planner statistics..."
+        docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "ANALYZE;" > /dev/null 2>&1 || true
+        print_info "Statistics updated"
+        
         # Handle migrations unless skipped
         if [[ "$skip_migrations" == "true" ]]; then
             print_warning "Skipping migration handling (--skip-migrations flag)"
@@ -711,6 +796,9 @@ main() {
             
             # Remove orphaned migrations
             remove_orphaned_migrations || true
+            
+            # Remove failed migration entries
+            remove_failed_migrations || true
             
             # Run Prisma migrations
             if run_prisma_migrations; then

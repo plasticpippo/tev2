@@ -37,8 +37,9 @@ readonly BOLD='\033[1m'
 #===============================================================================
 # GLOBAL STATE
 #===============================================================================
-readonly LOG_FILE="./install.log"
-readonly BACKUP_DIR="./backups"
+readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+readonly LOG_FILE="${SCRIPT_DIR}/install.log"
+readonly BACKUP_DIR="${SCRIPT_DIR}/backups"
 readonly MAX_BACKUPS=5
 VERBOSE=false
 UPGRADE_IN_PROGRESS=false
@@ -57,25 +58,21 @@ _log_file() {
 }
 
 print_info() {
-    local msg="[$(date '+%H:%M:%S')] [INFO] $1"
     printf '%b\n' "${BLUE}[INFO]${NC} $1"
     _log_file "[INFO] $1"
 }
 
 print_success() {
-    local msg="[$(date '+%H:%M:%S')] [SUCCESS] $1"
     printf '%b\n' "${GREEN}[SUCCESS]${NC} $1"
     _log_file "[SUCCESS] $1"
 }
 
 print_error() {
-    local msg="[$(date '+%H:%M:%S')] [ERROR] $1"
     printf '%b\n' "${RED}[ERROR]${NC} $1" >&2
     _log_file "[ERROR] $1"
 }
 
 print_warning() {
-    local msg="[$(date '+%H:%M:%S')] [WARNING] $1"
     printf '%b\n' "${YELLOW}[WARNING]${NC} $1"
     _log_file "[WARNING] $1"
 }
@@ -118,20 +115,6 @@ print_config_summary() {
     done < <(printf '%s\n' "$1" | grep -v '^$')
     printf '%b\n' "${WHITE}----------------------------------------${NC}"
     printf '\n'
-}
-
-show_spinner() {
-    local pid=$1
-    local message=$2
-    local spin='-\|/'
-    local i=0
-    
-    while kill -0 "$pid" 2>/dev/null; do
-        i=$(( (i+1) % 4 ))
-        printf '\r%b [%c] %s' "${BLUE}" "${spin:$i:1}" "$message"
-        sleep 0.1
-    done
-    printf '\r'
 }
 
 confirm() {
@@ -234,9 +217,14 @@ env_write() {
     local key="$2"
     local value="$3"
     
+    if [[ ! -f "$env_file" ]]; then
+        touch "$env_file"
+    fi
+    
     if grep -qE "^${key}=" "$env_file" 2>/dev/null; then
-        # Replace existing: use | as sed delimiter since values may contain /
-        sed -i "s|^${key}=.*|${key}=${value}|" "$env_file"
+        local escaped_value
+        escaped_value=$(printf '%s' "$value" | sed 's/[&\\/]/\\&/g')
+        sed -i "s|^${key}=.*|${key}=${escaped_value}|" "$env_file"
     else
         echo "${key}=${value}" >> "$env_file"
     fi
@@ -373,7 +361,7 @@ detect_previous_installation() {
     
     if [[ $signals -ge 2 ]]; then
         print_info "Previous installation detected ($signals signals):"
-        printf "$detection_log"
+        printf '%b\n' "$detection_log"
         return 0  # Previous installation found
     fi
     
@@ -458,7 +446,7 @@ preflight_checks() {
     
     # For upgrade: verify database is accessible
     if [[ "$target" == "upgrade" ]]; then
-        if docker compose ps 2>/dev/null | grep -q "db.*running\|backend_db.*running"; then
+        if $(get_docker_cmd) compose ps 2>/dev/null | grep -q "db.*running\|backend_db.*running"; then
             print_verbose "Database container is running"
         else
             print_warning "Database container is not running - will start it during upgrade"
@@ -499,6 +487,16 @@ _get_db_name() {
     env_read .env POSTGRES_DB "bar_pos"
 }
 
+get_docker_cmd() {
+    if docker info &>/dev/null 2>&1; then
+        echo "docker"
+    elif command -v sudo &>/dev/null && sudo docker info &>/dev/null 2>&1; then
+        echo "sudo docker"
+    else
+        echo "docker"
+    fi
+}
+
 # Backup database before upgrade
 backup_database() {
     local backup_dir="$BACKUP_DIR"
@@ -509,11 +507,31 @@ backup_database() {
     
     mkdir -p "$backup_dir"
     
+    local dc
+    dc=$(get_docker_cmd)
+    if ! $dc compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
+        print_info "Starting database container for backup..."
+        $dc compose up -d db
+        
+        local wait_attempts=0
+        while [[ $wait_attempts -lt 30 ]]; do
+            if $dc compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
+                break
+            fi
+            wait_attempts=$((wait_attempts + 1))
+            sleep 1
+        done
+        
+        if [[ $wait_attempts -ge 30 ]]; then
+            print_error "Database failed to start for backup"
+            return 1
+        fi
+    fi
+    
     print_info "Creating database backup..."
     print_verbose "Backup target: $backup_file (user=$db_user db=$db_name)"
     
-    # Run pg_dump inside the database container
-    if docker compose exec -T db pg_dump -U "$db_user" "$db_name" > "$backup_file" 2>/dev/null; then
+    if $(get_docker_cmd) compose exec -T db pg_dump -U "$db_user" "$db_name" > "$backup_file" 2>/dev/null; then
         # Verify backup file was created and is not empty
         if [[ ! -f "$backup_file" ]]; then
             print_error "Backup file was not created!"
@@ -564,15 +582,17 @@ restore_database() {
     print_info "Restoring database from: $backup_file"
     print_verbose "Restore target: user=$db_user db=$db_name"
     
-    # Drop existing connections and restore
-    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+    local dc
+    dc=$(get_docker_cmd)
+    
+    $dc compose exec -T db psql -U "$db_user" -d postgres -c \
         "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '${db_name}' AND pid <> pg_backend_pid();" 2>/dev/null
-    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+    $dc compose exec -T db psql -U "$db_user" -d postgres -c \
         "DROP DATABASE IF EXISTS ${db_name};" 2>/dev/null
-    docker compose exec -T db psql -U "$db_user" -d postgres -c \
+    $dc compose exec -T db psql -U "$db_user" -d postgres -c \
         "CREATE DATABASE ${db_name};" 2>/dev/null
     
-    if cat "$backup_file" | docker compose exec -T db psql -U "$db_user" "$db_name" > /dev/null 2>&1; then
+    if cat "$backup_file" | $dc compose exec -T db psql -U "$db_user" "$db_name" > /dev/null 2>&1; then
         print_success "Database restored successfully"
         return 0
     else
@@ -745,22 +765,24 @@ validate_upgrade() {
     print_info "Validating upgrade..."
     local errors=0
     
-    # Check if containers are running
-    if ! docker compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
+    local dc
+    dc=$(get_docker_cmd)
+    
+    if ! $dc compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
         print_error "Backend container is not running"
         ((errors++))
     else
         print_verbose "Backend container: running"
     fi
     
-    if ! docker compose ps 2>/dev/null | grep -qE "frontend.*running|bar_pos_frontend.*running"; then
+    if ! $dc compose ps 2>/dev/null | grep -qE "frontend.*running|bar_pos_frontend.*running"; then
         print_error "Frontend container is not running"
         ((errors++))
     else
         print_verbose "Frontend container: running"
     fi
     
-    if ! docker compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
+    if ! $dc compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
         print_error "Database container is not running"
         ((errors++))
     else
@@ -770,7 +792,7 @@ validate_upgrade() {
     # Check database connectivity using credentials from .env
     local db_user=$(_get_db_user)
     local db_name=$(_get_db_name)
-    if ! docker compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
+    if ! $dc compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
         print_error "Database is not ready"
         ((errors++))
     else
@@ -795,7 +817,7 @@ validate_upgrade() {
     
     # Verify migration status in the database
     local pending_count
-    pending_count=$(docker compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
+    pending_count=$($dc compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
         "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
     if [[ -n "$pending_count" && "$pending_count" -gt 0 ]]; then
         print_error "Found $pending_count unresolved migrations in the database"
@@ -824,15 +846,17 @@ resolve_failed_migrations() {
     local db_user=$(_get_db_user)
     local db_name=$(_get_db_name)
     
-    # Check if the database container is running
-    if ! docker compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
+    local dc
+    dc=$(get_docker_cmd)
+    
+    if ! $dc compose ps 2>/dev/null | grep -qE "db.*running|backend_db.*running"; then
         print_warning "Database container is not running, skipping migration check"
         return 0
     fi
     
     # Check for failed migrations in _prisma_migrations table
     local failed_count
-    failed_count=$(docker compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
+    failed_count=$($dc compose exec -T db psql -U "$db_user" -d "$db_name" -t -c \
         "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null | tr -d ' ')
     
     if [[ -z "$failed_count" ]]; then
@@ -846,12 +870,12 @@ resolve_failed_migrations() {
         
         # Get list of failed migrations
         print_info "Failed migrations:"
-        docker compose exec -T db psql -U "$db_user" -d "$db_name" -c \
+        $dc compose exec -T db psql -U "$db_user" -d "$db_name" -c \
             "SELECT migration_name, started_at FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
         
         # Delete failed migration records to allow retry
         print_info "Marking failed migrations as rolled back..."
-        docker compose exec -T db psql -U "$db_user" -d "$db_name" -c \
+        $dc compose exec -T db psql -U "$db_user" -d "$db_name" -c \
             "DELETE FROM _prisma_migrations WHERE finished_at IS NULL AND started_at IS NOT NULL;" 2>/dev/null
         
         print_success "Failed migrations have been cleared"
@@ -870,8 +894,11 @@ verify_migrations() {
     print_info "Verifying database migrations..."
     
     # Wait for backend container to be running
+    local dc
+    dc=$(get_docker_cmd)
+    
     while [[ $attempt -lt $max_attempts ]]; do
-        if docker compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
+        if $dc compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
             break
         fi
         attempt=$((attempt + 1))
@@ -888,7 +915,7 @@ verify_migrations() {
     
     # Run prisma migrate status inside backend container
     local migrate_status
-    migrate_status=$(docker compose exec -T backend npx prisma migrate status 2>&1)
+    migrate_status=$($dc compose exec -T backend npx prisma migrate status 2>&1)
     local status_code=$?
     
     print_verbose "Migration status exit code: $status_code"
@@ -977,7 +1004,7 @@ perform_upgrade() {
     # Phase 3: Stop containers
     UPGRADE_PHASE="stop-containers"
     print_info "Stopping containers..."
-    docker compose down
+    $(get_docker_cmd) compose down
     print_verbose "Containers stopped"
     
     # Phase 4: Merge environment variables (preserves existing secrets)
@@ -987,12 +1014,12 @@ perform_upgrade() {
     # Phase 5: Rebuild containers
     UPGRADE_PHASE="rebuild"
     print_info "Building new containers..."
-    docker compose build --no-cache
+    $(get_docker_cmd) compose build --no-cache
     
     # Phase 6: Start database first
     UPGRADE_PHASE="start-database"
     print_info "Starting database container..."
-    docker compose up -d db
+    $(get_docker_cmd) compose up -d db
     CONTAINER_STARTED_BY_SCRIPT=true
     
     # Wait for database to be ready
@@ -1001,7 +1028,7 @@ perform_upgrade() {
     local db_name=$(_get_db_name)
     local db_attempts=0
     while [[ $db_attempts -lt 30 ]]; do
-        if docker compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
+        if $(get_docker_cmd) compose exec -T db pg_isready -U "$db_user" -d "$db_name" > /dev/null 2>&1; then
             print_success "Database is ready"
             break
         fi
@@ -1023,7 +1050,7 @@ perform_upgrade() {
     # Phase 8: Start remaining containers (migrations run automatically via entrypoint)
     UPGRADE_PHASE="start-containers"
     print_info "Starting containers..."
-    docker compose up -d
+    $(get_docker_cmd) compose up -d
     
     # Phase 9: Wait for containers to stabilise
     UPGRADE_PHASE="wait-for-healthy"
@@ -1095,13 +1122,13 @@ restore_from_backup() {
     fi
     
     print_info "Starting database container..."
-    docker compose up -d db
+    $(get_docker_cmd) compose up -d db
     
     print_info "Waiting for database to be ready..."
     local db_attempts=0
     local db_user=$(_get_db_user)
     while [[ $db_attempts -lt 30 ]]; do
-        if docker compose exec -T db pg_isready -U "$db_user" > /dev/null 2>&1; then
+        if $(get_docker_cmd) compose exec -T db pg_isready -U "$db_user" > /dev/null 2>&1; then
             break
         fi
         db_attempts=$((db_attempts + 1))
@@ -1115,7 +1142,7 @@ restore_from_backup() {
     
     if restore_database "$backup_file"; then
         print_info "Restarting all containers..."
-        docker compose up -d
+        $(get_docker_cmd) compose up -d
         print_success "Restore complete"
         return 0
     else
@@ -1125,6 +1152,8 @@ restore_from_backup() {
 
 # Set up error trap after functions are defined
 trap 'print_error "Error on line $LINENO (phase: ${UPGRADE_PHASE:-main}). Command: $BASH_COMMAND"; _log_file "ERROR on line $LINENO: $BASH_COMMAND"' ERR
+trap 'print_warning "Interrupted (phase: ${UPGRADE_PHASE:-main})"; UPGRADE_IN_PROGRESS=false; exit 130' INT
+trap 'print_warning "Terminated (phase: ${UPGRADE_PHASE:-main})"; UPGRADE_IN_PROGRESS=false; exit 143' TERM
 
 #===============================================================================
 # HELP FUNCTION
@@ -1811,7 +1840,7 @@ configure_environment() {
     print_info "Expose Database Port: If true, the PostgreSQL port (5432) will be accessible"
     print_info "from the host machine. This is useful for development but should be"
     print_info "disabled in production for security."
-    if confirm "Expose database port?" "${CLI_EXPOSE_DB:-true}"; then
+    if confirm "Expose database port?" "${CLI_EXPOSE_DB:-y}"; then
         EXPOSE_DB_PORT="true"
     else
         EXPOSE_DB_PORT="false"
@@ -1821,7 +1850,7 @@ configure_environment() {
     printf '\n'
     print_info "Expose Frontend Port: If true, the frontend development server port (3000)"
     print_info "will be accessible from the host. Useful for development with hot-reload."
-    if confirm "Expose frontend port?" "${CLI_EXPOSE_FRONTEND:-true}"; then
+    if confirm "Expose frontend port?" "${CLI_EXPOSE_FRONTEND:-y}"; then
         EXPOSE_FRONTEND_PORT="true"
     else
         EXPOSE_FRONTEND_PORT="false"
@@ -1897,7 +1926,7 @@ configure_environment() {
     LOG_LEVEL=$(prompt_input "Log level" "info")
     
     # Debug Logging
-    if confirm "Enable debug logging?" "false"; then
+    if confirm "Enable debug logging?" "n"; then
         DEBUG_LOGGING="true"
     else
         DEBUG_LOGGING="false"
@@ -2016,27 +2045,18 @@ build_and_run() {
     
     # Determine if we need to use sudo for docker commands
     # Check if user can run docker without sudo
-    DOCKER_CMD="docker"
-    if ! docker info &> /dev/null 2>&1; then
-        if $SUDO docker info &> /dev/null 2>&1; then
-            DOCKER_CMD="$SUDO docker"
-            print_info "Using sudo for docker commands (user not in docker group yet)"
-        else
-            print_error "Docker is not running. Please start Docker first."
-            if confirm "Start Docker now?" "y"; then
-                start_docker_service
-                # Check again
-                if ! docker info &> /dev/null 2>&1; then
-                    if $SUDO docker info &> /dev/null 2>&1; then
-                        DOCKER_CMD="$SUDO docker"
-                    else
-                        print_error "Docker still not accessible"
-                        exit 1
-                    fi
-                fi
-            else
+    DOCKER_CMD=$(get_docker_cmd)
+    if ! $DOCKER_CMD info &> /dev/null 2>&1; then
+        print_error "Docker is not running. Please start Docker first."
+        if confirm "Start Docker now?" "y"; then
+            start_docker_service
+            DOCKER_CMD=$(get_docker_cmd)
+            if ! $DOCKER_CMD info &> /dev/null 2>&1; then
+                print_error "Docker still not accessible"
                 exit 1
             fi
+        else
+            exit 1
         fi
     fi
     
@@ -2120,30 +2140,29 @@ wait_for_healthy_services() {
     local docker_cmd="${DOCKER_CMD:-docker}"
     
     while [[ $elapsed -lt $max_wait ]]; do
-        # Check if all services are running
-        # Note: grep -c returns exit code 1 when no matches, but still outputs "0"
-        # Use || true to prevent set -e from exiting, then sanitize output
-        local unhealthy
-        local starting
-        unhealthy=$($docker_cmd compose ps --format json 2>/dev/null | \
-            grep -c '"Health":"unhealthy"' 2>/dev/null) || unhealthy=0
-        starting=$($docker_cmd compose ps --format json 2>/dev/null | \
-            grep -c '"Health":"starting"' 2>/dev/null) || starting=0
+        # Try JSON format first (Docker Compose v2.17+)
+        local unhealthy=0
+        local starting=0
+        
+        local json_output
+        json_output=$($docker_cmd compose ps --format json 2>/dev/null) || json_output=""
+        
+        if [[ -n "$json_output" ]]; then
+            unhealthy=$(printf '%s' "$json_output" | grep -c '"Health":"unhealthy"' 2>/dev/null) || unhealthy=0
+            starting=$(printf '%s' "$json_output" | grep -c '"Health":"starting"' 2>/dev/null) || starting=0
+        fi
         
         # Sanitize variables to ensure they contain only digits
         unhealthy=$(printf '%s' "$unhealthy" | tr -cd '0-9')
         starting=$(printf '%s' "$starting" | tr -cd '0-9')
-        
-        # Default to 0 if empty
         unhealthy=${unhealthy:-0}
         starting=${starting:-0}
         
         if [[ "$unhealthy" -eq 0 ]] && [[ "$starting" -eq 0 ]]; then
-            # Check if all services are running
+            # Check if all services are running (fallback to text output)
             local running
             local expected
             running=$($docker_cmd compose ps -q 2>/dev/null | wc -l)
-            # Sanitize: remove whitespace
             running=$(printf '%s' "$running" | tr -cd '0-9')
             running=${running:-0}
             
@@ -2197,6 +2216,15 @@ display_success_message() {
 #===============================================================================
 
 main() {
+    cd "$SCRIPT_DIR"
+    
+    # Validate we're in the TEV2 project root
+    if [[ ! -f "docker-compose.yml" ]]; then
+        print_error "docker-compose.yml not found in $SCRIPT_DIR"
+        print_info "This script must be run from the TEV2 project root directory."
+        exit 1
+    fi
+    
     # Parse command line arguments
     NON_INTERACTIVE=false
     SKIP_DOCKER=false
@@ -2326,8 +2354,8 @@ main() {
             if [[ "$current_version" == "$new_version" ]] && [[ "$NON_INTERACTIVE" != "true" ]]; then
                 if confirm "Would you like to rebuild containers anyway?" "n"; then
                     merge_env_variables
-                    docker compose build --no-cache
-                    docker compose up -d
+                    $(get_docker_cmd) compose build --no-cache
+                    $(get_docker_cmd) compose up -d
                     print_success "Containers rebuilt"
                 fi
             fi
