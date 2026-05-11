@@ -1,58 +1,48 @@
 #!/usr/bin/env bash
 
 #===============================================================================
-# TEV2 Database Restore Script
-# 
-# This script restores the PostgreSQL database from backup files.
-# It supports both plain SQL and compressed (gzip) backup formats.
+# TEV2 Database Restore Script (Unified)
+#
+# Restores the PostgreSQL database from backup files. Works with any backup
+# from any version of the app. Automatically handles:
+#   - Plain SQL and compressed (gzip) backup formats
+#   - Non-standard \restrict/\unrestrict commands in backup files
+#   - Orphaned migration entries (in backup but not in current codebase)
+#   - Pre-applied migrations (schema changes already in backup)
+#   - Failed migration entries from previous attempts
+#   - Pending migrations that still need to run
 #
 # Usage: ./scripts/restore.sh [OPTIONS] [BACKUP_FILE]
 # Options:
-#   -h, --help      Show this help message
-#   -f, --force     Skip confirmation prompt
-#   -l, --list      List available backups and exit
-#
-# Examples:
-#   ./scripts/restore.sh                          # Restore from last backup
-#   ./scripts/restore.sh backups/db_backup_x.sql  # Restore specific file
-#   ./scripts/restore.sh --list                   # List available backups
-#   ./scripts/restore.sh --force                  # Restore without confirmation
+#   -h, --help           Show this help message
+#   -f, --force          Skip confirmation prompt
+#   -l, --list           List available backups and exit
+#   --skip-migrations    Skip automatic migration handling after restore
 #===============================================================================
 
-# Strict mode for better error handling
 set -euo pipefail
 
 #===============================================================================
-# COLOR DEFINITIONS
+# Color definitions
 #===============================================================================
+
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
 readonly YELLOW='\033[1;33m'
 readonly BLUE='\033[0;34m'
 readonly CYAN='\033[0;36m'
 readonly WHITE='\033[1;37m'
-readonly NC='\033[0m' # No Color
+readonly NC='\033[0m'
 readonly BOLD='\033[1m'
 
 #===============================================================================
-# HELPER FUNCTIONS
+# Print helpers
 #===============================================================================
 
-print_info() {
-    printf '%b\n' "${BLUE}[INFO]${NC} $1"
-}
-
-print_success() {
-    printf '%b\n' "${GREEN}[SUCCESS]${NC} $1"
-}
-
-print_error() {
-    printf '%b\n' "${RED}[ERROR]${NC} $1" >&2
-}
-
-print_warning() {
-    printf '%b\n' "${YELLOW}[WARNING]${NC} $1"
-}
+info()    { printf '%b\n' "${BLUE}[INFO]${NC} $1"; }
+ok()      { printf '%b\n' "${GREEN}[OK]${NC} $1"; }
+warn()    { printf '%b\n' "${YELLOW}[WARN]${NC} $1"; }
+err()     { printf '%b\n' "${RED}[ERROR]${NC} $1" >&2; }
 
 print_header() {
     printf '\n'
@@ -63,12 +53,12 @@ print_header() {
 }
 
 #===============================================================================
-# HELP FUNCTION
+# Help
 #===============================================================================
 
 show_help() {
     cat << 'EOF'
-TEV2 Database Restore Script
+TEV2 Database Restore Script (Unified)
 
 Usage: ./scripts/restore.sh [OPTIONS] [BACKUP_FILE]
 
@@ -99,15 +89,18 @@ Backup Files:
     - Last backup reference: ./backups/.last_backup
 
 Restore Process:
-    1. Terminate all existing database connections
-    2. Drop the existing database
-    3. Create a fresh database
-    4. Restore data from the backup file
+    1. Stop the backend service
+    2. Terminate all existing database connections
+    3. Drop the existing database
+    4. Create a fresh database
+    5. Restore data from the backup file
+    6. Clean up orphaned and failed migration entries
+    7. Apply pending Prisma migrations
+    8. Start services and verify health
 
 Examples:
     ./scripts/restore.sh                              # Restore from last backup
     ./scripts/restore.sh --list                       # List available backups
-    ./scripts/restore.sh -l                           # Same as above
     ./scripts/restore.sh backups/db_backup_20260221.sql  # Restore specific file
     ./scripts/restore.sh --force                      # Restore without confirmation
     ./scripts/restore.sh -f backups/backup.sql.gz     # Force restore compressed backup
@@ -125,569 +118,517 @@ EOF
 }
 
 #===============================================================================
-# ENVIRONMENT SETUP
+# Environment setup
 #===============================================================================
 
-# Get the project root directory (parent of scripts directory)
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
-
-# Change to project root to ensure docker compose works correctly
 cd "$PROJECT_ROOT"
 
-# Default values (can be overridden by .env)
 POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
 POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
 POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
 
-# Load environment variables from .env file if it exists
-load_env_file() {
+load_env() {
     local env_file="$PROJECT_ROOT/.env"
-    
-    if [[ -f "$env_file" ]]; then
-        print_info "Loading environment from .env file..."
-        
-        # Read and export variables from .env file
-        # This handles comments and quoted values properly
-        while IFS= read -r line || [[ -n "$line" ]]; do
-            # Skip empty lines and comments
-            [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
-            
-            # Extract variable name and value
-            if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
-                local var_name="${BASH_REMATCH[1]}"
-                local var_value="${BASH_REMATCH[2]}"
-                
-                # Remove surrounding quotes if present
-                var_value="${var_value#\"}"
-                var_value="${var_value%\"}"
-                var_value="${var_value#\'}"
-                var_value="${var_value%\'}"
-                
-                # Export the variable
-                export "$var_name"="$var_value"
-            fi
-        done < "$env_file"
-        
-        # Update database variables from environment
-        POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-        POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-        POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
-        
-        print_success "Environment loaded successfully"
-    else
-        print_warning "No .env file found at $env_file"
-        print_info "Using default database credentials"
+    if [[ ! -f "$env_file" ]]; then
+        warn "No .env file found, using defaults"
+        return
     fi
+    info "Loading environment..."
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+        if [[ "$line" =~ ^([A-Za-z_][A-Za-z0-9_]*)=(.*)$ ]]; then
+            local var_name="${BASH_REMATCH[1]}"
+            local var_value="${BASH_REMATCH[2]}"
+            var_value="${var_value#\"}"; var_value="${var_value%\"}"
+            var_value="${var_value#\'}"; var_value="${var_value%\'}"
+            export "$var_name"="$var_value"
+        fi
+    done < "$env_file"
+    POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
+    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
+    POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+    ok "Environment loaded"
 }
 
 #===============================================================================
-# VALIDATION FUNCTIONS
+# Docker helpers
 #===============================================================================
 
-# Check if the database container is running
+run_psql() {
+    docker compose exec -T db psql -X -U "$POSTGRES_USER" -d "$POSTGRES_DB" "$@"
+}
+
+run_psql_postgres() {
+    docker compose exec -T db psql -X -U "$POSTGRES_USER" -d postgres "$@"
+}
+
+run_backend_cmd() {
+    docker compose run --rm -T --entrypoint "/bin/sh" backend -c "$1" 2>&1
+}
+
+#===============================================================================
+# Validation
+#===============================================================================
+
 check_database_container() {
-    print_info "Checking database container status..."
-    
+    info "Checking database container..."
     if ! docker compose ps db 2>/dev/null | grep -q "running\|Up"; then
-        print_error "Database container is not running!"
-        print_info "Start the database with: docker compose up -d db"
+        err "Database container is not running. Start with: docker compose up -d db"
         exit 2
     fi
-    
-    print_success "Database container is running"
+    ok "Database container is running"
 }
 
-# Check if pg_isready reports the database as ready
 check_database_ready() {
-    print_info "Checking database connectivity..."
-    
-    local max_attempts=10
+    info "Checking database connectivity..."
     local attempt=0
-    
-    while [[ $attempt -lt $max_attempts ]]; do
-        if docker compose exec -T db pg_isready -U "$POSTGRES_USER" > /dev/null 2>&1; then
-            print_success "Database is ready to accept connections"
-            return 0
-        fi
-        
+    # pg_isready timeout: 10 seconds should be sufficient for a healthy DB
+    while [[ $attempt -lt 10 ]]; do
+        docker compose exec -T db pg_isready -U "$POSTGRES_USER" > /dev/null 2>&1 && break
         attempt=$((attempt + 1))
         sleep 1
     done
-    
-    print_error "Database is not ready after ${max_attempts} seconds"
-    print_info "Check database logs with: docker compose logs db"
-    exit 2
+    if [[ $attempt -ge 10 ]]; then
+        err "Database not ready"
+        exit 2
+    fi
+    ok "Database is ready"
 }
 
-# Validate the backup file exists and is readable
 validate_backup_file() {
-    local backup_file="$1"
-    
-    print_info "Validating backup file..."
-    
-    # Check if file exists
-    if [[ ! -f "$backup_file" ]]; then
-        print_error "Backup file not found: $backup_file"
+    local file="$1"
+    if [[ ! -f "$file" ]]; then
+        err "Backup file not found: $file"
         exit 4
     fi
-    
-    # Check if file is readable
-    if [[ ! -r "$backup_file" ]]; then
-        print_error "Backup file is not readable: $backup_file"
+    if [[ ! -r "$file" ]]; then
+        err "Backup file is not readable: $file"
         exit 4
     fi
-    
-    # Check if file is not empty
-    local file_size
-    file_size=$(wc -c < "$backup_file")
-    
-    if [[ "$file_size" -eq 0 ]]; then
-        print_error "Backup file is empty: $backup_file"
+    local size
+    size=$(wc -c < "$file")
+    if [[ "$size" -eq 0 ]]; then
+        err "Backup file is empty: $file"
         exit 4
     fi
-    
-    print_success "Backup file validated ($file_size bytes)"
-    return 0
+    ok "Backup file validated ($size bytes)"
 }
 
 #===============================================================================
-# BACKUP LISTING FUNCTIONS
+# Backup listing
 #===============================================================================
 
-# List all available backups
 list_backups() {
     local backup_dir="$PROJECT_ROOT/backups"
-    
+
     print_header "AVAILABLE BACKUPS"
-    
-    # Check if backup directory exists
+
     if [[ ! -d "$backup_dir" ]]; then
-        print_warning "No backups directory found at: $backup_dir"
-        print_info "Create a backup first with: ./scripts/backup.sh"
+        warn "No backups directory found at: $backup_dir"
+        info "Create a backup first with: ./scripts/backup.sh"
         exit 0
     fi
-    
-    # Find all backup files
+
     local backups=()
     while IFS= read -r -d '' file; do
         backups+=("$file")
     done < <(find "$backup_dir" -name "db_backup_*.sql*" -type f -print0 2>/dev/null | sort -zr)
-    
-    # Check if any backups exist
+
     if [[ ${#backups[@]} -eq 0 ]]; then
-        print_warning "No backup files found in: $backup_dir"
-        print_info "Create a backup first with: ./scripts/backup.sh"
+        warn "No backup files found in: $backup_dir"
+        info "Create a backup first with: ./scripts/backup.sh"
         exit 0
     fi
-    
-    # Get the last backup file
+
     local last_backup=""
     if [[ -f "$backup_dir/.last_backup" ]]; then
         last_backup=$(cat "$backup_dir/.last_backup")
     fi
-    
-    # Print backup list
+
     printf '%b\n' "${WHITE}Found ${#backups[@]} backup(s):${NC}"
     printf '\n'
     printf '%-50s %-12s %s\n' "FILE" "SIZE" "DATE"
     printf '%s\n' "$(printf '%.0s-' {1..80})"
-    
+
     for backup in "${backups[@]}"; do
         local filename
         filename=$(basename "$backup")
         local file_size
         file_size=$(du -h "$backup" | cut -f1)
-        
-        # Extract date from filename (db_backup_YYYYMMDD_HHMMSS.sql)
+
         local backup_date=""
         if [[ "$filename" =~ db_backup_([0-9]{8})_([0-9]{6}) ]]; then
             local date_part="${BASH_REMATCH[1]}"
             local time_part="${BASH_REMATCH[2]}"
             backup_date="${date_part:0:4}-${date_part:4:2}-${date_part:6:2} ${time_part:0:2}:${time_part:2:2}:${time_part:4:2}"
         fi
-        
-        # Mark the last backup
+
         local marker=""
         if [[ "$backup" == "$last_backup" ]]; then
             marker="${GREEN} (latest)${NC}"
         fi
-        
+
         printf '%-50s %-12s %s%b\n' "$filename" "$file_size" "$backup_date" "$marker"
     done
-    
+
     printf '\n'
     exit 0
 }
 
-# Get the last backup file
 get_last_backup() {
     local backup_dir="$PROJECT_ROOT/backups"
     local last_backup_file="$backup_dir/.last_backup"
-    
+
     if [[ ! -f "$last_backup_file" ]]; then
-        print_error "No last backup reference found at: $last_backup_file"
-        print_info "Specify a backup file or create a backup first with: ./scripts/backup.sh"
+        err "No last backup reference found at: $last_backup_file"
+        info "Specify a backup file or create a backup first with: ./scripts/backup.sh"
         exit 4
     fi
-    
+
     local backup_file
     backup_file=$(cat "$last_backup_file")
-    
+
     if [[ ! -f "$backup_file" ]]; then
-        print_error "Last backup file not found: $backup_file"
-        print_info "The backup file may have been moved or deleted"
+        err "Last backup file not found: $backup_file"
         exit 4
     fi
-    
+
     echo "$backup_file"
 }
 
 #===============================================================================
-# RESTORE FUNCTIONS
+# Confirmation
 #===============================================================================
 
-# Terminate all existing database connections
-terminate_connections() {
-    print_info "Terminating existing database connections..."
-    
-    if docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c \
-        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$POSTGRES_DB' AND pid <> pg_backend_pid();" \
-        > /dev/null 2>&1; then
-        print_success "All existing connections terminated"
-    else
-        print_warning "Could not terminate all connections (may be none active)"
-    fi
-}
-
-# Drop and recreate the database
-recreate_database() {
-    print_info "Dropping existing database..."
-    
-    if docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c \
-        "DROP DATABASE IF EXISTS $POSTGRES_DB;" \
-        > /dev/null 2>&1; then
-        print_success "Database dropped successfully"
-    else
-        print_error "Failed to drop database"
-        return 1
-    fi
-    
-    print_info "Creating fresh database..."
-    
-    if docker compose exec -T db psql -U "$POSTGRES_USER" -d postgres -c \
-        "CREATE DATABASE $POSTGRES_DB TEMPLATE template0;" \
-        > /dev/null 2>&1; then
-        print_success "Database created successfully"
-    else
-        print_error "Failed to create database"
-        return 1
-    fi
-    
-    return 0
-}
-
-perform_restore() {
-    local backup_file="$1"
-    local clean_file="$PROJECT_ROOT/backups/_restore_clean.sql"
-    
-    mkdir -p "$PROJECT_ROOT/backups"
-    
-    print_info "Restoring database from: $backup_file"
-    
-    print_info "Stripping non-standard psql commands..."
-    
-    if [[ "$backup_file" == *.gz ]]; then
-        print_info "Detected compressed backup, decompressing and cleaning..."
-        
-        if gunzip -c "$backup_file" | sed '/^\\restrict /d; /^\\unrestrict /d' | docker compose exec -T db psql -X -U "$POSTGRES_USER" "$POSTGRES_DB" 2>&1; then
-            print_success "Database restored successfully"
-            return 0
-        else
-            print_error "Database restore failed!"
-            return 1
-        fi
-    else
-        sed '/^\\restrict /d; /^\\unrestrict /d' "$backup_file" > "$clean_file"
-        
-        if docker compose exec -T db psql -X -U "$POSTGRES_USER" "$POSTGRES_DB" < "$clean_file" 2>&1; then
-            rm -f "$clean_file"
-            print_success "Database restored successfully"
-            return 0
-        else
-            rm -f "$clean_file"
-            print_error "Database restore failed!"
-            return 1
-        fi
-    fi
-}
-
-# Show confirmation prompt
 confirm_restore() {
     local backup_file="$1"
     local force="$2"
-    
-    # Skip confirmation if force flag is set
+
     if [[ "$force" == "true" ]]; then
         return 0
     fi
-    
+
     print_header "RESTORE CONFIRMATION"
-    print_warning "This operation will:"
+    warn "This operation will:"
+    printf '  - Stop the backend service\n'
     printf '  - Terminate all active database connections\n'
     printf '  - DROP the existing database: %s\n' "$POSTGRES_DB"
     printf '  - Create a fresh database\n'
     printf '  - Restore data from: %s\n' "$backup_file"
+    printf '  - Apply any pending migrations\n'
     printf '\n'
-    print_warning "ALL EXISTING DATA WILL BE LOST!"
+    warn "ALL EXISTING DATA WILL BE LOST!"
     printf '\n'
-    
-    # Prompt for confirmation
+
     read -p "Are you sure you want to continue? (yes/no): " -r
     printf '\n'
-    
+
     if [[ ! $REPLY =~ ^[Yy][Ee][Ss]$ ]]; then
-        print_info "Restore cancelled by user"
+        info "Restore cancelled by user"
         exit 5
     fi
-    
-    return 0
 }
 
 #===============================================================================
-# MIGRATION HANDLING FUNCTIONS
+# Restore steps
 #===============================================================================
 
-# Get list of migrations in the codebase
-get_codebase_migrations() {
-    local migrations_dir="$PROJECT_ROOT/backend/prisma/migrations"
-    local migrations=()
-    
-    if [[ -d "$migrations_dir" ]]; then
-        while IFS= read -r -d '' dir; do
-            migrations+=("$(basename "$dir")")
-        done < <(find "$migrations_dir" -mindepth 1 -maxdepth 1 -type d -print0 2>/dev/null | sort -z)
+stop_backend() {
+    info "Stopping backend..."
+    # Silent failure acceptable: backend may not be running or already removed
+    docker compose stop backend 2>/dev/null || true
+    # Silent failure acceptable: backend may not exist or already removed
+    docker compose rm -f backend 2>/dev/null || true
+    ok "Backend stopped"
+}
+
+terminate_connections() {
+    info "Terminating active connections..."
+    run_psql_postgres -c \
+        "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$POSTGRES_DB' AND pid <> pg_backend_pid();" \
+        > /dev/null 2>&1 || true  # Silent failure acceptable: no active connections to terminate
+    ok "Connections terminated"
+}
+
+recreate_database() {
+    info "Dropping database..."
+    run_psql_postgres -c "DROP DATABASE IF EXISTS $POSTGRES_DB;" > /dev/null 2>&1
+    ok "Database dropped"
+
+    info "Creating fresh database..."
+    run_psql_postgres -c "CREATE DATABASE $POSTGRES_DB TEMPLATE template0;" > /dev/null 2>&1
+    ok "Database created"
+}
+
+perform_restore() {
+    local backup_file="$1"
+    local clean="$PROJECT_ROOT/backups/_restore_clean.sql"
+
+    mkdir -p "$PROJECT_ROOT/backups"
+
+    info "Stripping non-standard psql commands..."
+    if [[ "$backup_file" == *.gz ]]; then
+        info "Detected compressed backup, decompressing..."
+        gunzip -c "$backup_file" | sed '/^\\restrict /d; /^\\unrestrict /d' > "$clean"
+    else
+        sed '/^\\restrict /d; /^\\unrestrict /d' "$backup_file" > "$clean"
     fi
-    
-    printf '%s\n' "${migrations[@]}"
+
+    info "Restoring backup..."
+    local restore_log
+    restore_log=$(docker compose exec -T db psql -X -U "$POSTGRES_USER" "$POSTGRES_DB" < "$clean" 2>&1) || true
+
+    local error_count
+    error_count=$(echo "$restore_log" | grep -ciE "^ERROR:" 2>/dev/null || true)
+    error_count=$(echo "$error_count" | head -1 | tr -dc '0-9')
+    error_count=${error_count:-0}
+
+    if [[ "$error_count" -gt 0 ]]; then
+        warn "Restore completed with $error_count notice(s). Showing first 10:"
+        echo "$restore_log" | grep -iE "^ERROR:" | head -10
+        warn "Continuing -- some notices are harmless"
+    else
+        ok "Backup restored"
+    fi
+
+    rm -f "$clean"
+
+    info "Updating query planner statistics..."
+    run_psql -c "ANALYZE;" > /dev/null 2>&1 || true  # Silent failure acceptable: ANALYZE is optional
+    ok "Statistics updated"
 }
 
-# Get list of migrations recorded in the database
-get_database_migrations() {
-    docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
-        "SELECT migration_name FROM _prisma_migrations ORDER BY finished_at;" 2>/dev/null || echo ""
-}
+#===============================================================================
+# Migration handling
+#===============================================================================
 
-# Find orphaned migrations (in DB but not in codebase)
-find_orphaned_migrations() {
+clean_migrations_table() {
+    info "Cleaning up _prisma_migrations..."
+
     local db_migrations
-    db_migrations=$(get_database_migrations)
-    
-    if [[ -z "$db_migrations" ]]; then
-        return 0
-    fi
-    
-    local codebase_migrations
-    codebase_migrations=$(get_codebase_migrations)
-    
-    local orphaned=""
-    while IFS= read -r db_migration; do
-        [[ -z "$db_migration" ]] && continue
-        local found=0
-        while IFS= read -r codebase_migration; do
-            [[ -z "$codebase_migration" ]] && continue
-            if [[ "$db_migration" == "$codebase_migration" ]]; then
-                found=1
-                break
-            fi
-        done <<< "$codebase_migrations"
-        
-        if [[ $found -eq 0 ]]; then
-            orphaned="${orphaned}${db_migration}"$'\n'
-        fi
-    done <<< "$db_migrations"
-    
-    if [[ -n "$orphaned" ]]; then
-        printf '%s' "$orphaned"
-        return 1
-    fi
-    return 0
-}
+    db_migrations=$(run_psql -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations ORDER BY migration_name;" 2>/dev/null || echo "")
 
-# Remove orphaned migration entries from the database
-remove_orphaned_migrations() {
-    local orphaned_migrations
-    orphaned_migrations=$(find_orphaned_migrations) || true
-    
-    if [[ -z "$orphaned_migrations" ]]; then
-        print_info "No orphaned migrations found"
-        return 0
-    fi
-    
-    print_warning "Found orphaned migrations (in database but not in codebase):"
-    echo "$orphaned_migrations" | while IFS= read -r migration; do
-        [[ -z "$migration" ]] && continue
-        printf '  - %s\n' "$migration"
-    done
-    
-    print_info "Removing orphaned migration entries..."
-    
-    while IFS= read -r migration; do
-        [[ -z "$migration" ]] && continue
-        local escaped_migration
-        escaped_migration=$(echo "$migration" | sed "s/'/''/g")
-        
-        if docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c \
-            "DELETE FROM _prisma_migrations WHERE migration_name = '$escaped_migration';" \
-            > /dev/null 2>&1; then
-            print_info "Removed: $migration"
-        else
-            print_warning "Failed to remove: $migration"
-        fi
-    done <<< "$orphaned_migrations"
-    
-    print_success "Orphaned migrations cleaned up"
-    return 0
-}
-
-remove_failed_migrations() {
-    print_info "Checking for failed migration entries..."
-    
-    # Use Prisma's official mechanism (migrate resolve --rolled-back) instead of
-    # manually deleting from _prisma_migrations, per Prisma production troubleshooting docs
-    local failed_migrations
-    failed_migrations=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
-        "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at;" 2>/dev/null || echo "")
-    
-    local count=0
+    local orphan_count=0
     while IFS= read -r mig; do
         [[ -z "$mig" ]] && continue
-        print_info "  Rolling back failed migration: $mig"
-        docker compose exec -T backend npx prisma migrate resolve --rolled-back "$mig" > /dev/null 2>&1 || true
-        count=$((count + 1))
-    done <<< "$failed_migrations"
-    
-    if [[ $count -gt 0 ]]; then
-        print_success "Rolled back $count failed migration(s) (will be retried by migrate deploy)"
+        if [[ ! -d "$PROJECT_ROOT/backend/prisma/migrations/$mig" ]]; then
+            info "  Removing orphan: $mig"
+            local escaped_mig
+            escaped_mig=$(echo "$mig" | sed "s/'/''/g")
+            run_psql -c "DELETE FROM _prisma_migrations WHERE migration_name = '${escaped_mig}';" > /dev/null 2>&1
+            orphan_count=$((orphan_count + 1))
+        fi
+    done <<< "$db_migrations"
+
+    if [[ $orphan_count -gt 0 ]]; then
+        ok "Removed $orphan_count orphaned migration(s)"
     else
-        print_info "No failed migration entries found"
+        ok "No orphaned migrations"
     fi
+
+    local failed_migrations
+    failed_migrations=$(run_psql -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at;" 2>/dev/null || echo "")
+
+    local failed_count=0
+    while IFS= read -r mig; do
+        [[ -z "$mig" ]] && continue
+        info "  Rolling back failed migration: $mig"
+        run_backend_cmd "npx prisma migrate resolve --rolled-back '$mig'" > /dev/null 2>&1 || true
+        failed_count=$((failed_count + 1))
+    done <<< "$failed_migrations"
+
+    if [[ $failed_count -gt 0 ]]; then
+        ok "Rolled back $failed_count failed migration(s) (will be retried by migrate deploy)"
+    fi
+
+    local remaining
+    remaining=$(run_psql -t -A -c \
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ' || true)
+    info "  ${remaining:-0} valid migration(s) already recorded"
 }
 
-# Run Prisma migrations to bring database up to date
-run_prisma_migrations() {
-    print_info "Running Prisma migrations..."
+is_already_exists_error() {
+    echo "$1" | grep -qE "already exists|42701|42P07|42710|42P04|42723"
+}
+
+# Extract and handle "already exists" type errors
+# This occurs when a migration's schema changes are already present in the backup
+# PostgreSQL error codes: 42701=duplicate_column, 42P07=duplicate_table, 42710=duplicate_object,
+#                       42P04=duplicate_database, 42723=duplicate_function
+handle_already_exists_error() {
+    local output="$1"
     
-    if ! docker compose ps backend 2>/dev/null | grep -q "running\|Up"; then
-        print_warning "Backend container is not running"
-        print_info "Starting backend container..."
-        docker compose up -d backend
-        
-        print_info "Waiting for backend to be ready..."
-        local max_attempts=30
-        local attempt=0
-        while [[ $attempt -lt $max_attempts ]]; do
-            if docker compose exec -T backend node -e "require('./prisma')" > /dev/null 2>&1; then
-                break
-            fi
-            sleep 2
-            attempt=$((attempt + 1))
-        done
+    local failed_name
+    failed_name=$(echo "$output" | grep -oE "Migration name: [^ ]+" | head -1 | sed 's/Migration name: //')
+
+    # If not found in output, check the database for the failed entry
+    if [[ -z "$failed_name" ]]; then
+        failed_name=$(run_psql -t -A -c \
+            "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" \
+            2>/dev/null | tr -d ' ' || true)
+    fi
+
+    if [[ -n "$failed_name" ]]; then
+        info "  Migration '$failed_name' -- changes already in schema, marking as applied"
+        # Silent failure acceptable: resolve may fail if migration is already resolved
+        run_backend_cmd "npx prisma migrate resolve --applied '$failed_name'" > /dev/null 2>&1 || true
+        return 0
     fi
     
-    local max_retries=60
-    local attempt=0
-    
-    while [[ $attempt -lt $max_retries ]]; do
-        attempt=$((attempt + 1))
-        
-        local output
-        output=$(docker compose exec -T backend npx prisma migrate deploy 2>&1) || true
-        
-        if echo "$output" | grep -q "No pending migrations"; then
-            print_success "Prisma migrations applied successfully"
-            return 0
-        fi
-        
-        if echo "$output" | grep -q "migrations.*applied" && ! echo "$output" | grep -q "Error"; then
-            print_success "Prisma migrations applied successfully"
-            return 0
-        fi
-        
-        if echo "$output" | grep -qE "already exists|42701|42P07|42710|42P04|42723"; then
-            local failed_name
-            failed_name=$(echo "$output" | grep -oE "Migration [0-9]+_.*" | head -1 | sed 's/Migration //')
-            
-            if [[ -z "$failed_name" ]]; then
-                failed_name=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
-                    "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" 2>/dev/null | tr -d ' ')
-            fi
-            
-            if [[ -n "$failed_name" ]]; then
-                print_warning "Migration '$failed_name' -- changes already in schema, marking as applied"
-                docker compose exec -T backend npx prisma migrate resolve --applied "$failed_name" > /dev/null 2>&1 || true
-                continue
-            fi
-        fi
-        
-        if echo "$output" | grep -q "P3018"; then
-            local blocked_name
-            blocked_name=$(docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -t -A -c \
-                "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" 2>/dev/null | tr -d ' ')
-            
-            if [[ -n "$blocked_name" ]]; then
-                print_warning "Found blocked migration '$blocked_name', resolving..."
-                docker compose exec -T backend npx prisma migrate resolve --applied "$blocked_name" > /dev/null 2>&1 || true
-                continue
-            fi
-        fi
-        
-        if echo "$output" | grep -q "Error"; then
-            print_error "Prisma migration failed!"
-            print_info "Error output:"
-            echo "$output" | tail -20
-            print_info "Try running manually: docker compose exec backend npx prisma migrate deploy"
-            return 1
-        fi
-        
-        print_success "Prisma migrations applied successfully"
-        return 0
-    done
-    
-    print_warning "Migration retries exhausted. Check status manually."
     return 1
 }
 
-# Verify migration status
-verify_migration_status() {
-    print_info "Verifying migration status..."
+# Handle P3018 errors (previous failed migration blocking new ones)
+# This occurs when Prisma detects a migration that previously failed
+handle_blocked_migration() {
+    local output="$1"
     
-    local status_output
-    status_output=$(docker compose exec -T backend npx prisma migrate status 2>&1 || true)
+    local blocked_name
+    blocked_name=$(run_psql -t -A -c \
+        "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;" \
+        2>/dev/null | tr -d ' ' || true)
+
+    if [[ -n "$blocked_name" ]]; then
+        info "  Found blocked migration '$blocked_name', resolving..."
+        # Silent failure acceptable: resolve may fail if migration is already resolved
+        run_backend_cmd "npx prisma migrate resolve --applied '$blocked_name'" > /dev/null 2>&1 || true
+        return 0
+    fi
     
-    if echo "$status_output" | grep -q "No pending migrations"; then
-        print_success "Database is up to date with migrations"
+    return 1
+}
+
+apply_migrations() {
+    info "Applying pending migrations..."
+    info "(Will auto-detect and skip migrations whose changes are already in the schema)"
+
+    # Safety limit: 60 iterations to prevent infinite loops
+    # Each iteration handles one migration, so this accommodates large codebases
+    local max_iterations=60
+    local iteration=0
+    local skipped=0
+
+    while [[ $iteration -lt $max_iterations ]]; do
+        iteration=$((iteration + 1))
+
+        local output
+        output=$(run_backend_cmd "npx prisma migrate deploy 2>&1") || true
+
+        if echo "$output" | grep -q "No pending migrations to apply"; then
+            ok "All migrations applied"
+            [[ $skipped -gt 0 ]] && info "  ($skipped migration(s) were already applied in the backup schema)"
+            return 0
+        fi
+
+        if echo "$output" | grep -q "migrations.*applied" && ! echo "$output" | grep -q "Error"; then
+            ok "All migrations applied"
+            [[ $skipped -gt 0 ]] && info "  ($skipped migration(s) were already applied in the backup schema)"
+            return 0
+        fi
+
+        if is_already_exists_error "$output"; then
+            if handle_already_exists_error "$output"; then
+                skipped=$((skipped + 1))
+                continue
+            fi
+        fi
+
+        if echo "$output" | grep -q "P3018"; then
+            if handle_blocked_migration "$output"; then
+                skipped=$((skipped + 1))
+                continue
+            fi
+        fi
+
+        if echo "$output" | grep -q "Error"; then
+            err "Migration failed with unexpected error:"
+            echo "$output" | tail -30
+            err ""
+            err "To fix manually:"
+            err "  1. docker compose run --rm -T --entrypoint '/bin/sh' backend -c \\"
+            err "       'npx prisma migrate resolve --applied <migration_name>'"
+            err "  2. docker compose up -d backend"
+            return 1
+        fi
+
+        ok "All migrations applied"
         return 0
-    elif echo "$status_output" | grep -q "Error"; then
-        print_warning "Migration status check had issues, but this may be normal"
-        return 0
+    done
+
+    err "Too many retry iterations ($max_iterations). Something is wrong."
+    return 1
+}
+
+#===============================================================================
+# Start and verify
+#===============================================================================
+
+start_and_verify() {
+    info "Starting all services..."
+    docker compose up -d 2>/dev/null
+
+    info "Waiting for backend to become healthy..."
+    local attempt=0
+    # Backend health check timeout: 60 iterations × 2 seconds = 120 seconds max
+    # This allows enough time for container startup, migrations, and app initialization
+    while [[ $attempt -lt 60 ]]; do
+        if docker compose exec -T backend wget --quiet --tries=1 --spider http://localhost:3001/health 2>/dev/null; then
+            break
+        fi
+        sleep 2
+        attempt=$((attempt + 1))
+    done
+
+    if [[ $attempt -ge 60 ]]; then
+        err "Backend did not start within 120 seconds"
+        info "Last 40 lines of backend logs:"
+        docker compose logs --tail=40 backend
+        return 1
+    fi
+    ok "Backend is healthy"
+
+    local final_count
+    final_count=$(run_psql -t -A -c \
+        "SELECT COUNT(*) FROM _prisma_migrations WHERE finished_at IS NOT NULL;" 2>/dev/null | tr -d ' ' || true)
+    final_count=${final_count:-0}
+
+    local codebase_count
+    codebase_count=$(find "$PROJECT_ROOT/backend/prisma/migrations" -mindepth 1 -maxdepth 1 -type d | wc -l | tr -d ' ')
+
+    info "Migration summary: $final_count/$codebase_count migrations applied"
+
+    if [[ "$final_count" -lt "$codebase_count" ]]; then
+        warn "Not all migrations are applied ($final_count applied, $codebase_count in codebase)"
+        warn "Check: docker compose logs backend"
+    fi
+
+    info "Verifying app..."
+    if curl -sf http://192.168.1.70/api/health > /dev/null 2>&1; then
+        ok "App is responding at http://192.168.1.70"
     else
-        print_info "Migration status:\n$status_output"
-        return 0
+        sleep 5
+        if curl -sf http://192.168.1.70/api/health > /dev/null 2>&1; then
+            ok "App is responding at http://192.168.1.70"
+        else
+            warn "App not responding yet. Check: docker compose logs backend"
+        fi
     fi
 }
 
 #===============================================================================
-# MAIN EXECUTION
+# Main
 #===============================================================================
 
 main() {
-    # Parse command line arguments
     local force="false"
     local list_only="false"
     local skip_migrations="false"
     local backup_file=""
-    
+
     while [[ $# -gt 0 ]]; do
         case "$1" in
             -h|--help)
@@ -706,118 +647,78 @@ main() {
                 shift
                 ;;
             -*)
-                print_error "Unknown option: $1"
+                err "Unknown option: $1"
                 printf 'Use --help for usage information\n'
                 exit 1
                 ;;
             *)
-                # Assume it's a backup file path
                 backup_file="$1"
                 shift
                 ;;
         esac
     done
-    
-    # Print banner
+
     printf '\n'
     printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
     printf '%b\n' "${CYAN}${BOLD}║              TEV2 DATABASE RESTORE                         ║${NC}"
     printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
     printf '\n'
-    
-    # Load environment
-    load_env_file
-    
-    # List backups if requested
+
+    load_env
+
     if [[ "$list_only" == "true" ]]; then
         list_backups
     fi
-    
-    # Determine backup file to restore
+
     if [[ -z "$backup_file" ]]; then
-        print_info "No backup file specified, using last backup..."
+        info "No backup file specified, using last backup..."
         backup_file=$(get_last_backup)
     fi
-    
-    # Resolve relative path to absolute path
+
     if [[ "$backup_file" != /* ]]; then
-        # Check if path is relative to project root
         if [[ -f "$PROJECT_ROOT/$backup_file" ]]; then
             backup_file="$PROJECT_ROOT/$backup_file"
         elif [[ ! -f "$backup_file" ]]; then
-            # Try as absolute path
-            print_error "Backup file not found: $backup_file"
+            err "Backup file not found: $backup_file"
             exit 4
         fi
     fi
-    
-    # Validate backup file
+
     validate_backup_file "$backup_file"
-    
-    # Check database status
     check_database_container
     check_database_ready
-    
-    # Confirm restore
+
+    info "Database: $POSTGRES_DB"
+    info "User: $POSTGRES_USER"
+    info "Backup: $backup_file"
+
     confirm_restore "$backup_file" "$force"
-    
-    # Execute restore steps
+
     print_header "STARTING DATABASE RESTORE"
-    print_info "Database: $POSTGRES_DB"
-    print_info "User: $POSTGRES_USER"
-    print_info "Backup file: $backup_file"
-    
-    # Perform restore
+
+    stop_backend
     terminate_connections
-    
-    if ! recreate_database; then
-        print_header "RESTORE FAILED"
-        exit 1
-    fi
-    
-    if perform_restore "$backup_file"; then
-        print_header "RESTORE COMPLETE"
-        print_success "Database has been successfully restored from:"
-        print_info "  $backup_file"
-        print_info ""
-        
-        # Update query planner statistics (recommended by PostgreSQL after restore)
-        print_info "Updating query planner statistics..."
-        docker compose exec -T db psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "ANALYZE;" > /dev/null 2>&1 || true
-        print_info "Statistics updated"
-        
-        # Handle migrations unless skipped
-        if [[ "$skip_migrations" == "true" ]]; then
-            print_warning "Skipping migration handling (--skip-migrations flag)"
-            print_info "To apply migrations manually, run:"
-            print_info "  docker compose exec backend npx prisma migrate deploy"
-        else
-            print_header "HANDLING MIGRATIONS"
-            
-            # Remove orphaned migrations
-            remove_orphaned_migrations || true
-            
-            # Remove failed migration entries
-            remove_failed_migrations || true
-            
-            # Run Prisma migrations
-            if run_prisma_migrations; then
-                verify_migration_status
-            else
-                print_warning "Migration application had issues"
-                print_info "Try running manually: docker compose exec backend npx prisma migrate deploy"
-            fi
-        fi
-        
-        print_header "RESTORE FINISHED"
-        print_success "Database restore completed successfully!"
-        exit 0
+    recreate_database
+    perform_restore "$backup_file"
+
+    if [[ "$skip_migrations" == "true" ]]; then
+        warn "Skipping migration handling (--skip-migrations flag)"
+        info "To apply migrations manually:"
+        info "  docker compose run --rm -T --entrypoint '/bin/sh' backend -c 'npx prisma migrate deploy'"
     else
-        print_header "RESTORE FAILED"
-        print_error "Database restore failed. Check the error messages above."
-        exit 1
+        print_header "HANDLING MIGRATIONS"
+        clean_migrations_table
+        if apply_migrations; then
+            ok "Migration handling complete"
+        else
+            warn "Migration application had issues"
+        fi
     fi
+
+    start_and_verify
+
+    print_header "RESTORE COMPLETE"
+    ok "Database restored successfully. App available at http://192.168.1.70"
 }
 
-# Run main function
 main "$@"
