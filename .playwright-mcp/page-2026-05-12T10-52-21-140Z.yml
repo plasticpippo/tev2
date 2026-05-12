@@ -1,0 +1,92 @@
+- generic [ref=e25]:
+  - generic [ref=e136]:
+    - banner [ref=e137]:
+      - generic [ref=e139]:
+        - heading "Pannello Amministratore" [level=1] [ref=e140]
+        - paragraph [ref=e141]: Connesso come Admin User
+      - generic [ref=e142]:
+        - button "Vai al POS" [ref=e143] [cursor=pointer]
+        - button "Esci" [ref=e144] [cursor=pointer]
+    - generic [ref=e145]:
+      - navigation [ref=e146]:
+        - button "Comprimi barra laterale" [ref=e148] [cursor=pointer]:
+          - img [ref=e149]
+        - button "Dashboard" [ref=e351] [cursor=pointer]:
+          - img [ref=e353]
+          - generic [ref=e355]: Dashboard
+        - button "Analisi" [ref=e356] [cursor=pointer]:
+          - img [ref=e358]
+          - generic [ref=e360]: Analisi
+        - button "Analisi di Profitto" [ref=e361] [cursor=pointer]:
+          - img [ref=e363]
+          - generic [ref=e365]: Analisi di Profitto
+        - button "Transazioni" [ref=e366] [cursor=pointer]:
+          - img [ref=e368]
+          - generic [ref=e370]: Transazioni
+        - button "Scontrini" [ref=e371] [cursor=pointer]:
+          - img [ref=e373]
+          - generic [ref=e375]: Scontrini
+        - button "Registro Attività" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Registro Attività
+        - button "Riepilogo Chiusura Giornaliera" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Riepilogo Chiusura Giornaliera
+        - button "Clienti" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Clienti
+        - button "Prodotti" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Prodotti
+        - button "Categorie" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Categorie
+        - button "Articoli Magazzino" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Articoli Magazzino
+        - button "Inventario" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Inventario
+        - button "Gestione Costi" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Gestione Costi
+        - button "Conteggi Inventario" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Conteggi Inventario
+        - button "Report Scostamento" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Report Scostamento
+        - button "Utenti" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e430]: Utenti
+        - button "Casse" [ref=e431] [cursor=pointer]:
+          - img [ref=e433]
+          - generic [ref=e435]: Casse
+        - button "Tavoli e Layout" [ref=e436] [cursor=pointer]:
+          - img [ref=e438]
+          - generic [ref=e440]: Tavoli e Layout
+        - button "Consumo Dettagliato" [ref=e441] [cursor=pointer]:
+          - img [ref=e443]
+          - generic [ref=e445]: Consumo Dettagliato
+        - button "Impostazioni" [ref=e446] [cursor=pointer]:
+          - img [ref=e448]
+          - generic [ref=e451]: Impostazioni
+      - main [ref=e256]:
+        - generic [ref=e452]:
+          - generic [ref=e453]:
+            - button "Lingua" [ref=e454] [cursor=pointer]
+            - button "Impostazioni Fiscali" [ref=e455] [cursor=pointer]
+            - button "Giorno Lavorativo" [ref=e456] [cursor=pointer]
+            - button "Informazioni Attività" [ref=e457] [cursor=pointer]
+            - button "Backup" [ref=e458] [cursor=pointer]
+            - button "Email" [ref=e459] [cursor=pointer]
+            - button "Ricevuta da Pagamento" [ref=e460] [cursor=pointer]
+          - generic [ref=e462]:
+            - heading "Lingua" [level=3] [ref=e463]
+            - generic [ref=e464]:
+              - paragraph [ref=e465]: Seleziona la lingua preferita per il pannello amministratore.
+              - button "Cambia Lingua" [ref=e468] [cursor=pointer]:
+                - generic [ref=e469]: IT
+                - img [ref=e470]
+  - button "Attiva tastiera virtuale" [ref=e19] [cursor=pointer]:
+    - img [ref=e20]

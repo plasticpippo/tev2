@@ -403,5 +403,21 @@
     "invalidVoidStatus": "Only completed or complimentary transactions can be voided",
     "voidFailed": "Failed to void transaction",
     "negativeDiscount": "Discount cannot be negative"
+  },
+  "backup": {
+    "cloudStatusCheckFailed": "Failed to check cloud backup status. Please try again later.",
+    "emailAndPasswordRequired": "Email and password are required",
+    "megaNotInstalled": "MEGA cloud client is not installed. Please install it first.",
+    "loginFailed": "Failed to login to MEGA. Please check your credentials and try again.",
+    "logoutFailed": "Failed to logout from MEGA. Please try again later.",
+    "installationFailed": "Failed to install MEGA cloud client. Please try again later.",
+    "cloudBackupStartFailed": "Failed to start cloud backup. Please try again later.",
+    "listBackupsFailed": "Failed to list cloud backups. Please try again later.",
+    "filenameRequired": "Backup filename is required",
+    "restoreStartFailed": "Failed to start restore operation. Please try again later.",
+    "scheduleUpdateFailed": "Failed to update backup schedule. Please try again later.",
+    "getSettingsFailed": "Failed to retrieve backup settings. Please try again later.",
+    "scheduleRequired": "Schedule settings are required",
+    "saveSettingsFailed": "Failed to save backup settings. Please try again later."
   }
 }

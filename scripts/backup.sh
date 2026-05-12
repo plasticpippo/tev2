@@ -5,15 +5,18 @@
 # 
 # This script creates backups of the PostgreSQL database running in Docker.
 # It supports both plain SQL and compressed (gzip) backup formats.
+# With --cloud, it also archives Docker volumes and uploads to MEGA.
 #
 # Usage: ./scripts/backup.sh [OPTIONS]
 # Options:
 #   -h, --help      Show this help message
 #   -c, --compress  Compress the backup with gzip
+#   --cloud         Upload full backup archive to MEGA (DB + volumes + config)
 #
 # Examples:
 #   ./scripts/backup.sh              # Create plain SQL backup
 #   ./scripts/backup.sh --compress   # Create compressed backup
+#   ./scripts/backup.sh --cloud -c   # Compressed backup + upload to MEGA
 #===============================================================================
 
 # Strict mode for better error handling
@@ -72,10 +75,14 @@ Usage: ./scripts/backup.sh [OPTIONS]
 Description:
     Creates a backup of the PostgreSQL database running in Docker Compose.
     Backups are stored in the ./backups/ directory with timestamp-based naming.
+    With --cloud, also archives Docker volumes and config files, then uploads
+    to MEGA cloud storage.
 
 Options:
     -h, --help      Show this help message and exit
     -c, --compress  Compress the backup file with gzip
+    --cloud         Create full archive and upload to MEGA
+                    Includes: DB dump, storage_data, uploads_data, .env, VERSION
 
 Environment Variables:
     The script reads database credentials from the .env file:
@@ -84,13 +91,16 @@ Environment Variables:
     - POSTGRES_DB       Database name (default: bar_pos)
 
 Output:
-    - Backup file: ./backups/db_backup_YYYYMMDD_HHMMSS.sql[.gz]
+    - Local backup: ./backups/db_backup_YYYYMMDD_HHMMSS.sql[.gz]
+    - Cloud archive (with --cloud): ./backups/tev2_full_YYYYMMDD_HHMMSS.tar.gz
     - Last backup reference: ./backups/.last_backup
+    - Cloud retention: 30 backups (oldest auto-deleted)
 
 Examples:
     ./scripts/backup.sh              # Create plain SQL backup
     ./scripts/backup.sh --compress   # Create compressed gzip backup
     ./scripts/backup.sh -c           # Same as above (short form)
+    ./scripts/backup.sh --cloud -c   # Full backup + upload to MEGA
 
 Exit Codes:
     0 - Success
@@ -215,108 +225,148 @@ create_backup_dir() {
     fi
 }
 
-# Perform the database backup
-perform_backup() {
-    local compress="$1"
-    local backup_dir="$PROJECT_ROOT/backups"
-    local timestamp=$(date +%Y%m%d_%H%M%S)
-    local backup_file="${backup_dir}/db_backup_${timestamp}.sql"
-    
-    print_header "STARTING DATABASE BACKUP"
-    print_info "Database: $POSTGRES_DB"
-    print_info "User: $POSTGRES_USER"
-    print_info "Timestamp: $timestamp"
-    
-    # Read app version for metadata
-    local app_version="unknown"
-    if [[ -f "$PROJECT_ROOT/VERSION" ]]; then
-        app_version=$(grep '^VERSION=' "$PROJECT_ROOT/VERSION" | cut -d'=' -f2)
-    fi
-    
-    # Run pg_dump inside the database container
-    print_info "Creating database dump..."
-    
-    # Write backup metadata header
-    {
-        echo "-- TEV2 Database Backup"
-        echo "-- App Version: $app_version"
-        echo "-- Timestamp: $(date -Iseconds)"
-        echo "-- Database: $POSTGRES_DB"
-        echo ""
-    } > "$backup_file"
-    
-    if docker compose exec -T db pg_dump --no-owner --no-acl -U "$POSTGRES_USER" "$POSTGRES_DB" >> "$backup_file" 2>/dev/null; then
-        # Validate the backup file
-        if ! validate_backup "$backup_file"; then
-            return 1
+#===============================================================================
+# CLOUD BACKUP FUNCTIONS
+#===============================================================================
+
+readonly MEGA_REMOTE_FOLDER="/TEV2/backups"
+readonly CLOUD_RETENTION=30
+
+# Create a full backup archive with DB dump + Docker volumes + config
+create_cloud_archive() {
+    local db_backup_file="$1"
+    local backup_dir="$2"
+    local timestamp="$3"
+    local archive_name="tev2_full_${timestamp}.tar.gz"
+    local archive_path="${backup_dir}/${archive_name}"
+    local staging_dir="${backup_dir}/_cloud_staging"
+
+    print_info "Preparing cloud backup archive..."
+
+    # Create staging directory
+    rm -rf "$staging_dir"
+    mkdir -p "$staging_dir"
+
+    # 1. Copy database dump
+    print_info "  Adding database dump..."
+    mkdir -p "$staging_dir/database"
+    cp "$db_backup_file" "$staging_dir/database/"
+
+    # 2. Export Docker volumes
+    print_info "  Exporting Docker volumes..."
+
+    # Export storage_data volume
+    mkdir -p "$staging_dir/volumes"
+    if docker volume inspect storage_data &>/dev/null; then
+        print_info "  Exporting storage_data..."
+        docker run --rm -v storage_data:/data:ro -v "$staging_dir/volumes":/output alpine \
+            tar czf /output/storage_data.tar.gz -C /data . 2>/dev/null || true
+        if [[ -f "$staging_dir/volumes/storage_data.tar.gz" ]]; then
+            local storage_size
+            storage_size=$(du -h "$staging_dir/volumes/storage_data.tar.gz" | cut -f1)
+            print_success "  storage_data exported ($storage_size)"
+        else
+            print_warning "  storage_data is empty or not accessible"
         fi
-        
-        # Compress if requested
-        if [[ "$compress" == "true" ]]; then
-            print_info "Compressing backup file..."
-            if gzip -f "$backup_file"; then
-                backup_file="${backup_file}.gz"
-                print_success "Backup compressed successfully"
-            else
-                print_error "Failed to compress backup file"
-                rm -f "$backup_file"
-                return 1
-            fi
-        fi
-        
-        # Report file size
-        local file_size
-        file_size=$(du -h "$backup_file" | cut -f1)
-        print_success "Backup created: $backup_file"
-        print_info "File size: $file_size"
-        
-        # Store the backup path in .last_backup file
-        echo "$backup_file" > "${backup_dir}/.last_backup"
-        print_info "Backup path stored in: ${backup_dir}/.last_backup"
-        
-        return 0
     else
-        print_error "Database backup failed!"
-        print_info "Check if the database container is running and credentials are correct"
-        
-        # Clean up partial backup file if it exists
-        [[ -f "$backup_file" ]] && rm -f "$backup_file"
-        
-        return 1
+        print_warning "  storage_data volume not found"
     fi
+
+    # Export uploads_data volume
+    if docker volume inspect uploads_data &>/dev/null; then
+        print_info "  Exporting uploads_data..."
+        docker run --rm -v uploads_data:/data:ro -v "$staging_dir/volumes":/output alpine \
+            tar czf /output/uploads_data.tar.gz -C /data . 2>/dev/null || true
+        if [[ -f "$staging_dir/volumes/uploads_data.tar.gz" ]]; then
+            local uploads_size
+            uploads_size=$(du -h "$staging_dir/volumes/uploads_data.tar.gz" | cut -f1)
+            print_success "  uploads_data exported ($uploads_size)"
+        else
+            print_warning "  uploads_data is empty or not accessible"
+        fi
+    else
+        print_warning "  uploads_data volume not found"
+    fi
+
+    # 3. Copy config files
+    print_info "  Adding configuration files..."
+    mkdir -p "$staging_dir/config"
+    [[ -f "$PROJECT_ROOT/.env" ]] && cp "$PROJECT_ROOT/.env" "$staging_dir/config/"
+    [[ -f "$PROJECT_ROOT/VERSION" ]] && cp "$PROJECT_ROOT/VERSION" "$staging_dir/config/"
+
+    # 4. Write manifest
+    cat > "$staging_dir/MANIFEST.txt" << MANIFEST
+TEV2 Cloud Backup Archive
+Created: $(date -Iseconds)
+App Version: $(grep '^VERSION=' "$PROJECT_ROOT/VERSION" 2>/dev/null | cut -d'=' -f2 || echo "unknown")
+Database: $POSTGRES_DB
+DB Backup: $(basename "$db_backup_file")
+Contents:
+  database/   - PostgreSQL dump file
+  volumes/    - Docker volume exports (storage_data, uploads_data)
+  config/     - .env and VERSION files
+MANIFEST
+
+    # 5. Create tar.gz archive
+    print_info "  Creating archive: $archive_name"
+    tar czf "$archive_path" -C "$staging_dir" . 
+
+    # Clean up staging
+    rm -rf "$staging_dir"
+
+    local archive_size
+    archive_size=$(du -h "$archive_path" | cut -f1)
+    print_success "Cloud archive created: $archive_path ($archive_size)"
+
+    echo "$archive_path"
 }
 
-# Validate the backup file
-validate_backup() {
-    local backup_file="$1"
-    
-    print_info "Validating backup file..."
-    
-    # Check if file exists
-    if [[ ! -f "$backup_file" ]]; then
-        print_error "Backup file was not created!"
+# Upload archive to MEGA and rotate old backups
+upload_to_mega() {
+    local archive_path="$1"
+
+    print_info "Checking MEGA login..."
+    if ! mega-whoami 2>&1 | grep -q "@"; then
+        print_error "Not logged into MEGA. Run: ./scripts/setup-cloud-backup.sh"
         return 1
     fi
-    
-    # Check if file is not empty
-    local file_size
-    file_size=$(wc -c < "$backup_file")
-    
-    if [[ "$file_size" -eq 0 ]]; then
-        print_error "Backup file is empty!"
-        rm -f "$backup_file"
+
+    # Ensure remote folder exists
+    mega-mkdir /TEV2 2>/dev/null || true
+    mega-mkdir "$MEGA_REMOTE_FOLDER" 2>/dev/null || true
+
+    print_info "Uploading to MEGA: $MEGA_REMOTE_FOLDER/$(basename "$archive_path")"
+    if mega-put "$archive_path" "$MEGA_REMOTE_FOLDER/" 2>&1; then
+        print_success "Upload complete"
+    else
+        print_error "Upload failed"
         return 1
     fi
+
+    # Rotate old backups
+    print_info "Rotating cloud backups (keeping last $CLOUD_RETENTION)..."
+    local backups
+    backups=$(mega-find "$MEGA_REMOTE_FOLDER" --pattern="tev2_full_*.tar.gz" --time-format="%s" 2>/dev/null | sort -n || true)
+
+    local count
+    count=$(echo "$backups" | grep -c "tev2_full_" || true)
     
-    # Check if file contains valid PostgreSQL content
-    # A valid dump should contain at least some SQL commands
-    if ! grep -qE "(CREATE|INSERT|COPY|PostgreSQL database dump|TEV2 Database Backup)" "$backup_file" 2>/dev/null; then
-        print_warning "Backup file may not contain valid PostgreSQL dump content"
-        print_info "First few lines of backup file:"
-        head -n 5 "$backup_file"
+    if [[ "$count" -gt "$CLOUD_RETENTION" ]]; then
+        local to_delete=$((count - CLOUD_RETENTION))
+        print_info "  Removing $to_delete old backup(s)..."
+        echo "$backups" | head -n "$to_delete" | while IFS= read -r old_backup; do
+            local backup_name
+            backup_name=$(echo "$old_backup" | awk '{print $NF}' | xargs basename 2>/dev/null || echo "")
+            if [[ -n "$backup_name" ]]; then
+                print_info "  Deleting: $backup_name"
+                mega-rm "${MEGA_REMOTE_FOLDER}/${backup_name}" 2>/dev/null || true
+            fi
+        done
+        print_success "Rotation complete ($count -> $CLOUD_RETENTION)"
+    else
+        print_info "  $count/$CLOUD_RETENTION backups stored, no rotation needed"
     fi
-    
-    print_success "Backup file validated ($file_size bytes)"
+
     return 0
 }
 
@@ -327,6 +377,7 @@ validate_backup() {
 main() {
     # Parse command line arguments
     local compress="false"
+    local cloud="false"
     
     while [[ $# -gt 0 ]]; do
         case "$1" in
@@ -335,6 +386,10 @@ main() {
                 ;;
             -c|--compress)
                 compress="true"
+                shift
+                ;;
+            --cloud)
+                cloud="true"
                 shift
                 ;;
             *)
@@ -358,13 +413,101 @@ main() {
     check_database_ready
     create_backup_dir
     
-    if perform_backup "$compress"; then
-        print_header "BACKUP COMPLETE"
-        exit 0
-    else
+    # Track timestamp for consistent naming
+    local timestamp
+    timestamp=$(date +%Y%m%d_%H%M%S)
+
+    # Perform the database backup (override timestamp to use ours)
+    local backup_dir="$PROJECT_ROOT/backups"
+    local backup_file="${backup_dir}/db_backup_${timestamp}.sql"
+    
+    print_header "STARTING DATABASE BACKUP"
+    print_info "Database: $POSTGRES_DB"
+    print_info "User: $POSTGRES_USER"
+    print_info "Timestamp: $timestamp"
+    if [[ "$cloud" == "true" ]]; then
+        print_info "Cloud upload: enabled"
+    fi
+    
+    # Read app version for metadata
+    local app_version="unknown"
+    if [[ -f "$PROJECT_ROOT/VERSION" ]]; then
+        app_version=$(grep '^VERSION=' "$PROJECT_ROOT/VERSION" | cut -d'=' -f2)
+    fi
+    
+    # Run pg_dump inside the database container
+    print_info "Creating database dump..."
+    
+    # Write backup metadata header
+    {
+        echo "-- TEV2 Database Backup"
+        echo "-- App Version: $app_version"
+        echo "-- Timestamp: $(date -Iseconds)"
+        echo "-- Database: $POSTGRES_DB"
+        echo ""
+    } > "$backup_file"
+    
+    if ! docker compose exec -T db pg_dump --no-owner --no-acl -U "$POSTGRES_USER" "$POSTGRES_DB" >> "$backup_file" 2>/dev/null; then
+        print_error "Database backup failed!"
+        print_info "Check if the database container is running and credentials are correct"
+        [[ -f "$backup_file" ]] && rm -f "$backup_file"
         print_header "BACKUP FAILED"
         exit 1
     fi
+
+    # Validate the backup file
+    if ! validate_backup "$backup_file"; then
+        print_header "BACKUP FAILED"
+        exit 1
+    fi
+    
+    # Compress if requested
+    if [[ "$compress" == "true" ]]; then
+        print_info "Compressing backup file..."
+        if gzip -f "$backup_file"; then
+            backup_file="${backup_file}.gz"
+            print_success "Backup compressed successfully"
+        else
+            print_error "Failed to compress backup file"
+            rm -f "$backup_file"
+            print_header "BACKUP FAILED"
+            exit 1
+        fi
+    fi
+    
+    # Report file size
+    local file_size
+    file_size=$(du -h "$backup_file" | cut -f1)
+    print_success "Backup created: $backup_file"
+    print_info "File size: $file_size"
+    
+    # Store the backup path in .last_backup file
+    echo "$backup_file" > "${backup_dir}/.last_backup"
+    print_info "Backup path stored in: ${backup_dir}/.last_backup"
+
+    # Cloud upload if requested
+    if [[ "$cloud" == "true" ]]; then
+        print_header "CLOUD BACKUP"
+
+        local archive_path
+        archive_path=$(create_cloud_archive "$backup_file" "$backup_dir" "$timestamp")
+
+        if [[ -n "$archive_path" ]] && [[ -f "$archive_path" ]]; then
+            if command -v mega-put &>/dev/null; then
+                if upload_to_mega "$archive_path"; then
+                    rm -f "$archive_path"
+                    print_success "Local cloud archive cleaned up (DB dump preserved)"
+                else
+                    print_warning "Cloud upload failed. Archive kept locally: $archive_path"
+                fi
+            else
+                print_info "MEGA CMD not available locally. Archive ready for upload: $archive_path"
+                print_info "ARCHIVE_PATH=$archive_path"
+            fi
+        fi
+    fi
+
+    print_header "BACKUP COMPLETE"
 }
 
 # Run main function

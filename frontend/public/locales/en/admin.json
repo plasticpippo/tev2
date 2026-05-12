@@ -439,7 +439,144 @@
       "creating": "Creating backup...",
       "creatingBackup": "Creating backup...",
       "backupSuccess": "Backup created and downloaded successfully.",
-      "backupFailed": "Failed to create backup."
+      "backupFailed": "Failed to create backup.",
+      "backupType": {
+        "database": "Database Only",
+        "full": "Full Backup (Database + Files)",
+        "databaseDescription": "Download the database as a SQL file",
+        "fullDescription": "Download a complete archive with database, uploaded files, and configuration"
+      },
+      "cloud": {
+        "setupTitle": "Cloud Backup Setup",
+        "setupDescription": "Configure cloud backup to MEGA.",
+        "status": {
+          "title": "MEGA Status",
+          "notInstalled": "MEGA CMD not installed",
+          "installedNotLoggedIn": "MEGA CMD installed, not logged in",
+          "loggedIn": "Logged in as {{email}}",
+          "loading": "Checking status..."
+        },
+        "install": {
+          "title": "Install MEGA CMD",
+          "description": "Install MEGA command-line tool to enable cloud backups.",
+          "button": "Install MEGA CMD",
+          "installing": "Installing...",
+          "success": "MEGA CMD installed successfully.",
+          "failed": "Failed to install MEGA CMD."
+        },
+        "login": {
+          "title": "Login to MEGA",
+          "email": "Email",
+          "emailPlaceholder": "Enter your MEGA email",
+          "password": "Password",
+          "passwordPlaceholder": "Enter your MEGA password",
+          "button": "Login",
+          "loggingIn": "Logging in...",
+          "success": "Successfully logged in to MEGA.",
+          "failed": "Failed to login to MEGA."
+        },
+        "logout": {
+          "button": "Logout",
+          "loggingOut": "Logging out...",
+          "success": "Successfully logged out from MEGA."
+        },
+        "backup": {
+          "title": "Cloud Backup",
+          "description": "Create a backup and upload it to MEGA.",
+          "button": "Create Cloud Backup",
+          "backingUp": "Creating cloud backup...",
+          "success": "Cloud backup created successfully.",
+          "failed": "Failed to create cloud backup.",
+          "notLoggedIn": "You must be logged in to create cloud backups."
+        },
+        "schedule": {
+          "title": "Backup Schedule",
+          "description": "Configure automatic cloud backups.",
+          "enabled": "Enable scheduled backups",
+          "hour": "Hour (0-23)",
+          "compress": "Compress backup",
+          "save": "Save Schedule",
+          "saving": "Saving...",
+          "success": "Schedule saved successfully.",
+          "failed": "Failed to save schedule."
+        },
+        "retention": {
+          "label": "Retention Policy (days to keep backups)",
+          "description": "Backups older than the specified number of days will be automatically deleted."
+        },
+        "restore": {
+          "title": "Cloud Restore",
+          "description": "Restore your data from a cloud backup.",
+          "loadButton": "Load Cloud Backups",
+          "loading": "Loading backups...",
+          "noBackups": "No cloud backups found.",
+          "table": {
+            "filename": "Filename",
+            "date": "Date",
+            "size": "Size",
+            "actions": "Actions"
+          },
+          "restore": {
+            "button": "Restore",
+            "dialogTitle": "Restore Backup",
+            "dialogDescription": "Restore from backup: {{filename}}\nDate: {{date}}\nSize: {{size}}",
+            "dbOnly": "Database only",
+            "full": "Full restore",
+            "confirmLabel": "Type CONFIRM to proceed",
+            "confirmPlaceholder": "Type CONFIRM",
+            "confirmButton": "Restore",
+            "cancelButton": "Cancel",
+            "restoring": "Restoring...",
+            "success": "Restore completed successfully.",
+            "failed": "Failed to restore backup."
+          }
+        },
+        "usage": {
+          "title": "Cloud Storage",
+          "loading": "Checking storage usage..."
+        },
+        "errors": {
+          "emailAndPasswordRequired": "Email and password are required",
+          "invalidConfirmation": "Please type CONFIRM to proceed with the restore",
+          "logoutFailed": "Failed to logout from MEGA",
+          "loadBackupsFailed": "Failed to load cloud backups",
+          "noFileUploaded": "No backup file was uploaded.",
+          "invalidFileType": "Invalid file type. Only .sql, .sql.gz, and .tar.gz files are allowed.",
+          "restoreUploadFailed": "Failed to start restore."
+        },
+        "job": {
+          "status": "Status",
+          "statusPending": "Pending",
+          "statusRunning": "Running",
+          "statusSuccess": "Success",
+          "statusFailed": "Failed"
+        },
+        "progress": {
+          "title": "Progress",
+          "initializing": "Initializing...",
+          "uploading": "Uploading to cloud...",
+          "downloading": "Downloading from cloud...",
+          "processing": "Processing backup...",
+          "finalizing": "Finalizing..."
+        }
+      },
+      "restoreFile": {
+        "title": "Restore from File",
+        "description": "Upload a backup file to restore your data. Accepted formats: .sql, .sql.gz, .tar.gz",
+        "tarGzNote": "For .tar.gz archives, both the database and file storage volumes will be restored.",
+        "warning": "This will overwrite the current database. This action cannot be undone.",
+        "selectFile": "Select Backup File",
+        "noFileSelected": "No file selected",
+        "selectedFile": "Selected: {{filename}} ({{size}})",
+        "confirmLabel": "Type CONFIRM to proceed",
+        "confirmPlaceholder": "Type CONFIRM",
+        "restoreButton": "Restore Database",
+        "restoring": "Restoring...",
+        "cancelButton": "Cancel",
+        "success": "Restore completed successfully. Please refresh the page.",
+        "failed": "Failed to restore from uploaded file.",
+        "noFile": "Please select a backup file."
+      }
     },
     "email": {
       "title": "Email Settings",

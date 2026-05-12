@@ -359,6 +359,8 @@ model Settings {
   businessLogoPath String?
   businessLegalText String?
 
+  cloudBackupRetention Int @default(30) @map("cloud_backup_retention")
+
   @@index([defaultTaxRateId])
   @@map("settings")
 }

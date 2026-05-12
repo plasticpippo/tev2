@@ -146,6 +146,20 @@ export interface Settings {
     receiptIssueDefaultSelected: boolean;
     receiptIssueMode: "immediate" | "draft";
   };
+  backup?: {
+    cloud: {
+      provider: string;
+      enabled: boolean;
+      megaEmail: string | null;
+      megaLoggedIn: boolean;
+      retention: number;
+    };
+    schedule: {
+      enabled: boolean;
+      hour: number;
+      compress: boolean;
+    };
+  };
 }
 
 export interface Till {

@@ -26,6 +26,7 @@ import { customersRouter } from './handlers/customerHandler';
 import { customerRateLimiter } from './middleware/rateLimiter';
 import { receiptsRouter } from './handlers/receiptHandler';
 import { costManagementRouter } from './handlers/costManagement';
+import { backupRouter } from './handlers/backup';
 
 export const router = express.Router();
 
@@ -50,6 +51,7 @@ router.use('/tax-rates', taxRatesRouter);
 router.use('/customers', customerRateLimiter, customersRouter);
 router.use('/receipts', receiptsRouter);
 router.use('/cost-management', costManagementRouter);
+router.use('/backup', backupRouter);
 
 router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });

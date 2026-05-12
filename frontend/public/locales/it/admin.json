@@ -472,7 +472,144 @@
       "creating": "Creazione backup in corso...",
       "creatingBackup": "Creazione backup in corso...",
       "backupSuccess": "Backup creato e scaricato con successo.",
-      "backupFailed": "Creazione backup fallita."
+      "backupFailed": "Creazione backup fallita.",
+      "backupType": {
+        "database": "Solo Database",
+        "full": "Backup Completo (Database + File)",
+        "databaseDescription": "Scarica il database come file SQL",
+        "fullDescription": "Scarica un archivio completo con database, file caricati e configurazione"
+      },
+      "cloud": {
+        "setupTitle": "Configurazione Backup Cloud",
+        "setupDescription": "Configura il backup cloud su MEGA.",
+        "status": {
+          "title": "Stato MEGA",
+          "notInstalled": "MEGA CMD non installato",
+          "installedNotLoggedIn": "MEGA CMD installato, non connesso",
+          "loggedIn": "Connesso come {{email}}",
+          "loading": "Verifica stato..."
+        },
+        "install": {
+          "title": "Installa MEGA CMD",
+          "description": "Installa lo strumento MEGA da riga di comando per abilitare i backup cloud.",
+          "button": "Installa MEGA CMD",
+          "installing": "Installazione...",
+          "success": "MEGA CMD installato correttamente.",
+          "failed": "Installazione di MEGA CMD fallita."
+        },
+        "login": {
+          "title": "Accedi a MEGA",
+          "email": "Email",
+          "emailPlaceholder": "Inserisci la tua email MEGA",
+          "password": "Password",
+          "passwordPlaceholder": "Inserisci la tua password MEGA",
+          "button": "Accedi",
+          "loggingIn": "Accesso in corso...",
+          "success": "Accesso a MEGA effettuato correttamente.",
+          "failed": "Accesso a MEGA fallito."
+        },
+        "logout": {
+          "button": "Disconnetti",
+          "loggingOut": "Disconnessione...",
+          "success": "Disconnessione da MEGA effettuata correttamente."
+        },
+        "backup": {
+          "title": "Backup Cloud",
+          "description": "Crea un backup e caricalo su MEGA.",
+          "button": "Crea Backup Cloud",
+          "backingUp": "Creazione backup cloud...",
+          "success": "Backup cloud creato correttamente.",
+          "failed": "Creazione backup cloud fallita.",
+          "notLoggedIn": "Devi essere connesso per creare backup cloud."
+        },
+        "schedule": {
+          "title": "Pianificazione Backup",
+          "description": "Configura i backup cloud automatici.",
+          "enabled": "Abilita backup pianificati",
+          "hour": "Ora (0-23)",
+          "compress": "Comprimi backup",
+          "save": "Salva Pianificazione",
+          "saving": "Salvataggio...",
+          "success": "Pianificazione salvata correttamente.",
+          "failed": "Salvataggio pianificazione fallito."
+        },
+        "retention": {
+          "label": "Criterio di conservazione (giorni di retention)",
+          "description": "I backup piu vecchi del numero di giorni specificato saranno eliminati automaticamente."
+        },
+        "restore": {
+          "title": "Ripristino Cloud",
+          "description": "Ripristina i tuoi dati da un backup cloud.",
+          "loadButton": "Carica Backup Cloud",
+          "loading": "Caricamento backup...",
+          "noBackups": "Nessun backup cloud trovato.",
+          "table": {
+            "filename": "Nome file",
+            "date": "Data",
+            "size": "Dimensione",
+            "actions": "Azioni"
+          },
+          "restore": {
+            "button": "Ripristina",
+            "dialogTitle": "Ripristina Backup",
+            "dialogDescription": "Ripristina da backup: {{filename}}\nData: {{date}}\nDimensione: {{size}}",
+            "dbOnly": "Solo database",
+            "full": "Ripristino completo",
+            "confirmLabel": "Digita CONFERMA per procedere",
+            "confirmPlaceholder": "Digita CONFERMA",
+            "confirmButton": "Ripristina",
+            "cancelButton": "Annulla",
+            "restoring": "Ripristino in corso...",
+            "success": "Ripristino completato correttamente.",
+            "failed": "Ripristino fallito."
+          }
+        },
+        "usage": {
+          "title": "Spazio Cloud",
+          "loading": "Verifica spazio utilizzato..."
+        },
+        "errors": {
+          "emailAndPasswordRequired": "Email e password sono obbligatori",
+          "invalidConfirmation": "Digita CONFERMA per procedere con il ripristino",
+          "logoutFailed": "Disconnessione da MEGA fallita",
+          "loadBackupsFailed": "Caricamento backup cloud fallito",
+          "noFileUploaded": "Nessun file di backup caricato.",
+          "invalidFileType": "Tipo di file non valido. Sono consentiti solo file .sql, .sql.gz e .tar.gz.",
+          "restoreUploadFailed": "Impossibile avviare il ripristino."
+        },
+        "job": {
+          "status": "Stato",
+          "statusPending": "In attesa",
+          "statusRunning": "In esecuzione",
+          "statusSuccess": "Completato",
+          "statusFailed": "Fallito"
+        },
+        "progress": {
+          "title": "Avanzamento",
+          "initializing": "Inizializzazione...",
+          "uploading": "Caricamento su cloud...",
+          "downloading": "Download dal cloud...",
+          "processing": "Elaborazione backup...",
+          "finalizing": "Finalizzazione..."
+        }
+      },
+      "restoreFile": {
+        "title": "Ripristina da File",
+        "description": "Carica un file di backup per ripristinare i tuoi dati. Formati accettati: .sql, .sql.gz, .tar.gz",
+        "tarGzNote": "Per gli archivi .tar.gz, verranno ripristinati sia il database che i volumi di archiviazione file.",
+        "warning": "Questo sovrascriverà il database corrente. Questa azione non può essere annullata.",
+        "selectFile": "Seleziona File di Backup",
+        "noFileSelected": "Nessun file selezionato",
+        "selectedFile": "Selezionato: {{filename}} ({{size}})",
+        "confirmLabel": "Digita CONFERMA per procedere",
+        "confirmPlaceholder": "Digita CONFERMA",
+        "restoreButton": "Ripristina Database",
+        "restoring": "Ripristino in corso...",
+        "cancelButton": "Annulla",
+        "success": "Ripristino completato con successo. Si prega di aggiornare la pagina.",
+        "failed": "Impossibile ripristinare dal file caricato.",
+        "noFile": "Seleziona un file di backup."
+      }
     },
     "email": {
       "title": "Impostazioni Email",
