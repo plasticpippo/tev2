@@ -130,7 +130,7 @@ return (
               <>
  {/* Desktop/Tablet: Show both panels side by side */}
  <div className="hidden md:flex flex-row h-full w-full">
- <div className="flex-1 min-w-0 h-full flex flex-col">
+  <div className="flex-1 min-w-0 h-full flex flex-col relative z-20">
  {/* Product Grid with Layout System */}
  <div className="flex-1 overflow-y-auto overflow-x-hidden bg-slate-900">
  <ProductGridLayout

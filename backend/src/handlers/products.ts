@@ -248,7 +248,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
             themeColor: (v as any).themeColor || 'slate',
             taxRateId: (v as any).taxRateId || null,
             stockConsumption: {
-              create: v.stockConsumption.map((sc: { stockItemId: string; quantity: number }) => ({
+              create: (v.stockConsumption || []).map((sc: { stockItemId: string; quantity: number }) => ({
                 stockItemId: sc.stockItemId,
                 quantity: sc.quantity
               }))
@@ -474,7 +474,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
               themeColor: (v as any).themeColor || 'slate',
               taxRateId: (v as any).taxRateId || null,
               stockConsumption: {
-                create: v.stockConsumption.map((sc) => ({
+                create: (v.stockConsumption || []).map((sc) => ({
                   stockItemId: sc.stockItemId,
                   quantity: sc.quantity
                 }))

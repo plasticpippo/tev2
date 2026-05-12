@@ -305,7 +305,7 @@ case 'itemisedConsumption':
 </button>
         </div>
       </header>
-      <div className="flex-grow flex overflow-y-auto relative">
+      <div className="flex-grow flex overflow-hidden relative">
         {sidebarOpen && (
           <div
             className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"

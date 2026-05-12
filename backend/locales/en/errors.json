@@ -202,6 +202,7 @@
     "invalidSmtpPort": "Invalid SMTP port. Must be between 1 and 65535.",
     "invalidReceiptNumberLength": "Invalid receipt number length. Must be between 1 and 20.",
     "invalidReceiptStartNumber": "Invalid receipt start number. Must be at least 1.",
+    "invalidTaxMode": "Invalid tax mode. Must be 'inclusive', 'exclusive', or 'none'.",
     "invalidReceiptIssueMode": "Invalid receipt issue mode. Must be 'immediate' or 'draft'.",
     "tooManyEmailTestRequests": "Too many email test requests. Please try again later.",
     "noFileUploaded": "No file uploaded",

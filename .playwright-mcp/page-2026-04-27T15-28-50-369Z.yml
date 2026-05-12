@@ -1,5 +1,0 @@
-- generic [ref=e160]:
-  - img [ref=e162]
-  - heading "Something went wrong" [level=3] [ref=e164]
-  - paragraph [ref=e165]: An unexpected error occurred. Please try again.
-  - button "Try Again" [ref=e167] [cursor=pointer]

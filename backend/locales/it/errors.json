@@ -202,6 +202,7 @@
     "invalidSmtpPort": "Porta SMTP non valida. Deve essere compresa tra 1 e 65535.",
     "invalidReceiptNumberLength": "Lunghezza numero ricevuta non valida. Deve essere compresa tra 1 e 20.",
     "invalidReceiptStartNumber": "Numero iniziale ricevuta non valido. Deve essere almeno 1.",
+    "invalidTaxMode": "Modalità tassazione non valida. Deve essere 'inclusive', 'exclusive' o 'none'.",
     "invalidReceiptIssueMode": "Modalità emissione ricevuta non valida. Deve essere 'immediate' o 'draft'.",
     "tooManyEmailTestRequests": "Troppe richieste di test email. Riprova più tardi.",
     "noFileUploaded": "Nessun file caricato",

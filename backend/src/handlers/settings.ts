@@ -273,6 +273,12 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
   try {
     const { tax, businessDay, business, receipt, email, receiptFromPaymentModal } = req.body as Settings;
 
+    const validTaxModes = ['inclusive', 'exclusive', 'none'];
+    if (tax?.mode !== undefined && !validTaxModes.includes(tax.mode)) {
+      res.status(400).json({ error: t('errors:settings.invalidTaxMode') });
+      return;
+    }
+
     // Validate receiptIssueMode if provided
     if (receiptFromPaymentModal?.receiptIssueMode !== undefined) {
       if (receiptFromPaymentModal.receiptIssueMode !== 'immediate' && receiptFromPaymentModal.receiptIssueMode !== 'draft') {
