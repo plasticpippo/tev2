@@ -170,27 +170,38 @@ export const AnalyticsPanel: React.FC<AnalyticsPanelProps> = ({
     let startDate: Date;
 
     switch (dateRange) {
-      case 'week':
+      case 'week': {
         startDate = new Date();
         startDate.setDate(now.getDate() - 7);
+        startDate.setHours(0, 0, 0, 0);
         break;
-      case 'month':
+      }
+      case 'month': {
         startDate = new Date();
         startDate.setMonth(now.getMonth() - 1);
+        startDate.setHours(0, 0, 0, 0);
         break;
-      case 'year':
+      }
+      case 'year': {
         startDate = new Date();
         startDate.setFullYear(now.getFullYear() - 1);
+        startDate.setHours(0, 0, 0, 0);
         break;
+      }
+      case 'custom': {
+        const d = new Date(selectedDate);
+        d.setHours(0, 0, 0, 0);
+        startDate = d;
+        break;
+      }
       case 'today':
-      case 'custom':
       default:
         startDate = getBusinessDayStart(settings);
         break;
     }
 
     return transactions.filter(t => new Date(t.createdAt) >= startDate);
-  }, [transactions, dateRange, settings]);
+  }, [transactions, dateRange, selectedDate, settings]);
   
 const DateRangeButton: React.FC<{range: DateRange, label: string}> = ({range, label}) => (
 <button

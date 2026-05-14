@@ -36,21 +36,21 @@ export const SalesTrendChart: React.FC<SalesTrendChartProps> = ({ transactions, 
             }
             return result;
         } else { // 'week' or 'month' - group by day
-            // Group transactions by day (YYYY-MM-DD)
+            const localDateKey = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+
             transactions.forEach(t => {
                 const date = new Date(t.createdAt);
-                const key = date.toISOString().split('T')[0];
+                const key = localDateKey(date);
                 const currentTotal = dataMap.get(key) || 0;
                 dataMap.set(key, currentTotal + t.total);
             });
 
-            // Generate labels and data for the last 7 or 30 days
             const days = dateRange === 'week' ? 7 : 30;
             const result = [];
             for (let i = days - 1; i >= 0; i--) {
                 const d = new Date();
                 d.setDate(now.getDate() - i);
-                const key = d.toISOString().split('T')[0];
+                const key = localDateKey(d);
                 const label = d.toLocaleDateString(locale, { month: 'short', day: 'numeric' });
                 result.push({ label, total: dataMap.get(key) || 0 });
             }
