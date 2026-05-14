@@ -112,19 +112,9 @@ const result = await processPayment({
 
     if (result.receipt) {
       const receipt = result.receipt;
-      if (receipt.status === 'issued' && receipt.number) {
-        alert(t('paymentContext.paymentSuccessWithReceipt', { receiptNumber: receipt.number }));
-      } else if (receipt.status === 'pending' || receipt.status === 'queued') {
-        alert(t('paymentContext.paymentSuccessReceiptQueued'));
-      } else if (receipt.status === 'draft') {
-        alert(t('paymentContext.paymentSuccessReceiptDraft'));
-      } else {
-        alert(t('paymentContext.paymentSuccess'));
-      }
+      console.log(t('paymentContext.paymentSuccessWithReceipt', { receiptNumber: receipt.number || '' }));
     } else if (issueReceipt) {
-      alert(t('paymentContext.paymentSuccessReceiptError'));
-    } else {
-      alert(t('paymentContext.paymentSuccess'));
+      console.log(t('paymentContext.paymentSuccessReceiptError'));
     }
 
     if (assignedTable) {

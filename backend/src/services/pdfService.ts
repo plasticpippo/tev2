@@ -112,7 +112,7 @@ export async function generatePDF(
     page = await browser.newPage();
 
     await page.setContent(htmlContent, {
-      waitUntil: 'networkidle0',
+      waitUntil: 'networkidle',
       timeout: 10000,
     });
 

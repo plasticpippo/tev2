@@ -42,26 +42,32 @@ export async function isTokenRevoked(
 ): Promise<boolean> {
   const tokenDigest = hashToken(token);
   
-  // Check individual token revocation
-  const revokedToken = await prisma.revokedToken.findUnique({
-    where: {
-      tokenDigest,
-    },
-  });
-  
-  if (revokedToken !== null) {
-    return true;
-  }
-  
-  // Check bulk token revocation via tokensRevokedAt
-  if (userId && tokenIssuedAt) {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { tokensRevokedAt: true }
+  try {
+    const revokedToken = await prisma.revokedToken.findUnique({
+      where: {
+        tokenDigest,
+      },
     });
     
-    if (user?.tokensRevokedAt && tokenIssuedAt < user.tokensRevokedAt) {
+    if (revokedToken !== null) {
       return true;
+    }
+  } catch {
+    return false;
+  }
+  
+  if (userId && tokenIssuedAt) {
+    try {
+      const user = await prisma.user.findUnique({
+        where: { id: userId },
+        select: { tokensRevokedAt: true }
+      });
+      
+      if (user?.tokensRevokedAt && tokenIssuedAt < user.tokensRevokedAt) {
+        return true;
+      }
+    } catch {
+      return false;
     }
   }
   

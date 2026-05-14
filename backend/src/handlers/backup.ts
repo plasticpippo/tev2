@@ -873,6 +873,117 @@ backupRouter.post('/restore/upload', authenticateToken, requireAdmin, backupUplo
   res.json({ jobId: job.id });
 });
 
+const applyMigrations = async (jobId: string): Promise<void> => {
+  updateJobStatus(jobId, 'running', 'Applying database migrations...');
+
+  const maxIterations = 60;
+  let iteration = 0;
+  let skipped = 0;
+
+  while (iteration < maxIterations) {
+    iteration++;
+
+    const result = await new Promise<{ exitCode: number; stdout: string; stderr: string }>((resolve) => {
+      const child = spawn('npx', ['prisma', 'migrate', 'deploy'], {
+        env: { ...process.env },
+        stdio: ['pipe', 'pipe', 'pipe'],
+      });
+
+      let stdout = '';
+      let stderr = '';
+
+      child.stdout.on('data', (data) => { stdout += data.toString(); });
+      child.stderr.on('data', (data) => { stderr += data.toString(); });
+      child.on('close', (code) => resolve({ exitCode: code ?? 1, stdout, stderr }));
+      child.on('error', (err) => resolve({ exitCode: 1, stdout, stderr: err.message }));
+    });
+
+    const output = result.stdout + result.stderr;
+    updateJobStatus(jobId, 'running', `Migration iteration ${iteration}: ${output.slice(-200)}`);
+
+    if (output.includes('No pending migrations to apply')) {
+      updateJobStatus(jobId, 'running', `All migrations applied (${skipped} resolved as already in schema)`);
+      return;
+    }
+
+    if (/migrations?.*applied/.test(output) && !output.includes('Error')) {
+      updateJobStatus(jobId, 'running', `All migrations applied (${skipped} resolved as already in schema)`);
+      return;
+    }
+
+    const alreadyExistsMatch = output.match(/already exists|42701|42P07|42710|42P04|42723/);
+    if (alreadyExistsMatch) {
+      let failedName = output.match(/Migration name:\s+(\S+)/)?.[1];
+      if (!failedName) {
+        const dbUrl = process.env.DATABASE_URL;
+        if (dbUrl) {
+          const cfg = parseDatabaseUrl(dbUrl);
+          if (cfg) {
+            try {
+              const { stdout: nameOut } = await execAsync(
+                `psql -h ${cfg.host} -p ${cfg.port} -U ${cfg.user} -d ${cfg.database} -t -A -c "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;"`,
+                { env: { ...process.env, PGPASSWORD: cfg.password } }
+              );
+              failedName = nameOut.trim();
+            } catch { /* ignore */ }
+          }
+        }
+      }
+      if (failedName) {
+        updateJobStatus(jobId, 'running', `Migration '${failedName}' -- already in schema, marking as applied`);
+        await new Promise<{ exitCode: number }>((resolve) => {
+          const resolveChild = spawn('npx', ['prisma', 'migrate', 'resolve', '--applied', failedName!], {
+            env: { ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
+          resolveChild.on('close', (code) => resolve({ exitCode: code ?? 1 }));
+          resolveChild.on('error', () => resolve({ exitCode: 1 }));
+        });
+        skipped++;
+        continue;
+      }
+    }
+
+    if (output.includes('P3018')) {
+      let blockedName: string | undefined;
+      const dbUrl = process.env.DATABASE_URL;
+      if (dbUrl) {
+        const cfg = parseDatabaseUrl(dbUrl);
+        if (cfg) {
+          try {
+            const { stdout: nameOut } = await execAsync(
+              `psql -h ${cfg.host} -p ${cfg.port} -U ${cfg.user} -d ${cfg.database} -t -A -c "SELECT migration_name FROM _prisma_migrations WHERE finished_at IS NULL ORDER BY started_at DESC LIMIT 1;"`,
+              { env: { ...process.env, PGPASSWORD: cfg.password } }
+            );
+            blockedName = nameOut.trim();
+          } catch { /* ignore */ }
+        }
+      }
+      if (blockedName) {
+        updateJobStatus(jobId, 'running', `Resolving blocked migration '${blockedName}'...`);
+        await new Promise<{ exitCode: number }>((resolve) => {
+          const resolveChild = spawn('npx', ['prisma', 'migrate', 'resolve', '--applied', blockedName!], {
+            env: { ...process.env },
+            stdio: ['pipe', 'pipe', 'pipe'],
+          });
+          resolveChild.on('close', (code) => resolve({ exitCode: code ?? 1 }));
+          resolveChild.on('error', () => resolve({ exitCode: 1 }));
+        });
+        skipped++;
+        continue;
+      }
+    }
+
+    if (output.includes('Error')) {
+      throw new Error(`Migration failed: ${output.slice(-500)}`);
+    }
+
+    return;
+  }
+
+  throw new Error('Migration apply: too many retry iterations');
+};
+
 const restoreFromSql = async (buffer: Buffer, jobId: string, dbConfig: ReturnType<typeof parseDatabaseUrl>, env: NodeJS.ProcessEnv): Promise<void> => {
   const sqlPath = path.join(os.tmpdir(), `restore_${jobId}.sql`);
 
@@ -918,6 +1029,8 @@ const restoreFromSql = async (buffer: Buffer, jobId: string, dbConfig: ReturnTyp
     if (result.exitCode !== 0) {
       throw new Error(`psql failed with exit code ${result.exitCode}: ${result.stderr}`);
     }
+
+    await applyMigrations(jobId);
 
     updateJobStatus(jobId, 'success', 'Database restored successfully');
   } finally {
@@ -973,6 +1086,8 @@ const restoreFromSqlGz = async (buffer: Buffer, jobId: string, dbConfig: ReturnT
       psql.on('error', reject);
     });
 
+    await applyMigrations(jobId);
+
     updateJobStatus(jobId, 'success', 'Database restored successfully');
   } finally {
     try { await fs.unlink(gzPath); } catch { /* ignore */ }
@@ -1007,19 +1122,31 @@ const restoreFromTarGz = async (buffer: Buffer, jobId: string, dbConfig: ReturnT
       tar.on('error', reject);
     });
 
-    const dbDir = path.join(extractDir, 'database');
-    const files = await fs.readdir(dbDir);
-    const sqlFile = files.find(f => f.endsWith('.sql'));
-    const sqlGzFile = files.find(f => f.endsWith('.sql.gz'));
+    const findSqlFile = async (dir: string): Promise<{ sqlGz: string | null; sql: string | null }> => {
+      const entries = await fs.readdir(dir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(dir, entry.name);
+        if (entry.isDirectory()) {
+          const result = await findSqlFile(fullPath);
+          if (result.sql || result.sqlGz) return result;
+        } else if (entry.name.endsWith('.sql.gz')) {
+          return { sqlGz: fullPath, sql: null };
+        } else if (entry.name.endsWith('.sql')) {
+          return { sql: fullPath, sqlGz: null };
+        }
+      }
+      return { sql: null, sqlGz: null };
+    };
+
+    const { sql: sqlFile, sqlGz: sqlGzFile } = await findSqlFile(extractDir);
 
     let sqlFilePath: string | null = null;
 
     if (sqlGzFile) {
       updateJobStatus(jobId, 'running', 'Decompressing SQL file...');
-      const gzPath = path.join(dbDir, sqlGzFile);
       sqlFilePath = path.join(extractDir, 'database.sql');
       await new Promise<void>((resolve, reject) => {
-        const gunzip = spawn('gunzip', ['-c', gzPath], { env });
+        const gunzip = spawn('gunzip', ['-c', sqlGzFile], { env });
         const writeStream = require('fs').createWriteStream(sqlFilePath!);
 
         (gunzip.stdout as any).pipe(writeStream);
@@ -1029,7 +1156,7 @@ const restoreFromTarGz = async (buffer: Buffer, jobId: string, dbConfig: ReturnT
         gunzip.on('error', reject);
       });
     } else if (sqlFile) {
-      sqlFilePath = path.join(dbDir, sqlFile);
+      sqlFilePath = sqlFile;
     } else {
       throw new Error('No SQL file found in archive');
     }
@@ -1135,6 +1262,8 @@ const restoreFromTarGz = async (buffer: Buffer, jobId: string, dbConfig: ReturnT
       psql.on('close', (code) => code === 0 ? resolve() : reject(new Error('ANALYZE failed')));
       psql.on('error', reject);
     });
+
+    await applyMigrations(jobId);
 
     updateJobStatus(jobId, 'success', 'Restore completed successfully');
   } finally {

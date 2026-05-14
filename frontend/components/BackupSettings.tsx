@@ -163,7 +163,9 @@ export const BackupSettings: React.FC = () => {
 
     const pollJobStatus = async (jobId: string, type: 'backup' | 'restore', onComplete?: () => void) => {
         let retries = 0;
-        const MAX_RETRIES = 150; // 5 minutes at 2s intervals
+        let errorCount = 0;
+        const MAX_RETRIES = 150;
+        const MAX_ERRORS = 10;
 
         const poll = async () => {
             if (!isMountedRef.current) return;
@@ -187,8 +189,15 @@ export const BackupSettings: React.FC = () => {
                 if (!isMountedRef.current) return;
 
                 if (!response.ok) {
+                    if (errorCount < MAX_ERRORS) {
+                        errorCount++;
+                        setTimeout(poll, 3000);
+                        return;
+                    }
                     throw new Error('Failed to fetch job status');
                 }
+
+                errorCount = 0;
 
                 const job: BackupJob = await response.json();
 
@@ -212,11 +221,15 @@ export const BackupSettings: React.FC = () => {
                         setRestoreError(job.error || t('settings.backup.cloud.restore.restore.failed'));
                     }
                 } else {
-                    // Continue polling
                     setTimeout(poll, 2000);
                 }
             } catch (error) {
                 if (!isMountedRef.current) return;
+                if (errorCount < MAX_ERRORS) {
+                    errorCount++;
+                    setTimeout(poll, 3000);
+                    return;
+                }
                 if (type === 'backup') {
                     setCloudBackupError(t('settings.backup.cloud.backup.failed'));
                 } else {
@@ -298,7 +311,7 @@ export const BackupSettings: React.FC = () => {
 
             const response = await fetch('/api/backup/restore/upload', {
                 method: 'POST',
-                headers: getAuthHeaders(),
+                headers: getAuthHeaders(false),
                 credentials: 'include',
                 body: formData,
             });
@@ -313,7 +326,7 @@ export const BackupSettings: React.FC = () => {
 
             setRestoreFileJob({ id: jobId, type: 'restore', status: 'pending', output: [], startedAt: new Date().toISOString() });
 
-            const pollRestoreFile = async (retries = 0) => {
+            const pollRestoreFile = async (retries = 0, errorCount = 0) => {
                 if (!isMountedRef.current) return;
 
                 if (retries >= 150) {
@@ -332,6 +345,10 @@ export const BackupSettings: React.FC = () => {
                     if (!isMountedRef.current) return;
 
                     if (!jobResponse.ok) {
+                        if (errorCount < 10) {
+                            setTimeout(() => pollRestoreFile(retries, errorCount + 1), 3000);
+                            return;
+                        }
                         throw new Error('Failed to fetch job status');
                     }
 
@@ -345,10 +362,14 @@ export const BackupSettings: React.FC = () => {
                         setRestoreFileError(job.error || t('settings.backup.restoreFile.failed'));
                         setRestoreFileLoading(false);
                     } else {
-                        setTimeout(() => pollRestoreFile(retries), 2000);
+                        setTimeout(() => pollRestoreFile(retries, 0), 2000);
                     }
                 } catch (error) {
                     if (!isMountedRef.current) return;
+                    if (errorCount < 10) {
+                        setTimeout(() => pollRestoreFile(retries, errorCount + 1), 3000);
+                        return;
+                    }
                     setRestoreFileError(t('settings.backup.restoreFile.failed'));
                     setRestoreFileLoading(false);
                 }
