@@ -35,6 +35,14 @@ function validateIdempotencyKey(key: unknown): string | null {
   return key;
 }
 
+class TransactionError extends Error {
+  code: string;
+  constructor(message: string, code: string) {
+    super(message);
+    this.code = code;
+  }
+}
+
 // POST /api/transactions/process-payment - Atomic payment processing
 // This endpoint handles the entire payment flow in a single database transaction:
 // 1. Calculate transaction costs
@@ -361,9 +369,9 @@ const transaction = await tx.transaction.create({
             // Either stock item doesn't exist or insufficient quantity
             const stockItem = await tx.stockItem.findUnique({ where: { id: stockItemId } });
             if (!stockItem) {
-              throw new Error(t('errors:transactions.stockItemNotFound', { stockItemId }));
+              throw new TransactionError(t('errors:transactions.stockItemNotFound', { stockItemId }), 'STOCK_NOT_FOUND');
             }
-            throw new Error(t('errors:transactions.insufficientStock', { itemName: stockItem.name, available: String(stockItem.quantity), requested: String(quantity) }));
+            throw new TransactionError(t('errors:transactions.insufficientStock', { itemName: stockItem.name, available: String(stockItem.quantity), requested: String(quantity) }), 'INSUFFICIENT_STOCK');
           }
         }
       }
@@ -378,7 +386,7 @@ const transaction = await tx.transaction.create({
           data: { status: 'completed', updatedAt: new Date(), version: { increment: 1 } }
         });
         if (sessionResult.count === 0) {
-          throw new Error(t('errors:transactions.orderSessionConflict'));
+          throw new TransactionError(t('errors:transactions.orderSessionConflict'), 'CONFLICT');
         }
       }
   
@@ -489,21 +497,18 @@ const transaction = await tx.transaction.create({
 		logError(error instanceof Error ? error : 'Atomic payment processing failed', { correlationId });
 
 		// If it's a known error type, return appropriate status
-		if (error instanceof Error) {
-			// Conflict errors - return 409 for client retry
-				if (error.message.includes('CONFLICT') || error.message.includes('Order session was modified') || error.message.includes(t('errors:transactions.orderSessionConflict'))) {
-					return res.status(409).json({ 
-						error: t('errors:transactions.paymentConflict'),
-						code: 'CONFLICT',
-						details: error.message
-					});
+		if (error instanceof TransactionError) {
+			if (error.code === 'CONFLICT') {
+				return res.status(409).json({ 
+					error: t('errors:transactions.paymentConflict'),
+					code: 'CONFLICT',
+					details: error.message
+				});
 			}
-			// Insufficient stock - return 400 (client error)
-			if (error.message.includes('Insufficient stock')) {
+			if (error.code === 'INSUFFICIENT_STOCK') {
 				return res.status(400).json({ error: error.message });
 			}
-			// Stock item not found - return 400 (configuration error)
-			if (error.message.includes('Stock item not found')) {
+			if (error.code === 'STOCK_NOT_FOUND') {
 				return res.status(400).json({ error: error.message });
 			}
 		}

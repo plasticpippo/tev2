@@ -591,12 +591,25 @@ restore_database() {
         "DROP DATABASE IF EXISTS ${db_name};" 2>/dev/null
     $dc compose exec -T db psql -U "$db_user" -d postgres -c \
         "CREATE DATABASE ${db_name};" 2>/dev/null
-    
-    if cat "$backup_file" | $dc compose exec -T db psql -U "$db_user" "$db_name" > /dev/null 2>&1; then
+
+    local restore_log="/tmp/db_restore_$$.log"
+    local filtered_backup
+    filtered_backup=$(mktemp)
+
+    grep -v '^\\restrict' "$backup_file" > "$filtered_backup"
+
+    if $dc compose exec -T db psql -U "$db_user" -v ON_ERROR_STOP=1 "$db_name" < "$filtered_backup" > "$restore_log" 2>&1; then
+        rm -f "$filtered_backup" "$restore_log"
         print_success "Database restored successfully"
         return 0
     else
-        print_error "Database restore failed!"
+        local exit_code=$?
+        print_error "Database restore failed (exit code: $exit_code)!"
+        if [[ -f "$restore_log" ]]; then
+            print_error "Restore log (last 30 lines):"
+            tail -30 "$restore_log" >&2
+        fi
+        rm -f "$filtered_backup" "$restore_log"
         return 1
     fi
 }
