@@ -112,9 +112,11 @@ export async function generatePDF(
     page = await browser.newPage();
 
     await page.setContent(htmlContent, {
-      waitUntil: 'networkidle',
+      waitUntil: 'load',
       timeout: 10000,
     });
+
+    await page.waitForNetworkIdle({ timeout: 10000 });
 
     const puppeteerOpts = mapToPuppeteerOptions(options);
     const pdfArrayBuffer = await page.pdf(puppeteerOpts);
