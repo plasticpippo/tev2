@@ -2326,8 +2326,7 @@ main() {
     _log_file "Detected installed version: $current_version"
     _log_file "Target version: $new_version"
     
-    if [[ "$current_version" != "0.0.0" ]]; then
-        # Existing installation detected (includes 0.0.0-pre for pre-versioning installs)
+    if [[ "$current_version" != "0.0.0" && "$current_version" != "0.0.0-pre" ]]; then
         if compare_versions "$current_version" "$new_version"; then
             print_info "Existing installation detected (version: $current_version)"
             print_info "New version available: $new_version"
