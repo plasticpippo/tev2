@@ -166,6 +166,8 @@
     "noTablesInRoom": "Nessun tavolo in questa stanza",
     "addTablesInAdmin": "Aggiungi tavoli nel Pannello Admin",
     "selectRoomToViewTables": "Seleziona una stanza per visualizzare i tavoli",
+    "emptyTableIcon": "TAVOLO",
+    "emptyRoomIcon": "STANZA",
     "selected": "Selezionato: {{name}}",
     "status": "Stato: {{status}}",
     "clearing": "Rimozione...",

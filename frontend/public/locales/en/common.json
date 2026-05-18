@@ -166,6 +166,8 @@
     "noTablesInRoom": "No tables in this room",
     "addTablesInAdmin": "Add tables in Admin Panel",
     "selectRoomToViewTables": "Select a room to view tables",
+    "emptyTableIcon": "TABLE",
+    "emptyRoomIcon": "ROOM",
     "selected": "Selected: {{name}}",
     "status": "Status: {{status}}",
     "clearing": "Clearing...",

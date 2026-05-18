@@ -102,7 +102,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
       case 'available': return 'bg-green-500 border-green-600';
       case 'occupied': return 'bg-red-500 border-red-600';
       case 'bill_requested': return 'bg-yellow-500 border-yellow-600';
-      case 'reserved': return 'bg-yellow-500 border-yellow-600';
+      case 'reserved': return 'bg-blue-500 border-blue-600';
       case 'unavailable': return 'bg-gray-500 border-gray-600';
       default: return 'bg-gray-500 border-gray-600';
     }
@@ -113,7 +113,7 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
       case 'available': return 'text-green-400';
       case 'occupied': return 'text-red-400';
       case 'bill_requested': return 'text-yellow-400';
-      case 'reserved': return 'text-yellow-400';
+      case 'reserved': return 'text-blue-400';
       case 'unavailable': return 'text-gray-400';
       default: return 'text-gray-400';
     }
@@ -133,9 +133,10 @@ export const TableAssignmentModal: React.FC<TableAssignmentModalProps> = ({
   return (
     <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50 p-4">
       <div className="bg-slate-800 rounded-lg shadow-xl w-full max-w-md sm:max-w-5xl lg:max-w-7xl p-6 border border-slate-700 max-h-[90vh] flex flex-col">
-        {/* Header */}
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-2xl font-bold text-amber-400">{t('tableAssignmentModal.title')}</h2>
+        {/* Fixed Header */}
+        <div className="flex-shrink-0 mb-4">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold text-amber-400">{t('tableAssignmentModal.title')}</h2>
 <button
 onClick={onClose}
 className="text-slate-400 hover:text-white text-3xl w-11 h-11 min-h-11 min-w-11 flex items-center justify-center rounded-full hover:bg-slate-700 transition"
@@ -144,40 +145,42 @@ disabled={isAssigning}
 >
 &times;
 </button>
-        </div>
-
-        {/* Room Selector */}
-        <div className="mb-4">
-          <label className="block text-sm text-slate-400 mb-2">{t('tableAssignmentModal.selectRoom')}</label>
-          <div className="flex gap-2 flex-wrap">
-            {rooms.map(room => (
-              <button
-                key={room.id}
-                onClick={() => {
-                  setSelectedRoomId(room.id);
-                  setSelectedTableId(null); // Clear table selection when changing room
-                }}
-                className={`
-                  px-4 py-2 rounded-lg font-semibold transition-colors text-sm
-                  ${selectedRoomId === room.id
-                    ? 'bg-amber-600 text-white'
-                    : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
-                  }
-                  ${isAssigning ? 'opacity-50 cursor-not-allowed' : ''}
-                `}
-                disabled={isAssigning}
-              >
-                {room.name}
-              </button>
-            ))}
           </div>
-          {rooms.length === 0 && (
-            <p className="text-slate-400 text-sm mt-2">{t('tableAssignmentModal.noRoomsAvailable')}</p>
-          )}
+
+          {/* Room Selector */}
+          <div className="mt-4">
+            <label className="block text-sm text-slate-400 mb-2">{t('tableAssignmentModal.selectRoom')}</label>
+            <div className="flex gap-2 flex-wrap">
+              {rooms.map(room => (
+                <button
+                  key={room.id}
+                  onClick={() => {
+                    setSelectedRoomId(room.id);
+                    setSelectedTableId(null); // Clear table selection when changing room
+                  }}
+                  className={`
+                    px-4 py-2 rounded-lg font-semibold transition-colors text-sm
+                    ${selectedRoomId === room.id
+                      ? 'bg-amber-600 text-white'
+                      : 'bg-slate-700 text-gray-300 hover:bg-slate-600'
+                    }
+                    ${isAssigning ? 'opacity-50 cursor-not-allowed' : ''}
+                  `}
+                  disabled={isAssigning}
+                >
+                  {room.name}
+                </button>
+              ))}
+            </div>
+            {rooms.length === 0 && (
+              <p className="text-slate-400 text-sm mt-2">{t('tableAssignmentModal.noRoomsAvailable')}</p>
+            )}
+          </div>
         </div>
 
-        {/* Visual Table Layout */}
-        {selectedRoomId && (
+        {/* Scrollable Body */}
+        <div className="flex-grow overflow-y-auto min-h-0">
+          {selectedRoomId && (
           <div className="flex-grow mb-4 flex flex-col">
             <div className="mb-2 flex justify-between items-center">
               <h3 className="text-lg font-semibold text-slate-300">
@@ -194,7 +197,7 @@ disabled={isAssigning}
             </div>
 
             {/* Desktop/Tablet: Visual canvas layout (hidden on mobile) */}
-            <div className="hidden md:block flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 relative overflow-auto min-h-[400px]">
+            <div className="hidden md:block bg-slate-900 rounded-lg border-2 border-slate-700 p-4 relative overflow-auto max-h-[40vh] md:max-h-[50vh]">
               {roomTables.length > 0 ? (
                 <div
                   className="relative mx-auto"
@@ -252,7 +255,7 @@ ${isCurrent ? 'ring-4 ring-blue-400' : ''}
               ) : (
                 <div className="flex items-center justify-center h-full">
                   <div className="text-center">
-                    <div className="text-slate-500 text-6xl mb-4">TABLE</div>
+                    <div className="text-slate-500 text-6xl mb-4">{t('tableAssignmentModal.emptyTableIcon')}</div>
                     <p className="text-slate-400 text-lg">{t('tableAssignmentModal.noTablesInRoom')}</p>
                     <p className="text-slate-500 text-sm mt-2">{t('tableAssignmentModal.addTablesInAdmin')}</p>
                   </div>
@@ -261,7 +264,7 @@ ${isCurrent ? 'ring-4 ring-blue-400' : ''}
             </div>
 
             {/* Mobile: List view fallback (< 768px) */}
-            <div className="md:hidden flex-grow bg-slate-900 rounded-lg border-2 border-slate-700 p-4 overflow-y-auto max-h-[50vh]">
+            <div className="md:hidden bg-slate-900 rounded-lg border-2 border-slate-700 p-4 overflow-y-auto max-h-[40vh]">
               {roomTables.length > 0 ? (
                 <div className="space-y-2">
                   {roomTables.map(table => {
@@ -306,7 +309,7 @@ ${isCurrent ? 'ring-4 ring-blue-400' : ''}
               ) : (
                 <div className="flex items-center justify-center h-40">
                   <div className="text-center">
-                    <div className="text-slate-500 text-4xl mb-2">TABLE</div>
+                    <div className="text-slate-500 text-4xl mb-2">{t('tableAssignmentModal.emptyTableIcon')}</div>
                     <p className="text-slate-400">{t('tableAssignmentModal.noTablesInRoom')}</p>
                   </div>
                 </div>
@@ -316,87 +319,91 @@ ${isCurrent ? 'ring-4 ring-blue-400' : ''}
         )}
 
         {!selectedRoomId && rooms.length > 0 && (
-          <div className="flex-grow flex items-center justify-center bg-slate-900 rounded-lg border-2 border-slate-700 min-h-[400px]">
-            <div className="text-center">
-              <div className="text-slate-500 text-6xl mb-4">ROOM</div>
-              <p className="text-slate-400 text-lg">{t('tableAssignmentModal.selectRoomToViewTables')}</p>
-            </div>
+          <div className="flex items-center justify-center bg-slate-900 rounded-lg border-2 border-slate-700 max-h-[40vh] md:max-h-[50vh]">
+          <div className="text-center">
+            <div className="text-slate-500 text-6xl mb-4">{t('tableAssignmentModal.emptyRoomIcon')}</div>
+            <p className="text-slate-400 text-lg">{t('tableAssignmentModal.selectRoomToViewTables')}</p>
+          </div>
           </div>
         )}
 
-        {/* Selected Table Info */}
-        {selectedTableId && (
-          <div className="mb-4 p-3 bg-slate-700 rounded-lg border border-amber-500">
-            {(() => {
-              const table = tables.find(t => t.id === selectedTableId);
-              return table ? (
-                <div className="flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold text-white">{t('tableAssignmentModal.selected', { name: table.name })}</p>
-                    <p className={`text-sm ${getStatusTextColor(table.status)}`}>
-                      {t('tableAssignmentModal.status', { status: getStatusLabel(table.status) })}
-                    </p>
-                  </div>
-                  <div className={`w-4 h-4 rounded-full ${getStatusColor(table.status).split(' ')[0]}`}></div>
-                </div>
-              ) : null;
-            })()}
+        <div className="mt-4 flex gap-4 flex-wrap text-xs">
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-green-500"></div>
+            <span className="text-slate-400">{t('tableAssignmentModal.statusLabelAvailable')}</span>
           </div>
-        )}
-
-        {/* Action Buttons with loading state */}
-        <div className="flex justify-between pt-4 border-t border-slate-700">
-          <div className="flex gap-2">
-            {currentTableId && (
-              <button
-                onClick={handleClear}
-                disabled={isAssigning}
-                className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
-              >
-                {isAssigning ? t('tableAssignmentModal.clearing') : t('tableAssignmentModal.clearTable')}
-              </button>
-            )}
-            <button
-              onClick={onClose}
-              disabled={isAssigning}
-              className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
-            >
-              {t('buttons.cancel')}
-            </button>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-red-500"></div>
+            <span className="text-slate-400">{t('tableAssignmentModal.statusLabelOccupied')}</span>
           </div>
-          <button
-            onClick={handleConfirm}
-            disabled={!selectedTableId || isAssigning}
-className={`font-bold py-2 px-6 min-h-11 rounded-md transition ${
-selectedTableId && !isAssigning
-? 'bg-amber-600 hover:bg-amber-500 text-white'
-: 'bg-slate-700 text-slate-500 cursor-not-allowed'
-}`}
-          >
-            {isAssigning ? t('tableAssignmentModal.assigning') : t('tableAssignmentModal.assignToTable')}
-          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
+            <span className="text-slate-400">{t('tableAssignmentModal.statusLabelBillRequested')}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-blue-500"></div>
+            <span className="text-slate-400">{t('tableAssignmentModal.statusLabelReserved')}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className="w-3 h-3 rounded-full bg-gray-500"></div>
+            <span className="text-slate-400">{t('tableAssignmentModal.statusLabelUnavailable')}</span>
+          </div>
+        </div>
         </div>
 
-        {/* Status Legend */}
-        <div className="mt-4 pt-4 border-t border-slate-700">
-          <p className="text-xs text-slate-400 mb-2 font-semibold">{t('tableAssignmentModal.tableStatusLegend')}</p>
-          <div className="flex gap-4 flex-wrap text-xs">
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-green-500"></div>
-              <span className="text-slate-400">{t('tableAssignmentModal.statusAvailable')}</span>
+        {/* Fixed Footer */}
+        <div className="flex-shrink-0 mt-4 pt-4 border-t border-slate-700">
+          {/* Selected Table Info */}
+          {selectedTableId && (
+            <div className="mb-4 p-3 bg-slate-700 rounded-lg border border-amber-500">
+              {(() => {
+                const table = tables.find(t => t.id === selectedTableId);
+                return table ? (
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <p className="font-semibold text-white">{t('tableAssignmentModal.selected', { name: table.name })}</p>
+                      <p className={`text-sm ${getStatusTextColor(table.status)}`}>
+                        {t('tableAssignmentModal.status', { status: getStatusLabel(table.status) })}
+                      </p>
+                    </div>
+                    <div className={`w-4 h-4 rounded-full ${getStatusColor(table.status).split(' ')[0]}`}></div>
+                  </div>
+                ) : null;
+              })()}
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500"></div>
-              <span className="text-slate-400">{t('tableAssignmentModal.statusOccupied')}</span>
+          )}
+
+          {/* Action Buttons */}
+          <div className="flex justify-between">
+            <div className="flex gap-2">
+              {currentTableId && (
+                <button
+                  onClick={handleClear}
+                  disabled={isAssigning}
+                  className="bg-red-700 hover:bg-red-600 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
+                >
+                  {isAssigning ? t('tableAssignmentModal.clearing') : t('tableAssignmentModal.clearTable')}
+                </button>
+              )}
+              <button
+                onClick={onClose}
+                disabled={isAssigning}
+                className="bg-slate-600 hover:bg-slate-500 disabled:bg-slate-700 disabled:cursor-not-allowed text-white font-bold py-2 px-4 min-h-11 rounded-md transition"
+              >
+                {t('buttons.cancel')}
+              </button>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-yellow-500"></div>
-              <span className="text-slate-400">{t('tableAssignmentModal.statusBillRequested')}</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-gray-500"></div>
-              <span className="text-slate-400">{t('tableAssignmentModal.statusUnavailable')}</span>
-            </div>
+            <button
+              onClick={handleConfirm}
+              disabled={!selectedTableId || isAssigning}
+className={`font-bold py-2 px-6 min-h-11 rounded-md transition ${
+              selectedTableId && !isAssigning
+              ? 'bg-amber-600 hover:bg-amber-500 text-white'
+              : 'bg-slate-700 text-slate-500 cursor-not-allowed'
+            }`}
+            >
+              {isAssigning ? t('tableAssignmentModal.assigning') : t('tableAssignmentModal.assignToTable')}
+            </button>
           </div>
         </div>
       </div>

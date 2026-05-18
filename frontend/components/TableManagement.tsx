@@ -421,6 +421,7 @@ const TableModal: React.FC<TableModalProps> = ({ table, rooms, onClose, onSave }
               <option value="available">{t('tables.statusAvailable')}</option>
               <option value="occupied">{t('tables.statusOccupied')}</option>
               <option value="reserved">{t('tables.statusReserved')}</option>
+              <option value="bill_requested">{t('tables.statusBillRequested')}</option>
               <option value="unavailable">{t('tables.statusUnavailable')}</option>
             </select>
             {getFieldError('status') && (
@@ -501,7 +502,7 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
     setSelectedRoomId,
     layoutMode,
     setLayoutMode,
-    loading,
+    isFetching,
     error,
     deleteRoom,
     deleteTable,
@@ -621,6 +622,8 @@ export const TableManagement: React.FC<TableManagementProps> = () => {
         return t('tables.statusOccupied');
       case 'reserved':
         return t('tables.statusReserved');
+      case 'bill_requested':
+        return t('tables.statusBillRequested');
       case 'unavailable':
         return t('tables.statusUnavailable');
       default:
@@ -692,7 +695,6 @@ title={t('tables.manageIndividualTables')}
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
                 {t('tables.layoutEditor')}
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.visualTableLayoutManagement')}>?</span>
               </h3>
               <div className="flex gap-2">
                 <select
@@ -730,9 +732,8 @@ title={t('tables.manageIndividualTables')}
         {activeTab === 'rooms' && (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-300">
                 {t('tables.title')}
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.organizeVenueRooms')}>?</span>
               </h3>
               <button
                 onClick={() => { setEditingRoom(undefined); setIsRoomModalOpen(true); }}
@@ -749,7 +750,7 @@ title={t('tables.manageIndividualTables')}
               <p>{t('tables.roomsExamples')}</p>
             </div>
             
-            {loading ? (
+            {isFetching ? (
               <div className="text-center py-8 text-slate-50">{t('tables.loadingRooms')}</div>
             ) : (
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
@@ -830,9 +831,8 @@ title={t('tables.manageIndividualTables')}
         {activeTab === 'tables' && (
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-slate-300 flex items-center gap-2">
+              <h3 className="text-lg font-bold text-slate-300">
                 {t('tables.title')}
-                <span className="text-xs bg-slate-700 rounded-full w-5 h-5 flex items-center justify-center" title={t('tables.manageIndividualTables')}>?</span>
               </h3>
               <button
                 onClick={() => { setEditingTable(undefined); setIsTableModalOpen(true); }}
@@ -849,7 +849,7 @@ title={t('tables.manageIndividualTables')}
               <p>{t('tables.setStatusTracking')}</p>
             </div>
             
-            {loading ? (
+            {isFetching ? (
               <div className="text-center py-8 text-slate-500">{t('tables.loadingTables')}</div>
             ) : (
               <div className="space-y-2 max-h-[60vh] overflow-y-auto pr-2">
@@ -975,7 +975,7 @@ title={t('tables.manageIndividualTables')}
       />
       
       {/* Loading overlay */}
-      {loading && <LoadingOverlay message={t('tables.loadingTablesRooms')} />}
+      {isFetching && <LoadingOverlay message={t('tables.loadingTablesRooms')} />}
     </div>
  );
 };

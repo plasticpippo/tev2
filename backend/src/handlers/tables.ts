@@ -1,7 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
-import { verifyTableOwnership } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { validateTableData, validateTableStatusUpdate, TABLE_STATUS } from '../utils/tableValidation';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { safeJsonParse } from '../utils/jsonParser';
@@ -21,6 +21,7 @@ router.use((req, res, next) => {
 // GET /api/tables - Retrieve all tables with room information
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const userId = req.user?.id;
     const userRole = req.user?.role;
@@ -28,7 +29,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 
     // Build where clause based on ownership
     // Admin users can see all tables, regular users only see their own or unowned tables
-    const where = isAdmin ? {} : {
+    const baseWhere = isAdmin ? {} : {
       OR: [
         { ownerId: userId },
         { ownerId: null }
@@ -36,7 +37,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
     };
 
     const tables = await prisma.table.findMany({
-      where,
+      where: { venueId, ...baseWhere },
       include: {
         room: true,
       },
@@ -61,8 +62,9 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // GET /api/tables/:id - Retrieve specific table
-router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+router.get('/:id', authenticateToken, requirePermission('tables:update', { resourceType: 'table', resourceIdParam: 'id' }), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const table = await prisma.table.findUnique({
@@ -72,7 +74,7 @@ router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       },
     });
 
-    if (!table) {
+    if (!table || table.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
@@ -94,6 +96,7 @@ router.get('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
 // POST /api/tables - Create new table
 router.post('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, roomId, x, y, width, height, status, capacity, items } = req.body;
 
@@ -134,6 +137,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     const newTable = await prisma.table.create({
       data: {
+        venueId,
         name: sanitizedName,
         roomId,
         x: x !== undefined ? parseFloat(x.toString()) : 50,
@@ -160,8 +164,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // PUT /api/tables/:id - Update table
-router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+router.put('/:id', authenticateToken, requirePermission('tables:update', { resourceType: 'table', resourceIdParam: 'id' }), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, roomId, x, y, width, height, status, capacity, items, version } = req.body;
@@ -175,7 +180,7 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
       where: { id },
     });
 
-    if (!table) {
+    if (!table || table.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
@@ -225,6 +230,7 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
     const updateResult = await prisma.table.updateMany({
       where: {
         id,
+        venueId,
         version: version
       },
       data: {
@@ -274,8 +280,9 @@ router.put('/:id', authenticateToken, verifyTableOwnership, async (req: Request,
 });
 
 // DELETE /api/tables/:id - Delete table
-router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, requirePermission('tables:delete', { resourceType: 'table', resourceIdParam: 'id' }), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -283,7 +290,7 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
       where: { id },
     });
 
-    if (!table) {
+    if (!table || table.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
@@ -315,8 +322,9 @@ router.delete('/:id', authenticateToken, verifyTableOwnership, async (req: Reque
 });
 
 // PUT /api/tables/:id/position - Update only table position (for drag/drop)
-router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+router.put('/:id/position', authenticateToken, requirePermission('tables:update', { resourceType: 'table', resourceIdParam: 'id' }), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { x, y, version } = req.body;
@@ -334,6 +342,7 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
     const updateResult = await prisma.table.updateMany({
       where: {
         id,
+        venueId,
         version: version
       },
       data: {
@@ -360,7 +369,12 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
       return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
-    res.json(updatedTable);
+    const tableWithParsedItems = {
+      ...updatedTable,
+      items: safeJsonParse(updatedTable.items, [], { id: updatedTable.id, field: 'items' })
+    };
+
+    res.json(tableWithParsedItems);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error updating table position', {
       correlationId: (req as any).correlationId,
@@ -370,8 +384,9 @@ router.put('/:id/position', authenticateToken, verifyTableOwnership, async (req:
 });
 
 // PUT /api/tables/:id/status - Update only table status
-router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: Request, res: Response) => {
+router.put('/:id/status', authenticateToken, requirePermission('tables:update', { resourceType: 'table', resourceIdParam: 'id' }), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { status } = req.body;
@@ -393,7 +408,7 @@ router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: R
       where: { id },
     });
 
-    if (!table) {
+    if (!table || table.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:tables.notFound') });
     }
 
@@ -403,11 +418,30 @@ router.put('/:id/status', authenticateToken, verifyTableOwnership, async (req: R
       return res.status(400).json({ error: validation.error });
     }
 
-    const updatedTable = await prisma.table.update({
+    // Use updateMany with version check for optimistic locking
+    const updateResult = await prisma.table.updateMany({
+      where: {
+        id,
+        venueId,
+        version: table.version
+      },
+      data: { status, version: { increment: 1 } },
+    });
+
+    // Check if the update succeeded (version matched)
+    if (updateResult.count === 0) {
+      return res.status(409).json({ error: t('errors:tables.conflict') });
+    }
+
+    // Fetch the updated table
+    const updatedTable = await prisma.table.findUnique({
       where: { id },
-      data: { status },
       include: { room: true },
     });
+
+    if (!updatedTable) {
+      return res.status(404).json({ error: t('errors:tables.notFound') });
+    }
 
     res.json(updatedTable);
   } catch (error) {
