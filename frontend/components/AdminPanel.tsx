@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { usePermission } from '../contexts/PermissionContext';
+import { useVenue } from '../contexts/VenueContext';
 import type { User, Product, Category, Settings, Transaction, Till, StockItem, StockAdjustment, OrderActivityLog, Tab, Room, Table, TaxRate } from '../../shared/types';
 import { ProductManagement } from './ProductManagement';
 import { CategoryManagement } from './CategoryManagement';
@@ -24,6 +26,10 @@ import { ProfitAnalyticsPanel } from './ProfitAnalyticsPanel';
 import VarianceReportPanel from './VarianceReportPanel';
 import InventoryCountPanel from './InventoryCountPanel';
 import TableErrorBoundary from './TableErrorBoundary';
+import { RolesPage } from './RolesPage';
+import { RoleEditorPage } from './RoleEditorPage';
+import { VenuesPage } from './VenuesPage';
+import type { Role } from '../services/roleService';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
 import * as inventoryApi from '../services/inventoryService';
@@ -57,7 +63,9 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers' | 'costManagement' | 'profitAnalytics' | 'varianceReports' | 'inventoryCounts';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers' | 'costManagement' | 'profitAnalytics' | 'varianceReports' | 'inventoryCounts' | 'roles' | 'roleEditor' | 'venues';
+
+type RoleEditorState = { isNew: boolean; role: Role | null };
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -68,9 +76,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   } = props;
 
   const { t } = useTranslation('admin');
+  const { hasPermission } = usePermission();
+  const { venues, activeVenue, setActiveVenueById } = useVenue();
   const [activeView, setActiveView] = useState<AdminView>('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [roleEditorState, setRoleEditorState] = useState<RoleEditorState>({ isNew: false, role: null });
 
   const handleSettingsUpdate = async (newSettings: Settings) => {
     await settingApi.saveSettings(newSettings);
@@ -137,6 +148,20 @@ case 'itemisedConsumption':
         return <VarianceReportPanel />;
       case 'inventoryCounts':
         return <InventoryCountPanel />;
+      case 'venues':
+        return <VenuesPage onDataUpdate={onDataUpdate} />;
+      case 'roles':
+        return <RolesPage
+          onCreateRole={() => { setRoleEditorState({ isNew: true, role: null }); setActiveView('roleEditor'); }}
+          onEditRole={(role) => { setRoleEditorState({ isNew: false, role }); setActiveView('roleEditor'); }}
+        />;
+      case 'roleEditor':
+        return <RoleEditorPage
+          isNew={roleEditorState.isNew}
+          role={roleEditorState.role}
+          onBack={() => setActiveView('roles')}
+          onSaved={() => setActiveView('roles')}
+        />;
     default:
         return <p>{t('selectAView')}</p>;
     }
@@ -247,6 +272,18 @@ case 'itemisedConsumption':
     </svg>
   );
 
+  const RolesIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+    </svg>
+  );
+
+  const VenuesIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+    </svg>
+  );
+
   const TillsIcon = () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z" />
@@ -297,6 +334,21 @@ case 'itemisedConsumption':
           </div>
         </div>
         <div className="flex items-center gap-4">
+            {venues.length > 1 && (
+              <select
+                value={activeVenue?.id ?? ''}
+                onChange={(e) => {
+                  const id = parseInt(e.target.value, 10);
+                  setActiveVenueById(id);
+                  onDataUpdate();
+                }}
+                className="bg-slate-700 border border-slate-600 rounded-md px-3 py-2 text-white text-sm focus:outline-none focus:ring-2 focus:ring-amber-500"
+              >
+                {venues.filter(v => v.isActive).map(v => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            )}
 <button onClick={onSwitchToPos} className="bg-sky-600 hover:bg-sky-500 font-bold py-2 px-4 min-h-11 rounded-md transition">
 {t('header.switchToPos')}
 </button>
@@ -341,34 +393,36 @@ case 'itemisedConsumption':
             </button>
           </div>
           <NavButton view="dashboard" label={t('navigation.dashboard')} isFirst icon={<DashboardIcon />} />
-          <NavButton view="analytics" label={t('navigation.analytics')} icon={<AnalyticsIcon />} />
-          <NavButton view="profitAnalytics" label={t('navigation.profitAnalytics')} icon={<ProfitIcon />} />
+          {hasPermission('analytics:read') && <NavButton view="analytics" label={t('navigation.analytics')} icon={<AnalyticsIcon />} />}
+          {hasPermission('analytics:read') && <NavButton view="profitAnalytics" label={t('navigation.profitAnalytics')} icon={<ProfitIcon />} />}
           <div className="pt-2"></div>
-<NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />
-      <NavButton 
-        view="receipts" 
-        label={t('navigation.receipts')} 
-        icon={<ReceiptsIcon />} 
-        badge={<ReceiptStatusBadge onClick={() => handleNavClick('receipts')} collapsed={sidebarCollapsed} />}
-      />
-<NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />
-      <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />
-      <div className="pt-2"></div>
-      <NavButton view="customers" label={t('navigation.customers')} isFirst icon={<UsersIcon />} />
-      <NavButton view="products" label={t('navigation.products')} icon={<ProductsIcon />} />
-          <NavButton view="categories" label={t('navigation.categories')} icon={<CategoriesIcon />} />
-          <NavButton view="stockItems" label={t('navigation.stockItems')} icon={<StockItemsIcon />} />
-          <NavButton view="inventory" label={t('navigation.inventory')} icon={<InventoryIcon />} />
-          <NavButton view="costManagement" label={t('navigation.costManagement')} icon={<CostIcon />} />
-          <NavButton view="inventoryCounts" label={t('navigation.inventoryCounts')} icon={<InventoryCountIcon />} />
-          <NavButton view="varianceReports" label={t('navigation.varianceReports')} icon={<VarianceIcon />} />
+          {hasPermission('transactions:read') && <NavButton view="transactions" label={t('navigation.transactions')} icon={<TransactionsIcon />} />}
+          {hasPermission('receipts:read') && <NavButton
+            view="receipts"
+            label={t('navigation.receipts')}
+            icon={<ReceiptsIcon />}
+            badge={<ReceiptStatusBadge onClick={() => handleNavClick('receipts')} collapsed={sidebarCollapsed} />}
+          />}
+          {hasPermission('orders:read') && <NavButton view="activity" label={t('navigation.activity')} icon={<ActivityIcon />} />}
+          {hasPermission('daily_closings:read') && <NavButton view="dailyClosingSummary" label={t('navigation.dailyClosingSummary')} icon={<DailyClosingIcon />} />}
           <div className="pt-2"></div>
-          <NavButton view="users" label={t('navigation.users')} isFirst icon={<UsersIcon />} />
-          <NavButton view="tills" label={t('navigation.tills')} icon={<TillsIcon />} />
-          <NavButton view="tables" label={t('navigation.tables')} icon={<TablesIcon />} />
-          <NavButton view="itemisedConsumption" label={t('navigation.itemisedConsumption')} icon={<ItemisedIcon />} />
+          {hasPermission('customers:read') && <NavButton view="customers" label={t('navigation.customers')} isFirst icon={<UsersIcon />} />}
+          {hasPermission('products:read') && <NavButton view="products" label={t('navigation.products')} icon={<ProductsIcon />} />}
+          {hasPermission('categories:read') && <NavButton view="categories" label={t('navigation.categories')} icon={<CategoriesIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="stockItems" label={t('navigation.stockItems')} icon={<StockItemsIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="inventory" label={t('navigation.inventory')} icon={<InventoryIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="costManagement" label={t('navigation.costManagement')} icon={<CostIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="inventoryCounts" label={t('navigation.inventoryCounts')} icon={<InventoryCountIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="varianceReports" label={t('navigation.varianceReports')} icon={<VarianceIcon />} />}
           <div className="pt-2"></div>
-          <NavButton view="settings" label={t('navigation.settings')} isFirst icon={<SettingsIcon />} />
+          {hasPermission('users:read') && <NavButton view="users" label={t('navigation.users')} isFirst icon={<UsersIcon />} />}
+          {hasPermission('roles:read') && <NavButton view="roles" label={t('navigation.roles')} icon={<RolesIcon />} />}
+          {hasPermission('venues:read') && <NavButton view="venues" label={t('navigation.venues', 'Venues')} icon={<VenuesIcon />} />}
+          {hasPermission('tills:read') && <NavButton view="tills" label={t('navigation.tills')} icon={<TillsIcon />} />}
+          {hasPermission('tables:read') && <NavButton view="tables" label={t('navigation.tables')} icon={<TablesIcon />} />}
+          {hasPermission('stock:read') && <NavButton view="itemisedConsumption" label={t('navigation.itemisedConsumption')} icon={<ItemisedIcon />} />}
+          <div className="pt-2"></div>
+          {hasPermission('settings:manage') && <NavButton view="settings" label={t('navigation.settings')} isFirst icon={<SettingsIcon />} />}
         </nav>
         <main className={`flex-grow p-6 bg-slate-900 flex flex-col overflow-y-auto transition-all duration-300 ${sidebarCollapsed ? 'lg:ml-0' : 'lg:ml-0'}`}>
           {renderView()}

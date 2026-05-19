@@ -39,6 +39,8 @@ model User {
   varianceReports VarianceReport[]
   reviewedVarianceReports VarianceReport[] @relation("VarianceReviewedBy")
   transactionAuditLogs TransactionAuditLog[]
+  roleAssignments UserRoleAssignment[]
+  ownedResources ResourceOwnership[]
 
   @@map("users")
 }
@@ -62,9 +64,12 @@ model Product {
   id Int @id @default(autoincrement())
   name String
   categoryId Int
+  venueId Int @default(1)
   variants ProductVariant[]
   category Category @relation(fields: [categoryId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("products")
 }
 
@@ -100,9 +105,12 @@ model StockConsumption {
   variantId Int
   quantity Int
   stockItemId String @db.Uuid
+  venueId Int @default(1)
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
   variant ProductVariant @relation(fields: [variantId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("stock_consumptions")
 }
 
@@ -118,10 +126,13 @@ model StockConsumptionVersion {
   replacedAt    DateTime @default(now())
   changeReason  String?
   changedBy     Int?
+  venueId       Int      @default(1)
+  venue         Venue    @relation(fields: [venueId], references: [id])
 
   @@index([variantId])
   @@index([productId])
   @@index([replacedAt])
+  @@index([venueId])
   @@map("stock_consumption_versions")
 }
 
@@ -129,9 +140,12 @@ model Category {
   id Int @id @default(autoincrement())
   name String
   visibleTillIds Json?
+  venueId Int @default(1)
   products Product[]
   sharedLayouts SharedLayout[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("categories")
 }
 
@@ -167,7 +181,9 @@ model Transaction {
   voidedBy Int?
   voidedByUser User? @relation("VoidedTransactions", fields: [voidedBy], references: [id], onDelete: Restrict)
 
+  venueId Int @default(1)
   user User @relation(fields: [userId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
   receipts Receipt[]
   transactionItems TransactionItem[]
   auditLogs TransactionAuditLog[]
@@ -175,6 +191,7 @@ model Transaction {
   @@index([status])
   @@index([userId, createdAt])
   @@index([createdAt, status])
+  @@index([venueId])
   @@map("transactions")
 }
 
@@ -202,10 +219,13 @@ model Room {
   id String @id @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
   name String
   description String?
+  venueId Int @default(1)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   tables Table[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("rooms")
 }
 
@@ -227,9 +247,12 @@ model Table {
   room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
   owner User? @relation(fields: [ownerId], references: [id])
   tabs Tab[]
+  venueId Int @default(1)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([roomId])
   @@index([ownerId])
+  @@index([venueId])
   @@map("tables")
 }
 
@@ -242,18 +265,24 @@ model Tab {
   tillName String
   tableId String? @db.Uuid
   version Int @default(0)
+  venueId Int @default(1)
   table Table? @relation(fields: [tableId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([tableId])
-  @@unique([name])
+  @@unique([name, venueId])
+  @@index([venueId])
   @@map("tabs")
 }
 
 model Till {
   id Int @id @default(autoincrement())
   name String
+  venueId Int @default(1)
   variantLayouts VariantLayout[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("tills")
 }
 
@@ -276,9 +305,12 @@ model StockItem {
   costHistory CostHistory[]
   inventoryCountItems InventoryCountItem[]
   varianceReportItems VarianceReportItem[]
+  venueId Int @default(1)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([type])
   @@index([lastCostUpdate])
+  @@index([venueId])
   @@map("stock_items")
 }
 
@@ -293,10 +325,13 @@ model StockAdjustment {
   stockItemId String @db.Uuid
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
   user User @relation(fields: [userId], references: [id])
+  venueId Int @default(1)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([stockItemId])
   @@index([createdAt])
   @@index([userId, createdAt])
+  @@index([venueId])
   @@map("stock_adjustments")
 }
 
@@ -307,8 +342,11 @@ model OrderActivityLog {
   userId Int
   userName String
   createdAt DateTime @default(now())
+  venueId Int @default(1)
   user User @relation(fields: [userId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("order_activity_logs")
 }
 
@@ -320,7 +358,6 @@ model Settings {
   autoCloseEnabled Boolean @default(false)
   lastManualClose DateTime?
   defaultTaxRateId Int?
-  defaultTaxRate TaxRate? @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
 
   // Business Information Fields
   businessName String? @map("business_name")
@@ -360,8 +397,12 @@ model Settings {
   businessLegalText String?
 
   cloudBackupRetention Int @default(30) @map("cloud_backup_retention")
+  venueId Int @default(1)
+  defaultTaxRate TaxRate? @relation(fields: [defaultTaxRateId], references: [id], onDelete: SetNull)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([defaultTaxRateId])
+  @@index([venueId])
   @@map("settings")
 }
 
@@ -374,12 +415,15 @@ model TaxRate {
   isActive Boolean @default(true)
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  venueId Int @default(1)
 
   // Relations
   productVariants ProductVariant[]
   settings Settings[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([isDefault, isActive])
+  @@index([venueId])
   @@map("tax_rates")
 }
 
@@ -389,10 +433,13 @@ model DailyClosing {
   closedAt DateTime
   summary Json
   userId Int
+  venueId Int @default(1)
   user User @relation(fields: [userId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([closedAt])
   @@index([userId, closedAt])
+  @@index([venueId])
   @@map("daily_closings")
 }
 
@@ -405,8 +452,11 @@ model OrderSession {
   updatedAt DateTime @updatedAt
   logoutTime DateTime?
   version Int @default(0)
+  venueId Int @default(1)
   user User @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+  venue Venue @relation(fields: [venueId], references: [id])
 
+  @@index([venueId])
   @@map("order_sessions")
 }
 
@@ -420,15 +470,17 @@ model VariantLayout {
   ownerId Int? @map("owner_id") // Optional owner field for ownership verification
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  venueId Int @default(1)
 
   till Till @relation(fields: [tillId], references: [id], onDelete: Cascade)
   variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
   owner User? @relation(fields: [ownerId], references: [id])
-  // Removed category relation to allow pseudo-categories like Favourites (categoryId -1)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@unique([tillId, categoryId, variantId])
   @@index([tillId, categoryId])
   @@index([ownerId])
+  @@index([venueId])
   @@map("variant_layouts")
 }
 
@@ -439,12 +491,15 @@ model SharedLayout {
   ownerId Int? @map("owner_id") // Optional owner field for ownership verification
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  venueId Int @default(1)
 
   category Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   owner User? @relation(fields: [ownerId], references: [id])
   positions SharedLayoutPosition[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([ownerId])
+  @@index([venueId])
   @@map("shared_layouts")
 }
 
@@ -454,12 +509,15 @@ model SharedLayoutPosition {
   variantId Int
   gridColumn Int // 1-4 for 4-column grid
   gridRow Int // 1-based row number
+  venueId Int @default(1)
 
   sharedLayout SharedLayout @relation(fields: [sharedLayoutId], references: [id], onDelete: Cascade)
   variant ProductVariant @relation(fields: [variantId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@unique([sharedLayoutId, variantId])
   @@index([sharedLayoutId])
+  @@index([venueId])
   @@map("shared_layout_positions")
 }
 
@@ -479,8 +537,10 @@ model Customer {
   updatedAt DateTime @updatedAt @map("updated_at")
   deletedAt DateTime? @map("deleted_at")
   createdBy Int @map("created_by")
+  venueId Int @default(1)
   user User @relation(fields: [createdBy], references: [id], onDelete: Restrict, onUpdate: Cascade)
   receipts Receipt[]
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([name])
   @@index([phone])
@@ -488,6 +548,7 @@ model Customer {
   @@index([isActive])
   @@index([createdAt])
   @@index([email])
+  @@index([venueId])
   @@map("customers")
 }
 
@@ -574,6 +635,7 @@ model Receipt {
   generationAttempts Int @default(0) @map("generation_attempts")
   lastGenerationAttempt DateTime? @map("last_generation_attempt")
   generationError String? @map("generation_error")
+  venueId Int @default(1)
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   customer Customer? @relation(fields: [customerId], references: [id], onDelete: SetNull, onUpdate: Cascade)
@@ -583,6 +645,7 @@ model Receipt {
   emailJobs EmailQueue[]
   auditLogs ReceiptAuditLog[]
   generationQueue ReceiptGenerationQueue?
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([receiptNumber])
   @@index([transactionId])
@@ -590,6 +653,7 @@ model Receipt {
   @@index([status])
   @@index([issuedAt])
   @@index([createdAt])
+  @@index([venueId])
   @@map("receipts")
 }
 
@@ -611,13 +675,16 @@ model EmailQueue {
   createdAt DateTime @default(now()) @map("created_at")
   processedAt DateTime? @map("processed_at")
   sentAt DateTime? @map("sent_at")
+  venueId Int @default(1)
 
   receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([status, priority])
   @@index([nextAttemptAt])
   @@index([receiptId])
   @@index([createdAt])
+  @@index([venueId])
   @@map("email_queue")
 }
 
@@ -640,16 +707,19 @@ model ReceiptAuditLog {
 
   // Timestamp
   createdAt DateTime @default(now()) @map("created_at")
+  venueId Int @default(1)
 
   // Relations
   receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([receiptId])
   @@index([action])
   @@index([userId])
   @@index([createdAt])
   @@index([receiptId, createdAt])
+  @@index([venueId])
   @@map("receipt_audit_logs")
 }
 
@@ -663,10 +733,13 @@ model ReceiptGenerationQueue {
   lastError String? @db.Text @map("last_error")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  venueId Int @default(1)
 
   receipt Receipt @relation(fields: [receiptId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([status, nextAttemptAt])
+  @@index([venueId])
   @@map("receipt_generation_queue")
 }
 
@@ -685,12 +758,15 @@ model CostHistory {
   notes String?
   createdBy Int
   createdAt DateTime @default(now())
+  venueId Int @default(1)
 
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
   user User @relation(fields: [createdBy], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([stockItemId, effectiveFrom])
   @@index([effectiveFrom])
+  @@index([venueId])
   @@map("cost_history")
 }
 
@@ -705,13 +781,16 @@ model InventoryCount {
   notes String?
   createdBy Int
   createdAt DateTime @default(now())
+  venueId Int @default(1)
 
   items InventoryCountItem[]
   user User @relation(fields: [createdBy], references: [id])
   approver User? @relation("InventoryApprovedBy", fields: [approvedBy], references: [id], onDelete: Restrict)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([countDate])
   @@index([status])
+  @@index([venueId])
   @@map("inventory_counts")
 }
 
@@ -723,12 +802,15 @@ model InventoryCountItem {
   unitCost Decimal @db.Decimal(12, 6) // Cost at count time
   extendedValue Decimal @db.Decimal(14, 6) // quantity * unitCost
   notes String?
+  venueId Int @default(1)
 
   inventoryCount InventoryCount @relation(fields: [inventoryCountId], references: [id], onDelete: Cascade)
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([inventoryCountId])
   @@index([stockItemId])
+  @@index([venueId])
   @@map("inventory_count_items")
 }
 
@@ -752,12 +834,15 @@ model VarianceReport {
   createdAt DateTime @default(now())
   reviewedAt DateTime?
   reviewedBy Int?
+  venueId Int @default(1)
 
   items VarianceReportItem[]
   user User @relation(fields: [createdBy], references: [id])
   reviewer User? @relation("VarianceReviewedBy", fields: [reviewedBy], references: [id], onDelete: Restrict)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([periodStart, periodEnd])
+  @@index([venueId])
   @@map("variance_reports")
 }
 
@@ -776,12 +861,15 @@ model VarianceReportItem {
 
   status String @default("ok") // ok, warning, critical
   notes String?
+  venueId Int @default(1)
 
   varianceReport VarianceReport @relation(fields: [varianceReportId], references: [id], onDelete: Cascade)
   stockItem StockItem @relation(fields: [stockItemId], references: [id])
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([varianceReportId])
   @@index([stockItemId])
+  @@index([venueId])
   @@map("variance_report_items")
 }
 
@@ -800,13 +888,159 @@ model TransactionAuditLog {
   ipAddress String?
   userAgent String?
   createdAt DateTime @default(now())
+  venueId Int @default(1)
 
   transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
   user User @relation(fields: [userId], references: [id], onDelete: Restrict)
+  venue Venue @relation(fields: [venueId], references: [id])
 
   @@index([transactionId])
   @@index([userId])
   @@index([createdAt])
   @@index([action])
+  @@index([venueId])
   @@map("transaction_audit_logs")
+}
+
+// ============================================
+// Roles and Permissions System
+// ============================================
+
+enum RoleScope {
+  ORGANIZATION
+  VENUE
+}
+
+model Role {
+  id Int @id @default(autoincrement())
+  name String @unique
+  description String?
+  scope RoleScope @default(ORGANIZATION)
+  isSystem Boolean @default(false)
+  parentRoleId Int?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  parentRole Role? @relation("RoleHierarchy", fields: [parentRoleId], references: [id], onDelete: SetNull)
+  childRoles Role[] @relation("RoleHierarchy")
+  permissions RolePermission[]
+  userAssignments UserRoleAssignment[]
+
+  @@index([scope])
+  @@index([parentRoleId])
+  @@map("roles")
+}
+
+model Permission {
+  id Int @id @default(autoincrement())
+  module String
+  action String
+  field String?
+  description String?
+  key String @unique
+  createdAt DateTime @default(now())
+
+  rolePermissions RolePermission[]
+
+  @@unique([module, action, field])
+  @@index([module])
+  @@map("permissions")
+}
+
+model RolePermission {
+  id Int @id @default(autoincrement())
+  roleId Int
+  permissionId Int
+  excluded Boolean @default(false)
+  createdAt DateTime @default(now())
+
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@map("role_permissions")
+}
+
+model UserRoleAssignment {
+  id Int @id @default(autoincrement())
+  userId Int
+  roleId Int
+  venueId Int?
+  assignedBy Int
+  assignedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role Role @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  venue Venue? @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId, venueId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([venueId])
+  @@map("user_role_assignments")
+}
+
+model Venue {
+  id Int @id @default(autoincrement())
+  name String
+  address String?
+  isActive Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userAssignments UserRoleAssignment[]
+  resourceOwnerships ResourceOwnership[]
+  products Product[]
+  stockConsumptions StockConsumption[]
+  stockConsumptionVersions StockConsumptionVersion[]
+  categories Category[]
+  transactions Transaction[]
+  rooms Room[]
+  tables Table[]
+  tabs Tab[]
+  tills Till[]
+  stockItems StockItem[]
+  stockAdjustments StockAdjustment[]
+  orderActivityLogs OrderActivityLog[]
+  settings Settings[]
+  taxRates TaxRate[]
+  dailyClosings DailyClosing[]
+  orderSessions OrderSession[]
+  variantLayouts VariantLayout[]
+  sharedLayouts SharedLayout[]
+  sharedLayoutPositions SharedLayoutPosition[]
+  customers Customer[]
+  receipts Receipt[]
+  emailQueue EmailQueue[]
+  receiptAuditLogs ReceiptAuditLog[]
+  receiptGenerationQueue ReceiptGenerationQueue[]
+  costHistory CostHistory[]
+  inventoryCounts InventoryCount[]
+  inventoryCountItems InventoryCountItem[]
+  varianceReports VarianceReport[]
+  varianceReportItems VarianceReportItem[]
+  transactionAuditLogs TransactionAuditLog[]
+
+  @@index([isActive])
+  @@map("venues")
+}
+
+model ResourceOwnership {
+  id Int @id @default(autoincrement())
+  resourceType String
+  resourceId String
+  userId Int
+  venueId Int
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  venue Venue @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@unique([resourceType, resourceId])
+  @@index([resourceType])
+  @@index([userId])
+  @@index([venueId])
+  @@map("resource_ownership")
 }

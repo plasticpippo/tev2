@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { User, Transaction, OrderActivityLog, Settings } from '@shared/types';
 import * as userApi from '../services/userService';
 import * as transactionApi from '../services/transactionService';
 import * as orderApi from '../services/orderService';
 import * as settingApi from '../services/settingService';
+import { roleService, type UserRoleAssignment, type Role } from '../services/roleService';
 import { VKeyboardInput } from './VKeyboardInput';
 import ConfirmationModal from './ConfirmationModal';
 import { UserPerformanceReportModal } from './UserPerformanceReportModal';
@@ -144,6 +145,130 @@ const UserModal: React.FC<UserModalProps> = ({ user, onClose, onSave }) => {
   );
 };
 
+interface UserRoleModalProps {
+  user: User;
+  onClose: () => void;
+  onUpdated: () => void;
+}
+
+const UserRoleModal: React.FC<UserRoleModalProps> = ({ user, onClose, onUpdated }) => {
+  const { t } = useTranslation('admin');
+  const [assignments, setAssignments] = useState<UserRoleAssignment[]>([]);
+  const [roles, setRoles] = useState<Role[]>([]);
+  const [selectedOrgRoleId, setSelectedOrgRoleId] = useState<number | null>(null);
+  const [selectedVenueRoleId, setSelectedVenueRoleId] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        const [userAssignments, allRoles] = await Promise.all([
+          roleService.getUserRoleAssignments(user.id),
+          roleService.getRoles(),
+        ]);
+        setAssignments(userAssignments);
+        setRoles(allRoles);
+
+        const orgAssignment = userAssignments.find((a: UserRoleAssignment) => a.role.scope === 'ORGANIZATION');
+        if (orgAssignment) setSelectedOrgRoleId(orgAssignment.roleId);
+
+        const venueAssignment = userAssignments.find((a: UserRoleAssignment) => a.role.scope === 'VENUE');
+        if (venueAssignment) setSelectedVenueRoleId(venueAssignment.roleId);
+      } catch {
+        setError(t('roles.assignmentsFetchFailed'));
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+  }, [user.id, t]);
+
+  const handleSave = async () => {
+    try {
+      setSaving(true);
+      setError(null);
+      if (selectedOrgRoleId) {
+        await roleService.assignRole(user.id, selectedOrgRoleId, null);
+      }
+      if (selectedVenueRoleId) {
+        const activeVenueId = parseInt(localStorage.getItem('activeVenueId') || '1', 10);
+        await roleService.assignRole(user.id, selectedVenueRoleId, activeVenueId);
+      }
+      onUpdated();
+      onClose();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('roles.assignFailed'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const orgRoles = roles.filter(r => r.scope === 'ORGANIZATION');
+  const venueRoles = roles.filter(r => r.scope === 'VENUE');
+
+  if (loading) {
+    return (
+      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <div className="bg-slate-900 rounded-lg shadow-xl p-6 border border-slate-700">
+          <p className="text-slate-400">{t('status.loading', { ns: 'common' })}</p>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+      <div className="bg-slate-900 rounded-lg shadow-xl w-full max-w-md p-6 border border-slate-700">
+        <h3 className="text-xl font-bold text-amber-400 mb-4">{t('roles.manageUserRoles', { name: user.name })}</h3>
+
+        {error && (
+          <div className="mb-4">
+            <ErrorMessage message={error} type="error" onClear={() => setError(null)} showClear={true} />
+          </div>
+        )}
+
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-slate-400 mb-1">{t('roles.orgRole')}</label>
+            <select
+              value={selectedOrgRoleId || ''}
+              onChange={e => setSelectedOrgRoleId(e.target.value ? Number(e.target.value) : null)}
+              className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md text-white"
+            >
+              <option value="">{t('roles.noRoleAssigned')}</option>
+              {orgRoles.map(r => (
+                <option key={r.id} value={r.id}>{r.name}{r.isSystem ? ` (${t('roles.system')})` : ''}</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm text-slate-400 mb-1">{t('roles.venueRole')}</label>
+            <select
+              value={selectedVenueRoleId || ''}
+              onChange={e => setSelectedVenueRoleId(e.target.value ? Number(e.target.value) : null)}
+              className="w-full p-3 bg-slate-800 border border-slate-700 rounded-md text-white"
+            >
+              <option value="">{t('roles.noRoleAssigned')}</option>
+              {venueRoles.map(r => (
+                <option key={r.id} value={r.id}>{r.name}{r.isSystem ? ` (${t('roles.system')})` : ''}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-700">
+          <button type="button" onClick={onClose} className="btn btn-secondary">{t('buttons.cancel', { ns: 'common' })}</button>
+          <button type="button" onClick={handleSave} disabled={saving} className="btn btn-primary">
+            {saving ? t('status.saving', { ns: 'common' }) : t('buttons.save', { ns: 'common' })}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 
 interface UserManagementProps {
     users: User[];
@@ -159,6 +284,7 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
   const [editingUser, setEditingUser] = useState<User | undefined>(undefined);
   const [deletingUser, setDeletingUser] = useState<User | null>(null);
   const [reportingUser, setReportingUser] = useState<User | null>(null);
+  const [roleManagingUser, setRoleManagingUser] = useState<User | null>(null);
 
   const handleSave = () => {
     setIsModalOpen(false);
@@ -194,6 +320,12 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
             </div>
             <div className="flex items-center gap-2">
                 <button
+                    onClick={() => setRoleManagingUser(user)}
+                    className="btn btn-info btn-sm"
+                >
+                    {t('roles.manageRoles')}
+                </button>
+                <button
                     onClick={() => setReportingUser(user)}
                     className="btn btn-success btn-sm"
                 >
@@ -220,6 +352,13 @@ export const UserManagement: React.FC<UserManagementProps> = ({ users, transacti
           user={editingUser}
           onClose={() => { setIsModalOpen(false); setEditingUser(undefined); }}
           onSave={handleSave}
+        />
+      )}
+      {roleManagingUser && (
+        <UserRoleModal
+          user={roleManagingUser}
+          onClose={() => setRoleManagingUser(null)}
+          onUpdated={onDataUpdate}
         />
       )}
       {reportingUser && (

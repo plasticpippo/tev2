@@ -9,6 +9,7 @@ export const consumptionReportsRouter = express.Router();
 // GET /api/consumption-reports/itemised - Get itemised consumption report with detailed filtering
 consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const {
       startDate,
@@ -18,7 +19,7 @@ consumptionReportsRouter.get('/itemised', authenticateToken, async (req: Request
     } = req.query;
 
     // First, get all transactions within the date range if provided
-    const transactionWhere: any = {};
+    const transactionWhere: any = { venueId };
     
     if (startDate && endDate) {
       transactionWhere.createdAt = {

@@ -6,7 +6,7 @@ import { validateProduct, validateProductName, validateCategoryId, validateProdu
 import { logError } from '../utils/logger';
 import { multiplyMoney } from '../utils/money';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 
 export const productsRouter = express.Router();
@@ -39,6 +39,7 @@ function formatProductVariant(variant: ProductVariant & { stockConsumption: Stoc
 // GET /api/products/search - Search products by name
 productsRouter.get('/search', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { q, limit } = req.query;
     const searchQuery = typeof q === 'string' ? q : '';
@@ -50,6 +51,7 @@ productsRouter.get('/search', authenticateToken, async (req: Request, res: Respo
 
     const products = await prisma.product.findMany({
       where: {
+        venueId,
         OR: [
           { name: { contains: searchQuery, mode: 'insensitive' } },
           { 
@@ -91,8 +93,10 @@ productsRouter.get('/search', authenticateToken, async (req: Request, res: Respo
 // GET /api/products - Get all products
 productsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const products = await prisma.product.findMany({
+      where: { venueId },
       include: {
         variants: {
           include: {
@@ -155,8 +159,9 @@ productsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
 });
 
 // POST /api/products - Create a new product
-productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+productsRouter.post('/', authenticateToken, requirePermission('products:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants: Omit<ProductVariant, 'id' | 'productId'>[] };
     
@@ -183,7 +188,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
       
       if (taxRateIds.length > 0) {
         const taxRates = await prisma.taxRate.findMany({
-          where: { id: { in: taxRateIds } }
+          where: { id: { in: taxRateIds }, venueId }
         });
         
         const invalidIds = taxRateIds.filter(id => !taxRates.find(tr => tr.id === id));
@@ -221,7 +226,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
       // Check if all referenced stock items exist
       if (allStockItemIds.length > 0) {
         const existingStockItems = await prisma.stockItem.findMany({
-          where: { id: { in: allStockItemIds } },
+          where: { id: { in: allStockItemIds }, venueId },
           select: { id: true }
         });
         
@@ -238,6 +243,7 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
     
     const product = await prisma.product.create({
       data: {
+        venueId,
         name,
         categoryId,
         variants: {
@@ -282,8 +288,9 @@ productsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, r
 });
 
 // PUT /api/products/:id - Update a product
-productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+productsRouter.put('/:id', authenticateToken, requirePermission('products:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, categoryId, variants } = req.body as Omit<Product, 'id'> & { variants?: Omit<ProductVariant, 'id' | 'productId'>[] };
@@ -343,7 +350,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       
       if (taxRateIds.length > 0) {
         const taxRates = await prisma.taxRate.findMany({
-          where: { id: { in: taxRateIds } }
+          where: { id: { in: taxRateIds }, venueId }
         });
         
         const invalidIds = taxRateIds.filter(id => !taxRates.find(tr => tr.id === id));
@@ -381,7 +388,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
       // Check if all referenced stock items exist
       if (allStockItemIds.length > 0) {
         const existingStockItems = await prisma.stockItem.findMany({
-          where: { id: { in: allStockItemIds } },
+          where: { id: { in: allStockItemIds }, venueId },
           select: { id: true }
         });
         
@@ -514,7 +521,7 @@ productsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request,
 });
 
 // DELETE /api/products/:id - Delete a product
-productsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+productsRouter.delete('/:id', authenticateToken, requirePermission('products:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;

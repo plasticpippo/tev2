@@ -1,0 +1,327 @@
+# Custom Roles & Permissions System — Implementation Plan
+
+## Decisions Summary
+
+| Decision | Choice |
+|---|---|
+| **Access Control Model** | Full ABAC/ReBAC |
+| **Implementation** | Custom in existing Express + Prisma + PostgreSQL stack |
+| **Driver** | Multi-venue roadmap |
+| **Org-Level Roles** | Owner (hardcoded super admin, always has all permissions) |
+| **Venue-Level Roles** | Venue Manager |
+| **Cross-Venue Scoping** | Mixed — org-level roles apply everywhere, venue-level roles are per-venue |
+| **Role Hierarchy** | Hierarchical with exclusions (roles inherit from parent, can exclude specific permissions) |
+| **Multi-Role Users** | Single role per scope (one org-level, one venue-level per venue) |
+| **Role Management** | Owner + Org Admin can create/modify/delete role definitions |
+| **Permission Granularity** | Action-level + Field-level |
+| **Permission Organization** | Structured modules (defined module tree with action types and field permissions) |
+| **Ownership Controls** | Full migration — replace ownerId checks with record-level permission evaluation |
+| **Role Editor UI** | Checkbox matrix |
+| **Additional Admin Screens** | Role List Page |
+| **Unauthorized UI Handling** | Contextual mix (nav items hidden, action buttons disabled with tooltip, fields hidden/masked) |
+| **Security Gaps to Fix** | Activate CSRF middleware globally |
+| **Super Admin Protection** | Hardcoded — Owner always has all permissions, cannot be modified/deleted |
+| **Permission Propagation** | Immediate — DB lookup on every request |
+| **Migration Strategy** | Automatic best-guess (Admin → Owner, Cashier → Venue Manager at current venue) |
+| **User.role Field** | Deprecate gradually (keep during migration, remove in future release) |
+| **Scale** | 5-20 concurrent users, 100-500 total users, 2-5 venues |
+| **Multi-Venue Data Model** | venueId foreign key on every data table |
+| **Rollout** | 4 phases: Foundation → Admin UI → Multi-Venue → Migration & Hardening |
+| **Priority** | Backend first |
+
+---
+
+## Phase 1: Foundation — Permission Data Model & Backend Middleware
+
+### 1.1 Database Schema (Prisma Migration)
+
+**New models to add:**
+
+```
+Role
+  - id: Int (PK, autoincrement)
+  - name: String (unique)
+  - description: String?
+  - scope: RoleScope enum (ORGANIZATION, VENUE)
+  - isSystem: Boolean (default false) — true for Owner, cannot be modified/deleted
+  - parentRoleId: Int? (FK to Role, self-referential for hierarchy)
+  - createdAt, updatedAt
+
+RoleScope (enum)
+  - ORGANIZATION
+  - VENUE
+
+Permission
+  - id: Int (PK, autoincrement)
+  - module: String (e.g., "products", "transactions", "stock")
+  - action: String (e.g., "create", "read", "update", "delete")
+  - field: String? (null for action-level, "cost_price" for field-level)
+  - description: String?
+  - key: String (unique, computed: "module:action" or "module:action:field")
+
+RolePermission (junction)
+  - id: Int (PK)
+  - roleId: Int (FK to Role)
+  - permissionId: Int (FK to Permission)
+  - excluded: Boolean (default false) — for hierarchical exclusions
+  - unique constraint on (roleId, permissionId)
+
+UserRoleAssignment
+  - id: Int (PK)
+  - userId: Int (FK to User)
+  - roleId: Int (FK to Role)
+  - venueId: Int? (FK to Venue — null for org-level assignments)
+  - assignedBy: Int (FK to User)
+  - assignedAt: DateTime
+  - unique constraint on (userId, roleId, venueId) — single role per scope
+
+Venue
+  - id: Int (PK, autoincrement)
+  - name: String
+  - address: String?
+  - isActive: Boolean (default true)
+  - createdAt, updatedAt
+
+ResourceOwnership (replaces ownerId on tables/layouts)
+  - id: Int (PK)
+  - resourceType: String (e.g., "table", "layout")
+  - resourceId: Int
+  - userId: Int (FK to User)
+  - venueId: Int (FK to Venue)
+  - unique constraint on (resourceType, resourceId)
+```
+
+**Seed data:**
+- Owner role (system, ORGANIZATION scope, no parent)
+- Venue Manager role (system, VENUE scope, parent = Owner for inheritance)
+- All permissions for the current modules (products, transactions, stock, tables, layouts, rooms, categories, tills, receipts, settings, analytics, daily_closings, orders, users)
+- Owner gets all permissions
+- Venue Manager gets venue-appropriate permissions
+
+**Modify existing models:**
+- Add `venueId` FK to all data models (Phase 3, but schema prepared)
+- Keep `User.role` field (deprecated, still populated during transition)
+
+### 1.2 Backend Permission Engine
+
+**New files:**
+
+`backend/src/permissions/permissionEngine.ts`
+- Core evaluation engine
+- `checkPermission(userId, permissionKey, context?)` — async function
+- Loads user's role assignments (org + venue-scoped)
+- Walks role hierarchy (parent chain), collects all permissions
+- Removes excluded permissions
+- Checks if the requested permission key is in the effective set
+- Returns boolean
+
+`backend/src/permissions/permissionRegistry.ts`
+- Defines all permission modules, actions, and fields as structured data
+- Typed permission keys for TypeScript safety
+- Used by both seed and runtime
+
+`backend/src/permissions/resourceOwnership.ts`
+- Functions for checking resource-level ownership via ResourceOwnership table
+- `checkOwnership(userId, resourceType, resourceId)`
+- `getOwnedResources(userId, resourceType, venueId?)`
+
+**New middleware:**
+
+`backend/src/middleware/requirePermission.ts`
+- Replaces `requireAdmin` and `requireRole`
+- `requirePermission(permissionKey)` — middleware factory
+- Loads user from JWT (existing `authenticateToken`)
+- Calls `permissionEngine.checkPermission`
+- Returns 403 if denied
+- Optionally accepts resource ownership context
+
+### 1.3 API Route Refactoring
+
+- Replace all `requireAdmin` calls with `requirePermission('module:action')`
+- Replace all `requireRole(['ADMIN', 'CASHIER'])` with specific permission checks
+- Replace `verifyTableOwnership` / `verifyLayoutOwnership` with resource ownership checks
+- Maintain a mapping document: old middleware → new permission key
+
+### 1.4 CSRF Activation
+
+- Apply `csrfMiddleware` globally in `backend/src/index.ts` (it's already written, just needs to be activated)
+- Skip for GET/HEAD/OPTIONS (already handled)
+- Test all existing API routes work with CSRF enforcement
+
+### 1.5 Migration Script
+
+`backend/prisma/seed-roles.ts`
+- Seeds Owner and Venue Manager roles
+- Seeds all permissions from the registry
+- Assigns all permissions to Owner
+- Maps existing Admin users → Owner role assignment
+- Maps existing Cashier users → Venue Manager role assignment (at a default venue)
+- Creates a default venue if multi-venue not yet active
+
+---
+
+## Phase 2: Admin UI
+
+### 2.1 Role List Page
+- New route in Admin Panel: `/admin/roles`
+- Table showing: role name, scope (org/venue), parent role, number of users assigned, system/custom badge
+- Actions: Edit, Duplicate, Delete (custom roles only)
+- "Create New Role" button
+
+### 2.2 Role Editor (Checkbox Matrix)
+- New route: `/admin/roles/:id` (edit) and `/admin/roles/new` (create)
+- Grid layout: rows = permission modules (Products, Transactions, Stock, etc.), columns = actions (Create, Read, Update, Delete)
+- Field-level permissions shown as sub-rows under each module
+- Inherited permissions from parent role shown with visual distinction (e.g., blue checkbox)
+- Exclusions shown as crossed-out inherited permissions
+- Scope selector (Organization / Venue) on creation
+- Parent role selector (dropdown, filtered by same scope)
+
+### 2.3 User-Role Assignment
+- Modify existing User Management screen
+- Add org-level role selector (dropdown: Owner, or custom org roles)
+- Add venue-level role assignments section (per-venue dropdown)
+- Only visible to users with `roles:manage` permission
+
+### 2.4 Frontend Permission System
+- New React context: `PermissionContext`
+- Loads current user's effective permissions on login
+- Provides `hasPermission(permissionKey)` hook
+- Provides `usePermission(permissionKey)` for conditional rendering
+- **Navigation items**: hidden if user lacks any permission in that module
+- **Action buttons**: shown but disabled with tooltip "Requires [Role] role" if user lacks permission
+- **Data fields**: hidden or masked (e.g., "••••") if user lacks field-level read permission
+
+### 2.5 API Endpoints
+- `GET /api/roles` — list all roles (requires `roles:read`)
+- `POST /api/roles` — create role (requires `roles:create`)
+- `GET /api/roles/:id` — get role with permissions (requires `roles:read`)
+- `PUT /api/roles/:id` — update role permissions (requires `roles:update`)
+- `DELETE /api/roles/:id` — delete custom role (requires `roles:delete`)
+- `GET /api/permissions` — list all available permissions (requires `roles:read`)
+- `GET /api/users/:id/permissions` — get user's effective permissions (requires `users:read`)
+- `POST /api/users/:id/roles` — assign role to user (requires `roles:assign`)
+
+---
+
+## Phase 3: Multi-Venue
+
+### 3.1 Venue Management
+- CRUD API for venues (Owner only)
+- `GET /api/venues` — list venues
+- `POST /api/venues` — create venue
+- `PUT /api/venues/:id` — update venue
+- `DELETE /api/venues/:id` — deactivate venue (soft delete)
+
+### 3.2 venueId on All Data Tables
+- Add `venueId` FK to all relevant Prisma models
+- Migration script populates existing records with default venue ID
+- All queries scoped by venue (user's current venue from role assignment or selection)
+- Venue switcher in frontend header (for multi-venue users)
+
+### 3.3 Venue-Scoped Role Enforcement
+- Permission engine checks venue context
+- User's role assignment for the active venue determines permissions
+- Org-level roles (Owner) bypass venue scoping — access all venues
+
+### 3.4 Resource Ownership Migration
+- Migrate `ownerId` from tables/layouts to `ResourceOwnership` table
+- Update all ownership-dependent queries
+- Remove `verifyTableOwnership` and `verifyLayoutOwnership` middleware
+- Replace with `requirePermission` + resource ownership check
+
+---
+
+## Phase 4: Migration & Hardening
+
+### 4.1 Data Migration
+- Run seed-roles migration
+- Verify all users have correct role assignments
+- Verify all permissions are correctly seeded
+
+### 4.2 Cleanup
+- Remove deprecated `User.role` field (after full frontend/backend migration)
+- Remove old `requireAdmin`, `requireRole` middleware functions
+- Remove old `authorization.ts` middleware file
+- Normalize all remaining role string references
+
+### 4.3 Testing
+- Test every API route with every role combination
+- Test permission exclusion logic
+- Test resource ownership checks
+- Test venue scoping
+- Test Owner bypass (always has all permissions)
+- Test CSRF enforcement on all write endpoints
+- Test migration script on fresh database
+
+---
+
+## File Structure (New Files)
+
+```
+backend/src/
+  permissions/
+    permissionEngine.ts       — Core permission evaluation
+    permissionRegistry.ts     — Structured permission definitions
+    resourceOwnership.ts      — Resource-level ownership checks
+    types.ts                  — Permission-related TypeScript types
+  middleware/
+    requirePermission.ts      — New authorization middleware (replaces old)
+    auth.ts                   — Existing (keep, authenticateToken still needed)
+    csrf.ts                   — Existing (activate globally)
+
+backend/prisma/
+  migrations/
+    YYYYMMDDHHMMSS_add_roles_permissions/  — Phase 1 migration
+    YYYYMMDDHHMMSS_add_venue_model/        — Phase 3 migration
+    YYYYMMDDHHMMSS_add_venue_id_tables/    — Phase 3 migration
+  seed-roles.ts               — Role/permission seed data
+
+frontend/src/
+  contexts/
+    PermissionContext.tsx      — Permission state management
+  hooks/
+    usePermission.ts           — hasPermission hook
+  components/
+    PermissionGuard.tsx        — Wrapper for conditional rendering
+    DisabledAction.tsx         — Disabled button with tooltip
+  pages/admin/
+    RolesPage.tsx              — Role list
+    RoleEditorPage.tsx         — Role editor (checkbox matrix)
+```
+
+---
+
+## Permission Module Registry (Draft)
+
+| Module | Actions | Field Permissions |
+|---|---|---|
+| products | create, read, update, delete | cost_price:read, discount:read, discount:edit |
+| transactions | process, void, refund, read | discount_amount:edit |
+| stock | read, adjust, count, manage | |
+| tables | create, read, update, delete, assign | |
+| layouts | create, read, update, delete, assign | |
+| rooms | create, read, update, delete | |
+| categories | create, read, update, delete | |
+| tills | create, read, update, delete | |
+| receipts | create, read, update, delete | |
+| settings | read, manage | |
+| analytics | read, export | |
+| daily_closings | create, read, update | |
+| orders | create, read, update | |
+| users | create, read, update, delete | |
+| roles | create, read, update, delete, assign | |
+| venues | create, read, update, delete | |
+
+Total: ~17 modules, ~60 action permissions, ~4 field permissions = ~68 permissions
+
+---
+
+## Key Design Principles
+
+1. **Deny by default** — no access unless explicitly granted via role-permission assignment
+2. **Owner always passes** — hardcoded super admin, no permission lookup needed for Owner role
+3. **Immediate propagation** — every request evaluates permissions from DB (acceptable at 5-20 concurrent / 100-500 total scale)
+4. **Single source of truth** — new permission tables are authoritative; User.role is deprecated cache
+5. **Server-side enforcement only** — frontend permission checks are for UX only, all real enforcement in middleware
+6. **Venue-scoped queries** — all data access filtered by venue context from user's active role assignment

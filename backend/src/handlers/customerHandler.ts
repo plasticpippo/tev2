@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { z } from 'zod';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import * as customerService from '../services/customerService';
 import { prisma } from '../prisma';
 import { logError, logDataAccess } from '../utils/logger';
@@ -54,8 +54,9 @@ const validateVATNumber = (vat: string | undefined): boolean => {
 
 export const customersRouter = express.Router();
 
-customersRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.get('/', authenticateToken, requirePermission('customers:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const {
       search,
@@ -94,7 +95,7 @@ customersRouter.get('/', authenticateToken, async (req: Request, res: Response) 
       sortOrder: sortOrder === 'desc' ? 'desc' : 'asc',
     };
 
-    const result = await customerService.listCustomers(filters, pagination);
+    const result = await customerService.listCustomers(filters, pagination, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error listing customers', {
@@ -104,8 +105,9 @@ customersRouter.get('/', authenticateToken, async (req: Request, res: Response) 
   }
 });
 
-customersRouter.get('/search', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.get('/search', authenticateToken, requirePermission('customers:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { q, limit } = req.query;
 
@@ -114,7 +116,7 @@ customersRouter.get('/search', authenticateToken, async (req: Request, res: Resp
     }
 
     const limitNum = parseInt(String(limit), 10) || 10;
-    const customers = await customerService.searchCustomers(q, limitNum);
+    const customers = await customerService.searchCustomers(q, limitNum, venueId);
     res.json(customers);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error searching customers', {
@@ -124,8 +126,9 @@ customersRouter.get('/search', authenticateToken, async (req: Request, res: Resp
   }
 });
 
-customersRouter.get('/check-duplicate', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.get('/check-duplicate', authenticateToken, requirePermission('customers:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, email } = req.query;
 
@@ -135,7 +138,8 @@ customersRouter.get('/check-duplicate', authenticateToken, async (req: Request, 
 
     const result = await customerService.checkDuplicateCustomer(
       name,
-      email ? String(email) : null
+      email ? String(email) : null,
+      venueId
     );
     res.json(result);
   } catch (error) {
@@ -146,11 +150,12 @@ customersRouter.get('/check-duplicate', authenticateToken, async (req: Request, 
   }
 });
 
-customersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.get('/:id', authenticateToken, requirePermission('customers:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
-    const customer = await customerService.getCustomerById(Number(id));
+    const customer = await customerService.getCustomerById(Number(id), venueId);
 
     if (!customer) {
       return res.status(404).json({ error: t('customers.notFound') });
@@ -165,8 +170,9 @@ customersRouter.get('/:id', authenticateToken, async (req: Request, res: Respons
   }
 });
 
-customersRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.post('/', authenticateToken, requirePermission('customers:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const userId = req.user?.id;
 
@@ -191,7 +197,7 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
     }
 
     if (email) {
-      const isUnique = await customerService.checkEmailUniqueness(email);
+      const isUnique = await customerService.checkEmailUniqueness(email, undefined, venueId);
       if (!isUnique) {
         return res.status(409).json({ error: t('customers.duplicateEmail') });
       }
@@ -209,7 +215,7 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
       notes: notes?.trim() || null,
     };
 
-    const customer = await customerService.createCustomer(input, userId);
+    const customer = await customerService.createCustomer(input, userId, venueId);
 
     logDataAccess('customer', customer.id, 'CREATE', userId, req.user?.username);
 
@@ -222,8 +228,9 @@ customersRouter.post('/', authenticateToken, async (req: Request, res: Response)
   }
 });
 
-customersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.put('/:id', authenticateToken, requirePermission('customers:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -248,7 +255,7 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
         return res.status(400).json({ error: t('customers.invalidEmailFormat') });
       }
       // Check uniqueness
-      const isUnique = await customerService.checkEmailUniqueness(email, Number(id));
+      const isUnique = await customerService.checkEmailUniqueness(email, Number(id), venueId);
       if (!isUnique) {
         return res.status(409).json({ error: t('customers.duplicateEmail') });
       }
@@ -267,7 +274,7 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
       ...(isActive !== undefined && { isActive }),
     };
 
-    const customer = await customerService.updateCustomer(Number(id), input);
+    const customer = await customerService.updateCustomer(Number(id), input, venueId);
 
     if (!customer) {
       return res.status(404).json({ error: t('customers.notFound') });
@@ -284,8 +291,9 @@ customersRouter.put('/:id', authenticateToken, async (req: Request, res: Respons
   }
 });
 
-customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.delete('/:id', authenticateToken, requirePermission('customers:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -294,7 +302,7 @@ customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Resp
       return res.status(401).json({ error: t('auth.userNotFound') });
     }
 
-    const customer = await customerService.softDeleteCustomer(Number(id));
+    const customer = await customerService.softDeleteCustomer(Number(id), venueId);
 
     if (!customer) {
       return res.status(404).json({ error: t('customers.notFound') });
@@ -312,8 +320,9 @@ customersRouter.delete('/:id', authenticateToken, async (req: Request, res: Resp
 });
 
 // Dedicated endpoint for toggling customer active status
-customersRouter.patch('/:id/toggle-status', authenticateToken, async (req: Request, res: Response) => {
+customersRouter.patch('/:id/toggle-status', authenticateToken, requirePermission('customers:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -324,7 +333,7 @@ customersRouter.patch('/:id/toggle-status', authenticateToken, async (req: Reque
 
     // Get current customer
     const currentCustomer = await prisma.customer.findFirst({
-      where: { id: Number(id), deletedAt: null },
+      where: { id: Number(id), deletedAt: null, venueId },
     });
 
     if (!currentCustomer) {

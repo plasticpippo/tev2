@@ -27,8 +27,16 @@ import { customerRateLimiter } from './middleware/rateLimiter';
 import { receiptsRouter } from './handlers/receiptHandler';
 import { costManagementRouter } from './handlers/costManagement';
 import { backupRouter } from './handlers/backup';
+import { rolesRouter } from './handlers/rolesHandler';
+import { venuesRouter } from './handlers/venuesHandler';
+import { authenticateToken } from './middleware/auth';
+import { refreshCsrfToken } from './middleware/csrf';
 
 export const router = express.Router();
+
+// CSRF token refresh endpoint - allows authenticated clients to obtain fresh CSRF cookies
+// This is a GET endpoint so the CSRF middleware skips validation for it
+router.get('/auth/csrf-token', authenticateToken, refreshCsrfToken);
 
 router.use('/products', productsRouter);
 router.use('/users', usersRouter);
@@ -52,6 +60,8 @@ router.use('/customers', customerRateLimiter, customersRouter);
 router.use('/receipts', receiptsRouter);
 router.use('/cost-management', costManagementRouter);
 router.use('/backup', backupRouter);
+router.use('/roles', rolesRouter);
+router.use('/venues', venuesRouter);
 
 router.get('/health', (req, res) => {
   res.status(200).json({ status: 'API is running', timestamp: new Date().toISOString() });

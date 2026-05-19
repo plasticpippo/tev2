@@ -1,6 +1,6 @@
 import express, { Request, Response } from 'express';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import * as receiptService from '../services/receiptService';
 import { getPDFPath, generateReceiptPDF, deletePDFFromStorage } from '../services/pdfService';
 import { logError, logInfo, logDataAccess } from '../utils/logger';
@@ -44,6 +44,7 @@ export const receiptsRouter = express.Router();
 // GET /api/receipts/pending - Get pending/failed receipts for current user
 receiptsRouter.get('/pending', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const userId = req.user?.id;
     const userRole = req.user?.role;
@@ -56,6 +57,7 @@ receiptsRouter.get('/pending', authenticateToken, async (req: Request, res: Resp
 
     const receipts = await prisma.receipt.findMany({
       where: {
+        venueId,
         generationStatus: { in: ['pending', 'failed'] },
         ...(isAdmin ? {} : { issuedBy: userId }),
       },
@@ -82,8 +84,9 @@ receiptsRouter.get('/pending', authenticateToken, async (req: Request, res: Resp
 });
 
 // GET /api/receipts/email-queue/overview - Email queue overview (admin only)
-receiptsRouter.get('/email-queue/overview', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+receiptsRouter.get('/email-queue/overview', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const {
       status,
@@ -91,7 +94,7 @@ receiptsRouter.get('/email-queue/overview', authenticateToken, requireAdmin, asy
       limit = '20',
     } = req.query;
 
-    const where: any = {};
+    const where: any = { venueId };
     if (status) {
       where.status = String(status);
     }
@@ -203,6 +206,7 @@ receiptsRouter.post('/:id/retry', authenticateToken, async (req: Request, res: R
 
 receiptsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const {
       search,
@@ -326,6 +330,7 @@ receiptsRouter.get('/:id', authenticateToken, async (req: Request, res: Response
 
 receiptsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const userId = req.user?.id;
 
@@ -427,7 +432,7 @@ receiptsRouter.post('/:id/issue', authenticateToken, async (req: Request, res: R
   }
 });
 
-receiptsRouter.post('/:id/void', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+receiptsRouter.post('/:id/void', authenticateToken, requirePermission('receipts:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -792,6 +797,7 @@ receiptsRouter.post('/:id/email', authenticateToken, async (req: Request, res: R
 // GET /api/receipts/:id/email-jobs - Get email delivery status for a receipt
 receiptsRouter.get('/:id/email-jobs', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -801,7 +807,7 @@ receiptsRouter.get('/:id/email-jobs', authenticateToken, async (req: Request, re
     }
 
     const emailJobs = await prisma.emailQueue.findMany({
-      where: { receiptId: Number(id) },
+      where: { receiptId: Number(id), venueId },
       orderBy: { createdAt: 'desc' },
       select: {
         id: true,
@@ -929,7 +935,7 @@ receiptsRouter.get('/:id/audit', authenticateToken, async (req: Request, res: Re
 });
 
 // GET /api/receipts/audit - Get audit logs across all receipts (Admin only)
-receiptsRouter.get('/audit', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+receiptsRouter.get('/audit', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const {
@@ -981,7 +987,7 @@ receiptsRouter.get('/audit', authenticateToken, requireAdmin, async (req: Reques
 });
 
 // POST /api/receipts/admin/recover-pdfs - Recover missing PDF files (Admin only)
-receiptsRouter.post('/admin/recover-pdfs', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+receiptsRouter.post('/admin/recover-pdfs', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   try {
     const { recoverMissingPDFs } = await import('../services/pdfRecoveryService');
     const limit = req.body.limit ? parseInt(String(req.body.limit), 10) : 100;

@@ -4,7 +4,7 @@ import type { Category } from '../types';
 import { validateCategory, validateCategoryName } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 export const categoriesRouter = express.Router();
 
@@ -13,12 +13,13 @@ export const categoriesRouter = express.Router();
 // - includeSystem: boolean - If true, includes system categories (id <= 0) for POS view
 categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const includeSystem = req.query.includeSystem === 'true';
     
     // Filter out system categories (id <= 0) from admin panel by default
     // Use ?includeSystem=true to include them for POS view
-    const where = includeSystem ? {} : { id: { gt: 0 } };
+    const where = includeSystem ? { venueId } : { id: { gt: 0 }, venueId };
     
     const categories = await prisma.category.findMany({
       where,
@@ -65,8 +66,9 @@ categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
 });
 
 // POST /api/categories - Create a new category
-categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+categoriesRouter.post('/', authenticateToken, requirePermission('categories:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
     
@@ -78,6 +80,7 @@ categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     
     const category = await prisma.category.create({
       data: {
+        venueId,
         name,
         visibleTillIds: visibleTillIds || []
       },
@@ -98,7 +101,7 @@ categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
 });
 
 // PUT /api/categories/:id - Update a category
-categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+categoriesRouter.put('/:id', authenticateToken, requirePermission('categories:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -142,7 +145,7 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
 });
 
 // DELETE /api/categories/:id - Delete a category
-categoriesRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+categoriesRouter.delete('/:id', authenticateToken, requirePermission('categories:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;

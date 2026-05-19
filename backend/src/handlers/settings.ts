@@ -3,7 +3,7 @@ import rateLimit from 'express-rate-limit';
 import { prisma } from '../prisma';
 import type { Settings } from '../types';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { logError, logInfo, logWarn, logAuditEvent } from '../utils/logger';
 import { getSchedulerStatus, clearSettingsCache } from '../services/businessDayScheduler';
 import { Settings as PrismaSettings, TaxRate as PrismaTaxRate } from '@prisma/client';
@@ -49,9 +49,11 @@ function formatTaxRate(taxRate: PrismaTaxRate | null) {
 // GET /api/settings - Get current settings
 settingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Get the first (and should be only) settings record with default tax rate
     const settings = await prisma.settings.findFirst({
+      where: { venueId },
       include: {
         defaultTaxRate: true,
       },
@@ -177,8 +179,9 @@ email: {
 });
 
 // POST /api/settings/logo - Upload business logo
-settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('logo') as any, async (req: Request, res: Response) => {
+settingsRouter.post('/logo', authenticateToken, requirePermission('settings:manage'), upload.single('logo') as any, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     if (!req.file) {
       res.status(400).json({ error: t('errors:settings.noFileUploaded') });
@@ -200,7 +203,7 @@ settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('log
       return;
     }
 
-    const existingSettings = await prisma.settings.findFirst();
+    const existingSettings = await prisma.settings.findFirst({ where: { venueId } });
     let settings;
 
     if (existingSettings) {
@@ -211,6 +214,7 @@ settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('log
     } else {
       settings = await prisma.settings.create({
         data: {
+          venueId,
           taxMode: 'none',
           autoStartTime: '06:00',
           businessDayEndHour: '06:00',
@@ -237,10 +241,11 @@ settingsRouter.post('/logo', authenticateToken, requireAdmin, upload.single('log
 });
 
 // DELETE /api/settings/logo - Delete business logo
-settingsRouter.delete('/logo', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+settingsRouter.delete('/logo', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
-    const existingSettings = await prisma.settings.findFirst();
+    const existingSettings = await prisma.settings.findFirst({ where: { venueId } });
 
     if (!existingSettings || !existingSettings.businessLogoPath) {
       res.status(404).json({ error: t('errors:settings.noLogoFound') });
@@ -268,8 +273,9 @@ settingsRouter.delete('/logo', authenticateToken, requireAdmin, async (req: Requ
 });
 
 // PUT /api/settings - Update settings (requires admin role)
-settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+settingsRouter.put('/', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { tax, businessDay, business, receipt, email, receiptFromPaymentModal } = req.body as Settings;
 
@@ -329,7 +335,7 @@ settingsRouter.put('/', authenticateToken, requireAdmin, async (req: Request, re
     }
 
     // Get the first settings record or create one if it doesn't exist
-    const existingSettings = await prisma.settings.findFirst();
+    const existingSettings = await prisma.settings.findFirst({ where: { venueId } });
 
     let settings: SettingsWithTaxRate;
 
@@ -380,6 +386,7 @@ emailSmtpSecure: email?.smtpSecure !== undefined ? email.smtpSecure : existingSe
       // Create new settings record
       settings = await prisma.settings.create({
         data: {
+          venueId,
           taxMode: tax?.mode ?? 'none',
           defaultTaxRateId: tax?.defaultTaxRateId ?? null,
           autoStartTime: businessDay?.autoStartTime ?? '06:00',
@@ -515,7 +522,7 @@ settingsRouter.get('/business-day-status', async (req: Request, res: Response) =
 
 // POST /api/settings/backup - Create database backup (requires admin role)
 // Uses spawn with array arguments to prevent command injection
-settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+settingsRouter.post('/backup', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const backupTimeout = 120000; // 2 minutes timeout
   let timeoutId: NodeJS.Timeout | null = null;
@@ -651,7 +658,7 @@ settingsRouter.post('/backup', authenticateToken, requireAdmin, async (req: Requ
   }
 });
 
-settingsRouter.post('/email/test', authenticateToken, requireAdmin, emailTestRateLimiter, async (req: Request, res: Response) => {
+settingsRouter.post('/email/test', authenticateToken, requirePermission('settings:manage'), emailTestRateLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { recipient } = req.body;

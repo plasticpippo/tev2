@@ -40,7 +40,8 @@ interface ProductPerformanceResult {
  * Aggregates product performance data based on the provided parameters
  */
 export const aggregateProductPerformance = async (
-  params: AnalyticsParams
+  params: AnalyticsParams,
+  venueId: number
 ): Promise<ProductPerformanceResult> => {
   const {
     startDate,
@@ -109,6 +110,7 @@ export const aggregateProductPerformance = async (
 
   // Exclude voided transactions from analytics
   whereClause.status = { not: 'voided' };
+  whereClause.venueId = venueId;
 
   // Get all transactions that match the criteria
   const transactions = await prisma.transaction.findMany({
@@ -117,6 +119,7 @@ export const aggregateProductPerformance = async (
 
   // Extract products and categories to map product IDs to names and categories
   const products = await prisma.product.findMany({
+    where: { venueId },
     include: {
       category: true,
     },
@@ -335,8 +338,9 @@ function safePercentage(value: number, total: number): number {
  * Aggregates hourly sales data for a specific business day
  */
 export const aggregateHourlySales = async (
-  date: string,  // ISO date string "YYYY-MM-DD"
-  settings: SettingsConfig
+  date: string,
+  settings: SettingsConfig,
+  venueId: number
 ): Promise<HourlySalesResult> => {
   // Get business day range
   const targetDate = new Date(date);
@@ -348,6 +352,7 @@ export const aggregateHourlySales = async (
   // Fetch transactions within the business day (excluding voided)
   const transactions = await prisma.transaction.findMany({
     where: {
+      venueId,
       createdAt: {
         gte: start,
         lte: end,
@@ -454,11 +459,12 @@ export const aggregateHourlySales = async (
 export const compareHourlySales = async (
   date1: string,
   date2: string,
-  settings: SettingsConfig
+  settings: SettingsConfig,
+  venueId: number
 ): Promise<ComparisonResult> => {
   const [period1, period2] = await Promise.all([
-    aggregateHourlySales(date1, settings),
-    aggregateHourlySales(date2, settings),
+    aggregateHourlySales(date1, settings, venueId),
+    aggregateHourlySales(date2, settings, venueId),
   ]);
   
   // Calculate hourly differences
@@ -627,12 +633,14 @@ function computePreviousPeriod(startDate: string, endDate: string): { prevStart:
 
 export const getProfitSummary = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  venueId: number
 ): Promise<ProfitSummary> => {
   const { start, end } = computePeriodDates(startDate, endDate);
 
   const transactions = await prisma.transaction.findMany({
     where: {
+      venueId,
       createdAt: { gte: start, lte: end },
       status: 'completed',
     },
@@ -693,11 +701,12 @@ export const getProfitSummary = async (
 
 export const getProfitComparison = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  venueId: number
 ): Promise<ProfitComparison> => {
-  const current = await getProfitSummary(startDate, endDate);
+  const current = await getProfitSummary(startDate, endDate, venueId);
   const { prevStart, prevEnd } = computePreviousPeriod(startDate, endDate);
-  const previous = await getProfitSummary(prevStart, prevEnd);
+  const previous = await getProfitSummary(prevStart, prevEnd, venueId);
 
   const revenueChange = roundMoney(subtractMoney(current.revenue, previous.revenue));
   const revenueChangePercent = safePercentage(revenueChange, previous.revenue);
@@ -724,18 +733,21 @@ export const getProfitComparison = async (
 
 export const getMarginByCategory = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  venueId: number
 ): Promise<CategoryMargin[]> => {
   const { start, end } = computePeriodDates(startDate, endDate);
 
   const [transactions, products] = await Promise.all([
     prisma.transaction.findMany({
       where: {
+        venueId,
         createdAt: { gte: start, lte: end },
         status: 'completed',
       },
     }),
     prisma.product.findMany({
+      where: { venueId },
       include: { category: true },
     }),
   ]);
@@ -817,18 +829,21 @@ export const getMarginByCategory = async (
 export const getMarginByProduct = async (
   startDate: string,
   endDate: string,
-  limit?: number
+  limit?: number,
+  venueId?: number
 ): Promise<ProductMargin[]> => {
   const { start, end } = computePeriodDates(startDate, endDate);
 
   const [transactions, variants] = await Promise.all([
     prisma.transaction.findMany({
       where: {
+        venueId,
         createdAt: { gte: start, lte: end },
         status: 'completed',
       },
     }),
     prisma.productVariant.findMany({
+      where: { product: { venueId } },
       include: {
         product: {
           include: { category: true },
@@ -939,7 +954,8 @@ export const getMarginByProduct = async (
 
 export const getMarginTrend = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  venueId: number
 ): Promise<MarginTrendPoint[]> => {
   const start = new Date(`${startDate}T00:00:00`);
   const end = new Date(`${endDate}T23:59:59.999`);
@@ -958,6 +974,7 @@ export const getMarginTrend = async (
   // Single query for the entire period
   const transactions = await prisma.transaction.findMany({
     where: {
+      venueId,
       createdAt: { gte: start, lte: end },
       status: 'completed',
     },
@@ -1008,18 +1025,19 @@ export const getMarginTrend = async (
 
 export const getProfitDashboard = async (
   startDate: string,
-  endDate: string
+  endDate: string,
+  venueId: number
 ): Promise<ProfitDashboardData> => {
   const [summary, byCategory, byProduct, trend] = await Promise.all([
-    getProfitSummary(startDate, endDate),
-    getMarginByCategory(startDate, endDate),
-    getMarginByProduct(startDate, endDate),
-    getMarginTrend(startDate, endDate),
+    getProfitSummary(startDate, endDate, venueId),
+    getMarginByCategory(startDate, endDate, venueId),
+    getMarginByProduct(startDate, endDate, undefined, venueId),
+    getMarginTrend(startDate, endDate, venueId),
   ]);
 
   let comparison: ProfitComparison | null = null;
   try {
-    comparison = await getProfitComparison(startDate, endDate);
+    comparison = await getProfitComparison(startDate, endDate, venueId);
   } catch {
     comparison = null;
   }

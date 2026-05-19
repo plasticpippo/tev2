@@ -1,6 +1,7 @@
 import { Router, Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
+import { requirePermission } from '../middleware/requirePermission';
 import { validateRoomName } from '../utils/validation';
 import { sanitizeName, sanitizeDescription, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError, redactSensitiveData } from '../utils/logger';
@@ -20,8 +21,10 @@ router.use((req, res, next) => {
 // GET /api/rooms - Retrieve all rooms
 router.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const rooms = await prisma.room.findMany({
+      where: { venueId },
       include: {
         tables: true, // Include associated tables
       },
@@ -42,6 +45,7 @@ router.get('/', authenticateToken, async (req: Request, res: Response) => {
 // GET /api/rooms/:id - Retrieve specific room
 router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const room = await prisma.room.findUnique({
@@ -51,7 +55,7 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
       },
     });
 
-    if (!room) {
+    if (!room || room.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 
@@ -65,8 +69,9 @@ router.get('/:id', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // POST /api/rooms - Create new room
-router.post('/', authenticateToken, async (req: Request, res: Response) => {
+router.post('/', authenticateToken, requirePermission('rooms:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, description } = req.body;
 
@@ -102,8 +107,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
       where: {
         name: {
           equals: sanitizedName,
-          mode: 'insensitive' // Case insensitive comparison
-        }
+          mode: 'insensitive'
+        },
+        venueId
       }
     });
 
@@ -118,6 +124,7 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 
     const newRoom = await prisma.room.create({
       data: {
+        venueId,
         name: sanitizedName,
         description: sanitizedDescription,
       },
@@ -136,8 +143,9 @@ router.post('/', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // PUT /api/rooms/:id - Update room
-router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.put('/:id', authenticateToken, requirePermission('rooms:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, description } = req.body;
@@ -147,7 +155,7 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
       where: { id },
     });
 
-    if (!room) {
+    if (!room || room.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 
@@ -183,11 +191,12 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
         where: {
           name: {
             equals: sanitizedName,
-            mode: 'insensitive' // Case insensitive comparison
+            mode: 'insensitive'
           },
           id: {
-            not: id // Exclude current room from duplicate check
-          }
+            not: id
+          },
+          venueId
         }
       });
 
@@ -222,8 +231,9 @@ router.put('/:id', authenticateToken, async (req: Request, res: Response) => {
 });
 
 // DELETE /api/rooms/:id - Delete room (with validation to prevent deletion of rooms with assigned tables)
-router.delete('/:id', authenticateToken, async (req: Request, res: Response) => {
+router.delete('/:id', authenticateToken, requirePermission('rooms:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -231,7 +241,7 @@ router.delete('/:id', authenticateToken, async (req: Request, res: Response) => 
       where: { id },
     });
 
-    if (!room) {
+    if (!room || room.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:rooms.notFound') });
     }
 

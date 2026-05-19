@@ -56,7 +56,8 @@ function calculateSimilarity(str1: string, str2: string): number {
 
 export async function createCustomer(
   data: CreateCustomerInput,
-  userId: number
+  userId: number,
+  venueId: number
 ): Promise<CustomerResponseDTO> {
   const customer = await prisma.customer.create({
     data: {
@@ -71,6 +72,7 @@ export async function createCustomer(
       notes: data.notes ?? null,
       isActive: true,
       createdBy: userId,
+      venueId,
       updatedAt: new Date(),
     },
     include: {
@@ -83,10 +85,11 @@ export async function createCustomer(
   return toCustomerDTO(customer);
 }
 
-export async function getCustomerById(id: number): Promise<CustomerResponseDTO | null> {
+export async function getCustomerById(id: number, venueId: number): Promise<CustomerResponseDTO | null> {
   const customer = await prisma.customer.findFirst({
     where: {
       id,
+      venueId,
       deletedAt: null,
     },
     include: {
@@ -101,12 +104,13 @@ export async function getCustomerById(id: number): Promise<CustomerResponseDTO |
 
 export async function listCustomers(
   filters: CustomerFilters = {},
-  pagination: CustomerPagination = { page: 1, limit: 20 }
+  pagination: CustomerPagination = { page: 1, limit: 20 },
+  venueId: number
 ): Promise<CustomerListResult> {
   const { page, limit, sortBy = 'name', sortOrder = 'asc' } = pagination;
   const { includeDeleted = false } = filters;
 
-  const where: Prisma.CustomerWhereInput = {};
+  const where: Prisma.CustomerWhereInput = { venueId };
 
   if (!includeDeleted) {
     where.deletedAt = null;
@@ -176,10 +180,11 @@ export async function listCustomers(
 
 export async function updateCustomer(
   id: number,
-  data: UpdateCustomerInput
+  data: UpdateCustomerInput,
+  venueId: number
 ): Promise<CustomerResponseDTO | null> {
   const existingCustomer = await prisma.customer.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, venueId, deletedAt: null },
   });
 
   if (!existingCustomer) {
@@ -211,9 +216,9 @@ export async function updateCustomer(
   return toCustomerDTO(customer);
 }
 
-export async function softDeleteCustomer(id: number): Promise<CustomerResponseDTO | null> {
+export async function softDeleteCustomer(id: number, venueId: number): Promise<CustomerResponseDTO | null> {
   const existingCustomer = await prisma.customer.findFirst({
-    where: { id, deletedAt: null },
+    where: { id, venueId, deletedAt: null },
   });
 
   if (!existingCustomer) {
@@ -239,11 +244,13 @@ export async function softDeleteCustomer(id: number): Promise<CustomerResponseDT
 
 export async function checkDuplicateCustomer(
   name: string,
-  email?: string | null
+  email: string | undefined | null,
+  venueId: number
 ): Promise<CustomerDuplicateCheck> {
   const potentialDuplicates = await prisma.customer.findMany({
     where: {
       deletedAt: null,
+      venueId,
       OR: [
         { name: { contains: name, mode: Prisma.QueryMode.insensitive } },
         ...(email ? [{ email: { contains: email, mode: Prisma.QueryMode.insensitive } }] : []),
@@ -274,11 +281,13 @@ const maxSimilarity = Math.max(nameSimilarity, emailSimilarity);
 
 export async function searchCustomers(
   query: string,
-  limit: number = 10
+  limit: number = 10,
+  venueId: number
 ): Promise<CustomerResponseDTO[]> {
   const customers = await prisma.customer.findMany({
     where: {
       deletedAt: null,
+      venueId,
       isActive: true,
       OR: [
         { name: { contains: query, mode: Prisma.QueryMode.insensitive } },
@@ -296,11 +305,13 @@ export async function searchCustomers(
 
 export async function checkEmailUniqueness(
   email: string,
-  excludeId?: number
+  excludeId: number | undefined,
+  venueId: number
 ): Promise<boolean> {
   const existing = await prisma.customer.findFirst({
     where: {
       email: email,
+      venueId,
       deletedAt: null,
       ...(excludeId && { id: { not: excludeId } }),
     },

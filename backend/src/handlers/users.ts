@@ -4,7 +4,7 @@ import { prisma } from '../prisma';
 import type { User } from '../types';
 import { hashPassword, comparePassword } from '../utils/password';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { sendCsrfToken, clearCsrfToken } from '../middleware/csrf';
 import { revokeToken, revokeAllUserTokens } from '../services/tokenBlacklistService';
 import { validateJwtSecret } from '../utils/jwtSecretValidation';
@@ -59,7 +59,7 @@ usersRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
 });
 
 // POST /api/users - Create a new user
-usersRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+usersRouter.post('/', authenticateToken, requirePermission('users:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { name, username, password, role } = req.body as Omit<User, 'id'> & { password: string };
@@ -198,7 +198,7 @@ usersRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =
 });
 
 // DELETE /api/users/:id - Delete a user
-usersRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+usersRouter.delete('/:id', authenticateToken, requirePermission('users:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -434,7 +434,7 @@ usersRouter.put('/:id/receipt-preference', authenticateToken, async (req: Reques
 });
 
 // POST /api/auth/revoke-all - Revoke all tokens for a user (admin only)
-usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+usersRouter.post('/auth/revoke-all', authenticateToken, requirePermission('users:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { userId } = req.body;
@@ -453,6 +453,28 @@ usersRouter.post('/auth/revoke-all', authenticateToken, requireAdmin, async (req
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: t('users.revokeFailed') });
+  }
+});
+
+usersRouter.get('/:id/roles', authenticateToken, requirePermission('users:read'), async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  try {
+    const userId = Number(req.params.id);
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: t('users.invalidId') });
+    }
+
+    const assignments = await prisma.userRoleAssignment.findMany({
+      where: { userId },
+      include: { role: true, venue: true },
+      orderBy: { assignedAt: 'desc' },
+    });
+    res.json(assignments);
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching user role assignments', {
+      correlationId: (req as any).correlationId,
+    });
+    res.status(500).json({ error: t('roles.assignmentsFetchFailed') });
   }
 });
 

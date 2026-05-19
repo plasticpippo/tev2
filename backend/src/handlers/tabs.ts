@@ -3,7 +3,7 @@ import { prisma } from '../prisma';
 import type { Tab } from '../types';
 import { logInfo, logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { safeJsonParse } from '../utils/jsonParser';
 import { TABLE_STATUS, isValidStatusTransition } from '../utils/tableStatus';
 
@@ -37,8 +37,10 @@ export const tabsRouter = express.Router();
 // GET /api/tabs - Get all tabs
 tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const tabs = await prisma.tab.findMany({
+      where: { venueId },
       include: {
         table: true
       }
@@ -65,6 +67,7 @@ tabsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
 // GET /api/tabs/:id - Get a specific tab
 tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const tab = await prisma.tab.findUnique({
@@ -74,7 +77,7 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
       }
     });
     
-    if (!tab) {
+    if (!tab || tab.venueId !== venueId) {
       return res.status(404).json({ error: t('tabs.notFound') });
     }
     
@@ -97,6 +100,7 @@ tabsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =>
 // POST /api/tabs - Create a new tab
 tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     logInfo(t('tabs.log.createCalled'), {
       correlationId: (req as any).correlationId,
@@ -148,7 +152,7 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
     const tab = await prisma.$transaction(async (tx) => {
       // Check for duplicate name within the transaction
       const existingTab = await tx.tab.findFirst({
-        where: { name: name.trim() }
+        where: { name: name.trim(), venueId }
       });
 
       if (existingTab) {
@@ -177,6 +181,7 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
       // Create the tab
       const newTab = await tx.tab.create({
         data: {
+          venueId,
           name: name.trim(),
           items: JSON.stringify(items || []),
           tillId,
@@ -221,6 +226,7 @@ tabsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
 // PUT /api/tabs/transfer - Atomically transfer items between tabs (MUST be before /:id)
 tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { sourceTabId, destination, itemsToMove } = req.body;
 
@@ -274,7 +280,7 @@ tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Respons
         include: { table: true }
       });
 
-      if (!sourceTab) {
+      if (!sourceTab || sourceTab.venueId !== venueId) {
         throw new Error(t('tabs.sourceTabNotFound'));
       }
 
@@ -282,7 +288,7 @@ tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Respons
       if (destination.type === 'new') {
         // Check if a tab with the same name already exists
         const existingTab = await tx.tab.findFirst({
-          where: { name: destination.name.trim() }
+          where: { name: destination.name.trim(), venueId }
         });
 
         if (existingTab) {
@@ -292,6 +298,7 @@ tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Respons
         // Create new destination tab
         destinationTab = await tx.tab.create({
           data: {
+            venueId,
             name: destination.name.trim(),
             items: JSON.stringify([]),
             tillId: destination.tillId,
@@ -311,7 +318,7 @@ tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Respons
           include: { table: true }
         });
 
-        if (!destinationTab) {
+        if (!destinationTab || destinationTab.venueId !== venueId) {
           throw new Error(t('tabs.destinationTabNotFound'));
         }
       }
@@ -399,6 +406,7 @@ tabsRouter.put('/transfer', authenticateToken, async (req: Request, res: Respons
 // PUT /api/tabs/:id - Update a tab
 tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, items, tillId, tillName, tableId, version } = req.body;
@@ -451,7 +459,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
         where: { id: Number(id) }
       });
 
-      if (!existingTab) {
+      if (!existingTab || existingTab.venueId !== venueId) {
         throw new Error(t('tabs.notFound'));
       }
 
@@ -460,6 +468,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
         const duplicateTab = await tx.tab.findFirst({
           where: {
             name: name.trim(),
+            venueId,
             id: { not: Number(id) }
           }
         });
@@ -473,6 +482,7 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
       const updateResult = await tx.tab.updateMany({
         where: {
           id: Number(id),
+          venueId,
           version: version
         },
         data: {
@@ -556,8 +566,9 @@ tabsRouter.put('/:id', authenticateToken, async (req: Request, res: Response) =>
 });
 
 // DELETE /api/tabs/:id - Delete a tab
-tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+tabsRouter.delete('/:id', authenticateToken, requirePermission('orders:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -568,7 +579,7 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
         where: { id: Number(id) }
       });
 
-      if (!tab) {
+      if (!tab || tab.venueId !== venueId) {
         throw new Error(t('tabs.notFound'));
       }
 
@@ -605,6 +616,7 @@ tabsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, 
 // PUT /api/tabs/:id/request-bill - Request bill for a tab (sets table to bill_requested)
 tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const userId = req.user?.id;
@@ -617,7 +629,7 @@ tabsRouter.put('/:id/request-bill', authenticateToken, async (req: Request, res:
       include: { table: true }
     });
     
-    if (!tab) {
+    if (!tab || tab.venueId !== venueId) {
       return res.status(404).json({ error: t('tabs.notFound') });
     }
     

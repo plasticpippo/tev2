@@ -4,15 +4,16 @@ import type { Till } from '../types';
 import { validateTill, validateTillName } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 export const tillsRouter = express.Router();
 
 // GET /api/tills - Get all tills
 tillsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
-    const tills = await prisma.till.findMany();
+    const tills = await prisma.till.findMany({ where: { venueId } });
     res.json(tills);
   } catch (error) {
     logError(error instanceof Error ? error : t('tills.log.fetchError'), {
@@ -25,6 +26,7 @@ tillsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
 // GET /api/tills/:id - Get a specific till
 tillsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const till = await prisma.till.findUnique({
@@ -32,6 +34,10 @@ tillsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
     });
     
     if (!till) {
+      return res.status(404).json({ error: t('tills.notFound') });
+    }
+    
+    if (till.venueId !== venueId) {
       return res.status(404).json({ error: t('tills.notFound') });
     }
     
@@ -45,8 +51,9 @@ tillsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) =
 });
 
 // POST /api/tills - Create a new till
-tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+tillsRouter.post('/', authenticateToken, requirePermission('tills:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name } = req.body as Omit<Till, 'id'>;
     
@@ -58,6 +65,7 @@ tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
     
     const till = await prisma.till.create({
       data: {
+        venueId,
         name
       }
     });
@@ -72,8 +80,9 @@ tillsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res:
 });
 
 // PUT /api/tills/:id - Update a till
-tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+tillsRouter.put('/:id', authenticateToken, requirePermission('tills:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name } = req.body as Omit<Till, 'id'>;
@@ -84,6 +93,14 @@ tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, re
       if (nameError) {
         return res.status(400).json({ error: t('tills.validationFailed'), details: [nameError] });
       }
+    }
+    
+    const existing = await prisma.till.findUnique({ where: { id: Number(id) } });
+    if (!existing) {
+      return res.status(404).json({ error: t('tills.notFound') });
+    }
+    if (existing.venueId !== venueId) {
+      return res.status(404).json({ error: t('tills.notFound') });
     }
     
     const till = await prisma.till.update({
@@ -103,13 +120,23 @@ tillsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, re
 });
 
 // DELETE /api/tills/:id - Delete a till
-tillsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+tillsRouter.delete('/:id', authenticateToken, requirePermission('tills:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     
+    const existing = await prisma.till.findUnique({ where: { id: Number(id) } });
+    if (!existing) {
+      return res.status(404).json({ error: t('tills.notFound') });
+    }
+    if (existing.venueId !== venueId) {
+      return res.status(404).json({ error: t('tills.notFound') });
+    }
+    
     // Remove this till from all category visibleTillIds arrays
     const allCategories = await prisma.category.findMany({
+      where: { venueId },
       select: {
         id: true,
         visibleTillIds: true

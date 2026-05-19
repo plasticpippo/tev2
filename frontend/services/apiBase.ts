@@ -104,12 +104,35 @@ const CSRF_HEADER_NAME = 'x-csrf-token';
 export const getCsrfToken = (): string | null => {
   const cookies = document.cookie.split(';');
   for (const cookie of cookies) {
-    const [name, value] = cookie.trim().split('=');
+    const [name, ...rest] = cookie.trim().split('=');
     if (name === CSRF_COOKIE_NAME) {
-      return decodeURIComponent(value);
+      return decodeURIComponent(rest.join('='));
     }
   }
   return null;
+};
+
+// Ensures CSRF cookie is available by fetching a fresh token if missing.
+// This is needed because CSRF cookies are only set during login, but the JWT
+// in localStorage persists across sessions. When the user auto-authenticates
+// via the stored JWT, the CSRF cookies may be absent.
+let csrfRefreshPromise: Promise<void> | null = null;
+
+const ensureCsrfToken = async (): Promise<void> => {
+  if (getCsrfToken()) {
+    return;
+  }
+  if (csrfRefreshPromise) {
+    return csrfRefreshPromise;
+  }
+  csrfRefreshPromise = fetch(apiUrl('/api/auth/csrf-token'), {
+    method: 'GET',
+    credentials: 'include',
+    headers: getAuthHeaders(),
+  })
+    .then(() => { csrfRefreshPromise = null; })
+    .catch(() => { csrfRefreshPromise = null; });
+  return csrfRefreshPromise;
 };
 
 // Helper function to get headers with credentials
@@ -171,6 +194,12 @@ export const getAuthHeaders = (includeContentType: boolean = true): Record<strin
     headers[CSRF_HEADER_NAME] = csrfToken;
   }
 
+  // Add active venue ID header
+  const activeVenueId = localStorage.getItem('activeVenueId');
+  if (activeVenueId) {
+    headers['x-venue-id'] = activeVenueId;
+  }
+
   return headers;
 };
 
@@ -221,6 +250,12 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
   // If a cache key is provided, check if we have a pending request
   if (cacheKey && requestCache.has(cacheKey)) {
     return requestCache.get(cacheKey);
+  }
+
+  // For mutation requests, ensure CSRF cookie is available before proceeding
+  const method = (options?.method || 'GET').toUpperCase();
+  if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    await ensureCsrfToken();
   }
 
   // Create an AbortController for timeout handling

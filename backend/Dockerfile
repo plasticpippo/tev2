@@ -69,6 +69,7 @@ RUN npx tsc --project tsconfig.json
 
 # Compile seed file to dist directory
 RUN npx tsc prisma/seed.ts --outDir dist --target ES2020 --module commonjs --esModuleInterop
+RUN npx tsc prisma/seed-roles.ts --outDir dist --target ES2020 --module commonjs --esModuleInterop
 
 # Remove dev dependencies and clean npm cache
 RUN npm prune --omit=dev && npm cache clean --force

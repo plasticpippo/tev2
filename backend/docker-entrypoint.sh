@@ -101,6 +101,14 @@ else
     log "Seed completed successfully"
 fi
 
+# Run roles/permissions seed
+log "Running roles and permissions seed..."
+if ! node dist/prisma/seed-roles.js 2>&1; then
+    log_warn "Roles seed failed (this is OK if data already exists)"
+else
+    log "Roles seed completed successfully"
+fi
+
 # Start the application
 log "Starting application..."
 exec node dist/index.js

@@ -3,22 +3,23 @@ import { prisma } from '../prisma';
 import { validateAnalyticsParams } from '../utils/validation';
 import { aggregateProductPerformance, aggregateHourlySales, compareHourlySales, getProfitSummary, getProfitComparison, getMarginByCategory, getMarginByProduct, getMarginTrend, getProfitDashboard } from '../services/analyticsService';
 import { logError } from '../utils/logger';
+
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 export const analyticsRouter = express.Router();
 
 // GET /api/analytics/product-performance - Get detailed product performance metrics
-analyticsRouter.get('/product-performance', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/product-performance', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Validate and parse query parameters
     const params = validateAnalyticsParams(req.query);
     
     // Execute aggregation query
-    const results = await aggregateProductPerformance(params);
+    const results = await aggregateProductPerformance(params, venueId);
     
-    // Format response
     res.json(results);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching product performance', {
@@ -29,8 +30,9 @@ analyticsRouter.get('/product-performance', authenticateToken, requireAdmin, asy
 });
 
 // GET /api/analytics/top-performers - Maintains backward compatibility with existing functionality
-analyticsRouter.get('/top-performers', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/top-performers', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Validate and parse query parameters
     const params = validateAnalyticsParams(req.query);
@@ -40,7 +42,7 @@ analyticsRouter.get('/top-performers', authenticateToken, requireAdmin, async (r
       ...params,
       limit: params.limit || 5,
       includeAllProducts: false
-    });
+    }, venueId);
     
     // Format response to maintain backward compatibility
     res.json(results);
@@ -57,8 +59,9 @@ analyticsRouter.get('/top-performers', authenticateToken, requireAdmin, async (r
 // ============================================================================
 
 // GET /api/analytics/hourly-sales - Get hourly sales for a specific business day
-analyticsRouter.get('/hourly-sales', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/hourly-sales', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { date } = req.query;
     
@@ -75,7 +78,7 @@ analyticsRouter.get('/hourly-sales', authenticateToken, requireAdmin, async (req
     }
     
     // Get settings for business day configuration
-    const settings = await prisma.settings.findFirst();
+    const settings = await prisma.settings.findFirst({ where: { venueId } });
     
     if (!settings) {
       res.status(500).json({ error: t('errors.settings.notFound') });
@@ -85,7 +88,7 @@ analyticsRouter.get('/hourly-sales', authenticateToken, requireAdmin, async (req
     const result = await aggregateHourlySales(date, {
       autoStartTime: settings.autoStartTime,
       businessDayEndHour: settings.businessDayEndHour,
-    });
+    }, venueId);
     
     res.json(result);
   } catch (error) {
@@ -97,8 +100,9 @@ analyticsRouter.get('/hourly-sales', authenticateToken, requireAdmin, async (req
 });
 
 // GET /api/analytics/compare - Compare hourly sales between two days
-analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/compare', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { date1, date2 } = req.query;
     
@@ -115,7 +119,7 @@ analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Req
     }
     
     // Get settings for business day configuration
-    const settings = await prisma.settings.findFirst();
+    const settings = await prisma.settings.findFirst({ where: { venueId } });
     
     if (!settings) {
       res.status(500).json({ error: t('errors.settings.notFound') });
@@ -125,7 +129,7 @@ analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Req
     const result = await compareHourlySales(date1, date2, {
       autoStartTime: settings.autoStartTime,
       businessDayEndHour: settings.businessDayEndHour,
-    });
+    }, venueId);
     
     res.json(result);
   } catch (error) {
@@ -141,8 +145,9 @@ analyticsRouter.get('/compare', authenticateToken, requireAdmin, async (req: Req
 // ============================================================================
 
 // GET /api/analytics/profit-summary - Get profit KPIs for a date range
-analyticsRouter.get('/profit-summary', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/profit-summary', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate } = req.query;
 
@@ -157,7 +162,7 @@ analyticsRouter.get('/profit-summary', authenticateToken, requireAdmin, async (r
       return;
     }
 
-    const result = await getProfitSummary(startDate, endDate);
+    const result = await getProfitSummary(startDate, endDate, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching profit summary', {
@@ -168,8 +173,9 @@ analyticsRouter.get('/profit-summary', authenticateToken, requireAdmin, async (r
 });
 
 // GET /api/analytics/profit-comparison - Compare current vs previous period
-analyticsRouter.get('/profit-comparison', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/profit-comparison', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate } = req.query;
 
@@ -184,7 +190,7 @@ analyticsRouter.get('/profit-comparison', authenticateToken, requireAdmin, async
       return;
     }
 
-    const result = await getProfitComparison(startDate, endDate);
+    const result = await getProfitComparison(startDate, endDate, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching profit comparison', {
@@ -195,8 +201,9 @@ analyticsRouter.get('/profit-comparison', authenticateToken, requireAdmin, async
 });
 
 // GET /api/analytics/margin-by-category - Margin breakdown by category
-analyticsRouter.get('/margin-by-category', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/margin-by-category', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate } = req.query;
 
@@ -211,7 +218,7 @@ analyticsRouter.get('/margin-by-category', authenticateToken, requireAdmin, asyn
       return;
     }
 
-    const result = await getMarginByCategory(startDate, endDate);
+    const result = await getMarginByCategory(startDate, endDate, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching margin by category', {
@@ -222,8 +229,9 @@ analyticsRouter.get('/margin-by-category', authenticateToken, requireAdmin, asyn
 });
 
 // GET /api/analytics/margin-by-product - Margin breakdown by product
-analyticsRouter.get('/margin-by-product', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/margin-by-product', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate, limit } = req.query;
 
@@ -239,7 +247,7 @@ analyticsRouter.get('/margin-by-product', authenticateToken, requireAdmin, async
     }
 
     const parsedLimit = limit ? parseInt(limit as string, 10) : undefined;
-    const result = await getMarginByProduct(startDate, endDate, parsedLimit);
+    const result = await getMarginByProduct(startDate, endDate, parsedLimit, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching margin by product', {
@@ -250,8 +258,9 @@ analyticsRouter.get('/margin-by-product', authenticateToken, requireAdmin, async
 });
 
 // GET /api/analytics/margin-trend - Daily margin trend over time
-analyticsRouter.get('/margin-trend', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/margin-trend', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate } = req.query;
 
@@ -266,7 +275,7 @@ analyticsRouter.get('/margin-trend', authenticateToken, requireAdmin, async (req
       return;
     }
 
-    const result = await getMarginTrend(startDate, endDate);
+    const result = await getMarginTrend(startDate, endDate, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching margin trend', {
@@ -277,8 +286,9 @@ analyticsRouter.get('/margin-trend', authenticateToken, requireAdmin, async (req
 });
 
 // GET /api/analytics/profit-dashboard - Complete profit dashboard data
-analyticsRouter.get('/profit-dashboard', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+analyticsRouter.get('/profit-dashboard', authenticateToken, requirePermission('analytics:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { startDate, endDate } = req.query;
 
@@ -293,7 +303,7 @@ analyticsRouter.get('/profit-dashboard', authenticateToken, requireAdmin, async 
       return;
     }
 
-    const result = await getProfitDashboard(startDate, endDate);
+    const result = await getProfitDashboard(startDate, endDate, venueId);
     res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching profit dashboard', {

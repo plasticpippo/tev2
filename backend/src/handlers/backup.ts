@@ -5,7 +5,7 @@ import path from 'path';
 import os from 'os';
 import fs from 'fs/promises';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { backupUpload } from '../middleware/upload';
 import { logError, logInfo } from '../utils/logger';
 import { prisma } from '../prisma';
@@ -181,7 +181,7 @@ const updateSchedule = async (enabled: boolean, hour: number, compress: boolean)
   await fs.unlink(tmpFile);
 };
 
-backupRouter.get('/cloud/status', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.get('/cloud/status', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   try {
     const response = await sidecarFetch('/status');
     if (!response.ok) {
@@ -199,13 +199,13 @@ backupRouter.get('/cloud/status', authenticateToken, requireAdmin, async (req: R
   }
 });
 
-backupRouter.post('/cloud/install', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
+backupRouter.post('/cloud/install', authenticateToken, requirePermission('settings:manage'), async (_req: Request, res: Response) => {
   const job = createJob('backup');
   updateJobStatus(job.id, 'success', 'MEGA CMD is pre-installed in the sidecar container');
   res.json({ jobId: job.id });
 });
 
-backupRouter.post('/cloud/login', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/cloud/login', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const { email, password } = req.body;
   if (!email || !password) {
@@ -264,7 +264,7 @@ backupRouter.post('/cloud/login', authenticateToken, requireAdmin, async (req: R
   }
 });
 
-backupRouter.post('/cloud/logout', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/cloud/logout', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   try {
     await sidecarFetch('/logout', { method: 'POST' });
     res.json({ success: true });
@@ -273,7 +273,7 @@ backupRouter.post('/cloud/logout', authenticateToken, requireAdmin, async (req: 
   }
 });
 
-backupRouter.post('/local', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/local', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
 
   try {
@@ -363,7 +363,7 @@ backupRouter.post('/local', authenticateToken, requireAdmin, async (req: Request
   }
 });
 
-backupRouter.post('/local/full', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/local/full', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
 
   let stagingDir: string | null = null;
@@ -546,7 +546,7 @@ const enforceRetentionPolicy = async () => {
   } catch { /* ignore retention enforcement failures */ }
 };
 
-backupRouter.post('/cloud', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/cloud', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const { compress = true } = req.body;
 
@@ -700,7 +700,7 @@ backupRouter.post('/cloud', authenticateToken, requireAdmin, async (req: Request
   }
 });
 
-backupRouter.get('/cloud/jobs/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.get('/cloud/jobs/:id', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const { id } = req.params;
   const job = jobs.get(id);
 
@@ -719,7 +719,7 @@ backupRouter.get('/cloud/jobs/:id', authenticateToken, requireAdmin, async (req:
   });
 });
 
-backupRouter.get('/cloud/list', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.get('/cloud/list', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const response = await sidecarFetch('/list?path=/TEV2/backups');
@@ -747,7 +747,7 @@ backupRouter.get('/cloud/list', authenticateToken, requireAdmin, async (req: Req
   }
 });
 
-backupRouter.post('/cloud/restore', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.post('/cloud/restore', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const { filename, dbOnly = false } = req.body;
   if (!filename) {
@@ -822,7 +822,7 @@ backupRouter.post('/cloud/restore', authenticateToken, requireAdmin, async (req:
   }
 });
 
-backupRouter.post('/restore/upload', authenticateToken, requireAdmin, backupUpload.single('backup'), async (req: Request, res: Response) => {
+backupRouter.post('/restore/upload', authenticateToken, requirePermission('settings:manage'), backupUpload.single('backup'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
 
   if (!req.file) {
@@ -1272,7 +1272,7 @@ const restoreFromTarGz = async (buffer: Buffer, jobId: string, dbConfig: ReturnT
   }
 };
 
-backupRouter.get('/schedule', authenticateToken, requireAdmin, async (_req: Request, res: Response) => {
+backupRouter.get('/schedule', authenticateToken, requirePermission('settings:manage'), async (_req: Request, res: Response) => {
   try {
     const data = await getScheduleData();
     res.json(data);
@@ -1281,7 +1281,7 @@ backupRouter.get('/schedule', authenticateToken, requireAdmin, async (_req: Requ
   }
 });
 
-backupRouter.put('/schedule', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.put('/schedule', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const { enabled, hour = 4, compress = false } = req.body;
 
@@ -1301,7 +1301,7 @@ backupRouter.put('/schedule', authenticateToken, requireAdmin, async (req: Reque
   }
 });
 
-backupRouter.get('/settings', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.get('/settings', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const [cloudResponse, scheduleStatus, retention] = await Promise.all([
@@ -1339,7 +1339,7 @@ backupRouter.get('/settings', authenticateToken, requireAdmin, async (req: Reque
   }
 });
 
-backupRouter.put('/settings', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+backupRouter.put('/settings', authenticateToken, requirePermission('settings:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const { schedule, retention } = req.body;
 

@@ -4,7 +4,7 @@ import { Prisma, TaxRate } from '@prisma/client';
 import { AppError, NotFoundError, ValidationError } from '../middleware/errorHandler';
 import { logError, logInfo } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import type { TFunction } from 'i18next';
 
 
@@ -75,10 +75,12 @@ function validateTaxRateData(data: any, t: TFunction, isUpdate: boolean = false)
  */
 export const listTaxRates = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const taxRates = await prisma.taxRate.findMany({
       where: {
         isActive: true,
+        venueId,
       },
       orderBy: [
         { rate: 'asc' },
@@ -102,13 +104,14 @@ export const listTaxRates = async (req: Request, res: Response) => {
  */
 export const getTaxRate = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const taxRate = await prisma.taxRate.findUnique({
       where: { id: Number(id) },
     });
 
-    if (!taxRate) {
+    if (!taxRate || taxRate.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
@@ -131,6 +134,7 @@ export const getTaxRate = async (req: Request, res: Response) => {
  */
 export const createTaxRate = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, rate, description, isDefault } = req.body;
 
@@ -144,7 +148,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
 
     // Check for duplicate name (case-insensitive)
     const existing = await prisma.taxRate.findFirst({
-      where: { name: { equals: name.trim(), mode: 'insensitive' } },
+      where: { name: { equals: name.trim(), mode: 'insensitive' }, venueId },
     });
 
     if (existing) {
@@ -159,13 +163,14 @@ export const createTaxRate = async (req: Request, res: Response) => {
       // If setting as default, unset other defaults first
       if (isDefault) {
         await tx.taxRate.updateMany({
-          where: { isDefault: true },
+          where: { isDefault: true, venueId },
           data: { isDefault: false },
         });
       }
 
       return tx.taxRate.create({
         data: {
+          venueId,
           name: name.trim(),
           rate: rateNumber,
           description: description?.trim() || null,
@@ -195,6 +200,7 @@ export const createTaxRate = async (req: Request, res: Response) => {
  */
 export const updateTaxRate = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, rate, description, isDefault, isActive } = req.body;
@@ -212,7 +218,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
       where: { id: Number(id) },
     });
 
-    if (!existing) {
+    if (!existing || existing.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
@@ -222,6 +228,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
         where: {
           name: { equals: name.trim(), mode: 'insensitive' },
           id: { not: Number(id) },
+          venueId,
         },
       });
 
@@ -235,7 +242,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
       // If setting as default, unset other defaults first
       if (isDefault) {
         await tx.taxRate.updateMany({
-          where: { isDefault: true, id: { not: Number(id) } },
+          where: { isDefault: true, id: { not: Number(id) }, venueId },
           data: { isDefault: false },
         });
       }
@@ -270,6 +277,7 @@ export const updateTaxRate = async (req: Request, res: Response) => {
  */
 export const deleteTaxRate = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -278,7 +286,7 @@ export const deleteTaxRate = async (req: Request, res: Response) => {
       where: { id: Number(id) },
     });
 
-    if (!existing) {
+    if (!existing || existing.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
@@ -312,6 +320,7 @@ export const deleteTaxRate = async (req: Request, res: Response) => {
  */
 export const setDefaultTaxRate = async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -320,7 +329,7 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
       where: { id: Number(id) },
     });
 
-    if (!existing) {
+    if (!existing || existing.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:taxRates.notFound') });
     }
 
@@ -332,7 +341,7 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
     const taxRate = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Unset all defaults
       await tx.taxRate.updateMany({
-        where: { isDefault: true },
+        where: { isDefault: true, venueId },
         data: { isDefault: false },
       });
 
@@ -345,6 +354,7 @@ export const setDefaultTaxRate = async (req: Request, res: Response) => {
 
     // Update settings to point to new default
     await prisma.settings.updateMany({
+      where: { venueId },
       data: { defaultTaxRateId: taxRate.id },
     });
 
@@ -366,16 +376,16 @@ taxRatesRouter.get('/', authenticateToken, listTaxRates);
 taxRatesRouter.get('/:id', authenticateToken, getTaxRate);
 
 // POST /api/tax-rates - Create tax rate (admin only)
-taxRatesRouter.post('/', authenticateToken, requireAdmin, createTaxRate);
+taxRatesRouter.post('/', authenticateToken, requirePermission('settings:manage'), createTaxRate);
 
 // PUT /api/tax-rates/:id - Update tax rate (admin only)
-taxRatesRouter.put('/:id', authenticateToken, requireAdmin, updateTaxRate);
+taxRatesRouter.put('/:id', authenticateToken, requirePermission('settings:manage'), updateTaxRate);
 
 // DELETE /api/tax-rates/:id - Delete tax rate (soft delete, admin only)
-taxRatesRouter.delete('/:id', authenticateToken, requireAdmin, deleteTaxRate);
+taxRatesRouter.delete('/:id', authenticateToken, requirePermission('settings:manage'), deleteTaxRate);
 
 // PUT /api/tax-rates/:id/default - Set as default (admin only)
-taxRatesRouter.put('/:id/default', authenticateToken, requireAdmin, setDefaultTaxRate);
+taxRatesRouter.put('/:id/default', authenticateToken, requirePermission('settings:manage'), setDefaultTaxRate);
 
 export default {
   listTaxRates,

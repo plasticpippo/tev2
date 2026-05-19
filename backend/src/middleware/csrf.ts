@@ -13,15 +13,20 @@ const CSRF_COOKIE_ACCESSIBLE = 'XSRF-TOKEN-READ';
 
 const JWT_SECRET = process.env.JWT_SECRET!;
 
+// Check whether the request is actually over HTTPS
+// Uses X-Forwarded-Proto from the reverse proxy (nginx) since the backend
+// always receives plain HTTP inside the Docker network.
+const isSecureRequest = (req: Request): boolean => {
+  return req.secure || req.get('x-forwarded-proto') === 'https';
+};
+
 // Cookie options for httpOnly CSRF token (browser auto-send only)
 // Using SameSite=lax allows cookies to be sent across ports on the same host
 // This is still secure for CSRF protection as browsers won't send lax cookies on cross-site requests
-const getCsrfCookieOptionsHttpOnly = (): Record<string, any> => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+const getCsrfCookieOptionsHttpOnly = (req: Request): Record<string, any> => {
   return {
     httpOnly: true, // Prevent XSS from reading CSRF token - browser sends automatically
-    secure: isProduction, // Only send over HTTPS in production
+    secure: isSecureRequest(req), // Only set Secure flag when the connection is actually HTTPS
     sameSite: 'lax', // Lax allows cookies on same host different ports (e.g., port 80 vs 3001)
     maxAge: 24 * 60 * 60 * 1000, // 24 hours - matches token expiration
     path: '/',
@@ -30,12 +35,10 @@ const getCsrfCookieOptionsHttpOnly = (): Record<string, any> => {
 
 // Cookie options for accessible CSRF token (double-submit pattern)
 // This cookie IS readable by JavaScript so frontend can read and send as header
-const getCsrfCookieOptionsAccessible = (): Record<string, any> => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  
+const getCsrfCookieOptionsAccessible = (req: Request): Record<string, any> => {
   return {
     httpOnly: false, // JavaScript CAN read this cookie to send as header
-    secure: isProduction,
+    secure: isSecureRequest(req), // Only set Secure flag when the connection is actually HTTPS
     sameSite: 'lax', // Lax allows cookies on same host different ports (e.g., port 80 vs 3001)
     maxAge: 24 * 60 * 60 * 1000,
     path: '/',
@@ -72,13 +75,13 @@ export const sendCsrfToken = async (req: Request, res: Response): Promise<void> 
     .setExpirationTime('24h')
     .sign(new TextEncoder().encode(JWT_SECRET));
   
-  // Set the signed CSRF token as an httpOnly cookie with SameSite=Strict
+  // Set the signed CSRF token as an httpOnly cookie
   // Browser sends this automatically; JavaScript cannot read it (XSS-safe)
-  res.cookie(CSRF_COOKIE_HTTPONLY, signedToken, getCsrfCookieOptionsHttpOnly());
+  res.cookie(CSRF_COOKIE_HTTPONLY, signedToken, getCsrfCookieOptionsHttpOnly(req));
   
   // Also set an accessible cookie that JavaScript can read for double-submit
   // This allows the frontend to include the token in request headers
-  res.cookie(CSRF_COOKIE_ACCESSIBLE, signedToken, getCsrfCookieOptionsAccessible());
+  res.cookie(CSRF_COOKIE_ACCESSIBLE, signedToken, getCsrfCookieOptionsAccessible(req));
 };
 
 /**

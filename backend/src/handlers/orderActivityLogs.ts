@@ -10,8 +10,10 @@ export const orderActivityLogsRouter = express.Router();
 // GET /api/order-activity-logs - Get all order activity logs
 orderActivityLogsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const orderActivityLogs = await prisma.orderActivityLog.findMany({
+      where: { venueId },
       orderBy: { createdAt: 'desc' },
       take: 100  // Limit to last 10 logs for performance
     });
@@ -107,11 +109,13 @@ orderActivityLogsRouter.get('/:id', authenticateToken, async (req: Request, res:
 // POST /api/order-activity-logs - Create a new order activity log
 orderActivityLogsRouter.post('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { action, details, userId, userName } = req.body as Omit<OrderActivityLog, 'id' | 'createdAt'>;
     
     const orderActivityLog = await prisma.orderActivityLog.create({
       data: {
+        venueId,
         action,
         // Store details as JSON string if it's an object/array, otherwise store as string
         details: typeof details === 'string' ? details : JSON.stringify(details),

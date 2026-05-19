@@ -5,18 +5,19 @@ import { calculateDailyClosingSummary, createDailyClosing } from '../services/da
 import { logError } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 export const dailyClosingsRouter = express.Router();
 
 // GET /api/daily-closings - Get all daily closings (with optional filters)
 dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { userId, dateFrom, dateTo } = req.query;
 
     // Build filter object
-    const filter: any = {};
+    const filter: any = { venueId };
     if (userId) {
       filter.userId = Number(userId);
     }
@@ -72,6 +73,7 @@ dailyClosingsRouter.get('/', authenticateToken, async (req: Request, res: Respon
 // GET /api/daily-closings/:id - Get a specific daily closing
 dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
 
@@ -80,6 +82,11 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
     });
 
     if (!dailyClosing) {
+      res.status(404).json({ error: t('errors:dailyClosings.notFound') });
+      return;
+    }
+
+    if (dailyClosing.venueId !== venueId) {
       res.status(404).json({ error: t('errors:dailyClosings.notFound') });
       return;
     }
@@ -112,8 +119,9 @@ dailyClosingsRouter.get('/:id', authenticateToken, async (req: Request, res: Res
 });
 
 // POST /api/daily-closings - Create a new daily closing
-dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+dailyClosingsRouter.post('/', authenticateToken, requirePermission('daily_closings:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { closedAt, userId } = req.body;
 
@@ -124,7 +132,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
     }
 
     // Get current settings to determine the business day start
-    const settings = await prisma.settings.findFirst();
+    const settings = await prisma.settings.findFirst({ where: { venueId } });
     if (!settings) {
       res.status(500).json({ error: t('errors:settings.notFound') });
       return;
@@ -171,6 +179,7 @@ dailyClosingsRouter.post('/', authenticateToken, requireAdmin, async (req: Reque
 
     const dailyClosing = await prisma.dailyClosing.create({
       data: {
+        venueId,
         closedAt: new Date(closedAt),
         summary: summary as any, // Type assertion to handle JSON serialization
         userId: userId

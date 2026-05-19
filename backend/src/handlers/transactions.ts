@@ -7,7 +7,7 @@ import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
 import { safeJsonParse } from '../utils/jsonParser';
 import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber, roundCost } from '../utils/money';
-import { requireRole } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
 import { calculateTransactionCost } from '../services/costCalculationService';
 
@@ -52,15 +52,16 @@ class TransactionError extends Error {
 // 5. Delete tab (if exists)
 // 6. Update table status (if exists)
 // If ANY step fails, ALL changes are rolled back
-transactionsRouter.post('/process-payment', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
+transactionsRouter.post('/process-payment', authenticateToken, requirePermission('transactions:process'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   const correlationId = (req as any).correlationId;
+  const venueId = (req as any).venueId;
 
   try {
     // Get settings to determine tax mode
     let taxMode: 'inclusive' | 'exclusive' | 'none' = 'exclusive';
     try {
-      const settings = await prisma.settings.findFirst();
+      const settings = await prisma.settings.findFirst({ where: { venueId } });
       taxMode = (settings?.taxMode || 'exclusive') as 'inclusive' | 'exclusive' | 'none';
     } catch (settingsError) {
       logError('Failed to fetch settings for tax mode', { correlationId });
@@ -291,6 +292,7 @@ try {
 // 3. Create the transaction with idempotency key and cost data
 const transaction = await tx.transaction.create({
   data: {
+    venueId,
     items: JSON.stringify(items),
     subtotal: calculatedSubtotal,
     tax: validatedTax,
@@ -455,7 +457,7 @@ const transaction = await tx.transaction.create({
   let receiptResult: { id: number; number?: string; status: string; pdfUrl?: string } | undefined;
   if (issueReceipt && !isDuplicate) {
   try {
-    const settings = await prisma.settings.findFirst();
+    const settings = await prisma.settings.findFirst({ where: { venueId } });
     const issueMode = (settings?.receiptIssueMode || 'immediate') as 'immediate' | 'draft';
     const receiptCreationResult = await createReceiptFromPayment({
     transactionId: transaction.id,
@@ -520,15 +522,17 @@ const transaction = await tx.transaction.create({
 // GET /api/transactions/reconcile - Reconcile transactions with stock levels (MUST be before /:id route)
 transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Get all non-voided transactions (completed and complimentary)
     const transactions = await prisma.transaction.findMany({
-      where: { status: { in: ['completed', 'complimentary'] } },
+      where: { status: { in: ['completed', 'complimentary'] }, venueId },
       orderBy: { createdAt: 'desc' }
     });
     
     // Get all product variants with stock consumption
     const variants = await prisma.productVariant.findMany({
+      where: { product: { venueId } },
       include: {
         stockConsumption: true,
         product: true
@@ -546,7 +550,7 @@ transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res
     }
     
     // Get all stock items
-    const stockItems = await prisma.stockItem.findMany();
+    const stockItems = await prisma.stockItem.findMany({ where: { venueId } });
     const stockItemMap = new Map(stockItems.map(item => [item.id, item]));
     
     // Calculate expected vs actual stock
@@ -625,8 +629,10 @@ transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res
 // GET /api/transactions - Get all transactions
 transactionsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const transactions = await prisma.transaction.findMany({
+      where: { venueId },
       orderBy: { createdAt: 'desc' },
       include: {
         receipts: {
@@ -671,6 +677,7 @@ transactionsRouter.get('/', authenticateToken, async (req: Request, res: Respons
 // GET /api/transactions/:id - Get a specific transaction
 transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const transaction = await prisma.transaction.findUnique({
@@ -678,6 +685,10 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
     });
     
     if (!transaction) {
+      return res.status(404).json({ error: t('transactions.notFound') });
+    }
+    
+    if (transaction.venueId !== venueId) {
       return res.status(404).json({ error: t('transactions.notFound') });
     }
     
@@ -706,13 +717,14 @@ transactionsRouter.get('/:id', authenticateToken, async (req: Request, res: Resp
 transactionsRouter.post(
   '/:id/void',
   authenticateToken,
-  requireRole(['ADMIN']),
+  requirePermission('transactions:void'),
   async (req: Request, res: Response) => {
     const t = req.t.bind(req);
     const { id } = req.params;
     const { reason } = req.body;
     const authenticatedUserId = req.user?.id;
     const authenticatedUserName = req.user?.username;
+    const venueId = (req as any).venueId;
 
     if (!reason || typeof reason !== 'string' || reason.trim() === '') {
       return res.status(400).json({ error: t('errors:transactions.voidReasonRequired') });
@@ -726,6 +738,10 @@ transactionsRouter.post(
         });
 
         if (!transaction) {
+          throw new Error(t('errors:transactions.notFoundCode'));
+        }
+
+        if (transaction.venueId !== venueId) {
           throw new Error(t('errors:transactions.notFoundCode'));
         }
 
@@ -794,6 +810,7 @@ transactionsRouter.post(
             // Create linked stock adjustment for audit trail
             await tx.stockAdjustment.create({
               data: {
+                venueId,
                 stockItemId,
                 itemName: stockItem.name,
                 quantity: restoration.quantity,

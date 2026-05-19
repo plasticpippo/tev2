@@ -8,6 +8,8 @@ import { initPrisma, checkDatabaseHealth } from './prisma';
 import { validateJwtSecret } from './utils/jwtSecretValidation';
 import { correlationIdMiddleware, requestLoggerMiddleware, logInfo, logError } from './utils/logger';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler';
+import { csrfMiddleware } from './middleware/csrf';
+import { venueContext } from './middleware/venueContext';
 import i18n, { initI18n } from './i18n';
 import { initializeScheduler, stopScheduler } from './services/businessDayScheduler';
 import { initializeEmailWorker, stopEmailWorker } from './services/emailQueueWorker';
@@ -138,7 +140,7 @@ const corsOptions: CorsOptions = {
   origin: getValidatedOrigins(),
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS', 'HEAD'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin', 'x-venue-id', 'x-csrf-token'],
   exposedHeaders: ['X-Correlation-ID'],  // Expose correlation ID header to clients
   optionsSuccessStatus: 204,
   preflightContinue: false,
@@ -164,6 +166,10 @@ const authRateLimit = rateLimit({
 
 const app = express();
 const PORT = parseInt(process.env.PORT || '3001', 10);
+
+// Trust the first proxy (nginx) so req.secure, req.protocol, and req.ip
+// reflect the original client request rather than the internal Docker connection.
+app.set('trust proxy', 1);
 
 // Add correlation ID middleware - MUST be first to track all requests
 app.use(correlationIdMiddleware);
@@ -205,6 +211,13 @@ app.use((req, res, next) => {
   };
   next();
 });
+
+// CSRF protection middleware - validates tokens on state-changing requests
+// Runs after body parser, before API routes
+app.use(csrfMiddleware);
+
+// Venue context middleware - resolves active venue for the current request
+app.use(venueContext);
 
 // API routes
 app.use('/api', router);

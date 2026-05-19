@@ -5,7 +5,7 @@ import { Prisma, StockItem as PrismaStockItem, StockConsumption, ProductVariant,
 import { validateStockItem, validateStockItemName, validateStockItemQuantity, validateStockItemBaseUnit, validatePurchasingUnit } from '../utils/validation';
 import { logError, logWarn } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin, requireRole } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { safeJsonParse } from '../utils/jsonParser';
 
 export const stockItemsRouter = express.Router();
@@ -13,8 +13,9 @@ export const stockItemsRouter = express.Router();
 // GET /api/stock-items - Get all stock items
 stockItemsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
-    const stockItems = await prisma.stockItem.findMany();
+    const stockItems = await prisma.stockItem.findMany({ where: { venueId } });
     // Parse the purchasingUnits JSON string back to array
     const stockItemsWithParsedUnits = stockItems.map((item: PrismaStockItem) => ({
       ...item,
@@ -61,8 +62,9 @@ stockItemsRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
 });
 
 // POST /api/stock-items - Create a new stock item
-stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.post('/', authenticateToken, requirePermission('stock:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, quantity, type, baseUnit, purchasingUnits } = req.body as Omit<StockItem, 'id'>;
     
@@ -74,6 +76,7 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
     
     const stockItem = await prisma.stockItem.create({
       data: {
+        venueId,
         name,
         quantity,
         type,
@@ -90,8 +93,9 @@ stockItemsRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
 });
 
 // PUT /api/stock-items/update-levels - Update stock levels based on consumption
-stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 'CASHIER']), async (req: Request, res: Response) => {
+stockItemsRouter.put('/update-levels', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { consumptions, reason } = req.body as { consumptions: { stockItemId: string, quantity: number }[]; reason: string };
 
@@ -117,7 +121,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
 
     // Get all existing stock items in a single query
     const existingStockItems = await prisma.stockItem.findMany({
-      where: { id: { in: stockItemIds } }
+      where: { id: { in: stockItemIds }, venueId }
     });
     
     // Create a map of existing stock items for quick lookup and quantity validation
@@ -191,6 +195,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
 
         await tx.stockAdjustment.create({
           data: {
+            venueId,
             stockItemId,
             itemName: currentItem.name,
             quantity: -quantity,
@@ -226,7 +231,7 @@ stockItemsRouter.put('/update-levels', authenticateToken, requireRole(['ADMIN', 
 });
 
 // PUT /api/stock-items/:id - Update a stock item
-stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.put('/:id', authenticateToken, requirePermission('stock:update'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -317,7 +322,7 @@ stockItemsRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
 });
 
 // DELETE /api/stock-items/:id - Delete a stock item
-stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.delete('/:id', authenticateToken, requirePermission('stock:delete'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -385,10 +390,12 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
 // GET /api/stock-items/orphaned-references - Get stock consumption records that reference non-existent stock items
 stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Find stock consumption records that reference stock items that don't exist
     // First get all stock consumption records
     const allStockConsumptions = await prisma.stockConsumption.findMany({
+      where: { venueId },
       include: {
         variant: {
           include: {
@@ -432,12 +439,14 @@ stockItemsRouter.get('/orphaned-references', authenticateToken, async (req: Requ
 });
 
 // DELETE /api/stock-items/cleanup-orphaned - Remove invalid stock consumption references
-stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Find orphaned stock consumption records
     // Get all stock consumption records with related data
     const allStockConsumptions = await prisma.stockConsumption.findMany({
+      where: { venueId },
       include: {
         variant: {
           include: {
@@ -502,13 +511,15 @@ stockItemsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, as
 });
 
 // POST /api/stock-items/validate-integrity - Detect and fix data integrity issues
-stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockItemsRouter.post('/validate-integrity', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // --- Detection phase (same as GET endpoint) ---
 
     // Check for orphaned stock consumption references
     const allStockConsumptions = await prisma.stockConsumption.findMany({
+      where: { venueId },
       include: {
         variant: {
           include: {
@@ -539,7 +550,7 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
 
     // Check for stock items with negative quantities
     const negativeStockItems = await prisma.stockItem.findMany({
-      where: { quantity: { lt: 0 } }
+      where: { quantity: { lt: 0 }, venueId }
     });
 
     // Variants without consumption (informational only, not fixed)
@@ -602,6 +613,7 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
 
         await tx.stockAdjustment.create({
           data: {
+            venueId,
             stockItemId: item.id,
             itemName: item.name,
             quantity: adjustment,
@@ -651,10 +663,12 @@ stockItemsRouter.post('/validate-integrity', authenticateToken, requireAdmin, as
 // GET /api/stock-items/validate-integrity - Validate data integrity between products and stock items
 stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Check for orphaned stock consumption references
     // Get all stock consumption records with related data
     const allStockConsumptions = await prisma.stockConsumption.findMany({
+      where: { venueId },
       include: {
         variant: {
           include: {
@@ -695,7 +709,8 @@ stockItemsRouter.get('/validate-integrity', authenticateToken, async (req: Reque
       where: {
         quantity: {
           lt: 0
-        }
+        },
+        venueId
       }
     });
     

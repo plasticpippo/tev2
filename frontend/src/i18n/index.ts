@@ -51,7 +51,7 @@ i18n
     },
 
     // Namespaces - only declare default, others load on-demand
-    ns: ['common'],
+    ns: ['common', 'admin'],
     defaultNS: 'common',
 
     // Load all languages
@@ -72,7 +72,7 @@ export const initializeI18n = async (): Promise<void> => {
 
     // Preload only the critical 'common' namespace
     // Using loadNamespaces ensures translations are available
-    await i18n.loadNamespaces(['common']);
+    await i18n.loadNamespaces(['common', 'admin']);
 
     // Verify translations are loaded by checking if a known key exists
     // This ensures the backend has actually loaded the translations

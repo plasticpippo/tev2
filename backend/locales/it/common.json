@@ -46,5 +46,42 @@
     "emailQueued": "L'email della ricevuta è stata accodata per l'invio",
     "messageTooLong": "Il messaggio deve essere di massimo 1000 caratteri",
     "auditFetchFailed": "Impossibile recuperare il registro di audit delle ricevute"
+  },
+  "roles": {
+    "fetchFailed": "Impossibile caricare i ruoli",
+    "createFailed": "Impossibile creare il ruolo",
+    "fetchOneFailed": "Impossibile caricare il ruolo",
+    "updateFailed": "Impossibile aggiornare il ruolo",
+    "deleteFailed": "Impossibile eliminare il ruolo",
+    "duplicateFailed": "Impossibile duplicare il ruolo",
+    "permissionsFetchFailed": "Impossibile caricare i permessi",
+    "userPermissionsFetchFailed": "Impossibile caricare i permessi utente",
+    "assignFailed": "Impossibile assegnare il ruolo",
+    "assignmentsFetchFailed": "Impossibile caricare le assegnazioni",
+    "removeAssignmentFailed": "Impossibile rimuovere l'assegnazione",
+    "notFound": "Ruolo non trovato",
+    "invalidId": "ID non valido",
+    "nameRequired": "Il nome del ruolo e obbligatorio",
+    "duplicateName": "Un ruolo con questo nome esiste gia",
+    "parentNotFound": "Ruolo padre non trovato",
+    "cannotModifySystem": "I ruoli di sistema non possono essere modificati",
+    "cannotDeleteSystem": "I ruoli di sistema non possono essere eliminati",
+    "cannotBeOwnParent": "Un ruolo non puo essere padre di se stesso",
+    "hasUsers": "Impossibile eliminare un ruolo con utenti assegnati",
+    "roleIdRequired": "ID ruolo obbligatorio",
+    "orgRoleNoVenue": "I ruoli organizzazione non dovrebbero avere un'assegnazione locale",
+    "assignmentNotFound": "Assegnazione ruolo non trovata",
+    "cannotRemoveSystem": "Le assegnazioni di ruoli di sistema non possono essere rimosse"
+  },
+  "venues": {
+    "fetchFailed": "Impossibile recuperare le sedi",
+    "createFailed": "Impossibile creare la sede",
+    "fetchOneFailed": "Impossibile recuperare la sede",
+    "updateFailed": "Impossibile aggiornare la sede",
+    "deactivateFailed": "Impossibile disattivare la sede",
+    "nameRequired": "Il nome della sede è obbligatorio",
+    "invalidId": "ID sede non valido",
+    "notFound": "Sede non trovata",
+    "alreadyDeactivated": "La sede è già disattivata"
   }
 }

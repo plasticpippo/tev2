@@ -13,6 +13,7 @@ orderSessionsRouter.get('/current', authenticateToken, async (req: Request, res:
   try {
     const userId = req.user?.id;
     const t = req.t.bind(req);
+    const venueId = (req as any).venueId;
     
     if (!userId) {
       return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
@@ -104,6 +105,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
   try {
     const userId = req.user?.id;
     const t = req.t.bind(req);
+    const venueId = (req as any).venueId;
     
     if (!userId) {
       return res.status(401).json({ error: t('errors:orderSessions.userNotAuthenticated') });
@@ -191,6 +193,7 @@ orderSessionsRouter.post('/current', authenticateToken, async (req: Request, res
           // Create a new order session
           orderSession = await tx.orderSession.create({
             data: {
+              venueId,
               userId,
               items: JSON.stringify(items),
               status: 'active',

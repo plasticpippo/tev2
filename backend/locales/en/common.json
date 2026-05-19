@@ -46,5 +46,42 @@
     "emailQueued": "Receipt email has been queued for delivery",
     "messageTooLong": "Message must be 1000 characters or less",
     "auditFetchFailed": "Failed to fetch receipt audit log"
+  },
+  "roles": {
+    "fetchFailed": "Failed to fetch roles",
+    "createFailed": "Failed to create role",
+    "fetchOneFailed": "Failed to fetch role",
+    "updateFailed": "Failed to update role",
+    "deleteFailed": "Failed to delete role",
+    "duplicateFailed": "Failed to duplicate role",
+    "permissionsFetchFailed": "Failed to fetch permissions",
+    "userPermissionsFetchFailed": "Failed to fetch user permissions",
+    "assignFailed": "Failed to assign role",
+    "assignmentsFetchFailed": "Failed to fetch role assignments",
+    "removeAssignmentFailed": "Failed to remove role assignment",
+    "notFound": "Role not found",
+    "invalidId": "Invalid ID",
+    "nameRequired": "Role name is required",
+    "duplicateName": "A role with this name already exists",
+    "parentNotFound": "Parent role not found",
+    "cannotModifySystem": "System roles cannot be modified",
+    "cannotDeleteSystem": "System roles cannot be deleted",
+    "cannotBeOwnParent": "A role cannot be its own parent",
+    "hasUsers": "Cannot delete a role that has users assigned",
+    "roleIdRequired": "Role ID is required",
+    "orgRoleNoVenue": "Organization roles should not have a venue assignment",
+    "assignmentNotFound": "Role assignment not found",
+    "cannotRemoveSystem": "System role assignments cannot be removed"
+  },
+  "venues": {
+    "fetchFailed": "Failed to fetch venues",
+    "createFailed": "Failed to create venue",
+    "fetchOneFailed": "Failed to fetch venue",
+    "updateFailed": "Failed to update venue",
+    "deactivateFailed": "Failed to deactivate venue",
+    "nameRequired": "Venue name is required",
+    "invalidId": "Invalid venue ID",
+    "notFound": "Venue not found",
+    "alreadyDeactivated": "Venue is already deactivated"
   }
 }

@@ -7,7 +7,7 @@ import { generateVarianceReport, getVarianceReport, getVarianceReports, updateVa
 import { logError } from '../utils/logger';
 
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { decimalToNumber, multiplyCost, roundCost } from '../utils/money';
 
 export const costManagementRouter = express.Router();
@@ -23,12 +23,13 @@ function getCostStatus(standardCost: Prisma.Decimal, lastCostUpdate: Date): stri
 }
 
 // GET /api/cost-management/ingredients - List all ingredients with cost info
-costManagementRouter.get('/ingredients', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/ingredients', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { search, category } = req.query;
 
-    const where: any = {};
+    const where: any = { venueId };
     if (search && typeof search === 'string') {
       where.name = { contains: search, mode: 'insensitive' };
     }
@@ -63,7 +64,7 @@ costManagementRouter.get('/ingredients', authenticateToken, requireAdmin, async 
 });
 
 // GET /api/cost-management/ingredients/:id - Get single ingredient with cost details
-costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/ingredients/:id', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -119,7 +120,7 @@ costManagementRouter.get('/ingredients/:id', authenticateToken, requireAdmin, as
 });
 
 // POST /api/cost-management/ingredients/:id/cost - Update ingredient standard cost
-costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -161,7 +162,7 @@ costManagementRouter.post('/ingredients/:id/cost', authenticateToken, requireAdm
 });
 
 // GET /api/cost-management/ingredients/:id/history - Get full cost history for ingredient
-costManagementRouter.get('/ingredients/:id/history', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/ingredients/:id/history', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
@@ -183,7 +184,7 @@ costManagementRouter.get('/ingredients/:id/history', authenticateToken, requireA
 });
 
 // GET /api/cost-management/recent-changes - Get recent cost changes
-costManagementRouter.get('/recent-changes', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/recent-changes', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const limit = req.query.limit ? parseInt(req.query.limit as string, 10) : 20;
@@ -204,7 +205,7 @@ costManagementRouter.get('/recent-changes', authenticateToken, requireAdmin, asy
 });
 
 // GET /api/cost-management/variants/:id/cost - Get variant cost breakdown
-costManagementRouter.get('/variants/:id/cost', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/variants/:id/cost', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const variantId = parseInt(req.params.id, 10);
@@ -230,7 +231,7 @@ costManagementRouter.get('/variants/:id/cost', authenticateToken, requireAdmin, 
 });
 
 // POST /api/cost-management/variants/:id/recalculate - Recalculate variant cost
-costManagementRouter.post('/variants/:id/recalculate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/variants/:id/recalculate', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const variantId = parseInt(req.params.id, 10);
@@ -256,7 +257,7 @@ costManagementRouter.post('/variants/:id/recalculate', authenticateToken, requir
 });
 
 // GET /api/cost-management/variants/cost-summary - Get all variants with cost info
-costManagementRouter.get('/variants/cost-summary', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/variants/cost-summary', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { status, productId } = req.query;
@@ -304,7 +305,7 @@ costManagementRouter.get('/variants/cost-summary', authenticateToken, requireAdm
 });
 
 // POST /api/cost-management/bulk-recalculate - Recalculate all variant costs
-costManagementRouter.post('/bulk-recalculate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/bulk-recalculate', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const result = await recalculateAllVariantCosts();
@@ -318,12 +319,13 @@ costManagementRouter.post('/bulk-recalculate', authenticateToken, requireAdmin, 
 });
 
 // GET /api/cost-management/inventory-counts - List inventory counts
-costManagementRouter.get('/inventory-counts', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/inventory-counts', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { status, fromDate, toDate } = req.query;
 
-    const where: any = {};
+    const where: any = { venueId };
     if (status && typeof status === 'string') {
       where.status = status;
     }
@@ -370,8 +372,9 @@ costManagementRouter.get('/inventory-counts', authenticateToken, requireAdmin, a
 });
 
 // POST /api/cost-management/inventory-counts - Create inventory count
-costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/inventory-counts', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { countDate, countType, notes, items } = req.body;
     const userId = (req as any).user?.id;
@@ -419,6 +422,7 @@ costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, 
 
     const inventoryCount = await prisma.inventoryCount.create({
       data: {
+        venueId,
         countDate: new Date(countDate),
         countType,
         notes: notes || null,
@@ -457,7 +461,7 @@ costManagementRouter.post('/inventory-counts', authenticateToken, requireAdmin, 
 });
 
 // GET /api/cost-management/inventory-counts/:id - Get single inventory count
-costManagementRouter.get('/inventory-counts/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/inventory-counts/:id', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
@@ -495,7 +499,7 @@ costManagementRouter.get('/inventory-counts/:id', authenticateToken, requireAdmi
 });
 
 // POST /api/cost-management/inventory-counts/:id/submit - Submit inventory count
-costManagementRouter.post('/inventory-counts/:id/submit', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/inventory-counts/:id/submit', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
@@ -534,7 +538,7 @@ costManagementRouter.post('/inventory-counts/:id/submit', authenticateToken, req
 });
 
 // POST /api/cost-management/inventory-counts/:id/approve - Approve inventory count
-costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
@@ -575,7 +579,7 @@ costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, re
 });
 
 // GET /api/cost-management/variance-reports - List variance reports
-costManagementRouter.get('/variance-reports', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/variance-reports', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const page = req.query.page ? parseInt(req.query.page as string, 10) : 1;
@@ -602,7 +606,7 @@ costManagementRouter.get('/variance-reports', authenticateToken, requireAdmin, a
 });
 
 // GET /api/cost-management/variance-reports/:id - Get single variance report
-costManagementRouter.get('/variance-reports/:id', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.get('/variance-reports/:id', authenticateToken, requirePermission('stock:read'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);
@@ -628,7 +632,7 @@ costManagementRouter.get('/variance-reports/:id', authenticateToken, requireAdmi
 });
 
 // POST /api/cost-management/variance-reports/generate - Generate variance report
-costManagementRouter.post('/variance-reports/generate', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.post('/variance-reports/generate', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const { periodStart, periodEnd, beginningCountId, endingCountId } = req.body;
@@ -680,7 +684,7 @@ costManagementRouter.post('/variance-reports/generate', authenticateToken, requi
 });
 
 // PATCH /api/cost-management/variance-reports/:id/status - Update variance report status
-costManagementRouter.patch('/variance-reports/:id/status', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+costManagementRouter.patch('/variance-reports/:id/status', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
     const id = parseInt(req.params.id, 10);

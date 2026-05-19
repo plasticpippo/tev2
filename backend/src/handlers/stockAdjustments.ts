@@ -4,15 +4,17 @@ import { prisma } from '../prisma';
 import type { StockAdjustment as StockAdjustmentType } from '../types';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
-import { requireAdmin } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 
 export const stockAdjustmentsRouter = express.Router();
 
 // GET /api/stock-adjustments - Get all stock adjustments
 stockAdjustmentsRouter.get('/', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const stockAdjustments = await prisma.stockAdjustment.findMany({
+      where: { venueId },
       orderBy: { createdAt: 'desc' }
     });
     res.json(stockAdjustments);
@@ -49,8 +51,9 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
 });
 
 // POST /api/stock-adjustments - Create a new stock adjustment
-stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockAdjustmentsRouter.post('/', authenticateToken, requirePermission('stock:create'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustmentType, 'id' | 'createdAt'>;
     
@@ -85,6 +88,7 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
       // Create the stock adjustment record
       return tx.stockAdjustment.create({
         data: {
+          venueId,
           stockItemId,
           itemName,
           quantity,
@@ -108,9 +112,11 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
 // GET /api/stock-adjustments/orphaned-references - Get stock adjustment records that reference non-existent stock items
 stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
+      where: { venueId },
       select: {
         id: true,
         stockItemId: true,
@@ -148,11 +154,13 @@ stockAdjustmentsRouter.get('/orphaned-references', authenticateToken, async (req
 });
 
 // DELETE /api/stock-adjustments/cleanup-orphaned - Remove invalid stock adjustment references
-stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
+stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requirePermission('stock:manage'), async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
+      where: { venueId },
       select: {
         id: true,
         stockItemId: true,
@@ -213,9 +221,11 @@ stockAdjustmentsRouter.delete('/cleanup-orphaned', authenticateToken, requireAdm
 // GET /api/stock-adjustments/validate-integrity - Validate data integrity for stock adjustments
 stockAdjustmentsRouter.get('/validate-integrity', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     // Find all stock adjustment records
     const allStockAdjustments = await prisma.stockAdjustment.findMany({
+      where: { venueId },
       select: {
         id: true,
         stockItemId: true,

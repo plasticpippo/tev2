@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import { authenticateToken } from '../middleware/auth';
-import { verifyLayoutOwnership } from '../middleware/authorization';
+import { requirePermission } from '../middleware/requirePermission';
 import { writeLimiter } from '../middleware/rateLimiter';
 import { sanitizeName, SanitizationError } from '../utils/sanitization';
 import { logInfo, logError } from '../utils/logger';
@@ -18,6 +18,7 @@ export const layoutsRouter = express.Router();
 // Get layout for a specific till and category
 layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { tillId, categoryId } = req.params;
     
@@ -30,6 +31,7 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async
     
     const layouts = await prisma.variantLayout.findMany({
       where: {
+        venueId,
         tillId: Number(tillId),
         categoryId: parsedCategoryId
       },
@@ -52,6 +54,7 @@ layoutsRouter.get('/till/:tillId/category/:categoryId', authenticateToken, async
 // Save/update layout for a specific till and category
 layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { tillId, categoryId } = req.params;
     const { positions } = req.body as {
@@ -128,6 +131,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
         positions.map(pos =>
           tx.variantLayout.create({
             data: {
+              venueId,
               tillId: Number(tillId),
               categoryId: parsedCategoryId,
               variantId: pos.variantId,
@@ -156,6 +160,7 @@ layoutsRouter.post('/till/:tillId/category/:categoryId', authenticateToken, writ
 // Reset layout for a specific till and category (delete all positions)
 layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { tillId, categoryId } = req.params;
     const userId = req.user?.id;
@@ -172,6 +177,7 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
     // Check ownership: find one layout to verify ownership
     const existingLayout = await prisma.variantLayout.findFirst({
       where: {
+        venueId,
         tillId: parsedTillId,
         categoryId: parsedCategoryId
       }
@@ -190,6 +196,7 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
     // Note: We allow negative category IDs for pseudo-categories like Favourites (ID: -1)
     await prisma.variantLayout.deleteMany({
       where: {
+        venueId,
         tillId: parsedTillId,
         categoryId: parsedCategoryId
       }
@@ -212,13 +219,14 @@ layoutsRouter.delete('/till/:tillId/category/:categoryId', authenticateToken, wr
 // Get all shared layouts
 layoutsRouter.get('/shared', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { categoryId } = req.query;
     
-    let whereClause = {};
+    let whereClause: any = { venueId };
     if (categoryId) {
       const parsedCategoryId = Number(categoryId);
-      whereClause = { categoryId: parsedCategoryId };
+      whereClause = { categoryId: parsedCategoryId, venueId };
     }
     
     const sharedLayouts = await prisma.sharedLayout.findMany({
@@ -250,6 +258,7 @@ layoutsRouter.get('/shared', authenticateToken, async (req: Request, res: Respon
 // Get a specific shared layout
 layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     
@@ -270,6 +279,10 @@ layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Re
       return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
     }
     
+    if (sharedLayout.venueId !== venueId) {
+      return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
+    }
+    
     res.json(sharedLayout);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error fetching shared layout', {
@@ -283,6 +296,7 @@ layoutsRouter.get('/shared/:id', authenticateToken, async (req: Request, res: Re
 // Create a new shared layout
 layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { name, categoryId, positions } = req.body as {
       name: string;
@@ -356,6 +370,7 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
     // Create shared layout with positions
     const sharedLayout = await prisma.sharedLayout.create({
       data: {
+        venueId,
         name: sanitizedName,
         categoryId,
         ownerId: req.user?.id, // Set ownerId from authenticated user
@@ -385,8 +400,9 @@ layoutsRouter.post('/shared', authenticateToken, writeLimiter, async (req: Reque
 
 // PUT /api/layouts/shared/:id
 // Update an existing shared layout
-layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, writeLimiter, async (req: Request, res: Response) => {
+layoutsRouter.put('/shared/:id', authenticateToken, requirePermission('layouts:update', { resourceType: 'layout', resourceIdParam: 'id' }), writeLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     const { name, positions } = req.body as {
@@ -400,6 +416,10 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
     });
     
     if (!existing) {
+      return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
+    }
+    
+    if (existing.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
     }
     
@@ -508,8 +528,9 @@ layoutsRouter.put('/shared/:id', authenticateToken, verifyLayoutOwnership, write
 
 // DELETE /api/layouts/shared/:id
 // Delete a shared layout
-layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, writeLimiter, async (req: Request, res: Response) => {
+layoutsRouter.delete('/shared/:id', authenticateToken, requirePermission('layouts:delete', { resourceType: 'layout', resourceIdParam: 'id' }), writeLimiter, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id } = req.params;
     
@@ -519,6 +540,10 @@ layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, wr
     });
     
     if (!existing) {
+      return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
+    }
+    
+    if (existing.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
     }
     
@@ -541,6 +566,7 @@ layoutsRouter.delete('/shared/:id', authenticateToken, verifyLayoutOwnership, wr
 // Load a shared layout into a specific till (creates copy as till-specific layout)
 layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const venueId = (req as any).venueId;
   try {
     const { id, tillId } = req.params;
     
@@ -551,6 +577,10 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
     });
     
     if (!sharedLayout) {
+      return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
+    }
+    
+    if (sharedLayout.venueId !== venueId) {
       return res.status(404).json({ error: t('errors:layouts.sharedNotFound') });
     }
     
@@ -578,6 +608,7 @@ layoutsRouter.post('/shared/:id/load-to-till/:tillId', authenticateToken, async 
         sharedLayout.positions.map((pos: { variantId: number; gridColumn: number; gridRow: number }) =>
           tx.variantLayout.create({
             data: {
+              venueId,
               tillId: Number(tillId),
               categoryId: sharedLayout.categoryId,
               variantId: pos.variantId,
