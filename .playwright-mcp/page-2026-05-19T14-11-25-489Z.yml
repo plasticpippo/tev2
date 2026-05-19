@@ -1,0 +1,161 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - button "Enter Fullscreen" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "Admin Panel" [ref=e11] [cursor=pointer]
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Products" [level=2] [ref=e18]
+            - generic [ref=e19]:
+              - button "Favourites" [ref=e20] [cursor=pointer]
+              - button "Wine" [ref=e21] [cursor=pointer]
+              - button "Beer" [ref=e22] [cursor=pointer]
+              - button "Cocktails" [ref=e23] [cursor=pointer]
+              - button "Spirits" [ref=e24] [cursor=pointer]
+              - button "Soft Drinks" [ref=e25] [cursor=pointer]
+              - button "Coffee" [ref=e26] [cursor=pointer]
+              - button "All" [active] [ref=e27] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e31] [cursor=pointer]:
+              - paragraph [ref=e32]: Chianti Classico
+              - generic [ref=e33]:
+                - paragraph [ref=e34]: Glass
+                - paragraph [ref=e35]: €7,00
+              - generic [ref=e36]: FAV
+            - generic [ref=e108] [cursor=pointer]:
+              - paragraph [ref=e109]: Chianti Classico
+              - generic [ref=e110]:
+                - paragraph [ref=e111]: Bottle
+                - paragraph [ref=e112]: €28,00
+            - generic [ref=e113] [cursor=pointer]:
+              - paragraph [ref=e114]: Prosecco
+              - generic [ref=e115]:
+                - paragraph [ref=e116]: Glass
+                - paragraph [ref=e117]: €6,50
+            - generic [ref=e118] [cursor=pointer]:
+              - paragraph [ref=e119]: Prosecco
+              - generic [ref=e120]:
+                - paragraph [ref=e121]: Bottle
+                - paragraph [ref=e122]: €24,00
+            - generic [ref=e123] [cursor=pointer]:
+              - paragraph [ref=e124]: Lager
+              - generic [ref=e125]:
+                - paragraph [ref=e126]: Draft
+                - paragraph [ref=e127]: €5,00
+              - generic [ref=e128]: FAV
+            - generic [ref=e129] [cursor=pointer]:
+              - paragraph [ref=e130]: Lager
+              - generic [ref=e131]:
+                - paragraph [ref=e132]: Bottle
+                - paragraph [ref=e133]: €4,50
+            - generic [ref=e134] [cursor=pointer]:
+              - paragraph [ref=e135]: IPA
+              - generic [ref=e136]:
+                - paragraph [ref=e137]: Draft
+                - paragraph [ref=e138]: €6,00
+              - generic [ref=e139]: FAV
+            - generic [ref=e140] [cursor=pointer]:
+              - paragraph [ref=e141]: IPA
+              - generic [ref=e142]:
+                - paragraph [ref=e143]: Bottle
+                - paragraph [ref=e144]: €5,50
+            - generic [ref=e145] [cursor=pointer]:
+              - paragraph [ref=e146]: Negroni
+              - generic [ref=e147]:
+                - paragraph [ref=e148]: Regular
+                - paragraph [ref=e149]: €11,00
+              - generic [ref=e150]: FAV
+            - generic [ref=e151] [cursor=pointer]:
+              - paragraph [ref=e152]: Mojito
+              - generic [ref=e153]:
+                - paragraph [ref=e154]: Regular
+                - paragraph [ref=e155]: €10,00
+            - generic [ref=e156] [cursor=pointer]:
+              - paragraph [ref=e157]: Espresso Martini
+              - generic [ref=e158]:
+                - paragraph [ref=e159]: Regular
+                - paragraph [ref=e160]: €12,00
+              - generic [ref=e161]: FAV
+            - generic [ref=e162] [cursor=pointer]:
+              - paragraph [ref=e163]: Jameson
+              - generic [ref=e164]:
+                - paragraph [ref=e165]: Neat
+                - paragraph [ref=e166]: €7,00
+            - generic [ref=e167] [cursor=pointer]:
+              - paragraph [ref=e168]: Jameson
+              - generic [ref=e169]:
+                - paragraph [ref=e170]: On the Rocks
+                - paragraph [ref=e171]: €7,50
+            - generic [ref=e172] [cursor=pointer]:
+              - paragraph [ref=e173]: Jack Daniel's
+              - generic [ref=e174]:
+                - paragraph [ref=e175]: Neat
+                - paragraph [ref=e176]: €7,50
+              - generic [ref=e177]: FAV
+            - generic [ref=e178] [cursor=pointer]:
+              - paragraph [ref=e179]: Jack Daniel's
+              - generic [ref=e180]:
+                - paragraph [ref=e181]: On the Rocks
+                - paragraph [ref=e182]: €8,00
+            - generic [ref=e183] [cursor=pointer]:
+              - paragraph [ref=e184]: Coca Cola
+              - generic [ref=e185]:
+                - paragraph [ref=e186]: Glass
+                - paragraph [ref=e187]: €3,00
+            - generic [ref=e188] [cursor=pointer]:
+              - paragraph [ref=e189]: Sparkling Water
+              - generic [ref=e190]:
+                - paragraph [ref=e191]: Bottle
+                - paragraph [ref=e192]: €2,50
+            - generic [ref=e193] [cursor=pointer]:
+              - paragraph [ref=e194]: Espresso
+              - generic [ref=e195]:
+                - paragraph [ref=e196]: Single
+                - paragraph [ref=e197]: €2,00
+              - generic [ref=e198]: FAV
+            - generic [ref=e199] [cursor=pointer]:
+              - paragraph [ref=e200]: Espresso
+              - generic [ref=e201]:
+                - paragraph [ref=e202]: Double
+                - paragraph [ref=e203]: €3,00
+            - generic [ref=e204] [cursor=pointer]:
+              - paragraph [ref=e205]: Americano
+              - generic [ref=e206]:
+                - paragraph [ref=e207]: Regular
+                - paragraph [ref=e208]: €2,50
+        - generic [ref=e74]:
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - paragraph [ref=e77]: "Logged in as:"
+              - paragraph [ref=e78]:
+                - text: Admin User
+                - generic [ref=e79]: (Admin)
+            - button "Logout" [ref=e80] [cursor=pointer]
+          - generic [ref=e81]:
+            - heading "Current Order" [level=2] [ref=e82]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Chianti Classico - Glass
+                - paragraph [ref=e89]: €7,00
+              - generic [ref=e90]:
+                - button "-" [ref=e91] [cursor=pointer]
+                - generic [ref=e92]: "1"
+                - button "+" [ref=e93] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: EDIT
+            - generic [ref=e97]: Edit Layout
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: Subtotal
+              - generic [ref=e101]: €7,00
+            - generic [ref=e102]:
+              - button "Manage Tabs" [ref=e103] [cursor=pointer]
+              - button "Clear" [ref=e104] [cursor=pointer]
+            - generic [ref=e105]:
+              - button "ASSIGN TABLE" [ref=e106] [cursor=pointer]
+              - button "Payment" [ref=e107] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

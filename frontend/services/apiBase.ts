@@ -267,8 +267,8 @@ export const makeApiRequest = async (url: string, options?: RequestInit, cacheKe
     ...options,
     credentials: 'include',
     headers: {
-      ...getAuthHeaders(),
       ...options?.headers,
+      ...getAuthHeaders(),
     },
     signal: controller.signal,
   };

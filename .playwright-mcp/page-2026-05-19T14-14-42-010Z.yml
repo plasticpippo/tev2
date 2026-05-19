@@ -1,0 +1,183 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e999] [cursor=pointer]:
+          - img [ref=e1001]
+          - generic [ref=e1003]: Dashboard
+        - button "Analytics" [ref=e1004] [cursor=pointer]:
+          - img [ref=e1006]
+          - generic [ref=e1008]: Analytics
+        - button "Profit Analytics" [ref=e1009] [cursor=pointer]:
+          - img [ref=e1011]
+          - generic [ref=e1013]: Profit Analytics
+        - button "Transactions" [ref=e1014] [cursor=pointer]:
+          - img [ref=e1016]
+          - generic [ref=e1018]: Transactions
+        - button "Receipts 2" [ref=e1019] [cursor=pointer]:
+          - img [ref=e1021]
+          - generic [ref=e1023]: Receipts
+          - button "2" [ref=e1024]
+        - button "Activity Log" [ref=e1025] [cursor=pointer]:
+          - img [ref=e1027]
+          - generic [ref=e1029]: Activity Log
+        - button "Daily Closing Summary" [ref=e1030] [cursor=pointer]:
+          - img [ref=e1032]
+          - generic [ref=e1034]: Daily Closing Summary
+        - button "Customers" [ref=e1035] [cursor=pointer]:
+          - img [ref=e1037]
+          - generic [ref=e1039]: Customers
+        - button "Products" [ref=e1040] [cursor=pointer]:
+          - img [ref=e1042]
+          - generic [ref=e1044]: Products
+        - button "Categories" [ref=e1045] [cursor=pointer]:
+          - img [ref=e1047]
+          - generic [ref=e1049]: Categories
+        - button "Stock Items" [ref=e1050] [cursor=pointer]:
+          - img [ref=e1052]
+          - generic [ref=e1054]: Stock Items
+        - button "Inventory" [ref=e1055] [cursor=pointer]:
+          - img [ref=e1057]
+          - generic [ref=e1059]: Inventory
+        - button "Cost Management" [ref=e1060] [cursor=pointer]:
+          - img [ref=e1062]
+          - generic [ref=e1064]: Cost Management
+        - button "Inventory Counts" [ref=e1065] [cursor=pointer]:
+          - img [ref=e1067]
+          - generic [ref=e1069]: Inventory Counts
+        - button "Variance Reports" [ref=e1070] [cursor=pointer]:
+          - img [ref=e1072]
+          - generic [ref=e1074]: Variance Reports
+        - button "Users" [ref=e1075] [cursor=pointer]:
+          - img [ref=e1077]
+          - generic [ref=e1079]: Users
+        - button "Roles & Permissions" [ref=e1080] [cursor=pointer]:
+          - img [ref=e1082]
+          - generic [ref=e1084]: Roles & Permissions
+        - button "Venues" [ref=e1085] [cursor=pointer]:
+          - img [ref=e1087]
+          - generic [ref=e1089]: Venues
+        - button "Tills" [ref=e1090] [cursor=pointer]:
+          - img [ref=e1092]
+          - generic [ref=e1094]: Tills
+        - button "Tables & Layout" [ref=e1095] [cursor=pointer]:
+          - img [ref=e1097]
+          - generic [ref=e1099]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1100] [cursor=pointer]:
+          - img [ref=e1102]
+          - generic [ref=e1104]: Itemised Consumption
+        - button "Settings" [ref=e1105] [cursor=pointer]:
+          - img [ref=e1107]
+          - generic [ref=e1110]: Settings
+      - main [ref=e398]:
+        - generic [ref=e1111]:
+          - heading "Receipt Management" [level=2] [ref=e1112]
+          - generic [ref=e1113]:
+            - generic [ref=e1114]:
+              - generic [ref=e1115]:
+                - generic [ref=e1116]: Search
+                - textbox "Search" [ref=e1117]:
+                  - /placeholder: Receipt number or customer...
+              - generic [ref=e1118]:
+                - generic [ref=e1119]: Status
+                - combobox "Status" [ref=e1120]:
+                  - option "All Statuses" [selected]
+                  - option "Draft"
+                  - option "Issued"
+                  - option "Voided"
+              - generic [ref=e1121]:
+                - generic [ref=e1122]: Generation
+                - combobox "Generation" [ref=e1123]:
+                  - option "All Generation Statuses" [selected]
+                  - option "Pending"
+                  - option "Completed"
+                  - option "Failed"
+              - generic [ref=e1124]:
+                - generic [ref=e1125]: Email Status
+                - combobox "Email Status" [ref=e1126]:
+                  - option "All Email Statuses" [selected]
+                  - option "Pending"
+                  - option "Sent"
+                  - option "Failed"
+              - generic [ref=e1127]:
+                - generic [ref=e1128]: From Date
+                - button "From Date" [ref=e1130] [cursor=pointer]:
+                  - img [ref=e1131]
+                  - generic [ref=e1133]: From Date
+              - generic [ref=e1134]:
+                - generic [ref=e1135]: To Date
+                - button "To Date" [ref=e1137] [cursor=pointer]:
+                  - img [ref=e1138]
+                  - generic [ref=e1140]: To Date
+              - generic [ref=e1141]:
+                - generic [ref=e1142]: Customer
+                - textbox "Search customer..." [ref=e1144]
+            - generic [ref=e1145]:
+              - button "Search" [ref=e1146] [cursor=pointer]
+              - button "Clear Filters" [ref=e1147] [cursor=pointer]
+          - generic [ref=e1148]: Showing 2 of 2 receipts
+          - table [ref=e1152]:
+            - rowgroup [ref=e1153]:
+              - 'row "Receipt # Transaction Customer Status Generation Email Total Issued Date Actions" [ref=e1154]':
+                - 'columnheader "Receipt #" [ref=e1155]'
+                - columnheader "Transaction" [ref=e1156]
+                - columnheader "Customer" [ref=e1157]
+                - columnheader "Status" [ref=e1158]
+                - columnheader "Generation" [ref=e1159]
+                - columnheader "Email" [ref=e1160]
+                - columnheader "Total" [ref=e1161]
+                - columnheader "Issued Date" [ref=e1162]
+                - columnheader "Actions" [ref=e1163]
+            - rowgroup [ref=e1164]:
+              - 'row "R-000002 #2 No Customer Draft Pending Not Sent €40,46 -" [ref=e1165]':
+                - cell "R-000002" [ref=e1166]
+                - cell "#2" [ref=e1167]
+                - cell "No Customer" [ref=e1168]
+                - cell "Draft" [ref=e1169]
+                - cell "Pending" [ref=e1170]:
+                  - generic [ref=e1171]:
+                    - img [ref=e1172]
+                    - generic [ref=e1175]: Pending
+                - cell "Not Sent" [ref=e1176]
+                - cell "€40,46" [ref=e1177]
+                - cell "-" [ref=e1178]
+                - cell [ref=e1179]:
+                  - generic [ref=e1180]:
+                    - button "View Details" [ref=e1181] [cursor=pointer]:
+                      - img [ref=e1182]
+                    - button "Issue Receipt" [ref=e1185] [cursor=pointer]:
+                      - img [ref=e1186]
+              - 'row "R-000001 #1 No Customer Issued Pending Not Sent €50,60 21/04/2026, 16:31" [ref=e1188]':
+                - cell "R-000001" [ref=e1189]
+                - cell "#1" [ref=e1190]
+                - cell "No Customer" [ref=e1191]
+                - cell "Issued" [ref=e1192]
+                - cell "Pending" [ref=e1193]:
+                  - generic [ref=e1194]:
+                    - img [ref=e1195]
+                    - generic [ref=e1198]: Pending
+                - cell "Not Sent" [ref=e1199]
+                - cell "€50,60" [ref=e1200]
+                - cell "21/04/2026, 16:31" [ref=e1201]
+                - cell [ref=e1202]:
+                  - generic [ref=e1203]:
+                    - button "View Details" [ref=e1204] [cursor=pointer]:
+                      - img [ref=e1205]
+                    - button "Download PDF" [ref=e1208] [cursor=pointer]:
+                      - img [ref=e1209]
+                    - button "Send Email" [disabled] [ref=e1211]:
+                      - img [ref=e1212]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

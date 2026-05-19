@@ -1,0 +1,118 @@
+- generic [ref=e2]:
+  - generic [ref=e14]:
+    - banner [ref=e15]:
+      - generic [ref=e17]:
+        - heading "Admin Panel" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Logged in as Admin User
+      - generic [ref=e20]:
+        - combobox [ref=e21]:
+          - option "Default Venue"
+          - option "test venue" [selected]
+        - button "Switch to POS" [ref=e22] [cursor=pointer]
+        - button "Logout" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - navigation [ref=e25]:
+        - button "Collapse sidebar" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+        - button "Dashboard" [ref=e594] [cursor=pointer]:
+          - img [ref=e596]
+          - generic [ref=e598]: Dashboard
+        - button "Analytics" [ref=e599] [cursor=pointer]:
+          - img [ref=e601]
+          - generic [ref=e603]: Analytics
+        - button "Profit Analytics" [ref=e604] [cursor=pointer]:
+          - img [ref=e606]
+          - generic [ref=e608]: Profit Analytics
+        - button "Transactions" [ref=e609] [cursor=pointer]:
+          - img [ref=e611]
+          - generic [ref=e613]: Transactions
+        - button "Receipts 2" [ref=e614] [cursor=pointer]:
+          - img [ref=e616]
+          - generic [ref=e618]: Receipts
+          - button "2" [ref=e619]
+        - button "Activity Log" [ref=e620] [cursor=pointer]:
+          - img [ref=e622]
+          - generic [ref=e624]: Activity Log
+        - button "Daily Closing Summary" [ref=e625] [cursor=pointer]:
+          - img [ref=e627]
+          - generic [ref=e629]: Daily Closing Summary
+        - button "Customers" [ref=e630] [cursor=pointer]:
+          - img [ref=e632]
+          - generic [ref=e634]: Customers
+        - button "Products" [ref=e635] [cursor=pointer]:
+          - img [ref=e637]
+          - generic [ref=e639]: Products
+        - button "Categories" [ref=e640] [cursor=pointer]:
+          - img [ref=e642]
+          - generic [ref=e644]: Categories
+        - button "Stock Items" [ref=e645] [cursor=pointer]:
+          - img [ref=e647]
+          - generic [ref=e649]: Stock Items
+        - button "Inventory" [ref=e650] [cursor=pointer]:
+          - img [ref=e652]
+          - generic [ref=e654]: Inventory
+        - button "Cost Management" [ref=e655] [cursor=pointer]:
+          - img [ref=e657]
+          - generic [ref=e659]: Cost Management
+        - button "Inventory Counts" [ref=e660] [cursor=pointer]:
+          - img [ref=e662]
+          - generic [ref=e664]: Inventory Counts
+        - button "Variance Reports" [ref=e665] [cursor=pointer]:
+          - img [ref=e667]
+          - generic [ref=e669]: Variance Reports
+        - button "Users" [ref=e670] [cursor=pointer]:
+          - img [ref=e672]
+          - generic [ref=e674]: Users
+        - button "Roles & Permissions" [ref=e675] [cursor=pointer]:
+          - img [ref=e677]
+          - generic [ref=e679]: Roles & Permissions
+        - button "Venues" [ref=e680] [cursor=pointer]:
+          - img [ref=e682]
+          - generic [ref=e684]: Venues
+        - button "Tills" [ref=e685] [cursor=pointer]:
+          - img [ref=e687]
+          - generic [ref=e689]: Tills
+        - button "Tables & Layout" [ref=e690] [cursor=pointer]:
+          - img [ref=e692]
+          - generic [ref=e694]: Tables & Layout
+        - button "Itemised Consumption" [ref=e695] [cursor=pointer]:
+          - img [ref=e697]
+          - generic [ref=e699]: Itemised Consumption
+        - button "Settings" [ref=e700] [cursor=pointer]:
+          - img [ref=e702]
+          - generic [ref=e705]: Settings
+      - main [ref=e146]:
+        - generic [ref=e706]:
+          - generic [ref=e707]:
+            - heading "Role Management" [level=3] [ref=e708]
+            - button "Create Role" [ref=e709] [cursor=pointer]
+          - generic [ref=e710]:
+            - generic [ref=e711]:
+              - generic [ref=e712]:
+                - generic [ref=e713]:
+                  - paragraph [ref=e714]: Cashier
+                  - generic [ref=e715]: System
+                  - generic [ref=e716]: Venue
+                - paragraph [ref=e717]: "Cashier with restricted POS permissions | Inherits from: Venue Manager"
+                - paragraph [ref=e718]: 1 user(s) assigned
+              - button "Edit" [ref=e720] [cursor=pointer]
+            - generic [ref=e721]:
+              - generic [ref=e722]:
+                - generic [ref=e723]:
+                  - paragraph [ref=e724]: Owner
+                  - generic [ref=e725]: System
+                  - generic [ref=e726]: Organization
+                - paragraph [ref=e727]: Organization owner with full access to all venues
+                - paragraph [ref=e728]: 2 user(s) assigned
+              - button "Edit" [ref=e730] [cursor=pointer]
+            - generic [ref=e731]:
+              - generic [ref=e732]:
+                - generic [ref=e733]:
+                  - paragraph [ref=e734]: Venue Manager
+                  - generic [ref=e735]: System
+                  - generic [ref=e736]: Venue
+                - paragraph [ref=e737]: "Venue manager with access to venue-level operations | Inherits from: Owner"
+                - paragraph [ref=e738]: 0 user(s) assigned
+              - button "Edit" [ref=e740] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

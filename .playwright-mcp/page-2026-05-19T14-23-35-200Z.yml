@@ -1,0 +1,141 @@
+- generic [ref=e2]:
+  - generic [ref=e4812]:
+    - generic [ref=e4813]:
+      - button "Enter Fullscreen" [ref=e4814] [cursor=pointer]:
+        - img [ref=e4815]
+      - button "Admin Panel" [ref=e4817] [cursor=pointer]
+    - main [ref=e4818]:
+      - generic [ref=e4819]:
+        - generic [ref=e4822]:
+          - generic [ref=e4823]:
+            - heading "Products" [level=2] [ref=e4824]
+            - generic [ref=e4825]:
+              - button "Favourites" [ref=e4826] [cursor=pointer]
+              - button "Wine" [ref=e4827] [cursor=pointer]
+              - button "Beer" [ref=e4828] [cursor=pointer]
+              - button "Cocktails" [ref=e4829] [cursor=pointer]
+              - button "Spirits" [ref=e4830] [cursor=pointer]
+              - button "Soft Drinks" [ref=e4831] [cursor=pointer]
+              - button "Coffee" [ref=e4832] [cursor=pointer]
+              - button "All" [ref=e4833] [cursor=pointer]
+          - generic [ref=e4836]:
+            - generic [ref=e4837] [cursor=pointer]:
+              - paragraph [ref=e4838]: Chianti Classico
+              - generic [ref=e4839]:
+                - paragraph [ref=e4840]: Glass
+                - paragraph [ref=e4841]: €7,00
+              - generic [ref=e4842]: FAV
+            - generic [ref=e4843] [cursor=pointer]:
+              - paragraph [ref=e4844]: Lager
+              - generic [ref=e4845]:
+                - paragraph [ref=e4846]: Draft
+                - paragraph [ref=e4847]: €5,00
+              - generic [ref=e4848]: FAV
+            - generic [ref=e4849] [cursor=pointer]:
+              - paragraph [ref=e4850]: IPA
+              - generic [ref=e4851]:
+                - paragraph [ref=e4852]: Draft
+                - paragraph [ref=e4853]: €6,00
+              - generic [ref=e4854]: FAV
+            - generic [ref=e4855] [cursor=pointer]:
+              - paragraph [ref=e4856]: Negroni
+              - generic [ref=e4857]:
+                - paragraph [ref=e4858]: Regular
+                - paragraph [ref=e4859]: €11,00
+              - generic [ref=e4860]: FAV
+            - generic [ref=e4861] [cursor=pointer]:
+              - paragraph [ref=e4862]: Espresso Martini
+              - generic [ref=e4863]:
+                - paragraph [ref=e4864]: Regular
+                - paragraph [ref=e4865]: €12,00
+              - generic [ref=e4866]: FAV
+            - generic [ref=e4867] [cursor=pointer]:
+              - paragraph [ref=e4868]: Jack Daniel's
+              - generic [ref=e4869]:
+                - paragraph [ref=e4870]: Neat
+                - paragraph [ref=e4871]: €7,50
+              - generic [ref=e4872]: FAV
+            - generic [ref=e4873] [cursor=pointer]:
+              - paragraph [ref=e4874]: Espresso
+              - generic [ref=e4875]:
+                - paragraph [ref=e4876]: Single
+                - paragraph [ref=e4877]: €2,00
+              - generic [ref=e4878]: FAV
+        - generic [ref=e4880]:
+          - generic [ref=e4881]:
+            - generic [ref=e4882]:
+              - paragraph [ref=e4883]: "Logged in as:"
+              - paragraph [ref=e4884]:
+                - text: Admin User
+                - generic [ref=e4885]: (Admin)
+            - button "Logout" [ref=e4886] [cursor=pointer]
+          - generic [ref=e4887]:
+            - heading "Current Order" [level=2] [ref=e4888]
+            - generic [ref=e4899]:
+              - generic [ref=e4900]:
+                - paragraph [ref=e4901]: Negroni - Regular
+                - paragraph [ref=e4902]: €11,00
+              - generic [ref=e4903]:
+                - button "-" [ref=e4904] [cursor=pointer]
+                - generic [ref=e4905]: "1"
+                - button "+" [ref=e4906] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e4892] [cursor=pointer]:
+            - generic [ref=e4893]: EDIT
+            - generic [ref=e4894]: Edit Layout
+          - generic [ref=e4895]:
+            - generic [ref=e4907]:
+              - generic [ref=e4908]: Subtotal
+              - generic [ref=e4909]: €11,00
+            - generic [ref=e4896]:
+              - button "Manage Tabs" [ref=e4910] [cursor=pointer]
+              - button "Clear" [ref=e4911] [cursor=pointer]
+            - generic [ref=e4912]:
+              - button "ASSIGN TABLE" [ref=e4913] [cursor=pointer]
+              - button "Payment" [active] [ref=e4914] [cursor=pointer]
+  - generic [ref=e4916]:
+    - generic [ref=e4917]:
+      - heading "Complete Payment" [level=2] [ref=e4918]
+      - button "Close" [ref=e4919] [cursor=pointer]: ×
+    - generic [ref=e4920]:
+      - generic [ref=e4921]:
+        - generic [ref=e4923]: Discount
+        - generic [ref=e4924]:
+          - generic [ref=e4925]: Discount Amount
+          - generic [ref=e4926]:
+            - button "Decrease discount" [ref=e4927] [cursor=pointer]: "-"
+            - generic [ref=e4928]: €0,00
+            - button "Increase discount" [ref=e4929] [cursor=pointer]: +
+          - paragraph [ref=e4930]: "Max: €13,09"
+        - generic [ref=e4931]:
+          - generic [ref=e4932]: Quick Add
+          - generic [ref=e4933]:
+            - button "Quick Add 10" [ref=e4934] [cursor=pointer]: "10"
+            - button "Quick Add 20" [ref=e4935] [cursor=pointer]: "20"
+            - button "Quick Add 50" [ref=e4936] [cursor=pointer]: "50"
+        - generic [ref=e4937]:
+          - generic [ref=e4938]: Reason (optional)
+          - textbox "Enter reason for discount..." [ref=e4939]
+      - generic [ref=e4940]:
+        - generic [ref=e4941]: Tip Amount
+        - generic [ref=e4942]:
+          - button "Decrease tip" [ref=e4943] [cursor=pointer]: "-"
+          - generic [ref=e4944]: €0,00
+          - button "Increase tip" [ref=e4945] [cursor=pointer]: +
+      - generic [ref=e4946]:
+        - generic [ref=e4947]:
+          - generic [ref=e4948]: Subtotal
+          - generic [ref=e4949]: €11,00
+        - generic [ref=e4950]:
+          - generic [ref=e4951]: Tax
+          - generic [ref=e4952]: €2,09
+        - generic [ref=e4953]:
+          - generic [ref=e4954]: Tip
+          - generic [ref=e4955]: €0,00
+        - generic [ref=e4956]:
+          - generic [ref=e4957]: Final Total
+          - generic [ref=e4958]: €13,09
+    - generic [ref=e4960]:
+      - button "Pay with CASH" [ref=e4961] [cursor=pointer]
+      - button "Pay with CARD" [ref=e4962] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

@@ -1,0 +1,106 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e2278] [cursor=pointer]:
+          - img [ref=e2280]
+          - generic [ref=e2282]: Dashboard
+        - button "Analytics" [ref=e2283] [cursor=pointer]:
+          - img [ref=e2285]
+          - generic [ref=e2287]: Analytics
+        - button "Profit Analytics" [ref=e2288] [cursor=pointer]:
+          - img [ref=e2290]
+          - generic [ref=e2292]: Profit Analytics
+        - button "Transactions" [ref=e2293] [cursor=pointer]:
+          - img [ref=e2295]
+          - generic [ref=e2297]: Transactions
+        - button "Receipts 2" [ref=e2298] [cursor=pointer]:
+          - img [ref=e2300]
+          - generic [ref=e2302]: Receipts
+          - button "2" [ref=e2303]
+        - button "Activity Log" [ref=e2304] [cursor=pointer]:
+          - img [ref=e2306]
+          - generic [ref=e2308]: Activity Log
+        - button "Daily Closing Summary" [ref=e2309] [cursor=pointer]:
+          - img [ref=e2311]
+          - generic [ref=e2313]: Daily Closing Summary
+        - button "Customers" [ref=e2314] [cursor=pointer]:
+          - img [ref=e2316]
+          - generic [ref=e2318]: Customers
+        - button "Products" [ref=e2319] [cursor=pointer]:
+          - img [ref=e2321]
+          - generic [ref=e2323]: Products
+        - button "Categories" [ref=e2324] [cursor=pointer]:
+          - img [ref=e2326]
+          - generic [ref=e2328]: Categories
+        - button "Stock Items" [ref=e2329] [cursor=pointer]:
+          - img [ref=e2331]
+          - generic [ref=e2333]: Stock Items
+        - button "Inventory" [ref=e2334] [cursor=pointer]:
+          - img [ref=e2336]
+          - generic [ref=e2338]: Inventory
+        - button "Cost Management" [ref=e2339] [cursor=pointer]:
+          - img [ref=e2341]
+          - generic [ref=e2343]: Cost Management
+        - button "Inventory Counts" [ref=e2344] [cursor=pointer]:
+          - img [ref=e2346]
+          - generic [ref=e2348]: Inventory Counts
+        - button "Variance Reports" [ref=e2349] [cursor=pointer]:
+          - img [ref=e2351]
+          - generic [ref=e2353]: Variance Reports
+        - button "Users" [ref=e2354] [cursor=pointer]:
+          - img [ref=e2356]
+          - generic [ref=e2358]: Users
+        - button "Roles & Permissions" [ref=e2359] [cursor=pointer]:
+          - img [ref=e2361]
+          - generic [ref=e2363]: Roles & Permissions
+        - button "Venues" [ref=e2364] [cursor=pointer]:
+          - img [ref=e2366]
+          - generic [ref=e2368]: Venues
+        - button "Tills" [ref=e2369] [cursor=pointer]:
+          - img [ref=e2371]
+          - generic [ref=e2373]: Tills
+        - button "Tables & Layout" [ref=e2374] [cursor=pointer]:
+          - img [ref=e2376]
+          - generic [ref=e2378]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2379] [cursor=pointer]:
+          - img [ref=e2381]
+          - generic [ref=e2383]: Itemised Consumption
+        - button "Settings" [ref=e2384] [cursor=pointer]:
+          - img [ref=e2386]
+          - generic [ref=e2389]: Settings
+      - main [ref=e398]:
+        - generic [ref=e2390]:
+          - generic [ref=e2391]:
+            - paragraph [ref=e2392]: "This device is currently assigned as: Main Bar"
+            - paragraph [ref=e2393]: You can re-assign this device to a different till below.
+          - generic [ref=e2394]:
+            - heading "Manage All Tills" [level=3] [ref=e2395]
+            - button "Add Till" [ref=e2396] [cursor=pointer]
+          - generic [ref=e2397]:
+            - generic [ref=e2398]:
+              - paragraph [ref=e2400]: Main Bar
+              - generic [ref=e2401]:
+                - generic [ref=e2402]: Currently Assigned
+                - button "Edit" [ref=e2403] [cursor=pointer]
+                - button "Delete" [ref=e2404] [cursor=pointer]
+            - generic [ref=e2405]:
+              - paragraph [ref=e2407]: Patio
+              - generic [ref=e2408]:
+                - button "Assign This Device" [ref=e2409] [cursor=pointer]
+                - button "Edit" [ref=e2410] [cursor=pointer]
+                - button "Delete" [ref=e2411] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

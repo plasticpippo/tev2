@@ -1,0 +1,75 @@
+- generic [ref=e2]:
+  - generic [ref=e110]:
+    - button "Enter Fullscreen" [ref=e112] [cursor=pointer]:
+      - img [ref=e113]
+    - main [ref=e115]:
+      - generic [ref=e116]:
+        - generic [ref=e119]:
+          - generic [ref=e120]:
+            - heading "Products" [level=2] [ref=e121]
+            - generic [ref=e122]:
+              - button "Favourites" [ref=e123] [cursor=pointer]
+              - button "Wine" [ref=e124] [cursor=pointer]
+              - button "Beer" [ref=e125] [cursor=pointer]
+              - button "Cocktails" [ref=e126] [cursor=pointer]
+              - button "Spirits" [ref=e127] [cursor=pointer]
+              - button "Soft Drinks" [ref=e128] [cursor=pointer]
+              - button "Coffee" [ref=e129] [cursor=pointer]
+              - button "All" [ref=e130] [cursor=pointer]
+          - generic [ref=e133]:
+            - generic [ref=e134] [cursor=pointer]:
+              - paragraph [ref=e135]: Chianti Classico
+              - generic [ref=e136]:
+                - paragraph [ref=e137]: Glass
+                - paragraph [ref=e138]: €7,00
+              - generic [ref=e139]: FAV
+            - generic [ref=e140] [cursor=pointer]:
+              - paragraph [ref=e141]: Lager
+              - generic [ref=e142]:
+                - paragraph [ref=e143]: Draft
+                - paragraph [ref=e144]: €5,00
+              - generic [ref=e145]: FAV
+            - generic [ref=e146] [cursor=pointer]:
+              - paragraph [ref=e147]: IPA
+              - generic [ref=e148]:
+                - paragraph [ref=e149]: Draft
+                - paragraph [ref=e150]: €6,00
+              - generic [ref=e151]: FAV
+            - generic [ref=e152] [cursor=pointer]:
+              - paragraph [ref=e153]: Negroni
+              - generic [ref=e154]:
+                - paragraph [ref=e155]: Regular
+                - paragraph [ref=e156]: €11,00
+              - generic [ref=e157]: FAV
+            - generic [ref=e158] [cursor=pointer]:
+              - paragraph [ref=e159]: Espresso Martini
+              - generic [ref=e160]:
+                - paragraph [ref=e161]: Regular
+                - paragraph [ref=e162]: €12,00
+              - generic [ref=e163]: FAV
+            - generic [ref=e164] [cursor=pointer]:
+              - paragraph [ref=e165]: Jack Daniel's
+              - generic [ref=e166]:
+                - paragraph [ref=e167]: Neat
+                - paragraph [ref=e168]: €7,50
+              - generic [ref=e169]: FAV
+            - generic [ref=e170] [cursor=pointer]:
+              - paragraph [ref=e171]: Espresso
+              - generic [ref=e172]:
+                - paragraph [ref=e173]: Single
+                - paragraph [ref=e174]: €2,00
+              - generic [ref=e175]: FAV
+        - generic [ref=e177]:
+          - generic [ref=e178]:
+            - generic [ref=e179]:
+              - paragraph [ref=e180]: "Logged in as:"
+              - paragraph [ref=e181]:
+                - text: Cashier User
+                - generic [ref=e182]: (Cashier)
+            - button "Logout" [ref=e183] [cursor=pointer]
+          - generic [ref=e184]:
+            - heading "Current Order" [level=2] [ref=e185]
+            - generic [ref=e187]: Select products to add them here.
+          - button "View Open Tabs" [ref=e190] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

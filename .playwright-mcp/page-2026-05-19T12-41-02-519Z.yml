@@ -1,0 +1,117 @@
+- generic [ref=e2]:
+  - generic [ref=e14]:
+    - banner [ref=e15]:
+      - generic [ref=e17]:
+        - heading "Admin Panel" [level=1] [ref=e18]
+        - paragraph [ref=e19]: Logged in as Admin User
+      - generic [ref=e20]:
+        - combobox [active] [ref=e21]:
+          - option "Default Venue"
+          - option "test venue" [selected]
+        - button "Switch to POS" [ref=e22] [cursor=pointer]
+        - button "Logout" [ref=e23] [cursor=pointer]
+    - generic [ref=e24]:
+      - navigation [ref=e25]:
+        - button "Collapse sidebar" [ref=e27] [cursor=pointer]:
+          - img [ref=e28]
+        - button "Dashboard" [ref=e371] [cursor=pointer]:
+          - img [ref=e373]
+          - generic [ref=e375]: Dashboard
+        - button "Analytics" [ref=e376] [cursor=pointer]:
+          - img [ref=e378]
+          - generic [ref=e380]: Analytics
+        - button "Profit Analytics" [ref=e381] [cursor=pointer]:
+          - img [ref=e383]
+          - generic [ref=e385]: Profit Analytics
+        - button "Transactions" [ref=e386] [cursor=pointer]:
+          - img [ref=e388]
+          - generic [ref=e390]: Transactions
+        - button "Receipts" [ref=e391] [cursor=pointer]:
+          - img [ref=e393]
+          - generic [ref=e395]: Receipts
+        - button "Activity Log" [ref=e396] [cursor=pointer]:
+          - img [ref=e398]
+          - generic [ref=e400]: Activity Log
+        - button "Daily Closing Summary" [ref=e401] [cursor=pointer]:
+          - img [ref=e403]
+          - generic [ref=e405]: Daily Closing Summary
+        - button "Customers" [ref=e406] [cursor=pointer]:
+          - img [ref=e408]
+          - generic [ref=e410]: Customers
+        - button "Products" [ref=e411] [cursor=pointer]:
+          - img [ref=e413]
+          - generic [ref=e415]: Products
+        - button "Categories" [ref=e416] [cursor=pointer]:
+          - img [ref=e418]
+          - generic [ref=e420]: Categories
+        - button "Stock Items" [ref=e421] [cursor=pointer]:
+          - img [ref=e423]
+          - generic [ref=e425]: Stock Items
+        - button "Inventory" [ref=e426] [cursor=pointer]:
+          - img [ref=e428]
+          - generic [ref=e430]: Inventory
+        - button "Cost Management" [ref=e431] [cursor=pointer]:
+          - img [ref=e433]
+          - generic [ref=e435]: Cost Management
+        - button "Inventory Counts" [ref=e436] [cursor=pointer]:
+          - img [ref=e438]
+          - generic [ref=e440]: Inventory Counts
+        - button "Variance Reports" [ref=e441] [cursor=pointer]:
+          - img [ref=e443]
+          - generic [ref=e445]: Variance Reports
+        - button "Users" [ref=e446] [cursor=pointer]:
+          - img [ref=e448]
+          - generic [ref=e450]: Users
+        - button "Roles & Permissions" [ref=e451] [cursor=pointer]:
+          - img [ref=e453]
+          - generic [ref=e455]: Roles & Permissions
+        - button "Venues" [ref=e456] [cursor=pointer]:
+          - img [ref=e458]
+          - generic [ref=e460]: Venues
+        - button "Tills" [ref=e461] [cursor=pointer]:
+          - img [ref=e463]
+          - generic [ref=e465]: Tills
+        - button "Tables & Layout" [ref=e466] [cursor=pointer]:
+          - img [ref=e468]
+          - generic [ref=e470]: Tables & Layout
+        - button "Itemised Consumption" [ref=e471] [cursor=pointer]:
+          - img [ref=e473]
+          - generic [ref=e475]: Itemised Consumption
+        - button "Settings" [ref=e476] [cursor=pointer]:
+          - img [ref=e478]
+          - generic [ref=e481]: Settings
+      - main [ref=e146]:
+        - generic [ref=e338]:
+          - generic [ref=e339]:
+            - heading "Venues" [level=2] [ref=e340]
+            - button "Add Venue" [ref=e341] [cursor=pointer]
+          - table [ref=e343]:
+            - rowgroup [ref=e344]:
+              - row "Name Address Status Actions" [ref=e345]:
+                - columnheader "Name" [ref=e346]
+                - columnheader "Address" [ref=e347]
+                - columnheader "Status" [ref=e348]
+                - columnheader "Actions" [ref=e349]
+            - rowgroup [ref=e350]:
+              - row "Default Venue - Active Edit Deactivate" [ref=e351]:
+                - cell "Default Venue" [ref=e352]
+                - cell "-" [ref=e353]
+                - cell "Active" [ref=e354]
+                - cell "Edit Deactivate" [ref=e355]:
+                  - button "Edit" [ref=e356] [cursor=pointer]
+                  - button "Deactivate" [ref=e357] [cursor=pointer]
+              - row "test venue test Active Edit Deactivate" [ref=e358]:
+                - cell "test venue" [ref=e359]
+                - cell "test" [ref=e360]
+                - cell "Active" [ref=e361]
+                - cell "Edit Deactivate" [ref=e362]:
+                  - button "Edit" [ref=e363] [cursor=pointer]
+                  - button "Deactivate" [ref=e364] [cursor=pointer]
+              - row "Updated Test Venue 456 Updated Street Inactive Edit" [ref=e365]:
+                - cell "Updated Test Venue" [ref=e366]
+                - cell "456 Updated Street" [ref=e367]
+                - cell "Inactive" [ref=e368]
+                - cell "Edit" [ref=e369]:
+                  - button "Edit" [ref=e370] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

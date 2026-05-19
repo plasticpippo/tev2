@@ -1,0 +1,208 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e2660] [cursor=pointer]:
+          - img [ref=e2662]
+          - generic [ref=e2664]: Dashboard
+        - button "Analytics" [ref=e2665] [cursor=pointer]:
+          - img [ref=e2667]
+          - generic [ref=e2669]: Analytics
+        - button "Profit Analytics" [ref=e2670] [cursor=pointer]:
+          - img [ref=e2672]
+          - generic [ref=e2674]: Profit Analytics
+        - button "Transactions" [ref=e2675] [cursor=pointer]:
+          - img [ref=e2677]
+          - generic [ref=e2679]: Transactions
+        - button "Receipts 2" [ref=e2680] [cursor=pointer]:
+          - img [ref=e2682]
+          - generic [ref=e2684]: Receipts
+          - button "2" [ref=e2685]
+        - button "Activity Log" [ref=e2686] [cursor=pointer]:
+          - img [ref=e2688]
+          - generic [ref=e2690]: Activity Log
+        - button "Daily Closing Summary" [ref=e2691] [cursor=pointer]:
+          - img [ref=e2693]
+          - generic [ref=e2695]: Daily Closing Summary
+        - button "Customers" [ref=e2696] [cursor=pointer]:
+          - img [ref=e2698]
+          - generic [ref=e2700]: Customers
+        - button "Products" [ref=e2701] [cursor=pointer]:
+          - img [ref=e2703]
+          - generic [ref=e2705]: Products
+        - button "Categories" [ref=e2706] [cursor=pointer]:
+          - img [ref=e2708]
+          - generic [ref=e2710]: Categories
+        - button "Stock Items" [ref=e2711] [cursor=pointer]:
+          - img [ref=e2713]
+          - generic [ref=e2715]: Stock Items
+        - button "Inventory" [ref=e2716] [cursor=pointer]:
+          - img [ref=e2718]
+          - generic [ref=e2720]: Inventory
+        - button "Cost Management" [ref=e2721] [cursor=pointer]:
+          - img [ref=e2723]
+          - generic [ref=e2725]: Cost Management
+        - button "Inventory Counts" [ref=e2726] [cursor=pointer]:
+          - img [ref=e2728]
+          - generic [ref=e2730]: Inventory Counts
+        - button "Variance Reports" [ref=e2731] [cursor=pointer]:
+          - img [ref=e2733]
+          - generic [ref=e2735]: Variance Reports
+        - button "Users" [ref=e2736] [cursor=pointer]:
+          - img [ref=e2738]
+          - generic [ref=e2740]: Users
+        - button "Roles & Permissions" [ref=e2741] [cursor=pointer]:
+          - img [ref=e2743]
+          - generic [ref=e2745]: Roles & Permissions
+        - button "Venues" [ref=e2746] [cursor=pointer]:
+          - img [ref=e2748]
+          - generic [ref=e2750]: Venues
+        - button "Tills" [ref=e2751] [cursor=pointer]:
+          - img [ref=e2753]
+          - generic [ref=e2755]: Tills
+        - button "Tables & Layout" [ref=e2756] [cursor=pointer]:
+          - img [ref=e2758]
+          - generic [ref=e2760]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2761] [cursor=pointer]:
+          - img [ref=e2763]
+          - generic [ref=e2765]: Itemised Consumption
+        - button "Settings" [ref=e2766] [cursor=pointer]:
+          - img [ref=e2768]
+          - generic [ref=e2771]: Settings
+      - main [ref=e398]:
+        - generic [ref=e2772]:
+          - generic [ref=e2773]:
+            - generic [ref=e2774]:
+              - button "Ingredients" [ref=e2775] [cursor=pointer]
+              - button "Sellable Goods" [ref=e2776] [cursor=pointer]
+            - generic [ref=e2777]:
+              - textbox "Search by name..." [ref=e2778]
+              - combobox [ref=e2779]:
+                - option "All Categories" [selected]
+                - option "Wine"
+                - option "Beer"
+                - option "Cocktails"
+                - option "Spirits"
+                - option "Soft Drinks"
+                - option "Coffee"
+              - button "All" [ref=e2780] [cursor=pointer]
+              - button "Low" [ref=e2781] [cursor=pointer]
+              - button "Out" [ref=e2782] [cursor=pointer]
+          - generic [ref=e2783]:
+            - generic [ref=e2784]:
+              - generic [ref=e2785]:
+                - generic [ref=e2786]:
+                  - paragraph [ref=e2787]: Vodka
+                  - paragraph [ref=e2788]: "Tracked in: cl"
+                - generic [ref=e2789]:
+                  - generic [ref=e2790]: 500 in stock
+                  - button "Adjust" [ref=e2791] [cursor=pointer]
+              - generic [ref=e2792]:
+                - generic [ref=e2793]:
+                  - paragraph [ref=e2794]: Gin
+                  - paragraph [ref=e2795]: "Tracked in: cl"
+                - generic [ref=e2796]:
+                  - generic [ref=e2797]: 400 in stock
+                  - button "Adjust" [ref=e2798] [cursor=pointer]
+              - generic [ref=e2799]:
+                - generic [ref=e2800]:
+                  - paragraph [ref=e2801]: Rum
+                  - paragraph [ref=e2802]: "Tracked in: cl"
+                - generic [ref=e2803]:
+                  - generic [ref=e2804]: 350 in stock
+                  - button "Adjust" [ref=e2805] [cursor=pointer]
+              - generic [ref=e2806]:
+                - generic [ref=e2807]:
+                  - paragraph [ref=e2808]: Campari
+                  - paragraph [ref=e2809]: "Tracked in: cl"
+                - generic [ref=e2810]:
+                  - generic [ref=e2811]: 300 in stock
+                  - button "Adjust" [ref=e2812] [cursor=pointer]
+              - generic [ref=e2813]:
+                - generic [ref=e2814]:
+                  - paragraph [ref=e2815]: Sweet Vermouth
+                  - paragraph [ref=e2816]: "Tracked in: cl"
+                - generic [ref=e2817]:
+                  - generic [ref=e2818]: 200 in stock
+                  - button "Adjust" [ref=e2819] [cursor=pointer]
+              - generic [ref=e2820]:
+                - generic [ref=e2821]:
+                  - paragraph [ref=e2822]: Lime Juice
+                  - paragraph [ref=e2823]: "Tracked in: ml"
+                - generic [ref=e2824]:
+                  - generic [ref=e2825]: 2000 in stock
+                  - button "Adjust" [ref=e2826] [cursor=pointer]
+              - generic [ref=e2827]:
+                - generic [ref=e2828]:
+                  - paragraph [ref=e2829]: Mint Leaves
+                  - paragraph [ref=e2830]: "Tracked in: g"
+                - generic [ref=e2831]:
+                  - generic [ref=e2832]: 500 in stock
+                  - button "Adjust" [ref=e2833] [cursor=pointer]
+              - generic [ref=e2834]:
+                - generic [ref=e2835]:
+                  - paragraph [ref=e2836]: Coffee Beans
+                  - paragraph [ref=e2837]: "Tracked in: g"
+                - generic [ref=e2838]:
+                  - generic [ref=e2839]: 5000 in stock
+                  - button "Adjust" [ref=e2840] [cursor=pointer]
+              - generic [ref=e2841]:
+                - generic [ref=e2842]:
+                  - paragraph [ref=e2843]: Sugar Syrup
+                  - paragraph [ref=e2844]: "Tracked in: ml"
+                - generic [ref=e2845]:
+                  - generic [ref=e2846]: 3000 in stock
+                  - button "Adjust" [ref=e2847] [cursor=pointer]
+              - generic [ref=e2848]:
+                - generic [ref=e2849]:
+                  - paragraph [ref=e2850]: Beer Keg IPA
+                  - paragraph [ref=e2851]: "Tracked in: cl"
+                - generic [ref=e2852]:
+                  - generic [ref=e2853]: 3000 in stock
+                  - button "Adjust" [ref=e2854] [cursor=pointer]
+              - generic [ref=e2855]:
+                - generic [ref=e2856]:
+                  - paragraph [ref=e2857]: Beer Keg Lager
+                  - paragraph [ref=e2858]: "Tracked in: cl"
+                - generic [ref=e2859]:
+                  - generic [ref=e2860]: 4950 in stock
+                  - button "Adjust" [ref=e2861] [cursor=pointer]
+            - generic [ref=e2863]:
+              - heading "Stock Adjustment History" [level=3] [ref=e2865]
+              - generic [ref=e2867]:
+                - textbox "Search adjustments..." [ref=e2868]
+                - generic:
+                  - img
+              - generic [ref=e2869]:
+                - generic [ref=e2870]:
+                  - generic [ref=e2871]:
+                    - paragraph [ref=e2872]: Gin
+                    - paragraph [ref=e2873]: 18/04/2026, 12:00 by Admin User
+                    - paragraph [ref=e2874]: "Reason: Restocked from supplier"
+                  - paragraph [ref=e2876]: "+100"
+                - generic [ref=e2877]:
+                  - generic [ref=e2878]:
+                    - paragraph [ref=e2879]: Vodka
+                    - paragraph [ref=e2880]: 18/04/2026, 12:00 by Admin User
+                    - paragraph [ref=e2881]: "Reason: Weekly delivery"
+                  - paragraph [ref=e2883]: "+200"
+                - generic [ref=e2884]:
+                  - generic [ref=e2885]:
+                    - paragraph [ref=e2886]: Coffee Beans
+                    - paragraph [ref=e2887]: 18/04/2026, 12:00 by Admin User
+                    - paragraph [ref=e2888]: "Reason: Spillage during storage"
+                  - paragraph [ref=e2890]: "-500"
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

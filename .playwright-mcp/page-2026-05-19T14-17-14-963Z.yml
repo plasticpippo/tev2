@@ -1,0 +1,102 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e2412] [cursor=pointer]:
+          - img [ref=e2414]
+          - generic [ref=e2416]: Dashboard
+        - button "Analytics" [ref=e2417] [cursor=pointer]:
+          - img [ref=e2419]
+          - generic [ref=e2421]: Analytics
+        - button "Profit Analytics" [ref=e2422] [cursor=pointer]:
+          - img [ref=e2424]
+          - generic [ref=e2426]: Profit Analytics
+        - button "Transactions" [ref=e2427] [cursor=pointer]:
+          - img [ref=e2429]
+          - generic [ref=e2431]: Transactions
+        - button "Receipts 2" [ref=e2432] [cursor=pointer]:
+          - img [ref=e2434]
+          - generic [ref=e2436]: Receipts
+          - button "2" [ref=e2437]
+        - button "Activity Log" [ref=e2438] [cursor=pointer]:
+          - img [ref=e2440]
+          - generic [ref=e2442]: Activity Log
+        - button "Daily Closing Summary" [ref=e2443] [cursor=pointer]:
+          - img [ref=e2445]
+          - generic [ref=e2447]: Daily Closing Summary
+        - button "Customers" [ref=e2448] [cursor=pointer]:
+          - img [ref=e2450]
+          - generic [ref=e2452]: Customers
+        - button "Products" [ref=e2453] [cursor=pointer]:
+          - img [ref=e2455]
+          - generic [ref=e2457]: Products
+        - button "Categories" [ref=e2458] [cursor=pointer]:
+          - img [ref=e2460]
+          - generic [ref=e2462]: Categories
+        - button "Stock Items" [ref=e2463] [cursor=pointer]:
+          - img [ref=e2465]
+          - generic [ref=e2467]: Stock Items
+        - button "Inventory" [ref=e2468] [cursor=pointer]:
+          - img [ref=e2470]
+          - generic [ref=e2472]: Inventory
+        - button "Cost Management" [ref=e2473] [cursor=pointer]:
+          - img [ref=e2475]
+          - generic [ref=e2477]: Cost Management
+        - button "Inventory Counts" [ref=e2478] [cursor=pointer]:
+          - img [ref=e2480]
+          - generic [ref=e2482]: Inventory Counts
+        - button "Variance Reports" [ref=e2483] [cursor=pointer]:
+          - img [ref=e2485]
+          - generic [ref=e2487]: Variance Reports
+        - button "Users" [ref=e2488] [cursor=pointer]:
+          - img [ref=e2490]
+          - generic [ref=e2492]: Users
+        - button "Roles & Permissions" [ref=e2493] [cursor=pointer]:
+          - img [ref=e2495]
+          - generic [ref=e2497]: Roles & Permissions
+        - button "Venues" [ref=e2498] [cursor=pointer]:
+          - img [ref=e2500]
+          - generic [ref=e2502]: Venues
+        - button "Tills" [ref=e2503] [cursor=pointer]:
+          - img [ref=e2505]
+          - generic [ref=e2507]: Tills
+        - button "Tables & Layout" [ref=e2508] [cursor=pointer]:
+          - img [ref=e2510]
+          - generic [ref=e2512]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2513] [cursor=pointer]:
+          - img [ref=e2515]
+          - generic [ref=e2517]: Itemised Consumption
+        - button "Settings" [ref=e2518] [cursor=pointer]:
+          - img [ref=e2520]
+          - generic [ref=e2523]: Settings
+      - main [ref=e398]:
+        - generic [ref=e2524]:
+          - generic [ref=e2525]:
+            - button "Language" [ref=e2526] [cursor=pointer]
+            - button "Tax Settings" [ref=e2527] [cursor=pointer]
+            - button "Business Day" [ref=e2528] [cursor=pointer]
+            - button "Business Info" [ref=e2529] [cursor=pointer]
+            - button "Backup" [ref=e2530] [cursor=pointer]
+            - button "Email" [ref=e2531] [cursor=pointer]
+            - button "Receipt from Payment" [ref=e2532] [cursor=pointer]
+          - generic [ref=e2534]:
+            - heading "Language" [level=3] [ref=e2535]
+            - generic [ref=e2536]:
+              - paragraph [ref=e2537]: Select your preferred language for the admin panel.
+              - button "Change Language" [ref=e2540] [cursor=pointer]:
+                - generic [ref=e2541]: EN
+                - img [ref=e2542]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

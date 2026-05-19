@@ -1,0 +1,90 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e2544] [cursor=pointer]:
+          - img [ref=e2546]
+          - generic [ref=e2548]: Dashboard
+        - button "Analytics" [ref=e2549] [cursor=pointer]:
+          - img [ref=e2551]
+          - generic [ref=e2553]: Analytics
+        - button "Profit Analytics" [ref=e2554] [cursor=pointer]:
+          - img [ref=e2556]
+          - generic [ref=e2558]: Profit Analytics
+        - button "Transactions" [ref=e2559] [cursor=pointer]:
+          - img [ref=e2561]
+          - generic [ref=e2563]: Transactions
+        - button "Receipts 2" [ref=e2564] [cursor=pointer]:
+          - img [ref=e2566]
+          - generic [ref=e2568]: Receipts
+          - button "2" [ref=e2569]
+        - button "Activity Log" [ref=e2570] [cursor=pointer]:
+          - img [ref=e2572]
+          - generic [ref=e2574]: Activity Log
+        - button "Daily Closing Summary" [ref=e2575] [cursor=pointer]:
+          - img [ref=e2577]
+          - generic [ref=e2579]: Daily Closing Summary
+        - button "Customers" [ref=e2580] [cursor=pointer]:
+          - img [ref=e2582]
+          - generic [ref=e2584]: Customers
+        - button "Products" [ref=e2585] [cursor=pointer]:
+          - img [ref=e2587]
+          - generic [ref=e2589]: Products
+        - button "Categories" [ref=e2590] [cursor=pointer]:
+          - img [ref=e2592]
+          - generic [ref=e2594]: Categories
+        - button "Stock Items" [ref=e2595] [cursor=pointer]:
+          - img [ref=e2597]
+          - generic [ref=e2599]: Stock Items
+        - button "Inventory" [ref=e2600] [cursor=pointer]:
+          - img [ref=e2602]
+          - generic [ref=e2604]: Inventory
+        - button "Cost Management" [ref=e2605] [cursor=pointer]:
+          - img [ref=e2607]
+          - generic [ref=e2609]: Cost Management
+        - button "Inventory Counts" [ref=e2610] [cursor=pointer]:
+          - img [ref=e2612]
+          - generic [ref=e2614]: Inventory Counts
+        - button "Variance Reports" [ref=e2615] [cursor=pointer]:
+          - img [ref=e2617]
+          - generic [ref=e2619]: Variance Reports
+        - button "Users" [ref=e2620] [cursor=pointer]:
+          - img [ref=e2622]
+          - generic [ref=e2624]: Users
+        - button "Roles & Permissions" [ref=e2625] [cursor=pointer]:
+          - img [ref=e2627]
+          - generic [ref=e2629]: Roles & Permissions
+        - button "Venues" [ref=e2630] [cursor=pointer]:
+          - img [ref=e2632]
+          - generic [ref=e2634]: Venues
+        - button "Tills" [ref=e2635] [cursor=pointer]:
+          - img [ref=e2637]
+          - generic [ref=e2639]: Tills
+        - button "Tables & Layout" [ref=e2640] [cursor=pointer]:
+          - img [ref=e2642]
+          - generic [ref=e2644]: Tables & Layout
+        - button "Itemised Consumption" [ref=e2645] [cursor=pointer]:
+          - img [ref=e2647]
+          - generic [ref=e2649]: Itemised Consumption
+        - button "Settings" [ref=e2650] [cursor=pointer]:
+          - img [ref=e2652]
+          - generic [ref=e2655]: Settings
+      - main [ref=e398]:
+        - generic [ref=e2656]:
+          - heading "Order Activity History" [level=3] [ref=e2657]
+          - paragraph [ref=e2658]: A log of items removed from orders and cleared orders before payment.
+          - paragraph [ref=e2659]: No order activity has been logged.
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

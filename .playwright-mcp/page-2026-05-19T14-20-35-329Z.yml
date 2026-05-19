@@ -1,0 +1,118 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e4031] [cursor=pointer]:
+          - img [ref=e4033]
+          - generic [ref=e4035]: Dashboard
+        - button "Analytics" [ref=e4036] [cursor=pointer]:
+          - img [ref=e4038]
+          - generic [ref=e4040]: Analytics
+        - button "Profit Analytics" [ref=e4041] [cursor=pointer]:
+          - img [ref=e4043]
+          - generic [ref=e4045]: Profit Analytics
+        - button "Transactions" [ref=e4046] [cursor=pointer]:
+          - img [ref=e4048]
+          - generic [ref=e4050]: Transactions
+        - button "Receipts 2" [ref=e4051] [cursor=pointer]:
+          - img [ref=e4053]
+          - generic [ref=e4055]: Receipts
+          - button "2" [ref=e4056]
+        - button "Activity Log" [ref=e4057] [cursor=pointer]:
+          - img [ref=e4059]
+          - generic [ref=e4061]: Activity Log
+        - button "Daily Closing Summary" [ref=e4062] [cursor=pointer]:
+          - img [ref=e4064]
+          - generic [ref=e4066]: Daily Closing Summary
+        - button "Customers" [ref=e4067] [cursor=pointer]:
+          - img [ref=e4069]
+          - generic [ref=e4071]: Customers
+        - button "Products" [ref=e4072] [cursor=pointer]:
+          - img [ref=e4074]
+          - generic [ref=e4076]: Products
+        - button "Categories" [ref=e4077] [cursor=pointer]:
+          - img [ref=e4079]
+          - generic [ref=e4081]: Categories
+        - button "Stock Items" [ref=e4082] [cursor=pointer]:
+          - img [ref=e4084]
+          - generic [ref=e4086]: Stock Items
+        - button "Inventory" [ref=e4087] [cursor=pointer]:
+          - img [ref=e4089]
+          - generic [ref=e4091]: Inventory
+        - button "Cost Management" [ref=e4092] [cursor=pointer]:
+          - img [ref=e4094]
+          - generic [ref=e4096]: Cost Management
+        - button "Inventory Counts" [ref=e4097] [cursor=pointer]:
+          - img [ref=e4099]
+          - generic [ref=e4101]: Inventory Counts
+        - button "Variance Reports" [ref=e4102] [cursor=pointer]:
+          - img [ref=e4104]
+          - generic [ref=e4106]: Variance Reports
+        - button "Users" [ref=e4107] [cursor=pointer]:
+          - img [ref=e4109]
+          - generic [ref=e4111]: Users
+        - button "Roles & Permissions" [ref=e4112] [cursor=pointer]:
+          - img [ref=e4114]
+          - generic [ref=e4116]: Roles & Permissions
+        - button "Venues" [ref=e4117] [cursor=pointer]:
+          - img [ref=e4119]
+          - generic [ref=e4121]: Venues
+        - button "Tills" [ref=e4122] [cursor=pointer]:
+          - img [ref=e4124]
+          - generic [ref=e4126]: Tills
+        - button "Tables & Layout" [ref=e4127] [cursor=pointer]:
+          - img [ref=e4129]
+          - generic [ref=e4131]: Tables & Layout
+        - button "Itemised Consumption" [ref=e4132] [cursor=pointer]:
+          - img [ref=e4134]
+          - generic [ref=e4136]: Itemised Consumption
+        - button "Settings" [ref=e4137] [cursor=pointer]:
+          - img [ref=e4139]
+          - generic [ref=e4142]: Settings
+      - main [ref=e398]:
+        - generic [ref=e4143]:
+          - generic [ref=e4144]:
+            - heading "User Management" [level=3] [ref=e4145]
+            - button "Add User" [ref=e4146] [cursor=pointer]
+          - generic [ref=e4147]:
+            - generic [ref=e4148]:
+              - generic [ref=e4149]:
+                - paragraph [ref=e4150]: Admin User
+                - paragraph [ref=e4151]: admin - Admin
+              - generic [ref=e4152]:
+                - button "Roles" [ref=e4153] [cursor=pointer]
+                - button "Report" [ref=e4154] [cursor=pointer]
+                - button "Edit" [ref=e4155] [cursor=pointer]
+                - button "Delete" [ref=e4156] [cursor=pointer]
+            - generic [ref=e4157]:
+              - generic [ref=e4158]:
+                - paragraph [ref=e4159]: Cashier User
+                - paragraph [ref=e4160]: cashier - Cashier
+              - generic [ref=e4161]:
+                - button "Roles" [ref=e4162] [cursor=pointer]
+                - button "Report" [ref=e4163] [cursor=pointer]
+                - button "Edit" [ref=e4164] [cursor=pointer]
+                - button "Delete" [ref=e4165] [cursor=pointer]
+            - generic [ref=e4166]:
+              - generic [ref=e4167]:
+                - paragraph [ref=e4168]: Manager User
+                - paragraph [ref=e4169]: manager - Admin
+              - generic [ref=e4170]:
+                - button "Roles" [ref=e4171] [cursor=pointer]
+                - button "Report" [ref=e4172] [cursor=pointer]
+                - button "Edit" [ref=e4173] [cursor=pointer]
+                - button "Delete" [ref=e4174] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

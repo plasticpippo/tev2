@@ -1,0 +1,137 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e1524] [cursor=pointer]:
+          - img [ref=e1526]
+          - generic [ref=e1528]: Dashboard
+        - button "Analytics" [ref=e1529] [cursor=pointer]:
+          - img [ref=e1531]
+          - generic [ref=e1533]: Analytics
+        - button "Profit Analytics" [ref=e1534] [cursor=pointer]:
+          - img [ref=e1536]
+          - generic [ref=e1538]: Profit Analytics
+        - button "Transactions" [ref=e1539] [cursor=pointer]:
+          - img [ref=e1541]
+          - generic [ref=e1543]: Transactions
+        - button "Receipts 2" [ref=e1544] [cursor=pointer]:
+          - img [ref=e1546]
+          - generic [ref=e1548]: Receipts
+          - button "2" [ref=e1549]
+        - button "Activity Log" [ref=e1550] [cursor=pointer]:
+          - img [ref=e1552]
+          - generic [ref=e1554]: Activity Log
+        - button "Daily Closing Summary" [ref=e1555] [cursor=pointer]:
+          - img [ref=e1557]
+          - generic [ref=e1559]: Daily Closing Summary
+        - button "Customers" [ref=e1560] [cursor=pointer]:
+          - img [ref=e1562]
+          - generic [ref=e1564]: Customers
+        - button "Products" [ref=e1565] [cursor=pointer]:
+          - img [ref=e1567]
+          - generic [ref=e1569]: Products
+        - button "Categories" [ref=e1570] [cursor=pointer]:
+          - img [ref=e1572]
+          - generic [ref=e1574]: Categories
+        - button "Stock Items" [ref=e1575] [cursor=pointer]:
+          - img [ref=e1577]
+          - generic [ref=e1579]: Stock Items
+        - button "Inventory" [ref=e1580] [cursor=pointer]:
+          - img [ref=e1582]
+          - generic [ref=e1584]: Inventory
+        - button "Cost Management" [ref=e1585] [cursor=pointer]:
+          - img [ref=e1587]
+          - generic [ref=e1589]: Cost Management
+        - button "Inventory Counts" [ref=e1590] [cursor=pointer]:
+          - img [ref=e1592]
+          - generic [ref=e1594]: Inventory Counts
+        - button "Variance Reports" [ref=e1595] [cursor=pointer]:
+          - img [ref=e1597]
+          - generic [ref=e1599]: Variance Reports
+        - button "Users" [ref=e1600] [cursor=pointer]:
+          - img [ref=e1602]
+          - generic [ref=e1604]: Users
+        - button "Roles & Permissions" [ref=e1605] [cursor=pointer]:
+          - img [ref=e1607]
+          - generic [ref=e1609]: Roles & Permissions
+        - button "Venues" [ref=e1610] [cursor=pointer]:
+          - img [ref=e1612]
+          - generic [ref=e1614]: Venues
+        - button "Tills" [ref=e1615] [cursor=pointer]:
+          - img [ref=e1617]
+          - generic [ref=e1619]: Tills
+        - button "Tables & Layout" [ref=e1620] [cursor=pointer]:
+          - img [ref=e1622]
+          - generic [ref=e1624]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1625] [cursor=pointer]:
+          - img [ref=e1627]
+          - generic [ref=e1629]: Itemised Consumption
+        - button "Settings" [ref=e1630] [cursor=pointer]:
+          - img [ref=e1632]
+          - generic [ref=e1635]: Settings
+      - main [ref=e398]:
+        - generic [ref=e1636]:
+          - generic [ref=e1637]:
+            - heading "Category Management" [level=3] [ref=e1638]
+            - button "Add Category" [ref=e1639] [cursor=pointer]
+          - generic [ref=e1641]:
+            - textbox "Search categories..." [ref=e1642]
+            - generic:
+              - img
+          - generic [ref=e1643]:
+            - generic [ref=e1644]:
+              - generic [ref=e1645]:
+                - paragraph [ref=e1646]: Wine
+                - paragraph [ref=e1647]: "Visible on: All Tills"
+              - generic [ref=e1648]:
+                - button "Edit" [ref=e1649] [cursor=pointer]
+                - button "Delete" [ref=e1650] [cursor=pointer]
+            - generic [ref=e1651]:
+              - generic [ref=e1652]:
+                - paragraph [ref=e1653]: Beer
+                - paragraph [ref=e1654]: "Visible on: All Tills"
+              - generic [ref=e1655]:
+                - button "Edit" [ref=e1656] [cursor=pointer]
+                - button "Delete" [ref=e1657] [cursor=pointer]
+            - generic [ref=e1658]:
+              - generic [ref=e1659]:
+                - paragraph [ref=e1660]: Cocktails
+                - paragraph [ref=e1661]: "Visible on: All Tills"
+              - generic [ref=e1662]:
+                - button "Edit" [ref=e1663] [cursor=pointer]
+                - button "Delete" [ref=e1664] [cursor=pointer]
+            - generic [ref=e1665]:
+              - generic [ref=e1666]:
+                - paragraph [ref=e1667]: Spirits
+                - paragraph [ref=e1668]: "Visible on: All Tills"
+              - generic [ref=e1669]:
+                - button "Edit" [ref=e1670] [cursor=pointer]
+                - button "Delete" [ref=e1671] [cursor=pointer]
+            - generic [ref=e1672]:
+              - generic [ref=e1673]:
+                - paragraph [ref=e1674]: Soft Drinks
+                - paragraph [ref=e1675]: "Visible on: All Tills"
+              - generic [ref=e1676]:
+                - button "Edit" [ref=e1677] [cursor=pointer]
+                - button "Delete" [ref=e1678] [cursor=pointer]
+            - generic [ref=e1679]:
+              - generic [ref=e1680]:
+                - paragraph [ref=e1681]: Coffee
+                - paragraph [ref=e1682]: "Visible on: All Tills"
+              - generic [ref=e1683]:
+                - button "Edit" [ref=e1684] [cursor=pointer]
+                - button "Delete" [ref=e1685] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

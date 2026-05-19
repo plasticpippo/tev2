@@ -1,0 +1,134 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e3606] [cursor=pointer]:
+          - img [ref=e3608]
+          - generic [ref=e3610]: Dashboard
+        - button "Analytics" [ref=e3611] [cursor=pointer]:
+          - img [ref=e3613]
+          - generic [ref=e3615]: Analytics
+        - button "Profit Analytics" [ref=e3616] [cursor=pointer]:
+          - img [ref=e3618]
+          - generic [ref=e3620]: Profit Analytics
+        - button "Transactions" [ref=e3621] [cursor=pointer]:
+          - img [ref=e3623]
+          - generic [ref=e3625]: Transactions
+        - button "Receipts 2" [ref=e3626] [cursor=pointer]:
+          - img [ref=e3628]
+          - generic [ref=e3630]: Receipts
+          - button "2" [ref=e3631]
+        - button "Activity Log" [ref=e3632] [cursor=pointer]:
+          - img [ref=e3634]
+          - generic [ref=e3636]: Activity Log
+        - button "Daily Closing Summary" [ref=e3637] [cursor=pointer]:
+          - img [ref=e3639]
+          - generic [ref=e3641]: Daily Closing Summary
+        - button "Customers" [ref=e3642] [cursor=pointer]:
+          - img [ref=e3644]
+          - generic [ref=e3646]: Customers
+        - button "Products" [ref=e3647] [cursor=pointer]:
+          - img [ref=e3649]
+          - generic [ref=e3651]: Products
+        - button "Categories" [ref=e3652] [cursor=pointer]:
+          - img [ref=e3654]
+          - generic [ref=e3656]: Categories
+        - button "Stock Items" [ref=e3657] [cursor=pointer]:
+          - img [ref=e3659]
+          - generic [ref=e3661]: Stock Items
+        - button "Inventory" [ref=e3662] [cursor=pointer]:
+          - img [ref=e3664]
+          - generic [ref=e3666]: Inventory
+        - button "Cost Management" [ref=e3667] [cursor=pointer]:
+          - img [ref=e3669]
+          - generic [ref=e3671]: Cost Management
+        - button "Inventory Counts" [ref=e3672] [cursor=pointer]:
+          - img [ref=e3674]
+          - generic [ref=e3676]: Inventory Counts
+        - button "Variance Reports" [ref=e3677] [cursor=pointer]:
+          - img [ref=e3679]
+          - generic [ref=e3681]: Variance Reports
+        - button "Users" [ref=e3682] [cursor=pointer]:
+          - img [ref=e3684]
+          - generic [ref=e3686]: Users
+        - button "Roles & Permissions" [ref=e3687] [cursor=pointer]:
+          - img [ref=e3689]
+          - generic [ref=e3691]: Roles & Permissions
+        - button "Venues" [ref=e3692] [cursor=pointer]:
+          - img [ref=e3694]
+          - generic [ref=e3696]: Venues
+        - button "Tills" [ref=e3697] [cursor=pointer]:
+          - img [ref=e3699]
+          - generic [ref=e3701]: Tills
+        - button "Tables & Layout" [ref=e3702] [cursor=pointer]:
+          - img [ref=e3704]
+          - generic [ref=e3706]: Tables & Layout
+        - button "Itemised Consumption" [ref=e3707] [cursor=pointer]:
+          - img [ref=e3709]
+          - generic [ref=e3711]: Itemised Consumption
+        - button "Settings" [ref=e3712] [cursor=pointer]:
+          - img [ref=e3714]
+          - generic [ref=e3717]: Settings
+      - main [ref=e398]:
+        - generic [ref=e3718]:
+          - generic [ref=e3719]:
+            - heading "Daily Closing Summaries" [level=1] [ref=e3720]
+            - paragraph [ref=e3721]: View detailed breakdowns of daily business closings
+          - generic [ref=e3723]:
+            - generic [ref=e3724]:
+              - generic [ref=e3725]: From Date
+              - textbox [ref=e3726]
+            - generic [ref=e3727]:
+              - generic [ref=e3728]: To Date
+              - textbox [ref=e3729]
+            - button "Clear Filters" [ref=e3731] [cursor=pointer]
+          - generic [ref=e3732]:
+            - generic [ref=e3733]:
+              - heading "Total Transactions" [level=3] [ref=e3734]
+              - paragraph [ref=e3735]: "0"
+            - generic [ref=e3736]:
+              - heading "Total Sales" [level=3] [ref=e3737]
+              - paragraph [ref=e3738]: €0.00
+            - generic [ref=e3739]:
+              - heading "Total Tax" [level=3] [ref=e3740]
+              - paragraph [ref=e3741]: €0.00
+            - generic [ref=e3742]:
+              - heading "Total Tips" [level=3] [ref=e3743]
+              - paragraph [ref=e3744]: €0.00
+          - table [ref=e3747]:
+            - rowgroup [ref=e3748]:
+              - row "Date/Time User Transactions Total Sales Actions" [ref=e3749]:
+                - columnheader "Date/Time" [ref=e3750]
+                - columnheader "User" [ref=e3751]
+                - columnheader "Transactions" [ref=e3752]
+                - columnheader "Total Sales" [ref=e3753]
+                - columnheader "Actions" [ref=e3754]
+            - rowgroup [ref=e3755]:
+              - row "Apr 21, 2026 08:05 Admin User 0 €0.00 View Details" [ref=e3756] [cursor=pointer]:
+                - cell "Apr 21, 2026 08:05" [ref=e3757]:
+                  - generic [ref=e3758]: Apr 21, 2026 08:05
+                - cell "Admin User" [ref=e3759]:
+                  - generic [ref=e3760]: Admin User
+                - cell "0" [ref=e3761]:
+                  - generic [ref=e3762]: "0"
+                - cell "€0.00" [ref=e3763]:
+                  - generic [ref=e3764]: €0.00
+                - cell "View Details" [ref=e3765]:
+                  - button "View Details" [ref=e3766]
+          - generic [ref=e3767]:
+            - heading "Combined Payment Methods" [level=3] [ref=e3769]
+            - heading "Combined Till Summary" [level=3] [ref=e3771]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

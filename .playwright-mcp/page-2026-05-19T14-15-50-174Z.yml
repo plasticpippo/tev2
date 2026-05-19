@@ -1,0 +1,215 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e1686] [cursor=pointer]:
+          - img [ref=e1688]
+          - generic [ref=e1690]: Dashboard
+        - button "Analytics" [ref=e1691] [cursor=pointer]:
+          - img [ref=e1693]
+          - generic [ref=e1695]: Analytics
+        - button "Profit Analytics" [ref=e1696] [cursor=pointer]:
+          - img [ref=e1698]
+          - generic [ref=e1700]: Profit Analytics
+        - button "Transactions" [ref=e1701] [cursor=pointer]:
+          - img [ref=e1703]
+          - generic [ref=e1705]: Transactions
+        - button "Receipts 2" [ref=e1706] [cursor=pointer]:
+          - img [ref=e1708]
+          - generic [ref=e1710]: Receipts
+          - button "2" [ref=e1711]
+        - button "Activity Log" [ref=e1712] [cursor=pointer]:
+          - img [ref=e1714]
+          - generic [ref=e1716]: Activity Log
+        - button "Daily Closing Summary" [ref=e1717] [cursor=pointer]:
+          - img [ref=e1719]
+          - generic [ref=e1721]: Daily Closing Summary
+        - button "Customers" [ref=e1722] [cursor=pointer]:
+          - img [ref=e1724]
+          - generic [ref=e1726]: Customers
+        - button "Products" [ref=e1727] [cursor=pointer]:
+          - img [ref=e1729]
+          - generic [ref=e1731]: Products
+        - button "Categories" [ref=e1732] [cursor=pointer]:
+          - img [ref=e1734]
+          - generic [ref=e1736]: Categories
+        - button "Stock Items" [ref=e1737] [cursor=pointer]:
+          - img [ref=e1739]
+          - generic [ref=e1741]: Stock Items
+        - button "Inventory" [ref=e1742] [cursor=pointer]:
+          - img [ref=e1744]
+          - generic [ref=e1746]: Inventory
+        - button "Cost Management" [ref=e1747] [cursor=pointer]:
+          - img [ref=e1749]
+          - generic [ref=e1751]: Cost Management
+        - button "Inventory Counts" [ref=e1752] [cursor=pointer]:
+          - img [ref=e1754]
+          - generic [ref=e1756]: Inventory Counts
+        - button "Variance Reports" [ref=e1757] [cursor=pointer]:
+          - img [ref=e1759]
+          - generic [ref=e1761]: Variance Reports
+        - button "Users" [ref=e1762] [cursor=pointer]:
+          - img [ref=e1764]
+          - generic [ref=e1766]: Users
+        - button "Roles & Permissions" [ref=e1767] [cursor=pointer]:
+          - img [ref=e1769]
+          - generic [ref=e1771]: Roles & Permissions
+        - button "Venues" [ref=e1772] [cursor=pointer]:
+          - img [ref=e1774]
+          - generic [ref=e1776]: Venues
+        - button "Tills" [ref=e1777] [cursor=pointer]:
+          - img [ref=e1779]
+          - generic [ref=e1781]: Tills
+        - button "Tables & Layout" [ref=e1782] [cursor=pointer]:
+          - img [ref=e1784]
+          - generic [ref=e1786]: Tables & Layout
+        - button "Itemised Consumption" [ref=e1787] [cursor=pointer]:
+          - img [ref=e1789]
+          - generic [ref=e1791]: Itemised Consumption
+        - button "Settings" [ref=e1792] [cursor=pointer]:
+          - img [ref=e1794]
+          - generic [ref=e1797]: Settings
+      - main [ref=e398]:
+        - generic [ref=e1798]:
+          - generic [ref=e1799]:
+            - heading "Stock Items" [level=3] [ref=e1800]
+            - button "Add Stock Item" [ref=e1801] [cursor=pointer]
+          - generic [ref=e1803]:
+            - textbox "Search stock items..." [ref=e1804]
+            - generic:
+              - img
+          - generic [ref=e1805]:
+            - generic [ref=e1806]:
+              - generic [ref=e1807]:
+                - paragraph [ref=e1808]: Vodka
+                - paragraph [ref=e1809]: Ingredient (Tracked in cl)
+              - generic [ref=e1810]:
+                - generic [ref=e1811]: 500 cl in stock
+                - button "Edit" [ref=e1812] [cursor=pointer]
+                - button "Delete" [ref=e1813] [cursor=pointer]
+            - generic [ref=e1814]:
+              - generic [ref=e1815]:
+                - paragraph [ref=e1816]: Gin
+                - paragraph [ref=e1817]: Ingredient (Tracked in cl)
+              - generic [ref=e1818]:
+                - generic [ref=e1819]: 400 cl in stock
+                - button "Edit" [ref=e1820] [cursor=pointer]
+                - button "Delete" [ref=e1821] [cursor=pointer]
+            - generic [ref=e1822]:
+              - generic [ref=e1823]:
+                - paragraph [ref=e1824]: Rum
+                - paragraph [ref=e1825]: Ingredient (Tracked in cl)
+              - generic [ref=e1826]:
+                - generic [ref=e1827]: 350 cl in stock
+                - button "Edit" [ref=e1828] [cursor=pointer]
+                - button "Delete" [ref=e1829] [cursor=pointer]
+            - generic [ref=e1830]:
+              - generic [ref=e1831]:
+                - paragraph [ref=e1832]: Campari
+                - paragraph [ref=e1833]: Ingredient (Tracked in cl)
+              - generic [ref=e1834]:
+                - generic [ref=e1835]: 300 cl in stock
+                - button "Edit" [ref=e1836] [cursor=pointer]
+                - button "Delete" [ref=e1837] [cursor=pointer]
+            - generic [ref=e1838]:
+              - generic [ref=e1839]:
+                - paragraph [ref=e1840]: Sweet Vermouth
+                - paragraph [ref=e1841]: Ingredient (Tracked in cl)
+              - generic [ref=e1842]:
+                - generic [ref=e1843]: 200 cl in stock
+                - button "Edit" [ref=e1844] [cursor=pointer]
+                - button "Delete" [ref=e1845] [cursor=pointer]
+            - generic [ref=e1846]:
+              - generic [ref=e1847]:
+                - paragraph [ref=e1848]: Lime Juice
+                - paragraph [ref=e1849]: Ingredient (Tracked in ml)
+              - generic [ref=e1850]:
+                - generic [ref=e1851]: 2000 ml in stock
+                - button "Edit" [ref=e1852] [cursor=pointer]
+                - button "Delete" [ref=e1853] [cursor=pointer]
+            - generic [ref=e1854]:
+              - generic [ref=e1855]:
+                - paragraph [ref=e1856]: Mint Leaves
+                - paragraph [ref=e1857]: Ingredient (Tracked in g)
+              - generic [ref=e1858]:
+                - generic [ref=e1859]: 500 g in stock
+                - button "Edit" [ref=e1860] [cursor=pointer]
+                - button "Delete" [ref=e1861] [cursor=pointer]
+            - generic [ref=e1862]:
+              - generic [ref=e1863]:
+                - paragraph [ref=e1864]: Coffee Beans
+                - paragraph [ref=e1865]: Ingredient (Tracked in g)
+              - generic [ref=e1866]:
+                - generic [ref=e1867]: 5000 g in stock
+                - button "Edit" [ref=e1868] [cursor=pointer]
+                - button "Delete" [ref=e1869] [cursor=pointer]
+            - generic [ref=e1870]:
+              - generic [ref=e1871]:
+                - paragraph [ref=e1872]: Sugar Syrup
+                - paragraph [ref=e1873]: Ingredient (Tracked in ml)
+              - generic [ref=e1874]:
+                - generic [ref=e1875]: 3000 ml in stock
+                - button "Edit" [ref=e1876] [cursor=pointer]
+                - button "Delete" [ref=e1877] [cursor=pointer]
+            - generic [ref=e1878]:
+              - generic [ref=e1879]:
+                - paragraph [ref=e1880]: Beer Keg IPA
+                - paragraph [ref=e1881]: Ingredient (Tracked in cl)
+              - generic [ref=e1882]:
+                - generic [ref=e1883]: 3000 cl in stock
+                - button "Edit" [ref=e1884] [cursor=pointer]
+                - button "Delete" [ref=e1885] [cursor=pointer]
+            - generic [ref=e1886]:
+              - generic [ref=e1887]:
+                - paragraph [ref=e1888]: Coca Cola Can
+                - paragraph [ref=e1889]: Sellable Good (Tracked in unit)
+              - generic [ref=e1890]:
+                - generic [ref=e1891]: 120 unit in stock
+                - button "Edit" [ref=e1892] [cursor=pointer]
+                - button "Delete" [ref=e1893] [cursor=pointer]
+            - generic [ref=e1894]:
+              - generic [ref=e1895]:
+                - paragraph [ref=e1896]: Sparkling Water Bottle
+                - paragraph [ref=e1897]: Sellable Good (Tracked in unit)
+              - generic [ref=e1898]:
+                - generic [ref=e1899]: 80 unit in stock
+                - button "Edit" [ref=e1900] [cursor=pointer]
+                - button "Delete" [ref=e1901] [cursor=pointer]
+            - generic [ref=e1902]:
+              - generic [ref=e1903]:
+                - paragraph [ref=e1904]: Wine Bottle Chianti
+                - paragraph [ref=e1905]: Sellable Good (Tracked in unit)
+              - generic [ref=e1906]:
+                - generic [ref=e1907]: 48 unit in stock
+                - button "Edit" [ref=e1908] [cursor=pointer]
+                - button "Delete" [ref=e1909] [cursor=pointer]
+            - generic [ref=e1910]:
+              - generic [ref=e1911]:
+                - paragraph [ref=e1912]: Wine Bottle Prosecco
+                - paragraph [ref=e1913]: Sellable Good (Tracked in unit)
+              - generic [ref=e1914]:
+                - generic [ref=e1915]: 36 unit in stock
+                - button "Edit" [ref=e1916] [cursor=pointer]
+                - button "Delete" [ref=e1917] [cursor=pointer]
+            - generic [ref=e1918]:
+              - generic [ref=e1919]:
+                - paragraph [ref=e1920]: Beer Keg Lager
+                - paragraph [ref=e1921]: Ingredient (Tracked in cl)
+              - generic [ref=e1922]:
+                - generic [ref=e1923]: 4950 cl in stock
+                - button "Edit" [ref=e1924] [cursor=pointer]
+                - button "Delete" [ref=e1925] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

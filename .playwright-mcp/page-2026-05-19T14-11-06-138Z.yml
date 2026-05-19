@@ -1,0 +1,75 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e7]:
+      - button "Enter Fullscreen" [ref=e8] [cursor=pointer]:
+        - img [ref=e9]
+      - button "Admin Panel" [ref=e11] [cursor=pointer]
+    - main [ref=e12]:
+      - generic [ref=e13]:
+        - generic [ref=e16]:
+          - generic [ref=e17]:
+            - heading "Products" [level=2] [ref=e18]
+            - generic [ref=e19]:
+              - button "Favourites" [ref=e20] [cursor=pointer]
+              - button "Wine" [active] [ref=e21] [cursor=pointer]
+              - button "Beer" [ref=e22] [cursor=pointer]
+              - button "Cocktails" [ref=e23] [cursor=pointer]
+              - button "Spirits" [ref=e24] [cursor=pointer]
+              - button "Soft Drinks" [ref=e25] [cursor=pointer]
+              - button "Coffee" [ref=e26] [cursor=pointer]
+              - button "All" [ref=e27] [cursor=pointer]
+          - generic [ref=e30]:
+            - generic [ref=e31] [cursor=pointer]:
+              - paragraph [ref=e32]: Chianti Classico
+              - generic [ref=e33]:
+                - paragraph [ref=e34]: Glass
+                - paragraph [ref=e35]: €7,00
+              - generic [ref=e36]: FAV
+            - generic [ref=e108] [cursor=pointer]:
+              - paragraph [ref=e109]: Chianti Classico
+              - generic [ref=e110]:
+                - paragraph [ref=e111]: Bottle
+                - paragraph [ref=e112]: €28,00
+            - generic [ref=e113] [cursor=pointer]:
+              - paragraph [ref=e114]: Prosecco
+              - generic [ref=e115]:
+                - paragraph [ref=e116]: Glass
+                - paragraph [ref=e117]: €6,50
+            - generic [ref=e118] [cursor=pointer]:
+              - paragraph [ref=e119]: Prosecco
+              - generic [ref=e120]:
+                - paragraph [ref=e121]: Bottle
+                - paragraph [ref=e122]: €24,00
+        - generic [ref=e74]:
+          - generic [ref=e75]:
+            - generic [ref=e76]:
+              - paragraph [ref=e77]: "Logged in as:"
+              - paragraph [ref=e78]:
+                - text: Admin User
+                - generic [ref=e79]: (Admin)
+            - button "Logout" [ref=e80] [cursor=pointer]
+          - generic [ref=e81]:
+            - heading "Current Order" [level=2] [ref=e82]
+            - generic [ref=e86]:
+              - generic [ref=e87]:
+                - paragraph [ref=e88]: Chianti Classico - Glass
+                - paragraph [ref=e89]: €7,00
+              - generic [ref=e90]:
+                - button "-" [ref=e91] [cursor=pointer]
+                - generic [ref=e92]: "1"
+                - button "+" [ref=e93] [cursor=pointer]
+          - button "EDIT Edit Layout" [ref=e95] [cursor=pointer]:
+            - generic [ref=e96]: EDIT
+            - generic [ref=e97]: Edit Layout
+          - generic [ref=e98]:
+            - generic [ref=e99]:
+              - generic [ref=e100]: Subtotal
+              - generic [ref=e101]: €7,00
+            - generic [ref=e102]:
+              - button "Manage Tabs" [ref=e103] [cursor=pointer]
+              - button "Clear" [ref=e104] [cursor=pointer]
+            - generic [ref=e105]:
+              - button "ASSIGN TABLE" [ref=e106] [cursor=pointer]
+              - button "Payment" [ref=e107] [cursor=pointer]
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

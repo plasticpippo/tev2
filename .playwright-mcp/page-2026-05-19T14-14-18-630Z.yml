@@ -1,0 +1,171 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e794] [cursor=pointer]:
+          - img [ref=e796]
+          - generic [ref=e798]: Dashboard
+        - button "Analytics" [ref=e799] [cursor=pointer]:
+          - img [ref=e801]
+          - generic [ref=e803]: Analytics
+        - button "Profit Analytics" [ref=e804] [cursor=pointer]:
+          - img [ref=e806]
+          - generic [ref=e808]: Profit Analytics
+        - button "Transactions" [ref=e809] [cursor=pointer]:
+          - img [ref=e811]
+          - generic [ref=e813]: Transactions
+        - button "Receipts 2" [ref=e814] [cursor=pointer]:
+          - img [ref=e816]
+          - generic [ref=e818]: Receipts
+          - button "2" [ref=e819]
+        - button "Activity Log" [ref=e820] [cursor=pointer]:
+          - img [ref=e822]
+          - generic [ref=e824]: Activity Log
+        - button "Daily Closing Summary" [ref=e825] [cursor=pointer]:
+          - img [ref=e827]
+          - generic [ref=e829]: Daily Closing Summary
+        - button "Customers" [ref=e830] [cursor=pointer]:
+          - img [ref=e832]
+          - generic [ref=e834]: Customers
+        - button "Products" [ref=e835] [cursor=pointer]:
+          - img [ref=e837]
+          - generic [ref=e839]: Products
+        - button "Categories" [ref=e840] [cursor=pointer]:
+          - img [ref=e842]
+          - generic [ref=e844]: Categories
+        - button "Stock Items" [ref=e845] [cursor=pointer]:
+          - img [ref=e847]
+          - generic [ref=e849]: Stock Items
+        - button "Inventory" [ref=e850] [cursor=pointer]:
+          - img [ref=e852]
+          - generic [ref=e854]: Inventory
+        - button "Cost Management" [ref=e855] [cursor=pointer]:
+          - img [ref=e857]
+          - generic [ref=e859]: Cost Management
+        - button "Inventory Counts" [ref=e860] [cursor=pointer]:
+          - img [ref=e862]
+          - generic [ref=e864]: Inventory Counts
+        - button "Variance Reports" [ref=e865] [cursor=pointer]:
+          - img [ref=e867]
+          - generic [ref=e869]: Variance Reports
+        - button "Users" [ref=e870] [cursor=pointer]:
+          - img [ref=e872]
+          - generic [ref=e874]: Users
+        - button "Roles & Permissions" [ref=e875] [cursor=pointer]:
+          - img [ref=e877]
+          - generic [ref=e879]: Roles & Permissions
+        - button "Venues" [ref=e880] [cursor=pointer]:
+          - img [ref=e882]
+          - generic [ref=e884]: Venues
+        - button "Tills" [ref=e885] [cursor=pointer]:
+          - img [ref=e887]
+          - generic [ref=e889]: Tills
+        - button "Tables & Layout" [ref=e890] [cursor=pointer]:
+          - img [ref=e892]
+          - generic [ref=e894]: Tables & Layout
+        - button "Itemised Consumption" [ref=e895] [cursor=pointer]:
+          - img [ref=e897]
+          - generic [ref=e899]: Itemised Consumption
+        - button "Settings" [ref=e900] [cursor=pointer]:
+          - img [ref=e902]
+          - generic [ref=e905]: Settings
+      - main [ref=e398]:
+        - generic [ref=e906]:
+          - heading "Transactions" [level=2] [ref=e907]
+          - generic [ref=e908]:
+            - generic [ref=e909]:
+              - button "Filter by Today" [ref=e964] [cursor=pointer]: Today
+              - button "Filter by Yesterday" [ref=e965] [cursor=pointer]: Yesterday
+              - button "Filter by Last 7 Days" [ref=e966] [cursor=pointer]: Last 7 Days
+              - button "Filter by Last 30 Days" [pressed] [ref=e967] [cursor=pointer]: Last 30 Days
+              - button "Filter by custom date range" [ref=e914] [cursor=pointer]: Custom
+            - generic [ref=e916]:
+              - generic [ref=e917]:
+                - generic [ref=e918]: Till
+                - combobox "Filter by till" [ref=e919]:
+                  - option "All Tills" [selected]
+                  - option "Main Bar"
+                  - option "Patio"
+              - generic [ref=e920]:
+                - generic [ref=e921]: User
+                - combobox "Filter by user" [ref=e922]:
+                  - option "All Users" [selected]
+                  - option "Admin User"
+                  - option "Cashier User"
+                  - option "Manager User"
+          - generic [ref=e923]: 4 transactions found
+          - generic [ref=e924]:
+            - generic [ref=e925]:
+              - button "View details for transaction 4" [active] [ref=e927] [cursor=pointer]:
+                - generic [ref=e928]:
+                  - generic [ref=e929]: €22,61
+                  - generic [ref=e930]: Main Bar
+                - generic [ref=e931]:
+                  - generic [ref=e932]: admin (Cash)
+                  - generic [ref=e933]: 19/05/2026, 16:12
+              - button "View details for transaction 3" [ref=e935] [cursor=pointer]:
+                - generic [ref=e936]:
+                  - generic [ref=e937]: €35,92
+                  - generic [ref=e938]: Main Bar
+                - generic [ref=e939]:
+                  - generic [ref=e940]: Cashier User (card)
+                  - generic [ref=e941]: 22/04/2026, 11:45
+              - button "View details for transaction 2" [ref=e943] [cursor=pointer]:
+                - generic [ref=e944]:
+                  - generic [ref=e945]: €40,46
+                  - generic [ref=e946]: Main Bar
+                - generic [ref=e947]:
+                  - generic [ref=e948]: Admin User (cash)
+                  - generic [ref=e949]: 21/04/2026, 20:15
+                - generic [ref=e951]: "Receipt #R-000002"
+              - button "View details for transaction 1" [ref=e953] [cursor=pointer]:
+                - generic [ref=e954]:
+                  - generic [ref=e955]: €50,60
+                  - generic [ref=e956]: Main Bar
+                - generic [ref=e957]:
+                  - generic [ref=e958]: Cashier User (card)
+                  - generic [ref=e959]: 21/04/2026, 16:30
+                - generic [ref=e961]: "Receipt #R-000001"
+            - generic [ref=e968]:
+              - 'heading "Receipt #4" [level=4] [ref=e969]'
+              - paragraph [ref=e970]: 19/05/2026, 16:12
+              - generic [ref=e971]:
+                - generic [ref=e972]:
+                  - generic [ref=e973]: 2 x Chianti Classico - Glass
+                  - generic [ref=e974]: €14,00
+                - generic [ref=e975]:
+                  - generic [ref=e976]: 1 x Lager - Draft
+                  - generic [ref=e977]: €5,00
+              - generic [ref=e978]:
+                - generic [ref=e979]:
+                  - generic [ref=e980]: Subtotal
+                  - generic [ref=e981]: €19,00
+                - generic [ref=e982]:
+                  - generic [ref=e983]: Tax
+                  - generic [ref=e984]: €3,61
+                - generic [ref=e985]:
+                  - generic [ref=e986]: Tip
+                  - generic [ref=e987]: €0,00
+                - generic [ref=e988]:
+                  - generic [ref=e989]: Total
+                  - generic [ref=e990]: €22,61
+              - button "Generate Receipt" [ref=e992] [cursor=pointer]:
+                - img [ref=e993]
+                - text: Generate Receipt
+              - button "Void transaction" [ref=e996] [cursor=pointer]:
+                - img [ref=e997]
+                - text: Void Transaction
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

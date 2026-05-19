@@ -1,0 +1,160 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e4589] [cursor=pointer]:
+          - img [ref=e4591]
+          - generic [ref=e4593]: Dashboard
+        - button "Analytics" [ref=e4594] [cursor=pointer]:
+          - img [ref=e4596]
+          - generic [ref=e4598]: Analytics
+        - button "Profit Analytics" [ref=e4599] [cursor=pointer]:
+          - img [ref=e4601]
+          - generic [ref=e4603]: Profit Analytics
+        - button "Transactions" [ref=e4604] [cursor=pointer]:
+          - img [ref=e4606]
+          - generic [ref=e4608]: Transactions
+        - button "Receipts" [ref=e4609] [cursor=pointer]:
+          - img [ref=e4611]
+          - generic [ref=e4613]: Receipts
+        - button "Activity Log" [ref=e4614] [cursor=pointer]:
+          - img [ref=e4616]
+          - generic [ref=e4618]: Activity Log
+        - button "Daily Closing Summary" [ref=e4619] [cursor=pointer]:
+          - img [ref=e4621]
+          - generic [ref=e4623]: Daily Closing Summary
+        - button "Customers" [ref=e4624] [cursor=pointer]:
+          - img [ref=e4626]
+          - generic [ref=e4628]: Customers
+        - button "Products" [ref=e4629] [cursor=pointer]:
+          - img [ref=e4631]
+          - generic [ref=e4633]: Products
+        - button "Categories" [ref=e4634] [cursor=pointer]:
+          - img [ref=e4636]
+          - generic [ref=e4638]: Categories
+        - button "Stock Items" [ref=e4639] [cursor=pointer]:
+          - img [ref=e4641]
+          - generic [ref=e4643]: Stock Items
+        - button "Inventory" [ref=e4644] [cursor=pointer]:
+          - img [ref=e4646]
+          - generic [ref=e4648]: Inventory
+        - button "Cost Management" [ref=e4649] [cursor=pointer]:
+          - img [ref=e4651]
+          - generic [ref=e4653]: Cost Management
+        - button "Inventory Counts" [ref=e4654] [cursor=pointer]:
+          - img [ref=e4656]
+          - generic [ref=e4658]: Inventory Counts
+        - button "Variance Reports" [ref=e4659] [cursor=pointer]:
+          - img [ref=e4661]
+          - generic [ref=e4663]: Variance Reports
+        - button "Users" [ref=e4664] [cursor=pointer]:
+          - img [ref=e4666]
+          - generic [ref=e4668]: Users
+        - button "Roles & Permissions" [ref=e4669] [cursor=pointer]:
+          - img [ref=e4671]
+          - generic [ref=e4673]: Roles & Permissions
+        - button "Venues" [ref=e4674] [cursor=pointer]:
+          - img [ref=e4676]
+          - generic [ref=e4678]: Venues
+        - button "Tills" [ref=e4679] [cursor=pointer]:
+          - img [ref=e4681]
+          - generic [ref=e4683]: Tills
+        - button "Tables & Layout" [ref=e4684] [cursor=pointer]:
+          - img [ref=e4686]
+          - generic [ref=e4688]: Tables & Layout
+        - button "Itemised Consumption" [ref=e4689] [cursor=pointer]:
+          - img [ref=e4691]
+          - generic [ref=e4693]: Itemised Consumption
+        - button "Settings" [ref=e4694] [cursor=pointer]:
+          - img [ref=e4696]
+          - generic [ref=e4699]: Settings
+      - main [ref=e398]:
+        - generic [ref=e4510]:
+          - generic [ref=e4511]:
+            - heading "Current Business Day Sales (All Tills)" [level=2] [ref=e4512]
+            - generic [ref=e4513]:
+              - generic [ref=e4514]:
+                - paragraph [ref=e4515]: Gross Sales
+                - paragraph [ref=e4516]: €22.61
+              - generic [ref=e4517]:
+                - paragraph [ref=e4518]: Total Discounts
+                - paragraph [ref=e4519]: €0.00
+              - generic [ref=e4520]:
+                - paragraph [ref=e4521]: Net Sales
+                - paragraph [ref=e4522]: €22.61
+              - generic [ref=e4523]:
+                - paragraph [ref=e4524]: Total Cash
+                - paragraph [ref=e4525]: €22.61
+              - generic [ref=e4526]:
+                - paragraph [ref=e4527]: Total Card
+                - paragraph [ref=e4528]: €0.00
+              - generic [ref=e4529]:
+                - paragraph [ref=e4530]: Total Tax
+                - paragraph [ref=e4531]: €3.61
+              - generic [ref=e4532]:
+                - paragraph [ref=e4533]: Total Tips
+                - paragraph [ref=e4534]: €0.00
+          - generic [ref=e4535]:
+            - generic [ref=e4536]:
+              - heading "Business Day Management" [level=2] [ref=e4537]
+              - button "Close Current Business Day" [ref=e4539] [cursor=pointer]
+            - generic [ref=e4540]:
+              - heading "Recent Daily Closings" [level=2] [ref=e4541]
+              - generic [ref=e4542]: No recent closings
+          - generic [ref=e4544]:
+            - generic [ref=e4545]:
+              - heading "Till Status" [level=2] [ref=e4546]
+              - generic [ref=e4547]:
+                - generic [ref=e4548]:
+                  - generic [ref=e4549]:
+                    - generic [ref=e4550]:
+                      - heading "Main Bar" [level=3] [ref=e4551]
+                      - generic [ref=e4552]: Active
+                    - paragraph [ref=e4553]: "User: Admin User"
+                  - generic [ref=e4554]:
+                    - paragraph [ref=e4555]: Current Day Sales
+                    - paragraph [ref=e4556]: €22.61
+                    - generic [ref=e4557]:
+                      - generic [ref=e4558]:
+                        - generic [ref=e4559]: "Cash:"
+                        - generic [ref=e4560]: €22.61
+                      - generic [ref=e4561]:
+                        - generic [ref=e4562]: "Card:"
+                        - generic [ref=e4563]: €0.00
+                - generic [ref=e4564]:
+                  - generic [ref=e4565]:
+                    - generic [ref=e4566]:
+                      - heading "Patio" [level=3] [ref=e4567]
+                      - generic [ref=e4568]: Idle
+                    - paragraph [ref=e4569]: "User: No Activity"
+                  - generic [ref=e4570]:
+                    - paragraph [ref=e4571]: Current Day Sales
+                    - paragraph [ref=e4572]: €0.00
+                    - generic [ref=e4573]:
+                      - generic [ref=e4574]:
+                        - generic [ref=e4575]: "Cash:"
+                        - generic [ref=e4576]: €0.00
+                      - generic [ref=e4577]:
+                        - generic [ref=e4578]: "Card:"
+                        - generic [ref=e4579]: €0.00
+            - generic [ref=e4580]:
+              - heading "All Open Tabs" [level=2] [ref=e4581]
+              - generic [ref=e4584]:
+                - generic [ref=e4585]:
+                  - paragraph [ref=e4586]: Table Terrace A
+                  - paragraph [ref=e4587]: on Main Bar
+                - paragraph [ref=e4588]: €0,00
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]

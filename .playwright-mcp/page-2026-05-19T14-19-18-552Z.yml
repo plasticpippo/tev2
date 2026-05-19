@@ -1,0 +1,110 @@
+- generic [ref=e2]:
+  - generic [ref=e266]:
+    - banner [ref=e267]:
+      - generic [ref=e269]:
+        - heading "Admin Panel" [level=1] [ref=e270]
+        - paragraph [ref=e271]: Logged in as Admin User
+      - generic [ref=e272]:
+        - combobox [ref=e273]:
+          - option "Default Venue" [selected]
+          - option "test venue"
+        - button "Switch to POS" [ref=e274] [cursor=pointer]
+        - button "Logout" [ref=e275] [cursor=pointer]
+    - generic [ref=e276]:
+      - navigation [ref=e277]:
+        - button "Collapse sidebar" [ref=e279] [cursor=pointer]:
+          - img [ref=e280]
+        - button "Dashboard" [ref=e3464] [cursor=pointer]:
+          - img [ref=e3466]
+          - generic [ref=e3468]: Dashboard
+        - button "Analytics" [ref=e3469] [cursor=pointer]:
+          - img [ref=e3471]
+          - generic [ref=e3473]: Analytics
+        - button "Profit Analytics" [ref=e3474] [cursor=pointer]:
+          - img [ref=e3476]
+          - generic [ref=e3478]: Profit Analytics
+        - button "Transactions" [ref=e3479] [cursor=pointer]:
+          - img [ref=e3481]
+          - generic [ref=e3483]: Transactions
+        - button "Receipts 2" [ref=e3484] [cursor=pointer]:
+          - img [ref=e3486]
+          - generic [ref=e3488]: Receipts
+          - button "2" [ref=e3489]
+        - button "Activity Log" [ref=e3490] [cursor=pointer]:
+          - img [ref=e3492]
+          - generic [ref=e3494]: Activity Log
+        - button "Daily Closing Summary" [ref=e3495] [cursor=pointer]:
+          - img [ref=e3497]
+          - generic [ref=e3499]: Daily Closing Summary
+        - button "Customers" [ref=e3500] [cursor=pointer]:
+          - img [ref=e3502]
+          - generic [ref=e3504]: Customers
+        - button "Products" [ref=e3505] [cursor=pointer]:
+          - img [ref=e3507]
+          - generic [ref=e3509]: Products
+        - button "Categories" [ref=e3510] [cursor=pointer]:
+          - img [ref=e3512]
+          - generic [ref=e3514]: Categories
+        - button "Stock Items" [ref=e3515] [cursor=pointer]:
+          - img [ref=e3517]
+          - generic [ref=e3519]: Stock Items
+        - button "Inventory" [ref=e3520] [cursor=pointer]:
+          - img [ref=e3522]
+          - generic [ref=e3524]: Inventory
+        - button "Cost Management" [ref=e3525] [cursor=pointer]:
+          - img [ref=e3527]
+          - generic [ref=e3529]: Cost Management
+        - button "Inventory Counts" [ref=e3530] [cursor=pointer]:
+          - img [ref=e3532]
+          - generic [ref=e3534]: Inventory Counts
+        - button "Variance Reports" [ref=e3535] [cursor=pointer]:
+          - img [ref=e3537]
+          - generic [ref=e3539]: Variance Reports
+        - button "Users" [ref=e3540] [cursor=pointer]:
+          - img [ref=e3542]
+          - generic [ref=e3544]: Users
+        - button "Roles & Permissions" [ref=e3545] [cursor=pointer]:
+          - img [ref=e3547]
+          - generic [ref=e3549]: Roles & Permissions
+        - button "Venues" [ref=e3550] [cursor=pointer]:
+          - img [ref=e3552]
+          - generic [ref=e3554]: Venues
+        - button "Tills" [ref=e3555] [cursor=pointer]:
+          - img [ref=e3557]
+          - generic [ref=e3559]: Tills
+        - button "Tables & Layout" [ref=e3560] [cursor=pointer]:
+          - img [ref=e3562]
+          - generic [ref=e3564]: Tables & Layout
+        - button "Itemised Consumption" [ref=e3565] [cursor=pointer]:
+          - img [ref=e3567]
+          - generic [ref=e3569]: Itemised Consumption
+        - button "Settings" [ref=e3570] [cursor=pointer]:
+          - img [ref=e3572]
+          - generic [ref=e3575]: Settings
+      - main [ref=e398]:
+        - generic [ref=e3576]:
+          - heading "Variance Analysis Report" [level=2] [ref=e3577]
+          - button "Generate New Report" [ref=e3579] [cursor=pointer]:
+            - heading "Generate New Report" [level=3] [ref=e3580]
+            - img [ref=e3581]
+          - generic [ref=e3583]:
+            - generic [ref=e3585]:
+              - heading "Reports (1)" [level=3] [ref=e3587]
+              - table [ref=e3589]:
+                - rowgroup [ref=e3590]:
+                  - row "Period Variance Var % Status" [ref=e3591]:
+                    - columnheader "Period" [ref=e3592]
+                    - columnheader "Variance" [ref=e3593]
+                    - columnheader "Var %" [ref=e3594]
+                    - columnheader "Status" [ref=e3595]
+                - rowgroup [ref=e3596]:
+                  - row "01/04/2026 20/04/2026 €73,500000 2.6% reviewed" [ref=e3597] [cursor=pointer]:
+                    - cell "01/04/2026 20/04/2026" [ref=e3598]:
+                      - paragraph [ref=e3599]: 01/04/2026
+                      - paragraph [ref=e3600]: 20/04/2026
+                    - cell "€73,500000" [ref=e3601]
+                    - cell "2.6%" [ref=e3602]
+                    - cell "reviewed" [ref=e3603]
+            - generic [ref=e3605]: Select a report to view details
+  - button "Enable virtual keyboard" [ref=e4] [cursor=pointer]:
+    - img [ref=e5]
