@@ -1,0 +1,32 @@
+- generic [ref=e24]:
+  - generic [ref=e25]:
+    - generic [ref=e26]:
+      - button "Schermo Intero" [ref=e27] [cursor=pointer]:
+        - img [ref=e28]
+      - button "Pannello Admin" [ref=e30] [cursor=pointer]
+    - main [ref=e31]:
+      - generic [ref=e32]:
+        - generic [ref=e35]:
+          - generic [ref=e36]:
+            - heading "Prodotti" [level=2] [ref=e37]
+            - generic [ref=e38]:
+              - button "Preferiti" [ref=e39] [cursor=pointer]
+              - button "Tutti" [ref=e40] [cursor=pointer]
+          - generic [ref=e43]: Nessun prodotto in questa categoria
+        - generic [ref=e45]:
+          - generic [ref=e46]:
+            - generic [ref=e47]:
+              - paragraph [ref=e48]: "Connesso come:"
+              - paragraph [ref=e49]:
+                - text: Admin User
+                - generic [ref=e50]: (Admin)
+            - button "Esci" [ref=e51] [cursor=pointer]
+          - generic [ref=e52]:
+            - heading "Ordine Corrente" [level=2] [ref=e53]
+            - generic [ref=e55]: Seleziona i prodotti per aggiungerli qui.
+          - button "MODIFICA Modifica Layout" [ref=e57] [cursor=pointer]:
+            - generic [ref=e58]: MODIFICA
+            - generic [ref=e59]: Modifica Layout
+          - button "Vedi Conti Aperti" [ref=e62] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e19] [cursor=pointer]:
+    - img [ref=e20]

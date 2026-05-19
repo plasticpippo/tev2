@@ -1,19 +1,17 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLayout } from '../../contexts/LayoutContext';
+import { useViewport, GRID_COLUMNS_DESKTOP } from '../../hooks/useViewport';
 import type { ProductVariant, Product } from '@shared/types';
 import { formatCurrency } from '../../../utils/formatting';
-
-// Must match ProductGridLayout constants
-const MOBILE_BREAKPOINT = 768;
-const GRID_COLUMNS_MOBILE = 3;
 
 interface DraggableProductButtonProps {
   variant: ProductVariant;
   product: Product;
-  onClick?: () => void; // For normal POS mode (adding to order)
-  isMakable?: boolean; // Whether variant can be made (stock available)
-  isPositioned?: boolean; // Whether the button has a saved position in the grid
+  onClick?: () => void;
+  isMakable?: boolean;
+  isPositioned?: boolean;
+  gridStyle?: React.CSSProperties;
 }
 
 // Custom hook for touch drag support
@@ -143,32 +141,37 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
   variant,
   product,
   onClick,
-  isMakable = true
+  isMakable = true,
+  gridStyle: gridStyleProp
 }) => {
   const { t } = useTranslation();
   const { isEditMode, getButtonPosition } = useLayout();
   const [isDragging, setIsDragging] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
+  const { isSmall, isMobile } = useViewport();
 
   const position = getButtonPosition(variant.id);
 
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  let gridStyle: React.CSSProperties = {};
 
-  const handleClick = () => {
-    // Only allow clicks in normal mode (not edit mode)
-    if (!isEditMode && onClick && isMakable) {
-      onClick();
+  if (gridStyleProp) {
+    gridStyle = gridStyleProp;
+  } else if (position) {
+    const gridColumns = isSmall ? 2 : (isMobile ? 3 : GRID_COLUMNS_DESKTOP);
+    if (position.gridColumn > gridColumns) {
+      const newGridColumn = ((position.gridColumn - 1) % gridColumns) + 1;
+      const newGridRow = position.gridRow + Math.floor((position.gridColumn - 1) / gridColumns);
+      gridStyle = {
+        gridColumn: newGridColumn,
+        gridRow: newGridRow,
+      };
+    } else {
+      gridStyle = {
+        gridColumn: position.gridColumn,
+        gridRow: position.gridRow,
+      };
     }
-  };
+  }
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -194,7 +197,6 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     e.dataTransfer.effectAllowed = 'move';
     e.dataTransfer.setData('variantId', variant.id.toString());
 
-    // Make the drag image semi-transparent
     if (buttonRef.current) {
       const dragImage = buttonRef.current.cloneNode(true) as HTMLElement;
       dragImage.style.opacity = '0.7';
@@ -208,31 +210,11 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
     setIsDragging(false);
   };
 
-  // Calculate grid positioning:
-  // - In edit mode: always apply position, but clamp to current grid columns on mobile
-  // - In normal mode on desktop: apply saved position
-  // - In normal mode on mobile: let products flow naturally (no position)
-  let gridStyle: React.CSSProperties = {};
-
-  if (position) {
-    if (isEditMode) {
-      // In edit mode, always apply position but clamp column on mobile
-      const clampedColumn = isMobile
-        ? Math.min(position.gridColumn, GRID_COLUMNS_MOBILE)
-        : position.gridColumn;
-      gridStyle = {
-        gridColumn: clampedColumn,
-        gridRow: position.gridRow,
-      };
-    } else if (!isMobile) {
-      // Normal mode on desktop: use saved position
-      gridStyle = {
-        gridColumn: position.gridColumn,
-        gridRow: position.gridRow,
-      };
+  const handleClick = () => {
+    if (!isEditMode && onClick && isMakable) {
+      onClick();
     }
-    // Normal mode on mobile: no position, flows naturally
-  }
+  };
 
   const isActivelyDragging = isDragging || isTouchDragging;
 

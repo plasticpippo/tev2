@@ -4,14 +4,12 @@ import { useLayout } from '../../contexts/LayoutContext';
 import { DraggableProductButton } from './DraggableProductButton';
 import { CategoryTabs } from '../CategoryTabs';
 import AvailableProductsPanel from '../../../components/AvailableProductsPanel';
+import { useViewport } from '../../hooks/useViewport';
 import type { Product, ProductVariant, Category } from '@shared/types';
 
 // Grid configuration for layout customization system
 // Layout positions are always saved with 4 columns (for backward compatibility)
-// Visual grid adapts: 3 columns on mobile, 4 columns on tablet+
-const GRID_COLUMNS_DESKTOP = 4;
-const GRID_COLUMNS_MOBILE = 3;
-const MOBILE_BREAKPOINT = 768;
+// Visual grid adapts: 2 columns on very small screens, 3 columns on mobile, 4 columns on tablet+
 
 // Grid cell component with touch support
 interface GridDropCellProps {
@@ -128,20 +126,8 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const [activeFilterType, setActiveFilterType] = useState<'all' | 'favorites' | 'category'>('all');
   const [activeCategoryId, setActiveCategoryId] = useState<number | null>(null);
-  
-  // Track mobile viewport for responsive edit grid
-  const [isMobile, setIsMobile] = useState(false);
-  const currentGridColumns = isMobile ? GRID_COLUMNS_MOBILE : GRID_COLUMNS_DESKTOP;
 
-  // Detect mobile viewport
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < MOBILE_BREAKPOINT);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  const { currentGridColumns, isMobile } = useViewport();
 
   // Filter products by visible categories for this till
   const visibleProducts = useMemo(() => {
@@ -185,11 +171,43 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
   const maxRow = categoryLayout?.positions.reduce((max, pos) =>
     Math.max(max, pos.gridRow), 0
   ) || 0;
-  
+
+  // Calculate temporary positions for unpositioned products
+  const tempPositions = useMemo(() => {
+    const positionedVariantIds = new Set(
+      categoryLayout?.positions.map(p => p.variantId) || []
+    );
+
+    const tempPosMap = new Map<number, React.CSSProperties>();
+    let tempRow = maxRow + 1;
+    let tempCol = 1;
+
+    itemsToRender.forEach(({ variant }) => {
+      if (!positionedVariantIds.has(variant.id)) {
+        tempPosMap.set(variant.id, {
+          gridColumn: tempCol,
+          gridRow: tempRow,
+        });
+
+        tempCol++;
+        if (tempCol > currentGridColumns) {
+          tempCol = 1;
+          tempRow++;
+        }
+      }
+    });
+
+    return tempPosMap;
+  }, [categoryLayout, itemsToRender, maxRow, currentGridColumns]);
+
   // Don't calculate based on item count - this causes auto-compacting
-  // Just use the max row position or minimum (5)
-  const gridRows = Math.max(maxRow, 5);
-  
+  // Just use the max row position or minimum (5), plus rows needed for temp positions
+  const tempPositionsCount = tempPositions.size;
+  const tempRowsNeeded = tempPositionsCount > 0
+    ? Math.ceil(tempPositionsCount / currentGridColumns)
+    : 0;
+  const gridRows = Math.max(maxRow + tempRowsNeeded, 5);
+   
   // Debug logging for grid calculations
   useEffect(() => {
     if (isEditMode) {
@@ -198,12 +216,11 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
         gridRows,
         itemCount: itemsToRender.length,
         positions: categoryLayout?.positions,
-        isMobile,
         currentGridColumns,
         windowWidth: typeof window !== 'undefined' ? window.innerWidth : 'N/A'
       });
     }
-  }, [isEditMode, gridRows, maxRow, itemsToRender.length, categoryLayout, isMobile, currentGridColumns]);
+  }, [isEditMode, gridRows, maxRow, itemsToRender.length, categoryLayout, currentGridColumns]);
 
   const handleProductClick = (variant: ProductVariant, product: Product) => {
     if (!isEditMode) {
@@ -291,7 +308,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
 
 	{/* Product grid area */}
 			<div className="flex-1 overflow-y-auto overflow-x-hidden">
-				<div className="@container relative w-full h-full p-4">
+				<div className="relative w-full h-full p-4">
                       {/* Available Products Panel in edit mode - placed before the grid */}
                       {isEditMode && currentCategoryId !== 'all' && (
                         <div className="mb-6 z-20">
@@ -313,16 +330,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             
                 {/* Edit mode grid overlay - responsive to match grid columns */}
                 {showEditGrid && (
-                  <div
-                    className="absolute inset-0 pointer-events-none z-0 p-4"
-                    style={{
-                      backgroundImage: `
-                        repeating-linear-gradient(0deg, transparent, transparent calc(${100 / currentGridColumns}% - 1px), rgba(100, 116, 139, 0.3) calc(${100 / currentGridColumns}% - 1px), rgba(100, 116, 139, 0.3) ${100 / currentGridColumns}%),
-                        repeating-linear-gradient(90deg, transparent, transparent calc(${100 / currentGridColumns}% - 1px), rgba(100, 116, 139, 0.3) calc(${100 / currentGridColumns}% - 1px), rgba(100, 116, 139, 0.3) ${100 / currentGridColumns}%)
-                      `,
-                      backgroundSize: `${100 / currentGridColumns}% 80px, ${100 / currentGridColumns}% 100%`
-                    }}
-                  >
+                  <div className="absolute inset-0 pointer-events-none z-0 p-4 product-grid-lines">
                     <div className="absolute top-2 left-2 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold max-w-[calc(100%-1rem)] truncate">
                       {t('productGrid.columnGrid')} • {
                         currentCategoryId === 'favourites'
@@ -355,6 +363,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
             {/* Product buttons */}
             {itemsToRender.map(({ product, variant }: { product: Product, variant: ProductVariant }) => {
               const position = categoryLayout?.positions.find(p => p.variantId === variant.id);
+              const gridStyle = tempPositions.get(variant.id);
 
               return (
                 <DraggableProductButton
@@ -364,6 +373,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                   onClick={() => handleProductClick(variant, product)}
                   isMakable={makableVariantIds.has(variant.id)}
                   isPositioned={!!position}
+                  gridStyle={gridStyle}
                 />
               );
             })}

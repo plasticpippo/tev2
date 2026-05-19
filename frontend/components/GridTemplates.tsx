@@ -38,7 +38,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
     if (templateType === 'restaurant') {
       // Restaurant template with common food items
       return {
-        columns: 6,
+        columns: 4,
         gridItems: [
           // Appetizers - top row
           { id: 'app-1', variantId: sampleProducts[0]?.variants[0]?.id || 1, productId: sampleProducts[0]?.id || 1, x: 0, y: 0, width: 1, height: 1 },
@@ -66,7 +66,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
     } else if (templateType === 'retail') {
       // Retail template with common retail categories
       return {
-        columns: 6,
+        columns: 4,
         gridItems: [
           // Electronics - top row
           { id: 'elec-1', variantId: sampleProducts[0]?.variants[0]?.id || 1, productId: sampleProducts[0]?.id || 1, x: 0, y: 0, width: 1, height: 1 },
@@ -90,7 +90,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
     } else if (templateType === 'bar') {
       // Bar template with drinks organized by type
       return {
-        columns: 6,
+        columns: 4,
         gridItems: [
           // Beers - top row
           { id: 'beer-1', variantId: sampleProducts[0]?.variants[0]?.id || 1, productId: sampleProducts[0]?.id || 1, x: 0, y: 0, width: 1, height: 1 },
@@ -115,7 +115,7 @@ const GridTemplates: React.FC<GridTemplatesProps> = ({
     } else { // cafe
       // Cafe template with coffee and pastries
       return {
-        columns: 6,
+        columns: 4,
         gridItems: [
           // Coffee Types - top row
           { id: 'coffee-1', variantId: sampleProducts[0]?.variants[0]?.id || 1, productId: sampleProducts[0]?.id || 1, x: 0, y: 0, width: 1, height: 1 },

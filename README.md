@@ -93,7 +93,6 @@ Point-of-sale system for bars and restaurants. Built as a containerised full-sta
 
 - **Virtual on-screen keyboard** for touchscreen devices
 - **Fullscreen mode** for kiosk deployments
-- **Google Gemini AI assistant** integration
 - **Legacy browser support** (Chrome 77+, Firefox 68+, Android 10+)
 
 ---
@@ -148,7 +147,7 @@ All services run in Docker containers connected via an internal bridge network. 
 - **Linux** (tested on Debian/Ubuntu; installer supports Fedora, Arch, openSUSE, Alpine)
 - **Docker** 20.10+
 - **Docker Compose** v2.0+
-- **2 GB** minimum free disk space
+- **10 GB** minimum free disk space
 
 ---
 
