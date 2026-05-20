@@ -1,0 +1,145 @@
+- generic [ref=e2] [box=0,0,1366,768]:
+  - generic [ref=e3] [box=0,0,1366,768]:
+    - generic [ref=e7] [box=1154,8,204,44]:
+      - button "Schermo Intero" [ref=e8] [cursor=pointer] [box=1154,8,44,44]:
+        - img [ref=e9] [box=1166,20,20,20]
+      - button "Pannello Admin" [ref=e11] [cursor=pointer] [box=1206,8,152,44]
+    - main [ref=e12] [box=16,16,1334,736]:
+      - generic [ref=e13] [box=16,16,1334,736]:
+        - generic [ref=e16] [box=16,16,950,736]:
+          - generic [ref=e17] [box=16,16,950,145]:
+            - heading "Prodotti" [level=2] [ref=e18] [box=32,32,918,32]
+            - generic [ref=e19] [box=32,76,918,52]:
+              - button "Preferiti" [ref=e20] [cursor=pointer] [box=32,76,92,44]
+              - button "Wine" [ref=e21] [cursor=pointer] [box=132,76,70,44]
+              - button "Beer" [ref=e22] [cursor=pointer] [box=211,76,68,44]
+              - button "Cocktails" [ref=e23] [cursor=pointer] [box=286,76,103,44]
+              - button "Spirits" [ref=e24] [cursor=pointer] [box=397,76,82,44]
+              - button "Soft Drinks" [ref=e25] [cursor=pointer] [box=487,76,117,44]
+              - button "Coffee" [ref=e26] [cursor=pointer] [box=612,76,82,44]
+              - button "Tutti" [active] [ref=e27] [cursor=pointer] [box=702,76,65,44]
+          - generic [ref=e30] [box=32,177,918,912]:
+            - generic [ref=e31] [cursor=pointer] [box=32,177,226,170]:
+              - paragraph [ref=e32] [box=44,189,202,30]: Chianti Classico
+              - generic [ref=e33] [box=44,286,202,48]:
+                - paragraph [ref=e34] [box=44,286,202,24]: Glass
+                - paragraph [ref=e35] [box=44,310,202,24]: €7,00
+              - generic [ref=e36] [box=39,184,21,17]: FAV
+            - generic [ref=e92] [cursor=pointer] [box=274,177,226,170]:
+              - paragraph [ref=e93] [box=286,189,202,30]: Chianti Classico
+              - generic [ref=e94] [box=286,286,202,48]:
+                - paragraph [ref=e95] [box=286,286,202,24]: Bottle
+                - paragraph [ref=e96] [box=286,310,202,24]: €28,00
+            - generic [ref=e97] [cursor=pointer] [box=516,177,226,170]:
+              - paragraph [ref=e98] [box=528,189,202,30]: Prosecco
+              - generic [ref=e99] [box=528,286,202,48]:
+                - paragraph [ref=e100] [box=528,286,202,24]: Glass
+                - paragraph [ref=e101] [box=528,310,202,24]: €6,50
+            - generic [ref=e102] [cursor=pointer] [box=758,177,226,170]:
+              - paragraph [ref=e103] [box=770,189,202,30]: Prosecco
+              - generic [ref=e104] [box=770,286,202,48]:
+                - paragraph [ref=e105] [box=770,286,202,24]: Bottle
+                - paragraph [ref=e106] [box=770,310,202,24]: €24,00
+            - generic [ref=e37] [cursor=pointer] [box=32,363,226,170]:
+              - paragraph [ref=e38] [box=44,375,202,30]: Lager
+              - generic [ref=e39] [box=44,472,202,48]:
+                - paragraph [ref=e40] [box=44,472,202,24]: Draft
+                - paragraph [ref=e41] [box=44,496,202,24]: €5,00
+              - generic [ref=e42] [box=39,369,21,17]: FAV
+            - generic [ref=e107] [cursor=pointer] [box=274,363,226,170]:
+              - paragraph [ref=e108] [box=286,375,202,30]: Lager
+              - generic [ref=e109] [box=286,472,202,48]:
+                - paragraph [ref=e110] [box=286,472,202,24]: Bottle
+                - paragraph [ref=e111] [box=286,496,202,24]: €4,50
+            - generic [ref=e43] [cursor=pointer] [box=516,363,226,170]:
+              - paragraph [ref=e44] [box=528,375,202,30]: IPA
+              - generic [ref=e45] [box=528,472,202,48]:
+                - paragraph [ref=e46] [box=528,472,202,24]: Draft
+                - paragraph [ref=e47] [box=528,496,202,24]: €6,00
+              - generic [ref=e48] [box=523,369,21,17]: FAV
+            - generic [ref=e112] [cursor=pointer] [box=758,363,226,170]:
+              - paragraph [ref=e113] [box=770,375,202,30]: IPA
+              - generic [ref=e114] [box=770,472,202,48]:
+                - paragraph [ref=e115] [box=770,472,202,24]: Bottle
+                - paragraph [ref=e116] [box=770,496,202,24]: €5,50
+            - generic [ref=e49] [cursor=pointer] [box=32,548,226,170]:
+              - paragraph [ref=e50] [box=44,560,202,30]: Negroni
+              - generic [ref=e51] [box=44,657,202,48]:
+                - paragraph [ref=e52] [box=44,657,202,24]: Regular
+                - paragraph [ref=e53] [box=44,682,202,24]: €11,00
+              - generic [ref=e54] [box=39,555,21,17]: FAV
+            - generic [ref=e117] [cursor=pointer] [box=274,548,226,170]:
+              - paragraph [ref=e118] [box=286,560,202,30]: Mojito
+              - generic [ref=e119] [box=286,657,202,48]:
+                - paragraph [ref=e120] [box=286,657,202,24]: Regular
+                - paragraph [ref=e121] [box=286,682,202,24]: €10,00
+            - generic [ref=e55] [cursor=pointer] [box=516,548,226,170]:
+              - paragraph [ref=e56] [box=528,560,202,30]: Espresso Martini
+              - generic [ref=e57] [box=528,657,202,48]:
+                - paragraph [ref=e58] [box=528,657,202,24]: Regular
+                - paragraph [ref=e59] [box=528,682,202,24]: €12,00
+              - generic [ref=e60] [box=523,555,21,17]: FAV
+            - generic [ref=e122] [cursor=pointer] [box=758,548,226,170]:
+              - paragraph [ref=e123] [box=770,560,202,30]: Jameson
+              - generic [ref=e124] [box=770,657,202,48]:
+                - paragraph [ref=e125] [box=770,657,202,24]: Neat
+                - paragraph [ref=e126] [box=770,682,202,24]: €7,00
+            - generic [ref=e127] [cursor=pointer] [box=32,734,226,170]:
+              - paragraph [ref=e128] [box=44,746,202,30]: Jameson
+              - generic [ref=e129] [box=44,843,202,48]:
+                - paragraph [ref=e130] [box=44,843,202,24]: On the Rocks
+                - paragraph [ref=e131] [box=44,867,202,24]: €7,50
+            - generic [ref=e61] [cursor=pointer] [box=274,734,226,170]:
+              - paragraph [ref=e62] [box=286,746,202,30]: Jack Daniel's
+              - generic [ref=e63] [box=286,843,202,48]:
+                - paragraph [ref=e64] [box=286,843,202,24]: Neat
+                - paragraph [ref=e65] [box=286,867,202,24]: €7,50
+              - generic [ref=e66] [box=281,741,21,17]: FAV
+            - generic [ref=e132] [cursor=pointer] [box=516,734,226,170]:
+              - paragraph [ref=e133] [box=528,746,202,30]: Jack Daniel's
+              - generic [ref=e134] [box=528,843,202,48]:
+                - paragraph [ref=e135] [box=528,843,202,24]: On the Rocks
+                - paragraph [ref=e136] [box=528,867,202,24]: €8,00
+            - generic [ref=e137] [cursor=pointer] [box=758,734,226,170]:
+              - paragraph [ref=e138] [box=770,746,202,30]: Coca Cola
+              - generic [ref=e139] [box=770,843,202,48]:
+                - paragraph [ref=e140] [box=770,843,202,24]: Glass
+                - paragraph [ref=e141] [box=770,867,202,24]: €3,00
+            - generic [ref=e142] [cursor=pointer] [box=32,919,226,170]:
+              - paragraph [ref=e143] [box=44,931,202,30]: Sparkling Water
+              - generic [ref=e144] [box=44,1028,202,48]:
+                - paragraph [ref=e145] [box=44,1028,202,24]: Bottle
+                - paragraph [ref=e146] [box=44,1053,202,24]: €2,50
+            - generic [ref=e67] [cursor=pointer] [box=274,919,226,170]:
+              - paragraph [ref=e68] [box=286,931,202,30]: Espresso
+              - generic [ref=e69] [box=286,1028,202,48]:
+                - paragraph [ref=e70] [box=286,1028,202,24]: Single
+                - paragraph [ref=e71] [box=286,1053,202,24]: €2,00
+              - generic [ref=e72] [box=281,926,21,17]: FAV
+            - generic [ref=e147] [cursor=pointer] [box=516,919,226,170]:
+              - paragraph [ref=e148] [box=528,931,202,30]: Espresso
+              - generic [ref=e149] [box=528,1028,202,48]:
+                - paragraph [ref=e150] [box=528,1028,202,24]: Double
+                - paragraph [ref=e151] [box=528,1053,202,24]: €3,00
+            - generic [ref=e152] [cursor=pointer] [box=758,919,226,170]:
+              - paragraph [ref=e153] [box=770,931,202,30]: Americano
+              - generic [ref=e154] [box=770,1028,202,48]:
+                - paragraph [ref=e155] [box=770,1028,202,24]: Regular
+                - paragraph [ref=e156] [box=770,1053,202,24]: €2,50
+        - generic [ref=e74] [box=966,16,384,736]:
+          - generic [ref=e75] [box=967,16,383,77]:
+            - generic [ref=e76] [box=983,32,143,44]:
+              - paragraph [ref=e77] [box=983,32,143,20]: "Connesso come:"
+              - paragraph [ref=e78] [box=983,52,143,24]:
+                - text: Admin User
+                - generic [ref=e79] [box=1081,58,45,14]: (Admin)
+            - button "Esci" [ref=e80] [cursor=pointer] [box=1289,32,45,44]
+          - generic [ref=e81] [box=967,93,383,505]:
+            - heading "Ordine Corrente" [level=2] [ref=e82] [box=983,109,351,32]
+            - generic [ref=e84] [box=983,237,351,24]: Seleziona i prodotti per aggiungerli qui.
+          - button "MODIFICA Modifica Layout" [ref=e86] [cursor=pointer] [box=983,615,216,44]:
+            - generic [ref=e87] [box=999,627,69,20]: MODIFICA
+            - generic [ref=e88] [box=1076,627,107,20]: Modifica Layout
+          - button "Vedi Conti Aperti" [ref=e91] [cursor=pointer] [box=983,692,351,44]
+  - button "Attiva tastiera virtuale" [ref=e4] [cursor=pointer] [box=1294,696,48,48]:
+    - img [ref=e5] [box=1306,708,24,24]

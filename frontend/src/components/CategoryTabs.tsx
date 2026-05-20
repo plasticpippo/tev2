@@ -31,7 +31,7 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
   }, [categories, assignedTillId]);
 
   return (
-    <div className="flex gap-2 mb-4 overflow-x-auto pb-2 touch-pan-x scrollbar-hide">
+    <div className="category-tabs-container scrollbar-hide flex gap-2 mb-4 overflow-x-auto pb-2 touch-pan-x">
       {/* Favourites button */}
       <button
         onClick={() => setCurrentCategory('favourites')}

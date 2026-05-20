@@ -64,7 +64,7 @@ export const MainPOSInterface: React.FC = () => {
   // --- RENDER LOGIC ---
   // Check if essential data is loaded (settings is required)
   if (isLoading || !appData.settings) {
-    return <div className="bg-slate-900 text-white w-screen h-screen flex items-center justify-center">{t('common:app.loading')}</div>;
+    return <div className="bg-slate-900 text-white w-screen h-dvh flex items-center justify-center">{t('common:app.loading')}</div>;
   }
   
   if (!assignedTillId && currentUser?.role === 'Admin') {
@@ -110,8 +110,8 @@ export const MainPOSInterface: React.FC = () => {
   }
   
 return (
- <>
- <div className="w-screen h-screen bg-slate-800 text-white flex flex-col p-4 gap-4 min-w-[320px]">
+  <>
+   <div className="w-screen h-dvh bg-slate-800 text-white flex flex-col p-4 gap-4 min-w-[320px]">
  <div className="absolute top-2 right-2 flex items-center gap-2 z-30">
  <FullscreenToggle />
  {currentUser.role === 'Admin' && (

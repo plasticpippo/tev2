@@ -1,20 +1,57 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLayout } from '../../contexts/LayoutContext';
-import { useViewport, GRID_COLUMNS_DESKTOP } from '../../hooks/useViewport';
+import { useViewport } from '../../hooks/useViewport';
 import type { ProductVariant, Product } from '@shared/types';
 import { formatCurrency } from '../../../utils/formatting';
+
+function remapPosition(col: number, row: number, gridColumns: number): { col: number; row: number } {
+  if (col <= gridColumns) return { col, row };
+  const newCol = ((col - 1) % gridColumns) + 1;
+  const newRow = row + Math.floor((col - 1) / gridColumns);
+  return { col: newCol, row: newRow };
+}
+
+export function resolveRemappedPositions(
+  positions: { variantId: number; gridColumn: number; gridRow: number }[],
+  gridColumns: number
+): Map<number, { gridColumn: number; gridRow: number }> {
+  const result = new Map<number, { gridColumn: number; gridRow: number }>();
+  const occupied = new Set<string>();
+
+  for (const pos of positions) {
+    let remapped = remapPosition(pos.gridColumn, pos.gridRow, gridColumns);
+    let key = `${remapped.col},${remapped.row}`;
+    while (occupied.has(key)) {
+      remapped = { col: remapped.col + 1, row: remapped.row };
+      if (remapped.col > gridColumns) {
+        remapped = { col: 1, row: remapped.row + 1 };
+      }
+      key = `${remapped.col},${remapped.row}`;
+    }
+    occupied.add(key);
+    result.set(pos.variantId, { gridColumn: remapped.col, gridRow: remapped.row });
+  }
+
+  return result;
+}
+
+const TOUCH_DRAG_CONFIG = {
+  LONG_PRESS_DURATION: 500,
+  SCROLL_EDGE_DISTANCE: 50,
+  CANCEL_MOVE_THRESHOLD: 10,
+  SCROLL_UPDATE_INTERVAL: 16,
+  SCROLL_SPEED_DIVISOR: 5,
+} as const;
 
 interface DraggableProductButtonProps {
   variant: ProductVariant;
   product: Product;
   onClick?: () => void;
   isMakable?: boolean;
-  isPositioned?: boolean;
   gridStyle?: React.CSSProperties;
 }
 
-// Custom hook for touch drag support
 const useTouchDrag = (
   buttonRef: React.RefObject<HTMLDivElement>,
   isEditMode: boolean,
@@ -23,26 +60,48 @@ const useTouchDrag = (
   onDragEnd: () => void
 ) => {
   const [isTouchDragging, setIsTouchDragging] = useState(false);
+  const isTouchDraggingRef = useRef(false);
   const touchStartPos = useRef<{ x: number; y: number } | null>(null);
   const touchCurrentPos = useRef<{ x: number; y: number } | null>(null);
   const dragElementRef = useRef<HTMLElement | null>(null);
   const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const scrollIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const onDragStartRef = useRef(onDragStart);
+  const onDragEndRef = useRef(onDragEnd);
+  onDragStartRef.current = onDragStart;
+  onDragEndRef.current = onDragEnd;
+
+  const cleanupDragElement = useCallback(() => {
+    if (dragElementRef.current && document.body.contains(dragElementRef.current)) {
+      document.body.removeChild(dragElementRef.current);
+    }
+    dragElementRef.current = null;
+  }, []);
 
   useEffect(() => {
     const element = buttonRef.current;
     if (!element || !isEditMode) return;
+
+    const findScrollContainer = (el: HTMLElement): HTMLElement | null => {
+      let current: HTMLElement | null = el;
+      while (current) {
+        const { overflowY } = getComputedStyle(current);
+        if (overflowY === 'auto' || overflowY === 'scroll') return current;
+        current = current.parentElement;
+      }
+      return null;
+    };
 
     const handleTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0];
       touchStartPos.current = { x: touch.clientX, y: touch.clientY };
       touchCurrentPos.current = { x: touch.clientX, y: touch.clientY };
 
-      // Long press to initiate drag (500ms)
       longPressTimerRef.current = setTimeout(() => {
+        isTouchDraggingRef.current = true;
         setIsTouchDragging(true);
-        onDragStart();
+        onDragStartRef.current();
 
-        // Create a visual drag element
         const dragElement = element.cloneNode(true) as HTMLElement;
         dragElement.style.position = 'fixed';
         dragElement.style.zIndex = '9999';
@@ -52,7 +111,7 @@ const useTouchDrag = (
         dragElement.style.width = `${element.offsetWidth}px`;
         document.body.appendChild(dragElement);
         dragElementRef.current = dragElement;
-      }, 500);
+      }, TOUCH_DRAG_CONFIG.LONG_PRESS_DURATION);
     };
 
     const handleTouchMove = (e: TouchEvent) => {
@@ -61,17 +120,15 @@ const useTouchDrag = (
       const touch = e.touches[0];
       touchCurrentPos.current = { x: touch.clientX, y: touch.clientY };
 
-      // Cancel long press if moved too much before drag starts
       const dx = touch.clientX - touchStartPos.current.x;
       const dy = touch.clientY - touchStartPos.current.y;
       const distance = Math.sqrt(dx * dx + dy * dy);
 
-      if (!isTouchDragging && distance > 10 && longPressTimerRef.current) {
+      if (!isTouchDraggingRef.current && distance > TOUCH_DRAG_CONFIG.CANCEL_MOVE_THRESHOLD && longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
       }
 
-      // Update drag element position
       if (dragElementRef.current) {
         const width = dragElementRef.current.offsetWidth;
         const height = dragElementRef.current.offsetHeight;
@@ -79,29 +136,55 @@ const useTouchDrag = (
         dragElementRef.current.style.top = `${touch.clientY - height / 2}px`;
       }
 
-      // Dispatch custom event for grid cells to detect
-      const customEvent = new CustomEvent('touchDragOver', {
-        detail: { x: touch.clientX, y: touch.clientY, variantId },
-        bubbles: true
-      });
-      element.dispatchEvent(customEvent);
+      if (isTouchDraggingRef.current) {
+        e.preventDefault();
+
+        const customEvent = new CustomEvent('touchDragOver', {
+          detail: { x: touch.clientX, y: touch.clientY, variantId },
+          bubbles: true
+        });
+        element.dispatchEvent(customEvent);
+
+        const scrollContainer = findScrollContainer(element);
+        if (scrollContainer) {
+          const EDGE = TOUCH_DRAG_CONFIG.SCROLL_EDGE_DISTANCE;
+          const rect = scrollContainer.getBoundingClientRect();
+          if (touch.clientY < rect.top + EDGE) {
+            const speed = Math.max(1, (EDGE - (touch.clientY - rect.top)) / TOUCH_DRAG_CONFIG.SCROLL_SPEED_DIVISOR);
+            if (!scrollIntervalRef.current) {
+              scrollIntervalRef.current = setInterval(() => {
+                scrollContainer.scrollTop -= speed;
+              }, TOUCH_DRAG_CONFIG.SCROLL_UPDATE_INTERVAL);
+            }
+          } else if (touch.clientY > rect.bottom - EDGE) {
+            const speed = Math.max(1, (EDGE - (rect.bottom - touch.clientY)) / TOUCH_DRAG_CONFIG.SCROLL_SPEED_DIVISOR);
+            if (!scrollIntervalRef.current) {
+              scrollIntervalRef.current = setInterval(() => {
+                scrollContainer.scrollTop += speed;
+              }, TOUCH_DRAG_CONFIG.SCROLL_UPDATE_INTERVAL);
+            }
+          } else if (scrollIntervalRef.current) {
+            clearInterval(scrollIntervalRef.current);
+            scrollIntervalRef.current = null;
+          }
+        }
+      }
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
-      // Clear long press timer
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
         longPressTimerRef.current = null;
       }
 
-      if (isTouchDragging) {
-        // Remove drag element
-        if (dragElementRef.current) {
-          document.body.removeChild(dragElementRef.current);
-          dragElementRef.current = null;
-        }
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
+        scrollIntervalRef.current = null;
+      }
 
-        // Dispatch custom drop event
+      if (isTouchDraggingRef.current) {
+        cleanupDragElement();
+
         const touch = e.changedTouches[0];
         const customEvent = new CustomEvent('touchDrop', {
           detail: { x: touch.clientX, y: touch.clientY, variantId },
@@ -109,8 +192,9 @@ const useTouchDrag = (
         });
         element.dispatchEvent(customEvent);
 
+        isTouchDraggingRef.current = false;
         setIsTouchDragging(false);
-        onDragEnd();
+        onDragEndRef.current();
       }
 
       touchStartPos.current = null;
@@ -128,11 +212,12 @@ const useTouchDrag = (
       if (longPressTimerRef.current) {
         clearTimeout(longPressTimerRef.current);
       }
-      if (dragElementRef.current) {
-        document.body.removeChild(dragElementRef.current);
+      if (scrollIntervalRef.current) {
+        clearInterval(scrollIntervalRef.current);
       }
+      cleanupDragElement();
     };
-  }, [isEditMode, variantId, isTouchDragging, onDragStart, onDragEnd, buttonRef]);
+  }, [isEditMode, variantId, buttonRef, cleanupDragElement]);
 
   return isTouchDragging;
 };
@@ -145,33 +230,12 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
   gridStyle: gridStyleProp
 }) => {
   const { t } = useTranslation();
-  const { isEditMode, getButtonPosition } = useLayout();
+  const { isEditMode } = useLayout();
   const [isDragging, setIsDragging] = useState(false);
   const buttonRef = useRef<HTMLDivElement>(null);
-  const { isSmall, isMobile } = useViewport();
+  const { isMobile } = useViewport();
 
-  const position = getButtonPosition(variant.id);
-
-  let gridStyle: React.CSSProperties = {};
-
-  if (gridStyleProp) {
-    gridStyle = gridStyleProp;
-  } else if (position) {
-    const gridColumns = isSmall ? 2 : (isMobile ? 3 : GRID_COLUMNS_DESKTOP);
-    if (position.gridColumn > gridColumns) {
-      const newGridColumn = ((position.gridColumn - 1) % gridColumns) + 1;
-      const newGridRow = position.gridRow + Math.floor((position.gridColumn - 1) / gridColumns);
-      gridStyle = {
-        gridColumn: newGridColumn,
-        gridRow: newGridRow,
-      };
-    } else {
-      gridStyle = {
-        gridColumn: position.gridColumn,
-        gridRow: position.gridRow,
-      };
-    }
-  }
+  const gridStyle = gridStyleProp || {};
 
   const handleDragStart = () => {
     setIsDragging(true);
@@ -201,7 +265,7 @@ export const DraggableProductButton: React.FC<DraggableProductButtonProps> = ({
       const dragImage = buttonRef.current.cloneNode(true) as HTMLElement;
       dragImage.style.opacity = '0.7';
       document.body.appendChild(dragImage);
-      e.dataTransfer.setDragImage(dragImage, 60, 40);
+      e.dataTransfer.setDragImage(dragImage, buttonRef.current.offsetWidth / 2, buttonRef.current.offsetHeight / 2);
       setTimeout(() => document.body.removeChild(dragImage), 0);
     }
   };

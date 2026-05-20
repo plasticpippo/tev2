@@ -7,6 +7,17 @@ import {
   SharedLayout,
   VariantLayoutPosition
 } from '../types/layout.types';
+import { GRID_COLUMNS_DESKTOP } from '../hooks/useViewport';
+
+const FAVOURITES_CATEGORY_ID = -1;
+
+function sanitizePositions(positions: ButtonPosition[]): ButtonPosition[] {
+  return positions.map(p => ({
+    variantId: p.variantId,
+    gridColumn: Math.max(1, Math.min(p.gridColumn, GRID_COLUMNS_DESKTOP)),
+    gridRow: Math.max(1, p.gridRow),
+  }));
+}
 import {
   getTillLayout,
   saveTillLayout,
@@ -141,7 +152,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
     const currentController = abortControllerRef.current;
 
     // Convert 'favourites' to special ID
-    const categoryIdToFetch = categoryId === 'favourites' ? -1 : categoryId;
+    const categoryIdToFetch = categoryId === 'favourites' ? FAVOURITES_CATEGORY_ID : categoryId;
 
     setIsLoading(true);
     try {
@@ -152,11 +163,11 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         return;
       }
 
-      const positions: ButtonPosition[] = layouts.map(l => ({
+      const positions: ButtonPosition[] = sanitizePositions(layouts.map(l => ({
         variantId: l.variantId,
         gridColumn: l.gridColumn,
         gridRow: l.gridRow
-      }));
+      })));
 
       setCurrentTillLayout(prev => {
         // Update or add the category layout
@@ -236,7 +247,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   const getCurrentCategoryLayout = useCallback((): CategoryLayout | undefined => {
     // Convert 'favourites' to special ID
     const categoryIdToUse = currentCategoryId === 'favourites'
-      ? -1
+      ? FAVOURITES_CATEGORY_ID
       : typeof currentCategoryId === 'number'
         ? currentCategoryId
         : undefined;
@@ -260,7 +271,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
   ) => {
     // Convert favourites to -1
     const categoryIdToUse = currentCategoryId === 'favourites'
-      ? -1
+      ? FAVOURITES_CATEGORY_ID
       : currentCategoryId;
 
     if (typeof categoryIdToUse !== 'number') {
@@ -338,7 +349,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     // Convert favourites to -1
     const categoryIdToSave = currentCategoryId === 'favourites'
-      ? -1
+      ? FAVOURITES_CATEGORY_ID
       : currentCategoryId;
 
     if (typeof categoryIdToSave !== 'number') {
@@ -398,7 +409,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     // Convert favourites to -1
     const categoryIdToReset = currentCategoryId === 'favourites'
-      ? -1
+      ? FAVOURITES_CATEGORY_ID
       : currentCategoryId;
 
     if (typeof categoryIdToReset !== 'number') {
@@ -499,7 +510,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
 
     // Convert favourites to -1
     const categoryIdToUse = currentCategoryId === 'favourites'
-      ? -1
+      ? FAVOURITES_CATEGORY_ID
       : currentCategoryId;
 
     if (typeof categoryIdToUse !== 'number') {
@@ -561,7 +572,7 @@ export const LayoutProvider: React.FC<LayoutProviderProps> = ({
         const categoryId = loadedLayouts[0].categoryId;
 
         // Convert special ID -1 back to 'favourites'
-        const categoryToLoad = categoryId === -1 ? 'favourites' : categoryId;
+        const categoryToLoad = categoryId === FAVOURITES_CATEGORY_ID ? 'favourites' : categoryId;
 
         // Reload the layout for this category
         if (typeof categoryToLoad === 'number' || categoryToLoad === 'favourites') {

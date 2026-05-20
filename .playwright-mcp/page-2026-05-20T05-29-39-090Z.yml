@@ -1,0 +1,211 @@
+- generic [ref=e2]:
+  - generic [ref=e3]:
+    - generic [ref=e4]:
+      - button "Schermo Intero" [ref=e5] [cursor=pointer]:
+        - img [ref=e6]
+      - button "Pannello Admin" [ref=e8] [cursor=pointer]
+    - main [ref=e9]:
+      - generic [ref=e10]:
+        - generic [ref=e13]:
+          - generic [ref=e14]:
+            - heading "Prodotti" [level=2] [ref=e15]
+            - generic [ref=e16]:
+              - button "Preferiti" [ref=e17] [cursor=pointer]
+              - button "Wine" [ref=e18] [cursor=pointer]
+              - button "Beer" [ref=e19] [cursor=pointer]
+              - button "Cocktails" [ref=e20] [cursor=pointer]
+              - button "Spirits" [ref=e21] [cursor=pointer]
+              - button "Soft Drinks" [ref=e22] [cursor=pointer]
+              - button "Coffee" [ref=e23] [cursor=pointer]
+              - button "Tutti" [ref=e24] [cursor=pointer]
+          - generic [ref=e26]:
+            - region "Prodotti Disponibili" [ref=e93]:
+              - generic [ref=e94]:
+                - heading "Prodotti Disponibili" [level=3] [ref=e95]
+                - button "Aiuto per available-products" [ref=e98]: "?"
+              - group "Opzioni di filtro prodotti" [ref=e99]:
+                - button "Attiva filtro preferiti" [ref=e100] [cursor=pointer]: FAV Preferiti OFF
+                - button "Mostra tutti i prodotti" [ref=e101] [cursor=pointer]: Tutti i Prodotti
+                - button "Filtra per categoria Wine" [ref=e102] [cursor=pointer]: Wine
+                - button "Filtra per categoria Beer" [ref=e103] [cursor=pointer]: Beer
+                - button "Filtra per categoria Cocktails" [ref=e104] [cursor=pointer]: Cocktails
+                - button "Filtra per categoria Spirits" [ref=e105] [cursor=pointer]: Spirits
+                - button "Filtra per categoria Soft Drinks" [ref=e106] [cursor=pointer]: Soft Drinks
+                - button "Filtra per categoria Coffee" [ref=e107] [cursor=pointer]: Coffee
+              - list "Elenco dei prodotti disponibili da aggiungere alla griglia" [ref=e108]:
+                - listitem "Aggiungi Chianti Classico Glass alla griglia" [ref=e109] [cursor=pointer]:
+                  - paragraph [ref=e110]: Chianti Classico
+                  - generic [ref=e111]:
+                    - paragraph [ref=e112]: Glass
+                    - paragraph [ref=e113]: €7,00
+                - listitem "Aggiungi Chianti Classico Bottle alla griglia" [ref=e114] [cursor=pointer]:
+                  - paragraph [ref=e115]: Chianti Classico
+                  - generic [ref=e116]:
+                    - paragraph [ref=e117]: Bottle
+                    - paragraph [ref=e118]: €28,00
+                - listitem "Aggiungi Prosecco Glass alla griglia" [ref=e119] [cursor=pointer]:
+                  - paragraph [ref=e120]: Prosecco
+                  - generic [ref=e121]:
+                    - paragraph [ref=e122]: Glass
+                    - paragraph [ref=e123]: €6,50
+                - listitem "Aggiungi Prosecco Bottle alla griglia" [ref=e124] [cursor=pointer]:
+                  - paragraph [ref=e125]: Prosecco
+                  - generic [ref=e126]:
+                    - paragraph [ref=e127]: Bottle
+                    - paragraph [ref=e128]: €24,00
+                - listitem "Aggiungi Lager Draft alla griglia" [ref=e129] [cursor=pointer]:
+                  - paragraph [ref=e130]: Lager
+                  - generic [ref=e131]:
+                    - paragraph [ref=e132]: Draft
+                    - paragraph [ref=e133]: €5,00
+                - listitem "Aggiungi Lager Bottle alla griglia" [ref=e134] [cursor=pointer]:
+                  - paragraph [ref=e135]: Lager
+                  - generic [ref=e136]:
+                    - paragraph [ref=e137]: Bottle
+                    - paragraph [ref=e138]: €4,50
+                - listitem "Aggiungi IPA Draft alla griglia" [ref=e139] [cursor=pointer]:
+                  - paragraph [ref=e140]: IPA
+                  - generic [ref=e141]:
+                    - paragraph [ref=e142]: Draft
+                    - paragraph [ref=e143]: €6,00
+                - listitem "Aggiungi IPA Bottle alla griglia" [ref=e144] [cursor=pointer]:
+                  - paragraph [ref=e145]: IPA
+                  - generic [ref=e146]:
+                    - paragraph [ref=e147]: Bottle
+                    - paragraph [ref=e148]: €5,50
+                - listitem "Aggiungi Negroni Regular alla griglia" [ref=e149] [cursor=pointer]:
+                  - paragraph [ref=e150]: Negroni
+                  - generic [ref=e151]:
+                    - paragraph [ref=e152]: Regular
+                    - paragraph [ref=e153]: €11,00
+                - listitem "Aggiungi Mojito Regular alla griglia" [ref=e154] [cursor=pointer]:
+                  - paragraph [ref=e155]: Mojito
+                  - generic [ref=e156]:
+                    - paragraph [ref=e157]: Regular
+                    - paragraph [ref=e158]: €10,00
+                - listitem "Aggiungi Espresso Martini Regular alla griglia" [ref=e159] [cursor=pointer]:
+                  - paragraph [ref=e160]: Espresso Martini
+                  - generic [ref=e161]:
+                    - paragraph [ref=e162]: Regular
+                    - paragraph [ref=e163]: €12,00
+                - listitem "Aggiungi Jameson Neat alla griglia" [ref=e164] [cursor=pointer]:
+                  - paragraph [ref=e165]: Jameson
+                  - generic [ref=e166]:
+                    - paragraph [ref=e167]: Neat
+                    - paragraph [ref=e168]: €7,00
+                - listitem "Aggiungi Jameson On the Rocks alla griglia" [ref=e169] [cursor=pointer]:
+                  - paragraph [ref=e170]: Jameson
+                  - generic [ref=e171]:
+                    - paragraph [ref=e172]: On the Rocks
+                    - paragraph [ref=e173]: €7,50
+                - listitem "Aggiungi Jack Daniel's Neat alla griglia" [ref=e174] [cursor=pointer]:
+                  - paragraph [ref=e175]: Jack Daniel's
+                  - generic [ref=e176]:
+                    - paragraph [ref=e177]: Neat
+                    - paragraph [ref=e178]: €7,50
+                - listitem "Aggiungi Jack Daniel's On the Rocks alla griglia" [ref=e179] [cursor=pointer]:
+                  - paragraph [ref=e180]: Jack Daniel's
+                  - generic [ref=e181]:
+                    - paragraph [ref=e182]: On the Rocks
+                    - paragraph [ref=e183]: €8,00
+                - listitem "Aggiungi Coca Cola Glass alla griglia" [ref=e184] [cursor=pointer]:
+                  - paragraph [ref=e185]: Coca Cola
+                  - generic [ref=e186]:
+                    - paragraph [ref=e187]: Glass
+                    - paragraph [ref=e188]: €3,00
+                - listitem "Aggiungi Sparkling Water Bottle alla griglia" [ref=e189] [cursor=pointer]:
+                  - paragraph [ref=e190]: Sparkling Water
+                  - generic [ref=e191]:
+                    - paragraph [ref=e192]: Bottle
+                    - paragraph [ref=e193]: €2,50
+                - listitem "Aggiungi Espresso Single alla griglia" [ref=e194] [cursor=pointer]:
+                  - paragraph [ref=e195]: Espresso
+                  - generic [ref=e196]:
+                    - paragraph [ref=e197]: Single
+                    - paragraph [ref=e198]: €2,00
+                - listitem "Aggiungi Espresso Double alla griglia" [ref=e199] [cursor=pointer]:
+                  - paragraph [ref=e200]: Espresso
+                  - generic [ref=e201]:
+                    - paragraph [ref=e202]: Double
+                    - paragraph [ref=e203]: €3,00
+                - listitem "Aggiungi Americano Regular alla griglia" [ref=e204] [cursor=pointer]:
+                  - paragraph [ref=e205]: Americano
+                  - generic [ref=e206]:
+                    - paragraph [ref=e207]: Regular
+                    - paragraph [ref=e208]: €2,50
+            - generic:
+              - generic: Griglia a 4 Colonne • Preferiti • 4 colonne
+            - generic [ref=e27]:
+              - heading "Prodotti Non Posizionati - Trascina nella Griglia" [level=3] [ref=e229]
+              - generic [ref=e230]:
+                - generic [ref=e231]: ⋮⋮
+                - paragraph [ref=e232]: Chianti Classico
+                - generic [ref=e233]:
+                  - paragraph [ref=e234]: Glass
+                  - paragraph [ref=e235]: €7,00
+              - generic [ref=e236]:
+                - generic [ref=e237]: ⋮⋮
+                - paragraph [ref=e238]: Lager
+                - generic [ref=e239]:
+                  - paragraph [ref=e240]: Draft
+                  - paragraph [ref=e241]: €5,00
+              - generic [ref=e242]:
+                - generic [ref=e243]: ⋮⋮
+                - paragraph [ref=e244]: IPA
+                - generic [ref=e245]:
+                  - paragraph [ref=e246]: Draft
+                  - paragraph [ref=e247]: €6,00
+              - generic [ref=e248]:
+                - generic [ref=e249]: ⋮⋮
+                - paragraph [ref=e250]: Negroni
+                - generic [ref=e251]:
+                  - paragraph [ref=e252]: Regular
+                  - paragraph [ref=e253]: €11,00
+              - generic [ref=e254]:
+                - generic [ref=e255]: ⋮⋮
+                - paragraph [ref=e256]: Espresso Martini
+                - generic [ref=e257]:
+                  - paragraph [ref=e258]: Regular
+                  - paragraph [ref=e259]: €12,00
+              - generic [ref=e260]:
+                - generic [ref=e261]: ⋮⋮
+                - paragraph [ref=e262]: Jack Daniel's
+                - generic [ref=e263]:
+                  - paragraph [ref=e264]: Neat
+                  - paragraph [ref=e265]: €7,50
+              - generic [ref=e266]:
+                - generic [ref=e267]: ⋮⋮
+                - paragraph [ref=e268]: Espresso
+                - generic [ref=e269]:
+                  - paragraph [ref=e270]: Single
+                  - paragraph [ref=e271]: €2,00
+        - generic [ref=e71]:
+          - generic [ref=e72]:
+            - generic [ref=e73]:
+              - paragraph [ref=e74]: "Connesso come:"
+              - paragraph [ref=e75]:
+                - text: Admin User
+                - generic [ref=e76]: (Admin)
+            - button "Esci" [ref=e77] [cursor=pointer]
+          - generic [ref=e78]:
+            - heading "Ordine Corrente" [level=2] [ref=e79]
+            - generic [ref=e81]: Seleziona i prodotti per aggiungerli qui.
+            - generic [ref=e273]:
+              - generic [ref=e274]:
+                - heading "MODALITÀ MODIFICA" [level=2] [ref=e275]
+                - paragraph [ref=e276]: Trascina i pulsanti dei prodotti per riposizionarli nella griglia
+              - generic [ref=e277]:
+                - heading "Istruzioni:" [level=3] [ref=e278]
+                - list [ref=e279]:
+                  - listitem [ref=e280]: Clicca e trascina i pulsanti per riposizionarli
+                  - listitem [ref=e281]: I pulsanti si allineano a una griglia a 4 colonne
+                  - listitem [ref=e282]: Le modifiche si applicano solo alla categoria corrente
+                  - listitem [ref=e283]: Clicca Salva per salvare le modifiche
+              - generic [ref=e284]:
+                - button "✓ Salvato" [disabled] [ref=e285]
+                - button "RIPRISTINA Default" [ref=e286] [cursor=pointer]
+                - button "ANNULLA & Esci" [ref=e287] [cursor=pointer]
+              - paragraph [ref=e289]: "Griglia: 4 colonne • Dimensione pulsante fissa"
+          - button "Vedi Conti Aperti" [ref=e88] [cursor=pointer]
+  - button "Attiva tastiera virtuale" [ref=e89] [cursor=pointer]:
+    - img [ref=e90]
