@@ -275,7 +275,7 @@ export const BackupSettings: React.FC = () => {
 
             // Generate filename with timestamp
             const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, 19);
-            a.download = isFull ? `tev2_full_${timestamp}.tar.gz` : `database_backup_${timestamp}.sql`;
+            a.download = isFull ? `assopos_full_${timestamp}.tar.gz` : `database_backup_${timestamp}.sql`;
 
             document.body.appendChild(a);
             a.click();

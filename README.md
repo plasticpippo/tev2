@@ -1,7 +1,7 @@
 > **This app is 100% vibe coded and has many vulnerabilities.**
 > **USE AT YOUR OWN RISK**
 
-# Bar POS
+# AssoPOS
 
 Point-of-sale system for bars and restaurants. Built as a containerised full-stack application with a React frontend, Express API backend, and PostgreSQL database.
 
@@ -118,11 +118,11 @@ All services run in Docker containers connected via an internal bridge network. 
 
 | Container | Image | Purpose |
 |-----------|-------|---------|
-| `bar_pos_nginx` | `nginx:alpine` | Reverse proxy, static assets, security headers, rate limiting |
-| `bar_pos_frontend` | Custom build | React SPA served by Nginx |
-| `bar_pos_backend` | Custom build | Express REST API with Prisma ORM |
-| `bar_pos_backend_db` | `postgres:15` | PostgreSQL database |
-| `bar_pos_mailhog` | `mailhog/mailhog:v1.0.1` | Mock SMTP for development (internal only) |
+| `assopos_nginx` | `nginx:alpine` | Reverse proxy, static assets, security headers, rate limiting |
+| `assopos_frontend` | Custom build | React SPA served by Nginx |
+| `assopos_backend` | Custom build | Express REST API with Prisma ORM |
+| `assopos_backend_db` | `postgres:15` | PostgreSQL database |
+| `assopos_mailhog` | `mailhog/mailhog:v1.0.1` | Mock SMTP for development (internal only) |
 
 ---
 
@@ -210,9 +210,9 @@ All configuration is managed through a single `.env` file in the project root. C
 |----------|---------|-------------|
 | `URL` | `http://localhost` | Application URL (LAN IP, domain, or localhost) |
 | `NGINX_PORT` | `80` | Port exposed by Nginx |
-| `POSTGRES_USER` | `totalevo_user` | Database username |
-| `POSTGRES_PASSWORD` | `totalevo_password` | Database password |
-| `POSTGRES_DB` | `bar_pos` | Database name |
+| `POSTGRES_USER` | `assopos_user` | Database username |
+| `POSTGRES_PASSWORD` | `assopos_password` | Database password |
+| `POSTGRES_DB` | `assopos` | Database name |
 | `JWT_SECRET` | -- | Secret for JWT signing (generate with `openssl rand -hex 64`) |
 | `NODE_ENV` | `development` | `development` (detailed errors) or `production` (generic errors) |
 
@@ -448,10 +448,10 @@ npx prisma migrate deploy
 
 ```bash
 # From the host (if DB port is exposed via docker-compose.override.yml)
-docker exec -it bar_pos_backend_db psql -U totalevo_user -d bar_pos
+docker exec -it assopos_backend_db psql -U assopos_user -d assopos
 
 # One-off query
-docker exec -it bar_pos_backend_db psql -U totalevo_user -d bar_pos -c "SELECT * FROM users;"
+docker exec -it assopos_backend_db psql -U assopos_user -d assopos -c "SELECT * FROM users;"
 ```
 
 ### Useful Commands

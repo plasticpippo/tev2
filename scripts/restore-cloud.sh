@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #===============================================================================
-# TEV2 Cloud Restore Script
+# AssoPOS Cloud Restore Script
 #
 # Downloads a backup archive from MEGA and restores:
 #   - PostgreSQL database
@@ -56,7 +56,7 @@ print_header() {
 
 show_help() {
     cat << 'EOF'
-TEV2 Cloud Restore Script
+AssoPOS Cloud Restore Script
 
 Usage: ./scripts/restore-cloud.sh [OPTIONS]
 
@@ -91,7 +91,7 @@ Examples:
     ./scripts/restore-cloud.sh                     # Restore latest
     ./scripts/restore-cloud.sh --force             # Restore without prompt
     ./scripts/restore-cloud.sh --db-only           # Restore database only
-    ./scripts/restore-cloud.sh --file tev2_full_20260511_040000.tar.gz
+    ./scripts/restore-cloud.sh --file assopos_full_20260511_040000.tar.gz
 
 EOF
     exit 0
@@ -105,11 +105,11 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+POSTGRES_DB="${POSTGRES_DB:-assopos}"
 
-MEGA_REMOTE_FOLDER="/TEV2/backups"
+MEGA_REMOTE_FOLDER="/AssoPOS/backups"
 
 #===============================================================================
 # Environment loading
@@ -129,9 +129,9 @@ load_env() {
                 export "$var_name"="$var_value"
             fi
         done < "$env_file"
-        POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-        POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-        POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+        POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+        POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+        POSTGRES_DB="${POSTGRES_DB:-assopos}"
         ok "Environment loaded"
     else
         warn "No .env file found, using defaults"
@@ -192,7 +192,7 @@ list_cloud_backups() {
     # List backups in parseable format: filename<TAB>size<TAB>date
     # Parse mega-ls output to extract filename, size, date
     local entries
-    entries=$(mega-ls -l "$MEGA_REMOTE_FOLDER" 2>&1 | grep "tev2_full_" || true)
+    entries=$(mega-ls -l "$MEGA_REMOTE_FOLDER" 2>&1 | grep "assopos_full_" || true)
 
     if [[ -z "$entries" ]]; then
         warn "No cloud backups found at $MEGA_REMOTE_FOLDER"
@@ -213,7 +213,7 @@ list_cloud_backups() {
     done
 
     local count
-    count=$(echo "$entries" | grep -c "tev2_full_" || true)
+    count=$(echo "$entries" | grep -c "assopos_full_" || true)
     printf '\n'
     printf '%b\n' "${WHITE}Found $count cloud backup(s)${NC}"
 
@@ -250,7 +250,7 @@ download_cloud_backup() {
 # Find the latest cloud backup
 find_latest_backup() {
     local latest
-    latest=$(mega-ls "$MEGA_REMOTE_FOLDER" 2>&1 | grep "tev2_full_" | sort | tail -1 | awk '{print $NF}' || true)
+    latest=$(mega-ls "$MEGA_REMOTE_FOLDER" 2>&1 | grep "assopos_full_" | sort | tail -1 | awk '{print $NF}' || true)
 
     if [[ -z "$latest" ]]; then
         err "No cloud backups found at $MEGA_REMOTE_FOLDER"
@@ -603,7 +603,7 @@ main() {
 
     printf '\n'
     printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-    printf '%b\n' "${CYAN}${BOLD}║          TEV2 CLOUD RESTORE                               ║${NC}"
+    printf '%b\n' "${CYAN}${BOLD}║          AssoPOS CLOUD RESTORE                               ║${NC}"
     printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
     printf '\n'
 

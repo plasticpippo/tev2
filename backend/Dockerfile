@@ -6,10 +6,10 @@ ARG APP_VERSION=dev
 ARG BUILD_DATE=unknown
 
 # Set labels for version tracking
-LABEL app.name="bar-pos-backend" \
+LABEL app.name="assopos-backend" \
       app.version="${APP_VERSION}" \
       app.build.date="${BUILD_DATE}" \
-      org.opencontainers.image.title="Bar POS Backend" \
+      org.opencontainers.image.title="AssoPOS Backend" \
       org.opencontainers.image.version="${APP_VERSION}"
 
 # Set working directory

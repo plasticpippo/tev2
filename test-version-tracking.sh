@@ -94,9 +94,9 @@ echo ""
 
 # Check 7: Container version labels (if containers are running)
 echo "[CHECK 7] Running container version labels"
-if docker ps --filter "name=bar_pos" --format "{{.Names}}" | grep -q .; then
+if docker ps --filter "name=assopos" --format "{{.Names}}" | grep -q .; then
     echo "Checking running containers..."
-    for container in bar_pos_backend bar_pos_frontend bar_pos_nginx; do
+    for container in assopos_backend assopos_frontend assopos_nginx; do
         if docker ps --filter "name=$container" --format "{{.Names}}" | grep -q .; then
             CONTAINER_VERSION=$(docker inspect "$container" 2>/dev/null | jq -r '.[0].Config.Labels["app.version"]' 2>/dev/null || echo "unknown")
             if [[ "$CONTAINER_VERSION" != "null" && "$CONTAINER_VERSION" != "unknown" ]]; then

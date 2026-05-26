@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #===============================================================================
-# TEV2 Database Restore Script (Unified)
+# AssoPOS Database Restore Script (Unified)
 #
 # Restores the PostgreSQL database from backup files. Works with any backup
 # from any version of the app. Automatically handles:
@@ -58,7 +58,7 @@ print_header() {
 
 show_help() {
     cat << 'EOF'
-TEV2 Database Restore Script (Unified)
+AssoPOS Database Restore Script (Unified)
 
 Usage: ./scripts/restore.sh [OPTIONS] [BACKUP_FILE]
 
@@ -79,9 +79,9 @@ Arguments:
 
 Environment Variables:
     The script reads database credentials from the .env file:
-    - POSTGRES_USER     Database username (default: totalevo_user)
-    - POSTGRES_PASSWORD Database password (default: totalevo_password)
-    - POSTGRES_DB       Database name (default: bar_pos)
+    - POSTGRES_USER     Database username (default: assopos_user)
+    - POSTGRES_PASSWORD Database password (default: assopos_password)
+    - POSTGRES_DB       Database name (default: assopos)
 
 Backup Files:
     - Location: ./backups/
@@ -125,9 +125,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+POSTGRES_DB="${POSTGRES_DB:-assopos}"
 
 load_env() {
     local env_file="$PROJECT_ROOT/.env"
@@ -146,9 +146,9 @@ load_env() {
             export "$var_name"="$var_value"
         fi
     done < "$env_file"
-    POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-    POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+    POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+    POSTGRES_DB="${POSTGRES_DB:-assopos}"
     ok "Environment loaded"
 }
 
@@ -660,7 +660,7 @@ main() {
 
     printf '\n'
     printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-    printf '%b\n' "${CYAN}${BOLD}║              TEV2 DATABASE RESTORE                         ║${NC}"
+    printf '%b\n' "${CYAN}${BOLD}║              AssoPOS DATABASE RESTORE                         ║${NC}"
     printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
     printf '\n'
 

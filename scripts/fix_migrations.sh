@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #===============================================================================
-# TEV2 Fix Migrations Script
+# AssoPOS Fix Migrations Script
 #
 # Marks all migrations in the codebase as applied in _prisma_migrations.
 # Use when the database schema is up to date but the migration tracking table
@@ -24,9 +24,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
-POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+POSTGRES_DB="${POSTGRES_DB:-assopos}"
 
 readonly RED='\033[0;31m'
 readonly GREEN='\033[0;32m'
@@ -60,9 +60,9 @@ load_env() {
             export "$var_name"="$var_value"
         fi
     done < "$env_file"
-    POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-    POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+    POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+    POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+    POSTGRES_DB="${POSTGRES_DB:-assopos}"
     ok "Environment loaded"
 }
 
@@ -81,7 +81,7 @@ run_backend_cmd() {
 main() {
     printf '\n'
     printf '%b\n' "${BLUE}==========================================${NC}"
-    printf '%b\n' "${BLUE} TEV2 Fix Migrations${NC}"
+    printf '%b\n' "${BLUE} AssoPOS Fix Migrations${NC}"
     printf '%b\n' "${BLUE}==========================================${NC}"
     printf '\n'
 

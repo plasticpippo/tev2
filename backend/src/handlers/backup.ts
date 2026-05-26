@@ -141,7 +141,7 @@ const getScheduleData = async () => {
   try {
     const { stdout } = await execAsync('crontab -l');
     const lines = stdout.trim().split('\n');
-    const backupLine = lines.find(line => line.includes('TEV2-cloud-backup'));
+    const backupLine = lines.find(line => line.includes('AssoPOS-cloud-backup'));
     if (!backupLine) {
       return { enabled: false, hour: 4, compress: false };
     }
@@ -166,11 +166,11 @@ const updateSchedule = async (enabled: boolean, hour: number, compress: boolean)
   }
 
   const { stdout: currentCrontab } = await execAsync('crontab -l 2>/dev/null || true');
-  const lines = currentCrontab.trim().split('\n').filter(line => !line.includes('TEV2-cloud-backup'));
+  const lines = currentCrontab.trim().split('\n').filter(line => !line.includes('AssoPOS-cloud-backup'));
 
   if (enabled) {
     const compressFlag = compress ? '--compress' : '';
-    const backupLine = `0 ${hour} * * * bash ${SCRIPTS_DIR}/backup.sh --cloud ${compressFlag} # TEV2-cloud-backup`;
+    const backupLine = `0 ${hour} * * * bash ${SCRIPTS_DIR}/backup.sh --cloud ${compressFlag} # AssoPOS-cloud-backup`;
     lines.push(backupLine);
   }
 
@@ -386,7 +386,7 @@ backupRouter.post('/local/full', authenticateToken, requireAdmin, async (req: Re
     const now = new Date();
     const pad = (n: number) => String(n).padStart(2, '0');
     const timestamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}_${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}`;
-    const archiveName = `tev2_full_${timestamp}.tar.gz`;
+    const archiveName = `assopos_full_${timestamp}.tar.gz`;
     const backupDir = BACKUPS_DIR;
     await fs.mkdir(backupDir, { recursive: true });
 
@@ -430,7 +430,7 @@ backupRouter.post('/local/full', authenticateToken, requireAdmin, async (req: Re
     try { await fs.copyFile('/app/VERSION', path.join(stagingDir, 'config', 'VERSION')); } catch { /* no VERSION */ }
 
     const manifest = [
-      'TEV2 Full Backup Archive',
+      'AssoPOS Full Backup Archive',
       `Created: ${new Date().toISOString()}`,
       `Database: ${database}`,
       'Contents:',
@@ -485,8 +485,8 @@ const getRetention = async (): Promise<number> => {
 };
 
 const parseBackupDate = (filename: string): number | null => {
-  // filename format: tev2_full_YYYYMMDD_HHMMSS.tar.gz
-  const match = filename.match(/^tev2_full_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.tar\.gz$/);
+  // filename format: assopos_full_YYYYMMDD_HHMMSS.tar.gz
+  const match = filename.match(/^assopos_full_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})\.tar\.gz$/);
   if (!match) return null;
   const [, year, month, day, hour, min, sec] = match;
   const date = new Date(
@@ -525,11 +525,11 @@ const enforceRetentionPolicy = async () => {
   try {
     const retention = await getRetention();
     const cutoff = Date.now() - retention * 86400000;
-    const listRes = await sidecarFetch('/list?path=/TEV2/backups');
+    const listRes = await sidecarFetch('/list?path=/AssoPOS/backups');
     if (!listRes.ok) return;
     const data = await listRes.json();
     const backups = (data.files || [])
-      .filter((f: any) => f.name && f.name.startsWith('tev2_full_') && f.name.endsWith('.tar.gz'));
+      .filter((f: any) => f.name && f.name.startsWith('assopos_full_') && f.name.endsWith('.tar.gz'));
 
     const toDelete = backups.filter((b: any) => {
       const ts = parseBackupDate(b.name);
@@ -539,7 +539,7 @@ const enforceRetentionPolicy = async () => {
       try {
         await sidecarFetch('/rm', {
           method: 'POST',
-          body: JSON.stringify({ path: `/TEV2/backups/${backup.name}` }),
+          body: JSON.stringify({ path: `/AssoPOS/backups/${backup.name}` }),
         });
       } catch { /* ignore individual deletion failures */ }
     }
@@ -569,7 +569,7 @@ backupRouter.post('/cloud', authenticateToken, requireAdmin, async (req: Request
         const now = new Date();
         const pad = (n: number) => String(n).padStart(2, '0');
         const timestamp = `${now.getUTCFullYear()}${pad(now.getUTCMonth() + 1)}${pad(now.getUTCDate())}_${pad(now.getUTCHours())}${pad(now.getUTCMinutes())}${pad(now.getUTCSeconds())}`;
-        const archiveName = `tev2_full_${timestamp}.tar.gz`;
+        const archiveName = `assopos_full_${timestamp}.tar.gz`;
         const backupDir = BACKUPS_DIR;
         await fs.mkdir(backupDir, { recursive: true });
 
@@ -616,7 +616,7 @@ backupRouter.post('/cloud', authenticateToken, requireAdmin, async (req: Request
         try { await fs.copyFile('/app/VERSION', path.join(stagingDir, 'config', 'VERSION')); } catch { /* no VERSION */ }
 
         const manifest = [
-          'TEV2 Cloud Backup Archive',
+          'AssoPOS Cloud Backup Archive',
           `Created: ${new Date().toISOString()}`,
           `Database: ${database}`,
           `DB Backup: ${path.basename(dumpPath)}`,
@@ -632,12 +632,12 @@ backupRouter.post('/cloud', authenticateToken, requireAdmin, async (req: Request
         await fs.rm(stagingDir, { recursive: true, force: true });
 
         const sidecarLocalPath = `/backups/${archiveName}`;
-        const remotePath = '/TEV2/backups';
+        const remotePath = '/AssoPOS/backups';
 
         updateJobStatus(job.id, 'running', 'Ensuring MEGA folder exists...');
         await sidecarFetch('/mkdir', {
           method: 'POST',
-          body: JSON.stringify({ path: '/TEV2' }),
+          body: JSON.stringify({ path: '/AssoPOS' }),
         });
         await sidecarFetch('/mkdir', {
           method: 'POST',
@@ -722,14 +722,14 @@ backupRouter.get('/cloud/jobs/:id', authenticateToken, requireAdmin, async (req:
 backupRouter.get('/cloud/list', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
-    const response = await sidecarFetch('/list?path=/TEV2/backups');
+    const response = await sidecarFetch('/list?path=/AssoPOS/backups');
     if (!response.ok) {
       throw new Error(`Sidecar returned ${response.status}`);
     }
     const data = await response.json();
 
     const backups = (data.files || [])
-      .filter((f: any) => f.name && f.name.startsWith('tev2_full_'))
+      .filter((f: any) => f.name && f.name.startsWith('assopos_full_'))
       .map((f: any) => ({
         filename: f.name,
         size: f.size || 'unknown',
@@ -753,14 +753,14 @@ backupRouter.post('/cloud/restore', authenticateToken, requireAdmin, async (req:
   if (!filename) {
     return res.status(400).json({ error: t('errors.backup.filenameRequired') });
   }
-  const SAFE_FILENAME = /^tev2_full_\d{8}_\d{6}\.tar\.gz$/;
+  const SAFE_FILENAME = /^assopos_full_\d{8}_\d{6}\.tar\.gz$/;
   if (!SAFE_FILENAME.test(filename)) {
     return res.status(400).json({ error: 'Invalid backup filename format' });
   }
   try {
     const job = createJob('restore');
 
-    const remotePath = `/TEV2/backups/${filename}`;
+    const remotePath = `/AssoPOS/backups/${filename}`;
     const localPath = `/backups/${filename}`;
 
     updateJobStatus(job.id, 'running', 'Downloading from MEGA...');

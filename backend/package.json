@@ -1,7 +1,7 @@
 {
-  "name": "bar-pos-backend",
+  "name": "assopos-backend",
   "version": "1.0.0",
-  "description": "Backend server for the bar POS system",
+  "description": "Backend server for AssoPOS",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",
@@ -67,6 +67,6 @@
     "prisma",
     "postgresql"
   ],
-  "author": "Bar POS Pro",
+  "author": "AssoPOS",
   "license": "MIT"
 }

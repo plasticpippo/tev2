@@ -339,7 +339,7 @@ detect_previous_installation() {
     
     # Signal 3: Docker containers from a previous run exist (running or stopped)
     if command -v docker &>/dev/null; then
-        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qE 'bar_pos_(backend|frontend|nginx|backend_db)'; then
+        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qE 'assopos_(backend|frontend|nginx|backend_db)'; then
             detection_log+="  Existing TEV2 Docker containers detected\n"
             ((signals++))
         fi
@@ -347,7 +347,7 @@ detect_previous_installation() {
     
     # Signal 4: Docker volume exists
     if command -v docker &>/dev/null; then
-        if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q 'tev2_postgres_data\|postgres_data\|bar_pos'; then
+        if docker volume ls --format '{{.Name}}' 2>/dev/null | grep -q 'assopos_postgres_data\|postgres_data\|assopos'; then
             detection_log+="  Existing Docker data volumes detected\n"
             ((signals++))
         fi
@@ -392,7 +392,7 @@ detect_installed_version() {
     
     # Fallback: check running container labels
     if command -v docker &>/dev/null; then
-        version=$(docker inspect bar_pos_backend --format '{{index .Config.Labels "app.version"}}' 2>/dev/null || true)
+        version=$(docker inspect assopos_backend --format '{{index .Config.Labels "app.version"}}' 2>/dev/null || true)
         if [[ -n "$version" && "$version" != "dev" ]]; then
             print_verbose "Detected version from container label: $version"
             echo "$version"
@@ -402,7 +402,7 @@ detect_installed_version() {
     
     # Pre-versioning installation: containers exist but no version info
     if command -v docker &>/dev/null; then
-        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q 'bar_pos_backend'; then
+        if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -q 'assopos_backend'; then
             print_verbose "Pre-versioning installation detected (no version info available)"
             echo "0.0.0-pre"  # Signals: old install, version unknown
             return
@@ -480,11 +480,11 @@ preflight_checks() {
 
 # Read database credentials from .env (with fallback defaults)
 _get_db_user() {
-    env_read .env POSTGRES_USER "totalevo_user"
+    env_read .env POSTGRES_USER "assopos_user"
 }
 
 _get_db_name() {
-    env_read .env POSTGRES_DB "bar_pos"
+    env_read .env POSTGRES_DB "assopos"
 }
 
 get_docker_cmd() {
@@ -753,9 +753,9 @@ preserve_existing_secrets() {
     # Ensure backend DATABASE_URL stays in sync with root credentials
     if [[ -f "$backend_env_file" ]]; then
         local db_user db_pass db_name
-        db_user=$(env_read "$env_file" POSTGRES_USER "totalevo_user")
+        db_user=$(env_read "$env_file" POSTGRES_USER "assopos_user")
         db_pass=$(env_read "$env_file" POSTGRES_PASSWORD "")
-        db_name=$(env_read "$env_file" POSTGRES_DB "bar_pos")
+        db_name=$(env_read "$env_file" POSTGRES_DB "assopos")
         
         if [[ -n "$db_pass" ]]; then
             local new_url="postgresql://${db_user}:${db_pass}@postgres:5432/${db_name}?schema=public"
@@ -781,14 +781,14 @@ validate_upgrade() {
     local dc
     dc=$(get_docker_cmd)
     
-    if ! $dc compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
+    if ! $dc compose ps 2>/dev/null | grep -qE "backend.*running|assopos_backend.*running"; then
         print_error "Backend container is not running"
         ((errors++))
     else
         print_verbose "Backend container: running"
     fi
     
-    if ! $dc compose ps 2>/dev/null | grep -qE "frontend.*running|bar_pos_frontend.*running"; then
+    if ! $dc compose ps 2>/dev/null | grep -qE "frontend.*running|assopos_frontend.*running"; then
         print_error "Frontend container is not running"
         ((errors++))
     else
@@ -911,7 +911,7 @@ verify_migrations() {
     dc=$(get_docker_cmd)
     
     while [[ $attempt -lt $max_attempts ]]; do
-        if $dc compose ps 2>/dev/null | grep -qE "backend.*running|bar_pos_backend.*running"; then
+        if $dc compose ps 2>/dev/null | grep -qE "backend.*running|assopos_backend.*running"; then
             break
         fi
         attempt=$((attempt + 1))
@@ -1873,7 +1873,7 @@ configure_environment() {
     print_step "Configuring database settings..."
     
     # Preserve existing user/db or use defaults
-    POSTGRES_USER=$(prompt_input "Database username" "${CLI_DB_USER:-${existing_postgres_user:-totalevo_user}}")
+    POSTGRES_USER=$(prompt_input "Database username" "${CLI_DB_USER:-${existing_postgres_user:-assopos_user}}")
     
     printf '\n'
     print_info "Database Password: A secure password is recommended for production."
@@ -1886,11 +1886,11 @@ configure_environment() {
             POSTGRES_PASSWORD=$(generate_secure_password)
             print_success "Generated secure password"
         else
-            POSTGRES_PASSWORD=$(prompt_input "Database password" "${CLI_DB_PASSWORD:-totalevo_password}" "true")
+            POSTGRES_PASSWORD=$(prompt_input "Database password" "${CLI_DB_PASSWORD:-assopos_password}" "true")
         fi
     fi
     
-    POSTGRES_DB=$(prompt_input "Database name" "${CLI_DB_NAME:-${existing_postgres_db:-bar_pos}}")
+    POSTGRES_DB=$(prompt_input "Database name" "${CLI_DB_NAME:-${existing_postgres_db:-assopos}}")
     
     # JWT Secret
     printf '\n'

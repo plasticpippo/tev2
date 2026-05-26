@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 #===============================================================================
-# TEV2 Database Backup Script
+# AssoPOS Database Backup Script
 # 
 # This script creates backups of the PostgreSQL database running in Docker.
 # It supports both plain SQL and compressed (gzip) backup formats.
@@ -68,7 +68,7 @@ print_header() {
 
 show_help() {
     cat << 'EOF'
-TEV2 Database Backup Script
+AssoPOS Database Backup Script
 
 Usage: ./scripts/backup.sh [OPTIONS]
 
@@ -86,13 +86,13 @@ Options:
 
 Environment Variables:
     The script reads database credentials from the .env file:
-    - POSTGRES_USER     Database username (default: totalevo_user)
-    - POSTGRES_PASSWORD Database password (default: totalevo_password)
-    - POSTGRES_DB       Database name (default: bar_pos)
+    - POSTGRES_USER     Database username (default: assopos_user)
+    - POSTGRES_PASSWORD Database password (default: assopos_password)
+    - POSTGRES_DB       Database name (default: assopos)
 
 Output:
     - Local backup: ./backups/db_backup_YYYYMMDD_HHMMSS.sql[.gz]
-    - Cloud archive (with --cloud): ./backups/tev2_full_YYYYMMDD_HHMMSS.tar.gz
+    - Cloud archive (with --cloud): ./backups/assopos_full_YYYYMMDD_HHMMSS.tar.gz
     - Last backup reference: ./backups/.last_backup
     - Cloud retention: 30 backups (oldest auto-deleted)
 
@@ -124,9 +124,9 @@ PROJECT_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$PROJECT_ROOT"
 
 # Default values (can be overridden by .env)
-POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+POSTGRES_DB="${POSTGRES_DB:-assopos}"
 
 # Load environment variables from .env file if it exists
 load_env_file() {
@@ -158,9 +158,9 @@ load_env_file() {
         done < "$env_file"
         
         # Update database variables from environment
-        POSTGRES_USER="${POSTGRES_USER:-totalevo_user}"
-        POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-totalevo_password}"
-        POSTGRES_DB="${POSTGRES_DB:-bar_pos}"
+        POSTGRES_USER="${POSTGRES_USER:-assopos_user}"
+        POSTGRES_PASSWORD="${POSTGRES_PASSWORD:-assopos_password}"
+        POSTGRES_DB="${POSTGRES_DB:-assopos}"
         
         print_success "Environment loaded successfully"
     else
@@ -229,7 +229,7 @@ create_backup_dir() {
 # CLOUD BACKUP FUNCTIONS
 #===============================================================================
 
-readonly MEGA_REMOTE_FOLDER="/TEV2/backups"
+readonly MEGA_REMOTE_FOLDER="/AssoPOS/backups"
 readonly CLOUD_RETENTION=30
 
 # Create a full backup archive with DB dump + Docker volumes + config
@@ -237,7 +237,7 @@ create_cloud_archive() {
     local db_backup_file="$1"
     local backup_dir="$2"
     local timestamp="$3"
-    local archive_name="tev2_full_${timestamp}.tar.gz"
+    local archive_name="assopos_full_${timestamp}.tar.gz"
     local archive_path="${backup_dir}/${archive_name}"
     local staging_dir="${backup_dir}/_cloud_staging"
 
@@ -296,7 +296,7 @@ create_cloud_archive() {
 
     # 4. Write manifest
     cat > "$staging_dir/MANIFEST.txt" << MANIFEST
-TEV2 Cloud Backup Archive
+AssoPOS Cloud Backup Archive
 Created: $(date -Iseconds)
 App Version: $(grep '^VERSION=' "$PROJECT_ROOT/VERSION" 2>/dev/null | cut -d'=' -f2 || echo "unknown")
 Database: $POSTGRES_DB
@@ -332,7 +332,7 @@ upload_to_mega() {
     fi
 
     # Ensure remote folder exists
-    mega-mkdir /TEV2 2>/dev/null || true
+    mega-mkdir /AssoPOS 2>/dev/null || true
     mega-mkdir "$MEGA_REMOTE_FOLDER" 2>/dev/null || true
 
     print_info "Uploading to MEGA: $MEGA_REMOTE_FOLDER/$(basename "$archive_path")"
@@ -346,10 +346,10 @@ upload_to_mega() {
     # Rotate old backups
     print_info "Rotating cloud backups (keeping last $CLOUD_RETENTION)..."
     local backups
-    backups=$(mega-find "$MEGA_REMOTE_FOLDER" --pattern="tev2_full_*.tar.gz" --time-format="%s" 2>/dev/null | sort -n || true)
+    backups=$(mega-find "$MEGA_REMOTE_FOLDER" --pattern="assopos_full_*.tar.gz" --time-format="%s" 2>/dev/null | sort -n || true)
 
     local count
-    count=$(echo "$backups" | grep -c "tev2_full_" || true)
+    count=$(echo "$backups" | grep -c "assopos_full_" || true)
     
     if [[ "$count" -gt "$CLOUD_RETENTION" ]]; then
         local to_delete=$((count - CLOUD_RETENTION))
@@ -403,7 +403,7 @@ main() {
     # Print banner
     printf '\n'
     printf '%b\n' "${CYAN}${BOLD}╔════════════════════════════════════════════════════════════╗${NC}"
-    printf '%b\n' "${CYAN}${BOLD}║              TEV2 DATABASE BACKUP                          ║${NC}"
+    printf '%b\n' "${CYAN}${BOLD}║              AssoPOS DATABASE BACKUP                          ║${NC}"
     printf '%b\n' "${CYAN}${BOLD}╚════════════════════════════════════════════════════════════╝${NC}"
     printf '\n'
     
@@ -440,7 +440,7 @@ main() {
     
     # Write backup metadata header
     {
-        echo "-- TEV2 Database Backup"
+        echo "-- AssoPOS Database Backup"
         echo "-- App Version: $app_version"
         echo "-- Timestamp: $(date -Iseconds)"
         echo "-- Database: $POSTGRES_DB"

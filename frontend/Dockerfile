@@ -42,10 +42,10 @@ ARG APP_VERSION=dev
 ARG BUILD_DATE=unknown
 
 # Set labels for version tracking
-LABEL app.name="bar-pos-frontend" \
+LABEL app.name="assopos-frontend" \
       app.version="${APP_VERSION}" \
       app.build.date="${BUILD_DATE}" \
-      org.opencontainers.image.title="Bar POS Frontend" \
+      org.opencontainers.image.title="AssoPOS Frontend" \
       org.opencontainers.image.version="${APP_VERSION}"
 
 # Copy built application from builder stage

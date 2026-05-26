@@ -9,15 +9,15 @@ services:
   # - Total with limits: ~2.3GB leaves ~1.7GB for system overhead
   db:
     image: postgres:15
-    container_name: bar_pos_backend_db
+    container_name: assopos_backend_db
     labels:
-      app.name: "bar-pos-database"
+      app.name: "assopos-database"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     environment:
-      POSTGRES_USER: ${POSTGRES_USER:-totalevo_user}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-totalevo_password}
-      POSTGRES_DB: ${POSTGRES_DB:-bar_pos}
+      POSTGRES_USER: ${POSTGRES_USER:-assopos_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-assopos_password}
+      POSTGRES_DB: ${POSTGRES_DB:-assopos}
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -31,7 +31,7 @@ services:
         reservations:
           memory: 512M
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-totalevo_user} -d ${POSTGRES_DB:-bar_pos}"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-assopos_user} -d ${POSTGRES_DB:-assopos}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -49,13 +49,13 @@ services:
       args:
         - APP_VERSION=${APP_VERSION:-dev}
         - BUILD_DATE=${BUILD_DATE:-unknown}
-    container_name: bar_pos_backend
+    container_name: assopos_backend
     labels:
-      app.name: "bar-pos-backend"
+      app.name: "assopos-backend"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     environment:
-      - DATABASE_URL=postgresql://${POSTGRES_USER:-totalevo_user}:${POSTGRES_PASSWORD:-totalevo_password}@db:5432/${POSTGRES_DB:-bar_pos}?connection_limit=5&pool_timeout=10
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-assopos_user}:${POSTGRES_PASSWORD:-assopos_password}@db:5432/${POSTGRES_DB:-assopos}?connection_limit=5&pool_timeout=10
       - PORT=3001
       - HOST=0.0.0.0
       # Environment: development (detailed errors) or production (generic errors)
@@ -115,9 +115,9 @@ services:
         - VITE_PORT=3000
         - APP_VERSION=${APP_VERSION:-dev}
         - BUILD_DATE=${BUILD_DATE:-unknown}
-    container_name: bar_pos_frontend
+    container_name: assopos_frontend
     labels:
-      app.name: "bar-pos-frontend"
+      app.name: "assopos-frontend"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     environment:
@@ -149,9 +149,9 @@ services:
   # - Reservation: 64MB - Minimum guaranteed memory
   nginx:
     image: nginx:alpine
-    container_name: bar_pos_nginx
+    container_name: assopos_nginx
     labels:
-      app.name: "bar-pos-nginx"
+      app.name: "assopos-nginx"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     ports:
@@ -191,9 +191,9 @@ services:
   # Uses in-memory storage by default; messages lost on container restart (acceptable for testing)
   mailhog:
     image: mailhog/mailhog:v1.0.1
-    container_name: bar_pos_mailhog
+    container_name: assopos_mailhog
     labels:
-      app.name: "bar-pos-mailhog"
+      app.name: "assopos-mailhog"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     restart: unless-stopped
@@ -215,9 +215,9 @@ services:
     build:
       context: ./mega-sidecar
       dockerfile: Dockerfile
-    container_name: bar_pos_mega_sidecar
+    container_name: assopos_mega_sidecar
     labels:
-      app.name: "bar-pos-mega-sidecar"
+      app.name: "assopos-mega-sidecar"
       app.version: ${APP_VERSION:-dev}
       app.build_date: ${BUILD_DATE:-unknown}
     environment:

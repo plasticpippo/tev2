@@ -8,10 +8,10 @@
 - All servers (frontend, backend, db) run in Docker
 
 Docker container names:
-- `bar_pos_nginx`
-- `bar_pos_frontend`
-- `bar_pos_backend`
-- `bar_pos_backend_db`
+- `assopos_nginx`
+- `assopos_frontend`
+- `assopos_backend`
+- `assopos_backend_db`
 
 Rebuild and restart:
 ```bash
