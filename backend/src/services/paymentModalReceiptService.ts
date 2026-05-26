@@ -107,10 +107,13 @@ export async function createReceiptFromPayment(
     : transaction.items;
 
   const itemsSnapshot = items.map((item: any) => ({
+    id: item.id,
+    variantId: item.variantId,
+    productId: item.productId,
     name: item.name,
+    price: Number(item.price),
     quantity: item.quantity,
-    unitPrice: item.price,
-    total: multiplyMoney(Number(item.price), item.quantity),
+    taxRateId: item.taxRateId,
     taxRateName: item.taxRateName || 'Standard',
     taxRatePercent: item.taxRatePercent ?? Math.round((item.effectiveTaxRate || 0.22) * 100),
   }));
@@ -154,8 +157,8 @@ export async function createReceiptFromPayment(
   taxMap.forEach((value, key) => {
     const [name, percentStr] = key.split('-');
     taxBreakdown.push({
-      name,
-      percent: parseInt(percentStr, 10),
+      rateName: name,
+      ratePercent: parseInt(percentStr, 10),
       taxableAmount: roundMoney(value.taxableAmount),
       taxAmount: roundMoney(value.taxAmount),
     });
