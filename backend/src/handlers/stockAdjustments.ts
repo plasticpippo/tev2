@@ -51,9 +51,9 @@ stockAdjustmentsRouter.get('/:id', authenticateToken, async (req: Request, res: 
 // POST /api/stock-adjustments - Create a new stock adjustment
 stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
+  const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustmentType, 'id' | 'createdAt'>;
+  
   try {
-    const { stockItemId, itemName, quantity, reason, userId, userName } = req.body as Omit<StockAdjustmentType, 'id' | 'createdAt'>;
-    
     // Validate UUID format (standard format: 8-4-4-4-12 hex characters with optional dashes)
     const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     if (typeof stockItemId === 'string' && !uuidRegex.test(stockItemId)) {
@@ -72,6 +72,22 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     // Use atomic transaction to ensure both stock update and adjustment record are created together
     // This prevents data inconsistency if the server crashes between operations
     const stockAdjustment = await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      // Check for negative stock on decrement
+      if (quantity < 0) {
+        const currentItem = await tx.stockItem.findUnique({
+          where: { id: stockItemId },
+          select: { quantity: true, name: true }
+        });
+        
+        if (!currentItem) {
+          throw new Error(t('errors:stockAdjustments.invalidStockItemId', { stockItemId }));
+        }
+        
+        if (currentItem.quantity + quantity < 0) {
+          throw new Error('INSUFFICIENT_STOCK');
+        }
+      }
+      
       // Update the stock item quantity
       await tx.stockItem.update({
         where: { id: stockItemId },
@@ -98,6 +114,13 @@ stockAdjustmentsRouter.post('/', authenticateToken, requireAdmin, async (req: Re
     
     res.status(201).json(stockAdjustment);
   } catch (error) {
+    if (error instanceof Error && error.message === 'INSUFFICIENT_STOCK') {
+      const currentItem = await prisma.stockItem.findUnique({
+        where: { id: stockItemId },
+        select: { quantity: true, name: true }
+      });
+      return res.status(400).json({ error: t('errors:transactions.insufficientStock', { itemName: currentItem?.name ?? '', available: currentItem?.quantity ?? 0, requested: String(Math.abs(quantity)) }) });
+    }
     logError(error instanceof Error ? error : 'Error creating stock adjustment', {
       correlationId: (req as any).correlationId,
     });

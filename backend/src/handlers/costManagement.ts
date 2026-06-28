@@ -539,13 +539,17 @@ costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, re
   try {
     const id = parseInt(req.params.id, 10);
     const userId = (req as any).user?.id;
+    const userName = (req as any).user?.username;
 
     if (isNaN(id)) {
       res.status(400).json({ error: t('errors.costManagement.inventoryCounts.invalidId') });
       return;
     }
 
-    const existing = await prisma.inventoryCount.findUnique({ where: { id } });
+    const existing = await prisma.inventoryCount.findUnique({ 
+      where: { id },
+      include: { items: { include: { stockItem: true } } }
+    });
     if (!existing) {
       res.status(404).json({ error: t('errors.costManagement.inventoryCounts.notFound') });
       return;
@@ -556,16 +560,43 @@ costManagementRouter.post('/inventory-counts/:id/approve', authenticateToken, re
       return;
     }
 
-    const updated = await prisma.inventoryCount.update({
-      where: { id },
-      data: {
-        status: 'approved',
-        approvedAt: new Date(),
-        approvedBy: userId,
-      },
+    const result = await prisma.$transaction(async (tx) => {
+      // Reconcile stock and create adjustments
+      for (const item of existing.items) {
+        const currentQty = item.stockItem.quantity;
+        const countedQty = Math.round(item.quantity.toNumber());
+        const delta = countedQty - currentQty;
+        
+        if (delta !== 0) {
+          await tx.stockItem.update({
+            where: { id: item.stockItemId },
+            data: { quantity: countedQty },
+          });
+          
+          await tx.stockAdjustment.create({
+            data: {
+              stockItemId: item.stockItemId,
+              itemName: item.stockItem.name,
+              quantity: delta,
+              reason: `Inventory count #${id} approved`,
+              userId: userId!,
+              userName: userName!,
+            },
+          });
+        }
+      }
+      
+      return await tx.inventoryCount.update({
+        where: { id },
+        data: {
+          status: 'approved',
+          approvedAt: new Date(),
+          approvedBy: userId,
+        },
+      });
     });
 
-    res.json(updated);
+    res.json(result);
   } catch (error) {
     logError(error instanceof Error ? error : 'Error approving inventory count', {
       correlationId: (req as any).correlationId,

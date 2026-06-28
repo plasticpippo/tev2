@@ -125,6 +125,31 @@ model StockConsumptionVersion {
   @@map("stock_consumption_versions")
 }
 
+model StockConsumptionLedger {
+  id            Int      @id @default(autoincrement())
+  transactionId Int
+  stockItemId   String   @db.Uuid
+  variantId     Int
+  productId     Int
+  quantity      Int
+  productName   String
+  variantName   String
+  stockItemName String
+  categoryId    Int
+  categoryName  String
+  estimated     Boolean  @default(false)
+  createdAt     DateTime @default(now())
+
+  transaction Transaction @relation(fields: [transactionId], references: [id], onDelete: Cascade)
+  stockItem   StockItem   @relation(fields: [stockItemId], references: [id])
+
+  @@index([transactionId])
+  @@index([stockItemId])
+  @@index([createdAt])
+  @@index([stockItemId, createdAt])
+  @@map("stock_consumption_ledger")
+}
+
 model Category {
   id Int @id @default(autoincrement())
   name String
@@ -171,6 +196,7 @@ model Transaction {
   receipts Receipt[]
   transactionItems TransactionItem[]
   auditLogs TransactionAuditLog[]
+  consumptionLedger StockConsumptionLedger[]
 
   @@index([status])
   @@index([userId, createdAt])
@@ -276,6 +302,7 @@ model StockItem {
   costHistory CostHistory[]
   inventoryCountItems InventoryCountItem[]
   varianceReportItems VarianceReportItem[]
+  consumptionLedger StockConsumptionLedger[]
 
   @@index([type])
   @@index([lastCostUpdate])

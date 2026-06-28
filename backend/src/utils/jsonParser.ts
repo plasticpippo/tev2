@@ -30,3 +30,31 @@ export function safeJsonParse<T>(
     return defaultValue;
   }
 }
+
+/**
+ * Parses Transaction.items safely.
+ * Handles both string and object formats for backwards compatibility.
+ * Due to legacy double-encoding, some rows contain JSON strings, others contain objects.
+ */
+export function parseTransactionItems<T = any[]>(items: JsonValue | string | null | undefined): T {
+  if (!items) {
+    return [] as T;
+  }
+  
+  // If it's already an object/array, return it
+  if (typeof items !== 'string') {
+    return items as T;
+  }
+  
+  try {
+    const parsed = JSON.parse(items);
+    // If the parsed result is still a string (double-encoded), parse again
+    return typeof parsed === 'string' ? JSON.parse(parsed) : parsed;
+  } catch (error) {
+    logError('Failed to parse transaction items', {
+      error: error instanceof Error ? error.message : 'Unknown error',
+      itemsPreview: typeof items === 'string' ? items.substring(0, 100) : String(items)
+    });
+    return [] as T;
+  }
+}

@@ -329,12 +329,13 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
 
     await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
       // Check ALL referencing models in parallel
-      const [stockConsumptions, stockAdjustments, costHistory, inventoryCountItems, varianceReportItems] = await Promise.all([
+      const [stockConsumptions, stockAdjustments, costHistory, inventoryCountItems, varianceReportItems, ledgerRows] = await Promise.all([
         tx.stockConsumption.count({ where: { stockItemId: id } }),
         tx.stockAdjustment.count({ where: { stockItemId: id } }),
         tx.costHistory.count({ where: { stockItemId: id } }),
         tx.inventoryCountItem.count({ where: { stockItemId: id } }),
         tx.varianceReportItem.count({ where: { stockItemId: id } }),
+        tx.stockConsumptionLedger.count({ where: { stockItemId: id } }),
       ]);
 
       // Check each constraint and throw specific error
@@ -352,6 +353,9 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
       }
       if (varianceReportItems > 0) {
         throw new Error('STOCK_IN_USE_VARIANCE');
+      }
+      if (ledgerRows > 0) {
+        throw new Error('STOCK_IN_USE_LEDGER');
       }
 
       // All checks passed, delete the stock item
@@ -375,6 +379,8 @@ stockItemsRouter.delete('/:id', authenticateToken, requireAdmin, async (req: Req
           return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasInventoryCounts') });
         case 'STOCK_IN_USE_VARIANCE':
           return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasVarianceReports') });
+        case 'STOCK_IN_USE_LEDGER':
+          return res.status(400).json({ error: t('errors:stockItems.cannotDeleteHasConsumptionLedger') });
       }
     }
 

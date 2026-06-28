@@ -85,7 +85,8 @@
     "cannotDeleteHasAdjustments": "Impossibile eliminare l'articolo magazzino perché ha record di regolazione delle scorte.",
     "cannotDeleteHasCostHistory": "Impossibile eliminare l'articolo magazzino perché ha record di storico dei costi.",
     "cannotDeleteHasInventoryCounts": "Impossibile eliminare l'articolo magazzino perché è utilizzato negli inventari.",
-    "cannotDeleteHasVarianceReports": "Impossibile eliminare l'articolo magazzino perché è referenziato nei report di varianza."
+    "cannotDeleteHasVarianceReports": "Impossibile eliminare l'articolo magazzino perché è referenziato nei report di varianza.",
+    "cannotDeleteHasConsumptionLedger": "Impossibile eliminare l'articolo magazzino perché ha record di consumo storici."
   },
   "tills": {
     "notFound": "Cassa non trovata"

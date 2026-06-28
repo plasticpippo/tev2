@@ -10,6 +10,7 @@ import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, forma
 import { requireRole } from '../middleware/authorization';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
 import { calculateTransactionCost } from '../services/costCalculationService';
+import { CONSUMED_TRANSACTION_STATUSES } from '../utils/transaction';
 
 export const transactionsRouter = express.Router();
 
@@ -273,25 +274,71 @@ try {
 }
 
 // 2. Collect stock consumptions INSIDE transaction to prevent race conditions
-      const consumptions = new Map<string, number>();
-      for (const item of items) {
-        const product = await tx.product.findUnique({
-          where: { id: item.productId },
-          include: { variants: { where: { id: item.variantId }, include: { stockConsumption: true } } }
-        });
-  
-        if (product && product.variants[0]) {
-          for (const sc of product.variants[0].stockConsumption) {
-            const currentQty = consumptions.get(sc.stockItemId) || 0;
-            consumptions.set(sc.stockItemId, currentQty + (sc.quantity * item.quantity));
-          }
-        }
-      }
+//    AND build ledger rows for the consumption ledger AND build product/variant name map
+const consumptions = new Map<string, number>();
+const ledgerRows: Array<{
+  stockItemId: string;
+  variantId: number;
+  productId: number;
+  quantity: number;
+  productName: string;
+  variantName: string;
+  stockItemName: string;
+  categoryId: number;
+  categoryName: string;
+  estimated: boolean;
+}> = [];
+const productVariantNames = new Map<number, { productName: string; variantName: string; categoryId: number; categoryName: string }>();
+
+for (const item of items) {
+  const product = await tx.product.findUnique({
+    where: { id: item.productId },
+    include: { 
+      variants: { 
+        where: { id: item.variantId }, 
+        include: { stockConsumption: { include: { stockItem: true } } } 
+      },
+      category: true
+    }
+  });
+
+  if (product && product.variants[0]) {
+    const variant = product.variants[0];
+    
+    // Store product/variant names for C3 fix (TransactionItem creation)
+    productVariantNames.set(variant.id, {
+      productName: product.name,
+      variantName: variant.name,
+      categoryId: product.categoryId,
+      categoryName: product.category.name
+    });
+    
+    for (const sc of variant.stockConsumption) {
+      const currentQty = consumptions.get(sc.stockItemId) || 0;
+      const consumedQty = sc.quantity * item.quantity;
+      consumptions.set(sc.stockItemId, currentQty + consumedQty);
+      
+      // Push ledger row data (transactionId will be set after transaction.create)
+      ledgerRows.push({
+        stockItemId: sc.stockItemId,
+        variantId: variant.id,
+        productId: product.id,
+        quantity: consumedQty,
+        productName: product.name,
+        variantName: variant.name,
+        stockItemName: sc.stockItem.name,
+        categoryId: product.categoryId,
+        categoryName: product.category.name,
+        estimated: false
+      });
+    }
+  }
+}
   
 // 3. Create the transaction with idempotency key and cost data
 const transaction = await tx.transaction.create({
   data: {
-    items: JSON.stringify(items),
+    items: items,
     subtotal: calculatedSubtotal,
     tax: validatedTax,
     tip: tip || 0,
@@ -314,16 +361,27 @@ const transaction = await tx.transaction.create({
         }
       });
 
+// 3a. Write ledger rows after transaction.create (using the transaction.id)
+if (ledgerRows.length > 0) {
+  await tx.stockConsumptionLedger.createMany({
+    data: ledgerRows.map(row => ({
+      ...row,
+      transactionId: transaction.id
+    }))
+  });
+}
+
       // 3b. Create relational TransactionItem records for queryability and integrity
       await tx.transactionItem.createMany({
         data: items.map((item: { productId: number; variantId: number; name: string; price: number; quantity: number; effectiveTaxRate?: number }) => {
           const itemCost = itemCostMap.get(item.variantId);
+          const names = productVariantNames.get(item.variantId);
           return {
             transactionId: transaction.id,
             productId: item.productId,
             variantId: item.variantId,
-            productName: item.name,
-            variantName: item.name,
+            productName: names?.productName || item.name,
+            variantName: names?.variantName || item.name,
             price: item.price,
             quantity: item.quantity,
             effectiveTaxRate: item.effectiveTaxRate ?? null,
@@ -733,7 +791,7 @@ transactionsRouter.post(
           throw new Error(t('errors:transactions.alreadyVoidedCode'));
         }
 
-        if (transaction.status !== 'completed' && transaction.status !== 'complimentary') {
+        if (!CONSUMED_TRANSACTION_STATUSES.includes(transaction.status as any)) {
           throw new Error(t('errors:transactions.invalidStatusCode'));
         }
 
@@ -743,34 +801,51 @@ transactionsRouter.post(
           field: 'items',
         });
 
-        // 3. Calculate stock restorations by re-reading current recipes
+        // 3. Calculate stock restorations from the ledger (B2 fix)
+        //    Fall back to legacy recipe-based restoration for pre-migration transactions
+        const ledgerRows = await tx.stockConsumptionLedger.findMany({
+          where: { transactionId: Number(id) },
+        });
+
         const restorations = new Map<string, { name: string; quantity: number }>();
 
-        for (const item of items) {
-          if (!item.productId || !item.variantId) continue;
+        if (ledgerRows.length > 0) {
+          // Use ledger for restoration (accurate, recipe-independent)
+          for (const row of ledgerRows) {
+            const current = restorations.get(row.stockItemId) || { name: row.stockItemName, quantity: 0 };
+            restorations.set(row.stockItemId, {
+              name: row.stockItemName,
+              quantity: current.quantity + row.quantity,
+            });
+          }
+        } else {
+          // Legacy fallback: re-derive from current recipe (for pre-migration transactions)
+          for (const item of items) {
+            if (!item.productId || !item.variantId) continue;
 
-          const product = await tx.product.findUnique({
-            where: { id: item.productId },
-            include: {
-              variants: {
-                where: { id: item.variantId },
-                include: { stockConsumption: true },
+            const product = await tx.product.findUnique({
+              where: { id: item.productId },
+              include: {
+                variants: {
+                  where: { id: item.variantId },
+                  include: { stockConsumption: true },
+                },
               },
-            },
-          });
+            });
 
-          if (product && product.variants[0]) {
-            for (const sc of product.variants[0].stockConsumption) {
-              const current = restorations.get(sc.stockItemId);
-              const restorationQty = sc.quantity * item.quantity;
+            if (product && product.variants[0]) {
+              for (const sc of product.variants[0].stockConsumption) {
+                const current = restorations.get(sc.stockItemId);
+                const restorationQty = sc.quantity * item.quantity;
 
-              if (current) {
-                current.quantity += restorationQty;
-              } else {
-                restorations.set(sc.stockItemId, {
-                  name: '',
-                  quantity: restorationQty,
-                });
+                if (current) {
+                  current.quantity += restorationQty;
+                } else {
+                  restorations.set(sc.stockItemId, {
+                    name: '',
+                    quantity: restorationQty,
+                  });
+                }
               }
             }
           }

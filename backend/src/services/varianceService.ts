@@ -13,6 +13,7 @@ import {
   roundCost,
   divideCost,
 } from '../utils/money';
+import { CONSUMED_TRANSACTION_STATUSES_MUTABLE } from '../utils/transaction';
 
 interface TransactionItem {
   productId?: number;
@@ -228,52 +229,20 @@ export async function generateVarianceReport(
       stockAdditions.set(adj.stockItemId, current + adj.quantity);
     }
 
-    const transactions = await prisma.transaction.findMany({
+    const ledgerRows = await prisma.stockConsumptionLedger.findMany({
       where: {
-        status: 'completed',
-        createdAt: { gte: periodStart, lte: periodEnd },
+        transaction: {
+          status: { in: CONSUMED_TRANSACTION_STATUSES_MUTABLE },
+          createdAt: { gte: periodStart, lte: periodEnd },
+        },
       },
-      select: { items: true },
     });
 
     const theoreticalUsage = new Map<string, number>();
-    const allVariantIds = new Set<number>();
 
-    for (const tx of transactions) {
-      const txItems = tx.items as TransactionItem[] | null;
-      if (!txItems || !Array.isArray(txItems)) continue;
-      for (const item of txItems) {
-        if (item.variantId != null && item.quantity != null) {
-          allVariantIds.add(item.variantId);
-        }
-      }
-    }
-
-    const stockConsumptions = await prisma.stockConsumption.findMany({
-      where: { variantId: { in: Array.from(allVariantIds) } },
-      include: { stockItem: true },
-    });
-
-    const recipeMap = new Map<number, Array<{ stockItemId: string; quantity: number }>>();
-    for (const sc of stockConsumptions) {
-      const existing = recipeMap.get(sc.variantId) ?? [];
-      existing.push({ stockItemId: sc.stockItemId, quantity: sc.quantity });
-      recipeMap.set(sc.variantId, existing);
-    }
-
-    for (const tx of transactions) {
-      const txItems = tx.items as TransactionItem[] | null;
-      if (!txItems || !Array.isArray(txItems)) continue;
-      for (const item of txItems) {
-        if (item.variantId == null || item.quantity == null) continue;
-        const recipe = recipeMap.get(item.variantId);
-        if (!recipe) continue;
-        for (const ingredient of recipe) {
-          const usage = multiplyMoney(ingredient.quantity, item.quantity);
-          const current = theoreticalUsage.get(ingredient.stockItemId) ?? 0;
-          theoreticalUsage.set(ingredient.stockItemId, roundMoney(current + usage));
-        }
-      }
+    for (const row of ledgerRows) {
+      const current = theoreticalUsage.get(row.stockItemId) ?? 0;
+      theoreticalUsage.set(row.stockItemId, current + row.quantity);
     }
 
     const allStockItemIds = new Set<string>();

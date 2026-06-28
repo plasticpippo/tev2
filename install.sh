@@ -1074,6 +1074,10 @@ perform_upgrade() {
     UPGRADE_PHASE="verify-migrations"
     verify_migrations
     
+    # Phase 10b: Run post-upgrade data migrations (version-gated)
+    UPGRADE_PHASE="post-upgrade-data"
+    run_post_upgrade_data_migrations "$current_version"
+    
     # Phase 11: Validate upgrade
     UPGRADE_PHASE="validate"
     if validate_upgrade; then
@@ -1089,6 +1093,7 @@ perform_upgrade() {
         print_info "  - Database backup created in $BACKUP_DIR/"
         print_info "  - Containers rebuilt with new version"
         print_info "  - Database migrations applied automatically"
+        print_info "  - Post-upgrade data scripts executed (if applicable)"
         print_info "  - Existing configuration and secrets preserved"
         print_info ""
         print_info "To rollback if needed: ./install.sh --restore-backup"
@@ -1108,6 +1113,63 @@ perform_upgrade() {
         _log_file "UPGRADE VALIDATION FAILED: $current_version -> $new_version"
         return 1
     fi
+}
+
+#===============================================================================
+# POST-UPGRADE DATA MIGRATIONS
+#===============================================================================
+
+# Version that introduced the StockConsumptionLedger table.
+# Upgrades from versions older than this must run the backfill script to
+# populate consumption ledger rows for historical transactions.
+readonly LEDGER_VERSION="1.2.2"
+
+# Run version-gated one-time data scripts after schema migrations.
+# Each script is idempotent, so running it when not needed is harmless,
+# but we gate by version to avoid unnecessary work.
+run_post_upgrade_data_migrations() {
+    local current_version="$1"
+    local dc
+    dc=$(get_docker_cmd)
+    
+    print_info "Running post-upgrade data migrations..."
+    
+    # ------------------------------------------------------------------
+    # StockConsumptionLedger backfill (introduced in $LEDGER_VERSION)
+    # ------------------------------------------------------------------
+    # Only run when upgrading from a version older than the ledger version.
+    # Fresh installs and upgrades from >= $LEDGER_VERSION are skipped.
+    local need_backfill=false
+    if [[ "$current_version" == "0.0.0-pre" ]]; then
+        # Pre-versioning install: always backfill to be safe
+        need_backfill=true
+    elif compare_versions "$current_version" "$LEDGER_VERSION"; then
+        # current < ledger version → backfill needed
+        need_backfill=true
+    fi
+    
+    if [[ "$need_backfill" == "true" ]]; then
+        print_info "Backfilling StockConsumptionLedger for historical transactions (from version $current_version)..."
+        
+        local backfill_script="dist/scripts/backfillConsumptionLedger.js"
+        local backfill_output
+        backfill_output=$($dc compose exec -T backend node "$backfill_script" 2>&1) || true
+        
+        # The script logs a summary; surface it to the user
+        echo "$backfill_output"
+        
+        if echo "$backfill_output" | grep -qi "error\|failed"; then
+            print_warning "Consumption ledger backfill reported errors (see output above)."
+            print_info "The script is idempotent - you can re-run it later inside the container:"
+            print_info "  docker compose exec backend node $backfill_script"
+        else
+            print_success "Consumption ledger backfill completed"
+        fi
+    else
+        print_verbose "Consumption ledger already present (version $current_version >= $LEDGER_VERSION), skipping backfill"
+    fi
+    
+    print_success "Post-upgrade data migrations complete"
 }
 
 # Restore from backup option
@@ -1196,6 +1258,7 @@ Upgrade Behaviour:
   - Automatically detects previous installations (even pre-versioning)
   - Preserves all existing configuration and secrets during upgrade
   - Creates a database backup before any migration
+  - Runs version-gated data backfill scripts after schema migrations
   - Logs all operations to ./install.log
 
 Examples:

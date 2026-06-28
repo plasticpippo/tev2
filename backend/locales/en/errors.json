@@ -85,7 +85,8 @@
     "cannotDeleteHasAdjustments": "This stock item cannot be deleted because it has stock adjustment records.",
     "cannotDeleteHasCostHistory": "This stock item cannot be deleted because it has cost history records.",
     "cannotDeleteHasInventoryCounts": "This stock item cannot be deleted because it is used in inventory counts.",
-    "cannotDeleteHasVarianceReports": "This stock item cannot be deleted because it is referenced in variance reports."
+    "cannotDeleteHasVarianceReports": "This stock item cannot be deleted because it is referenced in variance reports.",
+    "cannotDeleteHasConsumptionLedger": "This stock item cannot be deleted because it has historical consumption records."
   },
   "tills": {
     "notFound": "Till not found"
