@@ -22,8 +22,9 @@ export const CategoryTabs: React.FC<CategoryTabsProps> = ({
       c.name.toLowerCase() !== 'favorites' &&
       c.name.toLowerCase() !== 'favourites'
     );
-    if (!assignedTillId) return filtered;
-    return filtered.filter(c =>
+    const sorted = [...filtered].sort((a, b) => a.sortOrder - b.sortOrder);
+    if (!assignedTillId) return sorted;
+    return sorted.filter(c =>
       !c.visibleTillIds ||
       c.visibleTillIds.length === 0 ||
       c.visibleTillIds.includes(assignedTillId)

@@ -59,6 +59,7 @@ export interface Category {
   id: number;
   name: string;
   visibleTillIds: number[] | null;
+  sortOrder: number;
 }
 
 export interface User {

@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
 import { prisma } from '../prisma';
 import type { Category } from '../types';
-import { validateCategory, validateCategoryName } from '../utils/validation';
+import { validateCategory, validateCategoryName, validateCategorySortOrder } from '../utils/validation';
 import { logError } from '../utils/logger';
 import { authenticateToken } from '../middleware/auth';
 import { requireAdmin } from '../middleware/authorization';
@@ -22,10 +22,15 @@ categoriesRouter.get('/', authenticateToken, async (req: Request, res: Response)
     
     const categories = await prisma.category.findMany({
       where,
+      orderBy: [
+        { sortOrder: 'asc' },
+        { name: 'asc' }
+      ],
       select: {
         id: true,
         name: true,
-        visibleTillIds: true
+        visibleTillIds: true,
+        sortOrder: true
       }
     });
     res.json(categories);
@@ -47,7 +52,8 @@ categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
       select: {
         id: true,
         name: true,
-        visibleTillIds: true
+        visibleTillIds: true,
+        sortOrder: true
       }
     });
     
@@ -68,7 +74,7 @@ categoriesRouter.get('/:id', authenticateToken, async (req: Request, res: Respon
 categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request, res: Response) => {
   const t = req.t.bind(req);
   try {
-    const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
+    const { name, visibleTillIds, sortOrder } = req.body as Omit<Category, 'id'>;
     
     // Validate category data
     const validation = validateCategory({ name });
@@ -76,15 +82,35 @@ categoriesRouter.post('/', authenticateToken, requireAdmin, async (req: Request,
       return res.status(400).json({ error: t('categories.validationFailed'), details: validation.errors });
     }
     
+    // Validate sortOrder if provided
+    if (sortOrder !== undefined) {
+      const sortOrderError = validateCategorySortOrder(sortOrder);
+      if (sortOrderError) {
+        return res.status(400).json({ error: t('categories.validationFailed'), details: [sortOrderError] });
+      }
+    }
+    
+    // If sortOrder is not provided, compute max(sortOrder) + 1 over existing categories
+    let newSortOrder = sortOrder;
+    if (newSortOrder === undefined) {
+      const maxCategory = await prisma.category.findFirst({
+        orderBy: { sortOrder: 'desc' },
+        select: { sortOrder: true }
+      });
+      newSortOrder = (maxCategory?.sortOrder ?? -1) + 1;
+    }
+    
     const category = await prisma.category.create({
       data: {
         name,
-        visibleTillIds: visibleTillIds || []
+        visibleTillIds: visibleTillIds || [],
+        sortOrder: newSortOrder
       },
       select: {
         id: true,
         name: true,
-        visibleTillIds: true
+        visibleTillIds: true,
+        sortOrder: true
       }
     });
     
@@ -102,7 +128,7 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
   const t = req.t.bind(req);
   try {
     const { id } = req.params;
-    const { name, visibleTillIds } = req.body as Omit<Category, 'id'>;
+    const { name, visibleTillIds, sortOrder } = req.body as Omit<Category, 'id'>;
     
     // System categories (id <= 0) cannot be modified
     if (Number(id) <= 0) {
@@ -119,16 +145,33 @@ categoriesRouter.put('/:id', authenticateToken, requireAdmin, async (req: Reques
       }
     }
     
+    // Validate sortOrder if provided
+    if (sortOrder !== undefined) {
+      const sortOrderError = validateCategorySortOrder(sortOrder);
+      if (sortOrderError) {
+        return res.status(400).json({ error: t('categories.validationFailed'), details: [sortOrderError] });
+      }
+    }
+    
+    const data: any = {};
+    if (name !== undefined) {
+      data.name = name;
+    }
+    if (visibleTillIds !== undefined) {
+      data.visibleTillIds = visibleTillIds;
+    }
+    if (sortOrder !== undefined) {
+      data.sortOrder = sortOrder;
+    }
+    
     const category = await prisma.category.update({
       where: { id: Number(id) },
-      data: {
-        name,
-        visibleTillIds: visibleTillIds || []
-      },
+      data,
       select: {
         id: true,
         name: true,
-        visibleTillIds: true
+        visibleTillIds: true,
+        sortOrder: true
       }
     });
     

@@ -121,6 +121,7 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCategories, setFilteredCategories] = useState<Category[]>([]);
   const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [orderDrafts, setOrderDrafts] = useState<Record<number, string>>({});
 
   // Filter categories based on search query
   useEffect(() => {
@@ -177,6 +178,36 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
     return idsArray.map(id => tills.find(t => t.id === id)?.name).filter(Boolean).join(', ') || t('categories.none');
   }
 
+  const handleOrderChange = (id: number, value: string) => {
+    setOrderDrafts(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleOrderCommit = async (category: Category) => {
+    const draft = orderDrafts[category.id];
+    setOrderDrafts(prev => {
+      const next = { ...prev };
+      delete next[category.id];
+      return next;
+    });
+    if (draft === undefined) return;
+    const sortOrder = parseInt(draft, 10);
+    if (isNaN(sortOrder) || sortOrder < 0 || sortOrder === category.sortOrder) {
+      return;
+    }
+    try {
+      await productApi.saveCategory({
+        id: category.id,
+        name: category.name,
+        visibleTillIds: category.visibleTillIds,
+        sortOrder,
+      });
+      onDataUpdate();
+    } catch (error) {
+      console.error('Error saving category order:', error);
+      alert(error instanceof Error ? error.message : t('categories.errors.failedToSave'));
+    }
+  };
+
   return (
     <div className="h-full flex flex-col">
       <div className="flex-shrink-0 flex justify-between items-center mb-4">
@@ -230,19 +261,33 @@ export const CategoryManagement: React.FC<CategoryManagementProps> = ({ categori
               <p className="font-semibold">{category.name}</p>
               <p className="text-sm text-slate-400">{t('categories.visibleOn')}: {getTillNames(category.visibleTillIds)}</p>
             </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={() => { setEditingCategory(category); setIsModalOpen(true); }}
-                className="btn btn-secondary btn-sm"
-              >
-                {t('buttons.edit', { ns: 'common' })}
-              </button>
-              <button
-                onClick={() => setDeletingCategory(category)}
-                className="btn btn-danger btn-sm"
-              >
-                {t('buttons.delete', { ns: 'common' })}
-              </button>
+            <div className="flex items-center gap-3">
+              <div className="flex flex-col items-end">
+                <label className="text-xs text-slate-400 mb-1">{t('categories.order')}</label>
+                <input
+                  type="number"
+                  min="0"
+                  step="1"
+                  value={orderDrafts[category.id] ?? category.sortOrder}
+                  onChange={(e) => handleOrderChange(category.id, e.target.value)}
+                  onBlur={() => handleOrderCommit(category)}
+                  className="w-20 p-2 bg-slate-900 border border-slate-700 rounded-md text-right focus:ring-2 focus:ring-amber-500 focus:border-transparent"
+                />
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => { setEditingCategory(category); setIsModalOpen(true); }}
+                  className="btn btn-secondary btn-sm"
+                >
+                  {t('buttons.edit', { ns: 'common' })}
+                </button>
+                <button
+                  onClick={() => setDeletingCategory(category)}
+                  className="btn btn-danger btn-sm"
+                >
+                  {t('buttons.delete', { ns: 'common' })}
+                </button>
+              </div>
             </div>
           </div>
         ))}

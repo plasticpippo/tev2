@@ -154,6 +154,7 @@ model Category {
   id Int @id @default(autoincrement())
   name String
   visibleTillIds Json?
+  sortOrder Int @default(0)
   products Product[]
   sharedLayouts SharedLayout[]
 

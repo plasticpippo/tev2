@@ -137,8 +137,9 @@ async function seedCategories() {
 
   const names = ['Wine', 'Beer', 'Cocktails', 'Spirits', 'Soft Drinks', 'Coffee'];
   const cats = [];
+  let sortOrder = 0;
   for (const name of names) {
-    cats.push(await prisma.category.create({ data: { name, visibleTillIds: [] } }));
+    cats.push(await prisma.category.create({ data: { name, visibleTillIds: [], sortOrder: sortOrder++ } }));
   }
   console.log(`Created ${cats.length} categories`);
   return cats;

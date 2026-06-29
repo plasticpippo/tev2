@@ -176,6 +176,28 @@ export const validateCategoryName = (name: string, t?: TranslateFunction): strin
   return null;
 };
 
+export const validateCategorySortOrder = (value: unknown, t?: TranslateFunction): string | null => {
+  const translate = t || ((key: string) => key.split('.').pop() || key);
+
+  if (value === undefined || value === null) {
+    return null;
+  }
+
+  if (typeof value !== 'number') {
+    return translate('errors:validation.invalidValue');
+  }
+
+  if (!Number.isInteger(value)) {
+    return translate('errors:validation.invalidValue');
+  }
+
+  if (value < 0) {
+    return translate('errors:validation.invalidValue');
+  }
+
+  return null;
+};
+
 export const validateCategory = (category: any, t?: TranslateFunction): { isValid: boolean; errors: string[] } => {
   const errors: string[] = [];
   

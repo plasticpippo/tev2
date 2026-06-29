@@ -126,6 +126,7 @@
     "visibleOn": "Visibile su",
     "allTills": "Tutte le Casse",
     "none": "Nessuna",
+    "order": "Ordine",
     "confirmDelete": "Sei sicuro di voler eliminare la categoria \"{{name}}\"? I prodotti in questa categoria diventeranno senza categoria.",
     "noCategories": "Nessuna categoria trovata",
     "searchPlaceholder": "Cerca categorie...",

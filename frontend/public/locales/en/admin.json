@@ -94,6 +94,7 @@
     "visibleOn": "Visible on",
     "allTills": "All Tills",
     "none": "None",
+    "order": "Order",
     "confirmDelete": "Are you sure you want to delete the category \"{{name}}\"? Products in this category will become uncategorized.",
     "noCategories": "No categories found",
     "searchPlaceholder": "Search categories...",
