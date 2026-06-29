@@ -50,6 +50,8 @@ export {
   deleteTab,
   updateMultipleTabs,
   transferTabItems,
+  getTransactionConsumption,
+  getInventoryAudit,
   type TransferDestination
 } from './transactionService';
 

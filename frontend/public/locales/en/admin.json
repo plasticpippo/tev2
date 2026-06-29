@@ -25,7 +25,8 @@
     "profitAnalytics": "Profit Analytics",
     "costManagement": "Cost Management",
     "varianceReports": "Variance Reports",
-    "inventoryCounts": "Inventory Counts"
+    "inventoryCounts": "Inventory Counts",
+    "inventoryAudit": "Inventory Audit"
   },
   "header": {
     "loggedInAs": "Logged in as {{name}}",

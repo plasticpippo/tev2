@@ -1,11 +1,11 @@
-import React, { useState, useMemo, useCallback } from 'react';
+import React, { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Transaction, User, Till, Settings, Receipt } from '../../shared/types';
+import type { Transaction, User, Till, Settings, Receipt, TransactionConsumption } from '../../shared/types';
 import { formatCurrency, formatDate } from '../utils/formatting';
 import { getBusinessDayStart } from '../utils/time';
 import { ReceiptGenerationModal } from './ReceiptGenerationModal';
 import { getAuthHeaders } from '../services/apiBase';
-import { voidTransaction } from '../services/transactionService';
+import { voidTransaction, getTransactionConsumption } from '../services/transactionService';
 
 const API_BASE = import.meta.env.VITE_API_BASE || '';
 
@@ -40,68 +40,41 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ transact
   const [voidError, setVoidError] = useState('');
   const [isVoiding, setIsVoiding] = useState(false);
 
-    const filteredTransactions = useMemo(() => {
-        let items = [...transactions];
+  // Consumption data state
+  const [consumptionData, setConsumptionData] = useState<TransactionConsumption | null>(null);
+  const [consumptionLoading, setConsumptionLoading] = useState(false);
+  const [consumptionError, setConsumptionError] = useState<string | null>(null);
 
-        // Date Filtering
-        const now = new Date();
-        let startDate: Date | null = null;
-        let endDate: Date | null = null;
-
-        if (dateRange === 'today') {
-            startDate = getBusinessDayStart(settings);
-            endDate = new Date(startDate.getTime() + 24 * 60 * 60 * 1000);
-        } else if (dateRange === 'yesterday') {
-            const businessDayStart = getBusinessDayStart(settings);
-            const yesterdayBusinessDayStart = new Date(businessDayStart);
-            yesterdayBusinessDayStart.setDate(businessDayStart.getDate() - 1);
-            
-            startDate = yesterdayBusinessDayStart;
-            endDate = businessDayStart;
-
-        } else if (dateRange === '7days') {
-            startDate = new Date();
-            startDate.setDate(now.getDate() - 7);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        } else if (dateRange === '30days') {
-            startDate = new Date();
-            startDate.setDate(now.getDate() - 30);
-            startDate.setHours(0, 0, 0, 0);
-            endDate = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-        } else if (dateRange === 'custom' && customStart && customEnd) {
-            const [startHours, startMinutes] = customStartTime.split(':').map(Number);
-            startDate = new Date(customStart);
-            startDate.setHours(startHours, startMinutes, 0, 0);
-
-            const [endHours, endMinutes] = customEndTime.split(':').map(Number);
-            endDate = new Date(customEnd);
-            endDate.setHours(endHours, endMinutes, 59, 999);
-        }
-
-        if (startDate && endDate) {
-            items = items.filter(t => {
-                const createdAt = new Date(t.createdAt);
-                return createdAt >= startDate! && createdAt < endDate!;
-            });
-        }
-
-        // Till & User Filtering
-        if (selectedTillId !== 'all') {
-            items = items.filter(t => t.tillId === selectedTillId);
-        }
-        if (selectedUserId !== 'all') {
-            items = items.filter(t => t.userId === selectedUserId);
-        }
-
-        return items.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-    }, [transactions, dateRange, customStart, customEnd, customStartTime, customEndTime, selectedTillId, selectedUserId, settings]);
-    
   const totalFilteredSales = useMemo(() => {
     return filteredTransactions
       .filter(t => t.status !== 'voided')
       .reduce((sum, t) => sum + t.total, 0);
   }, [filteredTransactions]);
+
+  // Load consumption data when transaction is selected
+  useEffect(() => {
+    if (!selectedTransaction) {
+      setConsumptionData(null);
+      setConsumptionError(null);
+      return;
+    }
+
+    const loadConsumption = async () => {
+      setConsumptionLoading(true);
+      setConsumptionError(null);
+      try {
+        const data = await getTransactionConsumption(selectedTransaction.id);
+        setConsumptionData(data);
+      } catch (error) {
+        console.error('Failed to load consumption data:', error);
+        setConsumptionError(error instanceof Error ? error.message : 'Failed to load consumption data');
+      } finally {
+        setConsumptionLoading(false);
+      }
+    };
+
+    loadConsumption();
+  }, [selectedTransaction]);
 
   const handleGenerateReceipt = (transaction: Transaction) => {
     setTransactionForReceipt(transaction);
@@ -366,6 +339,49 @@ aria-pressed={dateRange === 'custom'}
                                     </div>
                                 ))}
                             </div>
+
+                            <div className="border-t border-slate-700 pt-3 mb-4">
+                                <div className="text-sm font-semibold text-slate-400 mb-2">Inventory Deduction</div>
+                                {consumptionLoading ? (
+                                    <div className="text-sm text-slate-500">Loading...</div>
+                                ) : consumptionError ? (
+                                    <div className="text-sm text-red-400">{consumptionError}</div>
+                                ) : consumptionData ? (
+                                    <>
+                                        {consumptionData.verdict === 'ok' && (
+                                            <div className="text-sm text-green-400 mb-2">
+                                                Inventory deducted: {consumptionData.consumed.length} items / {consumptionData.totalConsumed} units
+                                            </div>
+                                        )}
+                                        {consumptionData.verdict === 'none_no_recipe' && (
+                                            <div className="text-sm text-slate-500 mb-2">
+                                                No inventory deducted - items have no recipe
+                                            </div>
+                                        )}
+                                        {consumptionData.verdict === 'review' && (
+                                            <div className="text-sm text-amber-400 mb-2">
+                                                Review: {consumptionData.issues.join(', ')}
+                                            </div>
+                                        )}
+                                        {consumptionData.consumed.length > 0 && (
+                                            <div className="space-y-1">
+                                                {consumptionData.consumed.map((row, idx) => (
+                                                    <div key={idx} className="flex justify-between text-xs text-slate-400">
+                                                        <span>
+                                                            {row.quantity} x {row.stockItemName}
+                                                            <span className="ml-2 text-slate-500">from {row.productName}/{row.variantName}</span>
+                                                            {row.estimated && (
+                                                                <span className="ml-2 text-amber-500">(estimated)</span>
+                                                            )}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </>
+                                ) : null}
+                            </div>
+
             <div className="border-t border-slate-700 pt-2 space-y-1 text-sm">
               <div className="flex justify-between"><span>{t('transactions.details.subtotal')}</span><span>{formatCurrency(selectedTransaction.subtotal)}</span></div>
               <div className="flex justify-between"><span>{t('transactions.details.tax')}</span><span>{formatCurrency(selectedTransaction.tax)}</span></div>

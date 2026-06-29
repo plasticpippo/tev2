@@ -1,3 +1,43 @@
+export interface TransactionConsumption {
+  transactionId: number;
+  status: string;
+  consumed: Array<{
+    stockItemId: string;
+    stockItemName: string;
+    quantity: number;
+    variantName: string;
+    productName: string;
+    estimated: boolean;
+  }>;
+  totalConsumed: number;
+  expected: Array<{
+    stockItemId: string;
+    stockItemName: string;
+    quantity: number;
+  }>;
+  itemFlags: Array<{
+    productName: string;
+    variantName: string;
+    hasRecipe: boolean;
+    deducted: boolean;
+  }>;
+  verdict: 'ok' | 'none_no_recipe' | 'review';
+  issues: string[];
+}
+
+export interface InventoryAuditIssue {
+  transactionId: number;
+  createdAt: string;
+  status: string;
+  userName: string;
+  issues: string[];
+}
+
+export interface InventoryAuditResult {
+  totalScanned: number;
+  flagged: InventoryAuditIssue[];
+}
+
 export interface OrderItem {
   id: string;
   variantId: number;

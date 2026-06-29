@@ -404,7 +404,9 @@
     "alreadyVoided": "Transaction is already voided",
     "invalidVoidStatus": "Only completed or complimentary transactions can be voided",
     "voidFailed": "Failed to void transaction",
-    "negativeDiscount": "Discount cannot be negative"
+    "negativeDiscount": "Discount cannot be negative",
+    "fetchConsumptionFailed": "Failed to fetch transaction consumption data",
+    "inventoryAuditFailed": "Failed to run inventory audit"
   },
   "backup": {
     "cloudStatusCheckFailed": "Failed to check cloud backup status. Please try again later.",

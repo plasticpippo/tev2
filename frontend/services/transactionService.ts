@@ -1,5 +1,5 @@
 import { makeApiRequest, apiUrl, getAuthHeaders, notifyUpdates } from './apiBase';
-import type { Transaction, Tab } from '../../shared/types';
+import type { Transaction, Tab, TransactionConsumption, InventoryAuditResult } from '../../shared/types';
 import i18n from '../src/i18n';
 
 // Transactions
@@ -229,4 +229,52 @@ export const processPayment = async (
 	}
 
 	throw lastError || new Error('Payment processing failed after multiple attempts');
+};
+
+// Get inventory consumption for a transaction
+export const getTransactionConsumption = async (transactionId: number): Promise<TransactionConsumption> => {
+  try {
+    const response = await fetch(apiUrl(`/api/transactions/${transactionId}/consumption`), {
+      headers: getAuthHeaders(),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching transaction consumption:', error);
+    throw error;
+  }
+};
+
+// Get inventory audit report
+export const getInventoryAudit = async (filters?: { from?: string; to?: string }): Promise<InventoryAuditResult> => {
+  try {
+    const params = new URLSearchParams();
+    if (filters?.from) params.append('from', filters.from);
+    if (filters?.to) params.append('to', filters.to);
+
+    const url = apiUrl(`/api/transactions/inventory-audit${params.toString() ? '?' + params.toString() : ''}`);
+
+    const response = await fetch(url, {
+      headers: getAuthHeaders(),
+      credentials: 'include'
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      const errorMessage = errorData.error || i18n.t('api.httpError', { status: response.status });
+      throw new Error(errorMessage);
+    }
+
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching inventory audit:', error);
+    throw error;
+  }
 };

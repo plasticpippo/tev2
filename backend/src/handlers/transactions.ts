@@ -5,12 +5,12 @@ import { Prisma, Transaction as PrismaTransaction } from '@prisma/client';
 import { logPaymentEvent, logError, logInfo, logDebug } from '../utils/logger';
 import { toUserReferenceDTO } from '../types/dto';
 import { authenticateToken } from '../middleware/auth';
-import { safeJsonParse } from '../utils/jsonParser';
+import { safeJsonParse, parseTransactionItems } from '../utils/jsonParser';
 import { isMoneyValid, addMoney, multiplyMoney, roundMoney, subtractMoney, formatMoney, divideMoney, decimalToNumber, roundCost } from '../utils/money';
 import { requireRole } from '../middleware/authorization';
 import { createReceiptFromPayment, getUserReceiptPreference } from '../services/paymentModalReceiptService';
 import { calculateTransactionCost } from '../services/costCalculationService';
-import { CONSUMED_TRANSACTION_STATUSES } from '../utils/transaction';
+import { CONSUMED_TRANSACTION_STATUSES, CONSUMED_TRANSACTION_STATUSES_MUTABLE } from '../utils/transaction';
 
 export const transactionsRouter = express.Router();
 
@@ -677,6 +677,279 @@ transactionsRouter.get('/reconcile', authenticateToken, async (req: Request, res
       correlationId: (req as any).correlationId,
     });
     res.status(500).json({ error: t('errors:transactions.dataReconciliationFailed') });
+  }
+});
+
+// GET /api/transactions/:id/consumption - Get inventory consumption for a transaction (MUST be before /:id route)
+transactionsRouter.get('/:id/consumption', authenticateToken, async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  const correlationId = (req as any).correlationId;
+
+  try {
+    const { id } = req.params;
+    const transactionId = Number(id);
+
+    const transaction = await prisma.transaction.findUnique({
+      where: { id: transactionId },
+      select: {
+        id: true,
+        status: true,
+        items: true,
+      },
+    });
+
+    if (!transaction) {
+      return res.status(404).json({ error: t('transactions.notFound') });
+    }
+
+    const items = safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' });
+
+    const consumed = await prisma.stockConsumptionLedger.findMany({
+      where: { transactionId },
+      orderBy: { stockItemName: 'asc' },
+    });
+
+    const totalConsumed = consumed.reduce((sum: number, row: any) => sum + row.quantity, 0);
+
+    const variantIds = items.map((item: any) => item.variantId).filter((id: number) => id);
+    const currentConsumption: any[] = await prisma.stockConsumption.findMany({
+      where: { variantId: { in: variantIds } },
+      include: {
+        stockItem: true,
+      },
+    });
+
+    const expectedMap = new Map<string, number>();
+    const typedItems: any[] = items;
+    for (const item of typedItems) {
+      const itemConsumption = currentConsumption.filter((sc: any) => sc.variantId === item.variantId);
+      if (itemConsumption.length > 0) {
+        for (const sc of itemConsumption as any[]) {
+          const current = expectedMap.get(sc.stockItemId) || 0;
+          expectedMap.set(sc.stockItemId, current + sc.quantity * item.quantity);
+        }
+      }
+    }
+
+    const expected = Array.from(expectedMap.entries()).map(([stockItemId, quantity]) => {
+      const stockItem = currentConsumption.find((sc: any) => sc.stockItemId === stockItemId);
+      return {
+        stockItemId,
+        stockItemName: stockItem?.stockItem.name || 'Unknown',
+        quantity,
+      };
+    });
+
+    const consumedMap = new Map<string, typeof consumed[0]>();
+    for (const c of consumed) {
+      consumedMap.set(`${c.variantId}:${c.stockItemId}`, c);
+    }
+
+    const itemFlags = items.map((item: any) => {
+      const itemConsumption = currentConsumption.filter(sc => sc.variantId === item.variantId);
+      const hasRecipe = itemConsumption.length > 0;
+      const ledgerForItem = consumed.filter((c: any) => c.variantId === item.variantId);
+      const deducted = ledgerForItem.length > 0;
+      return {
+        productName: item.name || 'Unknown',
+        variantName: item.variantName || 'Unknown',
+        hasRecipe,
+        deducted,
+      };
+    });
+
+    const issues: string[] = [];
+
+    const anyItemHasRecipeNow = items.some((item: any) => {
+      const itemConsumption = currentConsumption.filter(sc => sc.variantId === item.variantId);
+      return itemConsumption.length > 0;
+    });
+
+  if (consumed.length === 0) {
+    if (anyItemHasRecipeNow) {
+      for (const item of items) {
+        const itemConsumption = currentConsumption.filter((sc: any) => sc.variantId === (item as any).variantId);
+        if ((itemConsumption as any[]).length > 0) {
+          issues.push(`recipe_item_zero_deduction:${(item as any).name}`);
+        }
+      }
+    } else {
+      issues.push('none_no_recipe');
+    }
+  }
+
+    const orphanedRefs = consumed.filter((c: any) => !c.stockItem);
+    if (orphanedRefs.length > 0) {
+      issues.push('orphaned_reference');
+    }
+
+    let verdict: 'ok' | 'none_no_recipe' | 'review';
+    if (issues.includes('none_no_recipe') && issues.length === 1) {
+      verdict = 'none_no_recipe';
+    } else if (issues.length === 0) {
+      verdict = 'ok';
+    } else {
+      verdict = 'review';
+    }
+
+    res.json({
+      transactionId,
+      status: transaction.status,
+      consumed: consumed.map(c => ({
+        stockItemId: c.stockItemId,
+        stockItemName: c.stockItemName,
+        quantity: c.quantity,
+        variantName: c.variantName,
+        productName: c.productName,
+        estimated: c.estimated,
+      })),
+      totalConsumed,
+      expected,
+      itemFlags,
+      verdict,
+      issues,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error fetching transaction consumption', {
+      correlationId,
+    });
+    res.status(500).json({ error: t('errors:transactions.fetchConsumptionFailed') });
+  }
+});
+
+
+// GET /api/transactions/inventory-audit - Audit transactions for inventory issues (MUST be before /:id route)
+transactionsRouter.get('/inventory-audit', authenticateToken, requireRole(['ADMIN']), async (req: Request, res: Response) => {
+  const t = req.t.bind(req);
+  const correlationId = (req as any).correlationId;
+
+  try {
+    const { from, to } = req.query;
+
+    const dateFilter: any = {};
+    if (from) {
+      dateFilter.gte = new Date(from as string);
+    }
+    if (to) {
+      dateFilter.lte = new Date(to as string);
+    }
+
+    const transactions = await prisma.transaction.findMany({
+      where: {
+        status: { in: CONSUMED_TRANSACTION_STATUSES_MUTABLE },
+        ...(Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {}),
+      },
+      select: {
+        id: true,
+        createdAt: true,
+        status: true,
+        userName: true,
+        items: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+
+    const allLedgerRows = await prisma.stockConsumptionLedger.findMany({
+      where: {
+        transactionId: { in: transactions.map(t => t.id) },
+      },
+      include: {
+        stockItem: true,
+      },
+    });
+
+    const allStockConsumption = await prisma.stockConsumption.findMany({
+      include: {
+        stockItem: true,
+      },
+    });
+
+    const ledgerByTransaction = new Map<number, typeof allLedgerRows>();
+    for (const row of allLedgerRows) {
+      const existing = ledgerByTransaction.get(row.transactionId) || [];
+      existing.push(row);
+      ledgerByTransaction.set(row.transactionId, existing);
+    }
+
+    const consumptionByVariant = new Map<number, typeof allStockConsumption>();
+    for (const sc of allStockConsumption) {
+      const existing = consumptionByVariant.get(sc.variantId) || [];
+      existing.push(sc);
+      consumptionByVariant.set(sc.variantId, existing);
+    }
+
+    const flagged: Array<{
+      transactionId: number;
+      createdAt: string;
+      status: string;
+      userName: string;
+      issues: string[];
+    }> = [];
+
+    for (const transaction of transactions) {
+    const items = safeJsonParse(transaction.items, [], { id: String(transaction.id), field: 'items' }) as any[];
+      const ledgerRows = ledgerByTransaction.get(transaction.id) || [];
+
+      const issues: string[] = [];
+
+      const anyItemHasRecipeNow = items.some((item: any) => {
+        const consumption = consumptionByVariant.get(item.variantId);
+        return consumption && consumption.length > 0;
+      });
+
+      if (ledgerRows.length === 0) {
+        if (!anyItemHasRecipeNow) {
+          continue;
+        } else {
+          for (const item of items) {
+            const consumption = consumptionByVariant.get(item.variantId);
+            if (consumption && consumption.length > 0) {
+              issues.push(`recipe_item_zero_deduction:${item.name}`);
+            }
+          }
+        }
+      }
+
+      const orphanedRefs = ledgerRows.filter(row => !row.stockItem);
+      if (orphanedRefs.length > 0) {
+        issues.push('orphaned_reference');
+      }
+
+      for (const item of items) {
+        const consumption = consumptionByVariant.get(item.variantId);
+        if (!consumption || consumption.length === 0) {
+          continue;
+        }
+
+        const ledgerForItem = ledgerRows.filter((row: any) => row.variantId === item.variantId);
+        const expectedQty = consumption.reduce((sum: number, sc: any) => sum + sc.quantity * item.quantity, 0);
+        const actualQty = ledgerForItem.reduce((sum: number, row: any) => sum + row.quantity, 0);
+
+        if (expectedQty > 0 && actualQty === 0) {
+          issues.push(`recipe_item_zero_deduction:${item.name}`);
+        }
+      }
+
+      if (issues.length > 0) {
+        flagged.push({
+          transactionId: transaction.id,
+          createdAt: transaction.createdAt.toISOString(),
+          status: transaction.status,
+          userName: transaction.userName || 'Unknown',
+          issues,
+        });
+      }
+    }
+
+    res.json({
+      totalScanned: transactions.length,
+      flagged,
+    });
+  } catch (error) {
+    logError(error instanceof Error ? error : 'Error running inventory audit', {
+      correlationId,
+    });
+    res.status(500).json({ error: t('errors:transactions.inventoryAuditFailed') });
   }
 });
 

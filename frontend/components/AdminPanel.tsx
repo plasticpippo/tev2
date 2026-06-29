@@ -23,6 +23,7 @@ import CostManagementPanel from './CostManagementPanel';
 import { ProfitAnalyticsPanel } from './ProfitAnalyticsPanel';
 import VarianceReportPanel from './VarianceReportPanel';
 import InventoryCountPanel from './InventoryCountPanel';
+import { InventoryAuditPanel } from './InventoryAuditPanel';
 import TableErrorBoundary from './TableErrorBoundary';
 import * as userApi from '../services/userService';
 import * as productApi from '../services/productService';
@@ -57,7 +58,7 @@ interface AdminPanelProps {
   onSwitchToPos: () => void;
 }
 
-type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers' | 'costManagement' | 'profitAnalytics' | 'varianceReports' | 'inventoryCounts';
+type AdminView = 'dashboard' | 'analytics' | 'products' | 'categories' | 'stockItems' | 'inventory' | 'users' | 'tills' | 'settings' | 'transactions' | 'activity' | 'tables' | 'dailyClosingSummary' | 'itemisedConsumption' | 'receipts' | 'customers' | 'costManagement' | 'profitAnalytics' | 'varianceReports' | 'inventoryCounts' | 'inventoryAudit';
 
 export const AdminPanel: React.FC<AdminPanelProps> = (props) => {
   const {
@@ -137,6 +138,8 @@ case 'itemisedConsumption':
         return <VarianceReportPanel />;
       case 'inventoryCounts':
         return <InventoryCountPanel />;
+      case 'inventoryAudit':
+        return <InventoryAuditPanel />;
     default:
         return <p>{t('selectAView')}</p>;
     }
@@ -238,6 +241,12 @@ case 'itemisedConsumption':
   const InventoryCountIcon = () => (
     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+    </svg>
+  );
+
+  const AuditIcon = () => (
+    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h4m-2 0v4m-2 0h4m-6 0h4m-2 0v4m-2 0h4" />
     </svg>
   );
 
@@ -362,6 +371,7 @@ case 'itemisedConsumption':
           <NavButton view="costManagement" label={t('navigation.costManagement')} icon={<CostIcon />} />
           <NavButton view="inventoryCounts" label={t('navigation.inventoryCounts')} icon={<InventoryCountIcon />} />
           <NavButton view="varianceReports" label={t('navigation.varianceReports')} icon={<VarianceIcon />} />
+          <NavButton view="inventoryAudit" label={t('navigation.inventoryAudit')} icon={<AuditIcon />} />
           <div className="pt-2"></div>
           <NavButton view="users" label={t('navigation.users')} isFirst icon={<UsersIcon />} />
           <NavButton view="tills" label={t('navigation.tills')} icon={<TillsIcon />} />
