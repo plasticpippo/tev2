@@ -38,7 +38,7 @@ export const ReceiptStatusBadge: React.FC<ReceiptStatusBadgeProps> = ({ onClick,
       onClick={onClick}
       className={`
         flex items-center justify-center
-        ${collapsed ? 'w-5 h-5 text-[10px]' : 'px-2 py-0.5 text-xs'}
+        ${collapsed ? 'w-5 h-5 text-[0.625rem]' : 'px-2 py-0.5 text-xs'}
         bg-red-500 hover:bg-red-400 text-white font-bold rounded-full
         transition-colors duration-200
         ${collapsed ? 'absolute -top-1 -right-1' : 'ml-2'}

@@ -3,6 +3,13 @@
 @tailwind utilities;
 
 :root {
+/* Root font-size baseline for readability.
+   Slightly larger than the browser default (16px) and scales fluidly with
+   the viewport. Expressed in rem so it compounds with the user's browser
+   zoom / OS font-size setting (long-sighted staff can increase it further
+   without any in-app toggle). */
+font-size: clamp(1.0625rem, 1rem + 0.4vw, 1.1875rem); /* 17px -> 19px */
+
 /* Color Variables */
 --bg-primary: #1e293b; /* slate-800 equivalent */
 --bg-secondary: #0f172a; /* slate-900 equivalent */

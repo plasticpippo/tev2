@@ -364,7 +364,7 @@ export const ProductGridLayout: React.FC<ProductGridLayoutProps> = ({
                     {Array.from({ length: gridRows * currentGridColumns }, (_, i) => (
                       <div key={`line-${i}`} className="grid-line-cell" />
                     ))}
-                    <div className="absolute top-2 left-2 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-md text-[10px] sm:text-xs font-bold max-w-[calc(100%-1rem)] truncate">
+                    <div className="absolute top-2 left-2 bg-yellow-500 text-black px-2 sm:px-3 py-1 rounded-md text-[0.625rem] sm:text-xs font-bold max-w-[calc(100%-1rem)] truncate">
                       {t('productGrid.columnGrid')} • {
                         currentCategoryId === 'favourites'
                           ? t('productGrid.favourites')
