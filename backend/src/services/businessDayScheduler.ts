@@ -4,7 +4,7 @@
  * Handles automatic business day closing based on configured business hours.
  * Supports overnight business days (e.g., 10 PM to 4 AM for hospitality venues).
  * 
- * Uses Europe/Berlin timezone for scheduling.
+ * Uses Europe/Rome timezone for scheduling.
  */
 
 import cron, { ScheduledTask } from 'node-cron';
@@ -19,7 +19,7 @@ let isClosingInProgress = false;
 let lastCloseTime: Date | null = null;
 
 // Timezone for scheduling
-const TIMEZONE = 'Europe/Berlin';
+const TIMEZONE = 'Europe/Rome';
 
 /**
  * Initialize the business day scheduler

@@ -61,6 +61,7 @@ services:
       # Environment: development (detailed errors) or production (generic errors)
       # Set NODE_ENV=production in .env for production deployment
       - NODE_ENV=${NODE_ENV:-development}
+      - TZ=${TZ:-Europe/Rome}
       - CORS_ORIGIN=${URL},${URL}:${NGINX_PORT}
       - JWT_SECRET=${JWT_SECRET}
       - URL=${URL}
